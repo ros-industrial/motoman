@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #ifdef ROS
-#include "ros_conversion.h"
-#include "trajectory_job.h"
+#include "dx100/ros_conversion.h"
+#include "dx100/trajectory_job.h"
 #include "string.h"
 #include "simple_message/joint_traj_pt.h"
 #include "simple_message/shared_types.h"

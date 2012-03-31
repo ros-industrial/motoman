@@ -30,7 +30,7 @@
  */
  
 #ifdef ROS
-#include "ros_conversion.h"
+#include "dx100/ros_conversion.h"
 #include "simple_message/log_wrapper.h"
 #endif
 

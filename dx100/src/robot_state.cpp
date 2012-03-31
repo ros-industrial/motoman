@@ -33,7 +33,7 @@
 #include "simple_message/socket/simple_socket.h"
 #include "simple_message/socket/udp_client.h"
 #include "simple_message/socket/tcp_client.h"
-#include "motoman/joint_relay_handler.h"
+#include "dx100/joint_relay_handler.h"
 #include "simple_message/message_manager.h"
 
 using namespace industrial::udp_client;

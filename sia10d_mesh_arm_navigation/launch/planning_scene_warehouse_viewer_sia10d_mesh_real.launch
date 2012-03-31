@@ -35,10 +35,10 @@
 
   
   <!-- Start Motoman specific nodes -->
-  <node pkg="motoman" type="joint_trajectory_action" name="joint_trajectory_action"/>
-  <node pkg="motoman" type="robot_state" name="robot_state"/>
-  <!--node pkg="motoman" type="motion_interface" name="motion_interface"/-->
-  <node pkg="motoman" type="motion_download_interface" name="motion_download_interface"/>
+  <node pkg="dx100" type="joint_trajectory_action" name="joint_trajectory_action"/>
+  <node pkg="dx100" type="robot_state" name="robot_state"/>
+  <!--node pkg="dx100" type="motion_interface" name="motion_interface"/-->
+  <node pkg="dx100" type="motion_download_interface" name="motion_download_interface"/>
 
 
   <!-- Called when left arm executes trajectory using controllers -->

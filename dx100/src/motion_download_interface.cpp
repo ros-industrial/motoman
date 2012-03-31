@@ -29,7 +29,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include <motoman/joint_trajectory_downloader.h>
+#include <dx100/joint_trajectory_downloader.h>
 #include "simple_message/socket/simple_socket.h"
 #include "simple_message/socket/tcp_client.h"
 

@@ -29,8 +29,8 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include <motoman/utils.h>
-#include <motoman/definitions.h>
+#include <dx100/utils.h>
+#include <dx100/definitions.h>
 #include "ros/ros.h"
 #include "urdf/model.h"
 #include "math.h"

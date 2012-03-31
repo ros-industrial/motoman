@@ -29,7 +29,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include <motoman/joint_relay_handler.h>
+#include <dx100/joint_relay_handler.h>
 #include "simple_message/messages/joint_message.h"
 #include "simple_message/log_wrapper.h"
 
