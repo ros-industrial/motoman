@@ -1,0 +1,15 @@
+<launch>	
+
+
+  <!--Simple launch file starts just the robot state interface and the motion interface.
+
+	This is helpful when testing very low-level robot functionality 
+	This file is used mostly for debug purposes and probably will have to fixed as updates
+	are made.
+
+	usage simple_joint_stream_interface.launch robot_ip:=<value>-->
+
+	<arg name="robot_ip" />
+  <node pkg="motoman" type="robot_state" name="robot_state" args="$(arg robot_ip)"/>
+  <node pkg="motoman" type="motion_interface" name="motion_interface" args="$(arg robot_ip)"/>
+</launch>
