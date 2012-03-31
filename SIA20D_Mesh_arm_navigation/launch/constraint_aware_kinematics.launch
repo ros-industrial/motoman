@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='ASCII'?>
+<launch>
+  <include file="$(find SIA20D_Mesh_arm_navigation)/launch/SIA20D_Mesh_planning_environment.launch"/>
+  <node pkg="arm_kinematics_constraint_aware" type="arm_kinematics_constraint_aware" name="SIA20D_Mesh_manipulator_kinematics">
+    <param name="group" type="string" value="manipulator"/>
+    <param name="manipulator/root_name" type="string" value="base_link"/>
+    <param name="manipulator/tip_name" type="string" value="link_t"/>
+    <param name="kinematics_solver" type="string" value="SIA20D_Mesh_manipulator_kinematics/IKFastKinematicsPlugin"/>
+  </node>
+</launch>
