@@ -29,9 +29,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "utils.h"
-#include "definitions.h"
-#include "trajectory_job.h"
+#include "dx100/utils.h"
+#include "dx100/definitions.h"
+#include "dx100/trajectory_job.h"
 #include "simple_message/joint_traj.h"
 #include "simple_message/log_wrapper.h"
 
@@ -64,25 +64,25 @@ TEST(Utils, hasSuffix)
 
 TEST(Utils, checkJointNames)
 {
-  std::vector<std::string> names;
-  EXPECT_TRUE(checkJointNames(names));
-  names.push_back("joint_s");
-  EXPECT_TRUE(checkJointNames(names));
-  names.push_back("prefix_joint_l");
-  EXPECT_TRUE(checkJointNames(names));
-  names.push_back("bad_joint");
-  EXPECT_FALSE(checkJointNames(names));
-  names.clear();
-  names.resize(motoman::parameters::Parameters::JOINT_SUFFIXES_SIZE + 1 );
-  EXPECT_FALSE(checkJointNames(names));
+	trajectory_msgs::JointTrajectoryPtr base_msg(new trajectory_msgs::JointTrajectory());
+	trajectory_msgs::JointTrajectoryConstPtr msg(base_msg);
+  EXPECT_TRUE(checkJointNames(msg));
+  base_msg->joint_names.push_back("joint_s");
+  EXPECT_TRUE(checkJointNames(msg));
+  base_msg->joint_names.push_back("prefix_joint_l");
+  EXPECT_TRUE(checkJointNames(msg));
+  base_msg->joint_names.push_back("bad_joint");
+  EXPECT_FALSE(checkJointNames(msg));
+  base_msg->joint_names.clear();
+  base_msg->joint_names.resize(motoman::parameters::Parameters::JOINT_SUFFIXES_SIZE + 1 );
+  EXPECT_FALSE(checkJointNames(msg));
 
-  names.clear();
+  base_msg->joint_names.clear();
   for (int i = 0; i < motoman::parameters::Parameters::JOINT_SUFFIXES_SIZE; i++)
   {
-    names.push_back(motoman::parameters::Parameters::JOINT_SUFFIXES[i]);
+  	base_msg->joint_names.push_back(motoman::parameters::Parameters::JOINT_SUFFIXES[i]);
   }
-  EXPECT_TRUE(checkJointNames(names));
-
+  EXPECT_TRUE(checkJointNames(msg));
 }
 
 TEST(Utils, toMotomanVelocity)
@@ -140,12 +140,12 @@ TEST(TrajectoryJob, init)
     ASSERT_TRUE(traj.addPoint(pt));
   }
 
-  EXPECT_FALSE(job.init("this name is way too long to be the name of a file and this should fail", traj));
-  ASSERT_TRUE(job.init((char*)job_name.c_str(), traj));
+  EXPECT_FALSE(job.init("this name is way too long to be the name of a file and this should fail"));
+  ASSERT_TRUE(job.init((char*)job_name.c_str()));
 
-  EXPECT_FALSE(job.toJobString(&smallJobBuffer[0], SMALL_JOB_BUFFER_SIZE));
+  EXPECT_FALSE(job.toJobString(traj, &smallJobBuffer[0], SMALL_JOB_BUFFER_SIZE));
 
-  EXPECT_TRUE(job.toJobString(&bigJobBuffer[0], BIG_JOB_BUFFER_SIZE));
+  EXPECT_TRUE(job.toJobString(traj, &bigJobBuffer[0], BIG_JOB_BUFFER_SIZE));
   ofstream file;
   job_name.append(job_ext);
   file.open(job_name.c_str());
