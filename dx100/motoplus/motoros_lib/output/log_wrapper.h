@@ -85,6 +85,13 @@ namespace log_wrapper
 // Define MOTOPLUS if this library will execute under MOTOPLUS
 #ifdef MOTOPLUS
 
+
+// IMPORTANT:  Logging has been disabled because it can affect motion
+// when a telnet session is not used (as odd as this sounds).  See the
+// following link for more info:
+// http://code.google.com/p/swri-ros-pkg/issues/detail?id=17
+
+/*
 #define LOG(level, format, ...) \
 do \
 { \
@@ -93,15 +100,16 @@ do \
   printf(format, ##__VA_ARGS__); \
   printf("\n"); \
   } while (0)
+*/
 
 // WARNING: LOG_COMM produces many messages and could slow down program
 // execution on the robot.
 #define LOG_COMM(format, ...)  //LOG("COMM", format, ##__VA_ARGS__) 
-#define LOG_DEBUG(format, ...) LOG("DEBUG", format, ##__VA_ARGS__) 
-#define LOG_INFO(format, ...)  LOG("INFO", format, ##__VA_ARGS__)
-#define LOG_WARN(format, ...)  LOG("WARNING", format, ##__VA_ARGS__)
-#define LOG_ERROR(format, ...) LOG("ERROR", format, ##__VA_ARGS__)
-#define LOG_FATAL(format, ...) LOG("FATAL", format, ##__VA_ARGS__)
+#define LOG_DEBUG(format, ...) //LOG("DEBUG", format, ##__VA_ARGS__) 
+#define LOG_INFO(format, ...)  //LOG("INFO", format, ##__VA_ARGS__)
+#define LOG_WARN(format, ...)  //LOG("WARNING", format, ##__VA_ARGS__)
+#define LOG_ERROR(format, ...) //LOG("ERROR", format, ##__VA_ARGS__)
+#define LOG_FATAL(format, ...) //LOG("FATAL", format, ##__VA_ARGS__)
 
 #endif //MOTPLUS
 
