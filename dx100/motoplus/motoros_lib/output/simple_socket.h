@@ -75,9 +75,25 @@
 #include "shared_types.h"
 #include "smpl_msg_connection.h"
 
+// Including os defintion for set socket option.  The motoplus wrappers do not give access to socket
+// options.  In order to remove system delays the nagel algorithm must be disabled using the
+// TPC_NO_DELAY option
+extern "C" STATUS setsockopt (   /* remove "extern C", if you're using C instead of C++ */
+    int    s,                 /* target socket */
+    int    level,             /* protocol level of option */
+    int    optname,           /* option name */
+    char * optval,            /* pointer to option value */
+    int    optlen             /* option length */
+    );
+
 #define SOCKET(domain, type, protocol) mpSocket(domain, type, protocol)
 #define BIND(sockfd, addr, addrlen) mpBind(sockfd, addr, addrlen)
-#define SET_NO_DELAY(sockfd, val) -1 //MOTOPLUS does not allow for setting the "no delay" socket option
+
+// Motoplus compliant version (i.e. a NOOP)
+// #define SET_NO_DELAY(sockfd, val) -1 //MOTOPLUS does not allow for setting the "no delay" socket option
+// Raw OS call, not Motoplus compliant and might not be allowed in future versions. (taking a risk at this point)
+#define SET_NO_DELAY(sockfd, val) setsockopt(sockfd, SOL_SOCKET, TCP_NODELAY, (char *)&val, sizeof(val))
+
 #define SET_REUSE_ADDR(sockfd, val) -1 //MOTOPLUS does not support this function.
 #define LISTEN(sockfd, n) mpListen(sockfd, n)
 #define ACCEPT(sockfd, addr, addrlen) mpAccept(sockfd, addr, addrlen)
