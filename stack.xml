@@ -13,5 +13,6 @@
   <depend stack="robot_model" /> <!-- urdf -->
   <depend stack="ros" />
   <depend stack="ros_comm" /> <!-- std_msgs, rospy, roscpp -->
+  <depend stack="industrial" /> <!-- simple_message -->
 
 </stack>
