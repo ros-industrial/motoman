@@ -99,7 +99,7 @@ void JointTrajectoryHandler::jointTrajectoryCB(const trajectory_msgs::JointTraje
     // TODO: This section pads any trajectory below the minimum size with the same
     // end point.  This is required because the motoman side requires a minimum buffer
     // size before it start motion.
-    while (current_traj_.points.size() < 6)
+    while (current_traj_.points.size() <= 6)
     {
       ROS_DEBUG("Padding trajectory, current size: %d", current_traj_.points.size());
       current_traj_.points.push_back(current_traj_.points[current_traj_.points.size()-1]);

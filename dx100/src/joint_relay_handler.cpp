@@ -86,8 +86,6 @@ bool JointRelayHandler::internalCB(industrial::simple_message::SimpleMessage & i
   JointMessage joint;
   SimpleMessage msg;
 
-  LOG_INFO("Executing internal CB");
-
   if (joint.init(in))
   {
     shared_real value;
