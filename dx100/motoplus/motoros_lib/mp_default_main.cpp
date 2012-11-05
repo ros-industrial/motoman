@@ -29,6 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "controller.h"
 #include "mp_default_main.h"
 #include "log_wrapper.h"
 #include "tcp_server.h"
@@ -39,7 +40,6 @@
 #include "joint_message.h"
 #include "simple_message.h"
 #include "ros_conversion.h"
-#include "mp_wrapper.h"
 
 #include "motoPlus.h"
 
@@ -102,20 +102,21 @@ void systemServer(void)
 
 void stateServer(void)
 {
-
+    using motoman::controller::Controller;
     using namespace industrial::simple_socket;
     using namespace industrial::tcp_server;
     using namespace industrial::joint_message;
     using namespace industrial::joint_data;
     using namespace industrial::simple_message;
     using namespace motoman::ros_conversion;
-    using namespace motoman::mp_wrapper;
     
     // Using TPC server for debugging (this should really be UDP)
     TcpServer connection;
     JointData rosJoints;
     JointMessage msg;
     SimpleMessage simpMsg;
+    Controller controller;
+    float mpJoints[MAX_PULSE_AXES];
     
     const int period = 100; //ticks
     
@@ -127,7 +128,8 @@ void stateServer(void)
       
       while(connection.isConnected())
       {
-        getRosFbPos(rosJoints);
+        controller.getActJointPos(mpJoints);
+        toRosJoint(mpJoints, rosJoints);
         msg.init(0, rosJoints);
         msg.toTopic(simpMsg);
         connection.sendMsg(simpMsg);

@@ -49,19 +49,21 @@ class CommsFaultHandler
 public:
 
   /**
-   * \brief Send failure callback method. TODO: This callback may not be used
+   * \brief Send failure callback method.  This method will be executed in the event
+   * that a comms send fails.
    *
    */
   virtual void sendFailCB()=0;
 
   /**
-   * \brief Receive failure callback method TODO: This callback may not be used
-   *
+   * \brief Receive failure callback method.  This method will be executed in the event
+   * that a comms receive fails.
    */
   virtual void receiveFailCB()=0;
 
   /**
-   * \brief Connection failure callback method
+   * \brief Connection failure callback method.  This method will be exectured in the 
+   * event that a comms connection is lost.
    *
    */
   virtual void connectionFailCB()=0;

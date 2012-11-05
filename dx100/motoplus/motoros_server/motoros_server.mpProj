@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <MotoPlusProject>
-  <ProjectName>sia20d</ProjectName>
+  <ProjectName>motoros_server</ProjectName>
   <FilesInProject>
-    <FileForProject>motoros_lib.mpLib</FileForProject>
     <FileForProject>byte_array.h</FileForProject>
+    <FileForProject>controller.h</FileForProject>
     <FileForProject>joint_data.h</FileForProject>
+    <FileForProject>motoros_lib.mpLib</FileForProject>
     <FileForProject>mp_default_main.h</FileForProject>
     <FileForProject>mpMain.cpp</FileForProject>
-    <FileForProject>ros_conversion.h</FileForProject>
+    <FileForProject>ParameterExtraction.h</FileForProject>
     <FileForProject>shared_types.h</FileForProject>
     <FileForProject>simple_message.h</FileForProject>
     <FileForProject>simple_serialize.h</FileForProject>

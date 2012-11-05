@@ -29,10 +29,10 @@
     <FileForProject>motoros_lib.h</FileForProject>
     <FileForProject>mp_default_main.cpp</FileForProject>
     <FileForProject>mp_default_main.h</FileForProject>
-    <FileForProject>mp_wrapper.cpp</FileForProject>
-    <FileForProject>mp_wrapper.h</FileForProject>
     <FileForProject>p_var_q.cpp</FileForProject>
     <FileForProject>p_var_q.h</FileForProject>
+    <FileForProject>ParameterExtraction.h</FileForProject>
+    <FileForProject>ParameterExtraction.mpLib</FileForProject>
     <FileForProject>ping_handler.cpp</FileForProject>
     <FileForProject>ping_handler.h</FileForProject>
     <FileForProject>ping_message.cpp</FileForProject>
@@ -55,8 +55,6 @@
     <FileForProject>tcp_server.h</FileForProject>
     <FileForProject>tcp_socket.cpp</FileForProject>
     <FileForProject>tcp_socket.h</FileForProject>
-    <FileForProject>trajectory_job.cpp</FileForProject>
-    <FileForProject>trajectory_job.h</FileForProject>
     <FileForProject>typed_message.h</FileForProject>
     <FileForProject>udp_client.cpp</FileForProject>
     <FileForProject>udp_client.h</FileForProject>
@@ -65,7 +63,7 @@
     <FileForProject>udp_socket.cpp</FileForProject>
     <FileForProject>udp_socket.h</FileForProject>
   </FilesInProject>
-  <LastFileOpened>joint_motion_handler.cpp</LastFileOpened>
+  <LastFileOpened>controller.cpp</LastFileOpened>
   <UsrInit>False</UsrInit>
   <ProjectType>Library</ProjectType>
   <Debug>
@@ -75,7 +73,7 @@
     <DebugPass>99999999</DebugPass>
   </Debug>
   <Build>
-    <CompileCommand>mpbuilder\bin\ccpentium.exe -mcpu=pentiumiii -march=p3 -nostdlib -fno-builtin -fno-defer-pop -W -Werror-implicit-function-declaration -Wreturn-type -Wunused -Wuninitialized -Wunreachable-code -I"~ProjectDir~" -I"~IncludeDir~" -DCPU=PENTIUM4 -DMOTOPLUS -fvolatile -O -c "~FilePath~" -o "~OutputPath~"</CompileCommand>
+    <CompileCommand>mpbuilder\bin\ccpentium.exe -mcpu=pentiumiii -march=p3 -nostdlib -fno-builtin -fno-defer-pop -W -Wreturn-type -Wuninitialized -Wunreachable-code -I"~ProjectDir~" -I"~IncludeDir~" -DCPU=PENTIUM4 -DMOTOPLUS -fvolatile -O -c "~FilePath~" -o "~OutputPath~"</CompileCommand>
     <BuildCommand>mpbuilder\bin\ccpentium -nostdlib -r -Wl,-X -Wl~FileList~ -o "~OutputPath~"</BuildCommand>
     <IncludeDir>deprecated</IncludeDir>
   </Build>

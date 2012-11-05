@@ -119,96 +119,230 @@ typedef ReplyTypes::ReplyType ReplyType;
 
 
 /**
- * \brief A simple messaging protocol for communicating with industrial robot
- * controllers.
- */
+* \brief This class defines a simple messaging protocol for communicating with an
+* industrial robot controller.  
+*
+* The protocol meets the following requirements:
+*
+* 1. Format should be simple enough that code can be shared between ROS and
+* the controller (for those controllers that support C/C++).  For those controllers
+* that do not support C/C++, the protocol must be simple enough to be decoded with
+* the limited capabilities of the typical robot programming language.  A corollary
+* to this requirement is that the protocol should not be so onerous as to overwhelm
+* the limited resources of the robot controller
+*
+* 2. Format should allow for data streaming (ROS topic like)
+*
+* 3. Format should allow for data reply (ROS service like)
+*
+* 4. The protocol is not intended to encapsulate version information  It is up to
+* individual developers to ensure that code developed for communicating platforms
+* does not have any version conflicts (this includes message type identifiers).
+*
+* Message Structure
+*
+* - <PREFIX> Not considered part of the message
+*   - int LENGTH (HEADER + DATA) in bytes
+*
+*
+*
+* - <HEADER>
+*   - int MSG_TYPE identifies type of message (standard (see StandardMsgTypes::StandardMsgType)
+*     and robot specific values)
+*   - int COMM_TYPE identified communications type (see CommTypes::CommType)
+*   - int REPLY CODE (service reply only) reply code (see ReplyTypes::ReplyType)
+* 
+* - <BODY>
+*   - ByteArray DATA variable length data determined by message
+*     type and and communications type.
+*
+*
+* THIS CLASS IS NOT THREAD-SAFE
+*
+*/
 class SimpleMessage
 {
 
-  //* SimpleMessage
-  /**
-   * This class defines a simple messaging protocol for communicating with an
-   * industrial robot controller.  The protocol meets the following requirements:
-   *
-   * 1. Format should be simple enough that code can be shared between ROS and
-   * the controller (for those controllers that support C/C++).  For those controllers
-   * that do not support C/C++, the protocol must be simple enough to be decoded with
-   * the limited capabilities of the typical robot programming language.  A corollary
-   * to this requirement is that the protocol should not be so onerous as to overwhelm
-   * the limited resources of the robot controller
-   *
-   * 2. Format should allow for data streaming (ROS topic like)
-   *
-   * 3. Format should allow for data reply (ROS service like)
-   *
-   * 4. The protocol is not intended to encapsulate version information  It is up to
-   * individual developers to ensure that code developed for communicating platforms
-   * does not have any version conflicts (this includes message type identifiers).
-   *
-   * Message Structure
-   *
-   * <PREFIX> Not considered part of the message
-   * int LENGTH (HEADER + DATA) in bytes
-   *
-   * <HEADER>
-   * int MSG_TYPE identifies type of message (standard and robot specific values)
-   * int COMM_TYPE identified communications type
-   * int REPLY CODE (service reply only) reply code
-   * <BODY>
-   * ByteArray DATA variable length data determined by message
-   *                    type and and communications type.
-   *
-   *
-   * THIS CLASS IS NOT THREAD-SAFE
-   *
-   */
+  
 public:
+  /**
+   * \brief Constructs an empty message
+   */
 	SimpleMessage();
-	~SimpleMessage(void);
 
+  /**
+   * \brief Destructs a message
+   */
+	~SimpleMessage(void);
+  /**
+   * \brief Initializes a fully populated simple message
+   *
+   * \param message type. Globally unique message ID (see StandardMsgType)
+   * \param communications types (see CommType)
+   * \param reply code(see ReplyType), only valide if comms type is a reply
+   * \param data payload for the message
+   *
+   * \return true if valid message created
+   */
 	bool init(int msgType, int commType, int replyCode,
 	          industrial::byte_array::ByteArray &data );
-        bool init(int msgType, int commType, int replyCode);
-        bool init(industrial::byte_array::ByteArray & msg);
+            
+  /**
+   * \brief Initializes a simple message with an emtpy data payload
+   *
+   * \param message type. Globally unique message ID (see StandardMsgType)
+   * \param communications types (see CommType)
+   * \param reply code(see ReplyType), only valide if comms type is a reply
+   *
+   * \return true if valid message created
+   */
+  bool init(int msgType, int commType, int replyCode);
+  
+  /**
+   * \brief Initializes a simple message from a generic byte array.  The byte
+   * array is assumed to hold a valid message with a HEADER and data payload
+   *
+   * \param valid message (as bytes)
+   *
+   * \return true if valid message created
+   */
+  bool init(industrial::byte_array::ByteArray & msg);
 
-        void toByteArray(industrial::byte_array::ByteArray & msg);
+   /**
+   * \brief Populates a raw byte array with the message.  Any data stored in
+   * the passed in byte array is deleted
+   * 
+   * \param byte array to be populated
+   */
+  void toByteArray(industrial::byte_array::ByteArray & msg);
 
-        static unsigned int getHeaderSize() { return SimpleMessage::HEADER_SIZE; };
-        static unsigned int getLengthSize() { return SimpleMessage::LENGTH_SIZE; };
+  /**
+   * \brief Gets size of message header in bytes(fixed)
+   *
+   * \return message header size
+   */
+  static unsigned int getHeaderSize() { return SimpleMessage::HEADER_SIZE; };
+  
+   /**
+   * \brief Gets size of message length member in bytes (fixed)
+   *
+   * \return message header size
+   */
+  static unsigned int getLengthSize() { return SimpleMessage::LENGTH_SIZE; };
 
+  /**
+   * \brief Gets message type(see StandardMsgType)
+   *
+   * \return message type
+   */
 	int getMessageType() {return this->message_type_;};
+  
+  /**
+   * \brief Gets message type(see CommType)
+   *
+   * \return communications type
+   */
 	int getCommType() {return this->comm_type_;};
-        int getReplyCode() {return this->reply_code_;};
+  
+    /**
+   * \brief Gets reply code(see ReplyType)
+   *
+   * \return reply code
+   */
+  int getReplyCode() {return this->reply_code_;};
+  
+   /**
+   * \brief Gets message length (total size, HEADER + data)
+   *
+   * \return message length
+   */
 	int getMsgLength() {return this->getHeaderSize() + this->data_.getBufferSize();};
+  
+   /**
+   * \brief Gets length of message data portion.
+   *
+   * \return message data length
+   */
 	int getDataLength() {return this->data_.getBufferSize();};
-        industrial::byte_array::ByteArray & getData() {return this->data_;};
+  
+   /**
+   * \brief Returns a reference to the internal data member
+   *
+   * \return reference to message data portion.
+   */
+  industrial::byte_array::ByteArray & getData() {return this->data_;};
 	
-        /**
-           * \brief performs logical checks to ensure that the message is fully
-           * defined and adheres to the message conventions.
-           *
-           * \return true if message valid, false otherwise
-           */
-        bool validateMessage();
+  /**
+   * \brief performs logical checks to ensure that the message is fully
+   * defined and adheres to the message conventions.
+   *
+   * \return true if message valid, false otherwise
+   */
+  bool validateMessage();
 	
 
 
 private:
 
-        industrial::shared_types::shared_int message_type_;
-        industrial::shared_types::shared_int comm_type_;
-        industrial::shared_types::shared_int reply_code_;
+  /**
+   * \brief Message type(see StandardMsgType)
+   */
+  industrial::shared_types::shared_int message_type_;
+  
+   /**
+   * \brief Communications type(see CommType)
+   */
+  industrial::shared_types::shared_int comm_type_;
+  
+  /**
+   * \brief Reply code(see ReplyType)
+   */
+  industrial::shared_types::shared_int reply_code_;
+  
+  /**
+   * \brief Message data portion
+   */
 	industrial::byte_array::ByteArray data_;
 
+  /**
+   * \brief Size(in bytes) of message header (fixed)
+   */
 	static const unsigned int HEADER_SIZE = sizeof(industrial::shared_types::shared_int) +
 	    sizeof(industrial::shared_types::shared_int) +
 	    sizeof(industrial::shared_types::shared_int);
+      
+  /**
+   * \brief Size (in bytes) of message length parameter (fixed)
+   */
 	static const unsigned int LENGTH_SIZE = sizeof(industrial::shared_types::shared_int);
 
-        void setMessageType(int msgType) {this->message_type_ = msgType;};
-        void setCommType(int commType) {this->comm_type_ = commType;};
-        void setReplyCode(int replyCode) {this->reply_code_ = replyCode;};
-        void setData(industrial::byte_array::ByteArray & data);
+  /**
+   * \brief Sets message type
+   *
+   * \param message type
+   */
+  void setMessageType(int msgType) {this->message_type_ = msgType;};
+  
+  /**
+   * \brief Sets communications type
+   *
+   * \param communications type
+   */
+  void setCommType(int commType) {this->comm_type_ = commType;};
+  
+  /**
+   * \brief Sets reply code
+   *
+   * \param reply code
+   */
+  void setReplyCode(int replyCode) {this->reply_code_ = replyCode;};
+  
+  /**
+   * \brief Sets data portion
+   *
+   * \param data portion
+   */
+  void setData(industrial::byte_array::ByteArray & data);
 };
 
 }//namespace simple_message

@@ -53,10 +53,25 @@ namespace typed_message
 {
 
 /**
- * \brief Message interface for typed messages built from simple_message(link)
- */
-//* TypedMessage
-/**
+ * \brief Message interface for typed messages built from SimpleMessage.
+ *
+ * This is an interface for a helper class that when implemented is used
+ * to create simple messages of the various types (i.e. as defined by the
+ * message type enumeration).  It also has constructors and initializers 
+ * that can be used to create a typed message from a simple message.
+ *
+ * If the typed message does not support a particular simple message type
+ * the "to" method should be overridden to return false.  For exmaple, a
+ * ping message cannot be a topic, it is always expected to be a request/
+ * reply.  A joint trajectory point on the other hand may either be a topic
+ * (i.e. asynchronously sent) or a request/reply (i.e. syncrounously sent)
+ *
+ * Classes that implement this interface shall include data members for
+ * the data payload of the typed message.
+ *
+ * \deprecated The base function implementations in the class will be removed
+ * in a later release.  This will force classes that inherit from this
+ * class to implement them.
  *
  * THIS CLASS IS NOT THREAD-SAFE
  *
@@ -64,11 +79,6 @@ namespace typed_message
 
 class TypedMessage : public industrial::simple_serialize::SimpleSerialize
 {
-
-  /*
-   * This class is just put here for planning purposes.  After many typed messages
-   * have been created the common code will be ported to this class.
-   */
 
 public:
   /**
@@ -137,10 +147,14 @@ public:
 
 protected:
 
-
-  void setMessageType(int MESSAGE_TYPE = industrial::simple_message::StandardMsgTypes::INVALID)
+/**
+     * \brief sets message type
+     *
+     * \return message type
+     */
+  void setMessageType(int message_type = industrial::simple_message::StandardMsgTypes::INVALID)
   {
-    this->message_type_ = MESSAGE_TYPE;
+    this->message_type_ = message_type;
   }
 
 private:

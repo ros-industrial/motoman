@@ -54,14 +54,51 @@ namespace industrial
 namespace smpl_msg_connection
 {
 
+/**
+ * \brief Defines an interface and common methods for sending simple messages 
+ * (see simple_message).  This interface makes a bare minimum of assumptions:
+ *
+ * 1. The connection is capable of sending raw bytes (encapsulated within a simple message)
+ *
+ * 2. The data connection has an explicit connect that establishes the connection (and an 
+ *    associated disconnect method).  NOTE: For data connections that are connectionless,
+ *    such as UDP, the connection method can be a NULL operation.
+ */
 class SmplMsgConnection
 
 {
 public:
 
   // Message
+  
+  /**
+   * \brief Sends a message using the data connection
+   *
+   * \param message to send
+   *
+   * \return true if successful
+   */
   virtual bool sendMsg(industrial::simple_message::SimpleMessage & message);
+  
+  /**
+   * \brief Receives a message using the data connection
+   *
+   * \param populated with received message
+   *
+   * \return true if successful
+   */
   virtual bool receiveMsg(industrial::simple_message::SimpleMessage & message);
+  
+  /**
+   * \brief Performs a complete send and receive.  This is helpful when sending
+   * a message that requires and explicit reply
+   *
+   * \param message to send
+   * \param populated with received message
+   * \param verbosity level of low level logging
+   *
+   * \return true if successful
+   */
   bool sendAndReceiveMsg(industrial::simple_message::SimpleMessage & send,
                          industrial::simple_message::SimpleMessage & recv, 
                          bool verbose = false);
@@ -83,7 +120,25 @@ public:
 private:
 
   // Overrides
+  /**
+   * \brief Method used by send message interface method.  This should be overridden 
+   * for the specific connection type
+   *
+   * \param data to send.
+   *
+   * \return true if successful
+   */
   virtual bool sendBytes(industrial::byte_array::ByteArray & buffer) =0;
+  
+  /**
+   * \brief Method used by receive message interface method.  This should be overridden 
+   * for the specific connection type
+   *
+   * \param data to receive.
+   * \param size (in bytes) of data to receive 
+   *
+   * \return true if successful
+   */
   virtual bool receiveBytes(industrial::byte_array::ByteArray & buffer,
                             industrial::shared_types::shared_int num_bytes) =0;
 

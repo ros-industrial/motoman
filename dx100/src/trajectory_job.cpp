@@ -35,6 +35,7 @@
 #include "simple_message/joint_traj_pt.h"
 #include "simple_message/shared_types.h"
 #include "simple_message/log_wrapper.h"
+#define MAX_PULSE_AXES (8)
 #endif
 
 #ifdef MOTOPLUS
@@ -44,6 +45,7 @@
 #include "joint_traj_pt.h"
 #include "shared_types.h"
 #include "log_wrapper.h"
+#include "motoPlus.h"
 #endif
 
 using namespace industrial::shared_types;
@@ -154,7 +156,8 @@ bool TrajectoryJob::toJobString(JointTraj & trajectory, char* str_buffer, size_t
     // ----------------------------------------------------------------------------
     JointTrajPt pt;
     JointData rosData;
-    JointData mpData;
+    float mpRadians[MAX_PULSE_AXES];
+    long mpPulses[MAX_PULSE_AXES];
 
     for(int i = 0; i < trajectory.size(); i++)
     {
@@ -164,18 +167,22 @@ bool TrajectoryJob::toJobString(JointTraj & trajectory, char* str_buffer, size_t
       pt.getJointPosition(rosData);
       
       // Converting to a motoplus joint (i.e. the correct order and units
-      toMpJoint(rosData, mpData);
-      for(int j = 0; j < mpData.getMaxNumJoints(); j++)
+      toMpJoint(rosData, mpRadians);
+      memset(mpPulses, 0, MAX_PULSE_AXES);  // can't convert radian->pulse on PC-side
+      LOG_ERROR("Failed to create Job string: Radian->Pulse scaling is not available for PC-side code.");
+      return false;
+
+      for(int j = 0; j < MAX_PULSE_AXES; j++)
       {
         // Don't append comma to last position, instead line-feed.
-        if (j < (mpData.getMaxNumJoints() - 1))
+        if (j < (MAX_PULSE_AXES - 1))
         {
-          sprintf(this->line_buffer_, "%d,", (int)mpData.getJoint(j));
+          sprintf(this->line_buffer_, "%d,", mpPulses[j]);
           SAFE_STRCAT(str_buffer, buffer_size, this->line_buffer_);
         }
         else
         {
-          sprintf(this->line_buffer_, "%d", (int)mpData.getJoint(j));
+          sprintf(this->line_buffer_, "%d", mpPulses[j]);
           APPEND_LINE(str_buffer, buffer_size, this->line_buffer_);
         }
       }
@@ -205,6 +212,7 @@ bool TrajectoryJob::toJobString(JointTraj & trajectory, char* str_buffer, size_t
     rtn = false;
     LOG_ERROR("Failed to generate job string");
   }
+
   return rtn;
 
 }

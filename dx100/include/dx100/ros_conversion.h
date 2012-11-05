@@ -87,68 +87,26 @@ enum RosJointIndex
 }
 typedef RosJointIndexes::RosJointIndex RosJointIndex;
 
-
 /**
- * \brief Enumeration of Motoman robot types (models).  Initially these are
- * being used to initialize joint rads->count conversion factors.
- */
-namespace MotomanRobotModels
-{
-enum MotomanRobotModel
-{
-  SIA_10D,
-  SIA_20D
-};
-}
-typedef MotomanRobotModels::MotomanRobotModel MotomanRobotModel;
-
-/**
- * \brief Initializes joint rads->enocder count conversion factors
- * This function must be manually called from within mpUsrRoot.
- * Failure to call this function results in conversion factors of
- * zero.
- *
- * \param robot model (@see MotomanRobotModels)
- */
-void initJointConversion(MotomanRobotModel model_number);
-
-//TODO: Standardize function calls such that JointDatas are always in ROS
-//      order and MP types are always in motoman order.  The order of the
-//      JointData type can change within a function, but when a variable
-//      of that type enters or leaves a function is should always be in ROS
-//      order.  Move the appropriate function prototypes below to the src
-//      file in order to hide the ordering details (essentially make them private)
-float toPulses(float radians, MotomanJointIndex joint);
-float toRadians(float pulses, MotomanJointIndex joint);
-
-
-/**
- * \brief Converts a motoplus joint (in motoplus order and pulses) to
- * a ros joint (in ros order and radians)
+ * \brief Converts a motoplus joint (radians, in motoplus order) to
+ * a ros joint (radians, in ros order, JointData format)
  *
  * \param motoplus joints to convert
  * \param ros joint (returned)
  */
-void toRosJoint(industrial::joint_data::JointData & mp_joints, 
+void toRosJoint(float* mp_joints, 
 				industrial::joint_data::JointData & ros_joints);
 
 /**
- * \brief Converts a ros joint (in ros order and radians) to
- * a motoplus joint (in motoplus order and pulses)
- * WARNING: This function should only be used at the lowest levels.
- * The assumption is that any JointData type is assumed to be a ROS
- * Joint.
+ * \brief Converts a ros joint (in ros order, JointData format) to
+ * a motoplus joint (in motoplus order)
  *
- * \param ros joint (returned)
- * \param motoplus joints to convert
+ * \param ros joint to convert
+ * \param motoplus joints (returned)
  */
 void toMpJoint(industrial::joint_data::JointData & ros_joints,
-				industrial::joint_data::JointData & mp_joints);
-				
-				
-				
-//DEPRECATED
-void toMotomanJointOrder(industrial::joint_data::JointData & joints);
+				float* mp_joints);
+
 // These functions change the JointData in place which has lead to some dangerous
 // bugs when they are called more than once.  Use the functions above
 // that swap joint order and perform unit conversion automatically

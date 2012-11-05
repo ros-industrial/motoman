@@ -5,10 +5,8 @@ motoplus_sync_script_generator.xlsm - used to auto-generate sync scripts below
 SyncFromSource.bat - syncs local copies of source/header files FROM the source location (THIS SHOULD BE RAN FIRST)
 SyncToSource.bat - Syncs local source/header files TO the source location (THIS SHOULD BE RAN LAST)
 
-In the motoplus directory the following files are used:
-robot_sync_script_generator.xlsm - used to auto-generate sync scripts for robot specific projects.
-
-In robot specific project (i.e. siaXXd, etc...)
+In the motoros_server directory the following files are used:
+robot_sync_script_generator.xlsm - used to auto-generate sync scripts for robot-server executable
 SyncFromSource.bat - syncs local copies from the motros_lib.  NOTE: there is no need to sync back to source since the source files are generated in the motoros_lib project (i.e. any changes should be made there and then synced to the robot specific project).
 
 

@@ -33,19 +33,21 @@
 //
 //This contains mpUsrRoot which is the entry point for your MotoPlus application
 #include "mp_default_main.h"
-#include "ros_conversion.h"
+#include "controller.h"
 #include "motoPlus.h"
 
 using namespace motoman::mp_default_main;
-using namespace motoman::ros_conversion;
+using motoman::controller::Controller;
 
 int motion_server_task_ID; \
 int system_server_task_ID; \
 int state_server_task_ID; \
 int io_server_task_ID; \
 extern "C" void mpUsrRoot(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10)
-{  
-  initJointConversion( MotomanRobotModels::SIA_20D ); 
+{
+  const int ROBOT_CONTROL_GROUP = 0;  // assume Robot Control Group #1 (0-based indexing)
+  Controller::initParameters(ROBOT_CONTROL_GROUP);
+
   motion_server_task_ID = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, (FUNCPTR)motionServer, 
   					arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10); 
   state_server_task_ID = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, (FUNCPTR)stateServer, 

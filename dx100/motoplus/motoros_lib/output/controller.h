@@ -33,7 +33,8 @@
 #define CONTROLLER_H
 
 #include "motoPlus.h"
-
+#include "ParameterExtraction.h"  // new motoPlus library
+#include "joint_data.h"
 
 namespace motoman
 {
@@ -77,6 +78,15 @@ public:
   */
  ~Controller();
  
+  /**
+  * \brief Reads key values from parameter data-list.
+  *
+  * \param Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  *
+  * \return true if parameters successfully read
+  */
+ static bool initParameters(int ctrl_grp);
+ 
  /**
   * \brief Read integer data from the controller integer data table.  Function
   * blocks until data is read
@@ -85,7 +95,7 @@ public:
   *
   * \return integer value
   */
-int getInteger(int index);
+static int getInteger(int index);
 
 
 /**
@@ -95,7 +105,18 @@ int getInteger(int index);
   * \param index in data table
   * \param value to write
   */
-void setInteger(int index, int value);
+static void setInteger(int index, int value);
+
+/**
+  * \brief Write position-variable data to the controller data table.  Function
+  * blocks until data is written
+  *
+  * \param index in data table
+  * \param joint positions to write (ROS-order, radians)
+  *
+  * \return true if variable set successfully
+  */
+static bool setJointPositionVar(int index, industrial::joint_data::JointData ros_joints);
 
  /**
   * \brief Utility function for setting a digital output in the
@@ -117,7 +138,16 @@ void setInteger(int index, int value);
   */
  void waitDigitalIn(int bit_offset, bool wait_value);
  
- 
+ /**
+  * \brief Get the actual Joint Position from the robot encoders
+  * NOTE: use getCmdJointPos to get the commanded joint positions
+  *
+  * \param array to hold joint positions (in radians)
+  *
+  * \return true if positions retrieved successfully
+  */
+ static bool getActJointPos(float* pos);
+  
    /**
 * \brief return true if motion is enabled (Based on internal class state
 * not MotoPlus call)
@@ -200,6 +230,39 @@ void delayTicks(int ticks) { mpTaskDelay(ticks);};
  double getVelocityLimit()
     {return (double) this->getInteger(VELOCITY_LIMIT_INDEX);};
 
+
+  /**
+  * \brief Reads the number of robot axes from the controller's config parameters.
+  *
+  * \param Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  * \param Number of robot axes (return)
+  *
+  * \return true if parameters successfully read
+  */static bool getNumRobotAxes(int ctrl_grp, int* numAxes);
+
+ /**
+  * \brief Reads the pulse-to-radian scaling factors from the controller's
+  * config parameters, based on the arm's gearing ratios.
+  *    jntPosInRadians = jntPosInPulses * pulseToRadian
+  *
+  * \param Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  * \param array of scaling factors (return, in Motoman order, length=MAX_PULSE_AXES)
+  *
+  * \return true if parameters successfully read
+  */
+ static bool getPulseToRadian(int ctrl_grp, float* pulse_to_radian);
+
+ /**
+  * \brief Reads the pulse correction factors from the controller's
+  * config parameters, based on physical axis cross-coupling.
+  *    pulsePos[ulCorrectionAxis] -= pulsePos[ulSourceAxis] * fCorrectionRatio
+  *
+  * \param Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  * \param array of correction factors (return, length=MAX_PULSE_AXES)
+  *
+  * \return true if parameters successfully read
+  */
+ static bool getFBPulseCorrection(int ctrl_grp, FB_AXIS_CORRECTION* pulse_correction);
  
 protected:
 
@@ -207,8 +270,6 @@ protected:
 * \brief Index within integer data table that holds velocity limit
 */
 static const int VELOCITY_LIMIT_INDEX = 94;
-\
-	        
 	        
  /**
   * \brief Typical MP function call return on error
@@ -244,6 +305,16 @@ MP_STD_RSP_DATA job_error;
 MP_HOLD_SEND_DATA hold_data;
 MP_STD_RSP_DATA hold_error;
  
+// Cache robot parameters locally, since GetParameters is expensive
+typedef struct
+{
+  int ctrl_grp;
+  int num_axes;
+  float pulse_to_rad[MAX_PULSE_AXES];
+  FB_AXIS_CORRECTION pulse_correction[MAX_PULSE_AXES];
+} RobotParameters;
+static RobotParameters parameters_;  // TBD - This may eventually be an array, to support multiple robot types
+
  //TODO: motion and job flags are just internal state variables, we may
  //want to make them query the appropriate motoplus API calls instead.
  /**
@@ -255,8 +326,6 @@ MP_STD_RSP_DATA hold_error;
   * \brief True if job started
   */
  bool jobStarted;
- 
- 
 };
 
 

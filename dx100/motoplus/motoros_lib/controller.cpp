@@ -31,6 +31,7 @@
  
  #include "controller.h"
  #include "log_wrapper.h"
+ #include "ros_conversion.h"
  
  namespace motoman
 {
@@ -47,6 +48,32 @@ Controller::~Controller()
 {
   this->disableMotion();
   // TODO: The current job should probably be unloaded.
+}
+
+bool Controller::initParameters(int ctrl_grp)
+{
+  parameters_.ctrl_grp = ctrl_grp;
+
+  bool rslt = true;
+  rslt &= getNumRobotAxes(ctrl_grp, &parameters_.num_axes);
+  rslt &= getPulseToRadian(ctrl_grp, parameters_.pulse_to_rad);
+  rslt &= getFBPulseCorrection(ctrl_grp, parameters_.pulse_correction);
+  
+  printf("Controller Parameters retrieved for group #%d\n", ctrl_grp+1);
+  printf("  numAxes: %d\n", parameters_.num_axes);
+  printf("  pulse2rad: %8g", parameters_.pulse_to_rad[0]);
+  for (int i=1; i<parameters_.num_axes; ++i)
+    printf(", %8g", parameters_.pulse_to_rad[i]);
+  printf("\n");
+  for (int i=0; i<MAX_PULSE_AXES; ++i)
+  {
+    printf("  pulseCorr[%d]: %d, %d, %8g\n", i,
+    parameters_.pulse_correction[i].ulSourceAxis,
+    parameters_.pulse_correction[i].ulCorrectionAxis,
+    parameters_.pulse_correction[i].fCorrectionRatio);
+  }
+
+  return rslt;
 }
 
 void Controller::setInteger(int index, int value)
@@ -80,6 +107,32 @@ int Controller::getInteger(int index)
         mpTaskDelay(VAR_POLL_DELAY_);
     }
     return rtn;
+}
+
+bool Controller::setJointPositionVar(int index, industrial::joint_data::JointData ros_joints)
+{
+    // convert ROS joint-order to MP joint-order
+    float mp_joints_radians[MAX_PULSE_AXES];
+    ros_conversion::toMpJoint(ros_joints, mp_joints_radians);
+    
+    // convert radians to pulses
+    LONG mp_joints_pulses[MAX_PULSE_AXES];
+  	for (int i=0; i<MAX_PULSE_AXES; ++i)
+    	mp_joints_pulses[i] = (long)floor(mp_joints_radians[i] / parameters_.pulse_to_rad[i]);
+    
+    // convert to MP_POSVAR_DATA structure
+    const int MP_POSVAR_SIZE = 10;  // hardcoded in MP_POSVAR_DATA (not set to MAX_PULSE_AXES+2)
+	MP_POSVAR_DATA local_posvar;
+	local_posvar.usType = MP_RESTYPE_VAR_ROBOT;  // assume ROBOT position (not BASE or STATION)
+	local_posvar.usIndex = index;
+	local_posvar.ulValue[0] = 0;   // 0 => Pulse (joint) position
+	for (int i=0; i<MP_POSVAR_SIZE-2 && i<MAX_PULSE_AXES; ++i)
+	  local_posvar.ulValue[i+2] = mp_joints_pulses[i];  // First two values in ulValue are reserved
+	
+	// copy position data to controller data-list
+	bool result = (mpPutPosVarData ( &local_posvar, 1 ) == OK);
+	
+	return result;
 }
 
 void Controller::enableMotion(void)
@@ -323,8 +376,84 @@ void Controller::setDigitalOut(int bit_offset, bool value)
     LOG_ERROR("Bit offset: %d, is greater than size: %d", bit_offset, this->UNIV_IO_DATA_SIZE_);
   }
  }
+ 
+bool Controller::getActJointPos(float* pos)
+{
+  LONG status = 0;
+  MP_CTRL_GRP_SEND_DATA sData;
+  MP_FB_PULSE_POS_RSP_DATA pulse_data;
 
+  memset(pos, 0, MAX_PULSE_AXES*sizeof(float));  // clear result, in case of error
+  
+  // get raw (uncorrected/unscaled) joint positions
+  sData.sCtrlGrp = parameters_.ctrl_grp;
+  status = mpGetFBPulsePos (&sData,&pulse_data);
+  if (0 != status)
+  {
+    LOG_ERROR("Failed to get pulse feedback position: %u", status);
+    return false;
+  }
+  
+  // apply correction to account for cross-axis coupling
+  for (int i=0; i<MAX_PULSE_AXES; ++i)
+  {
+    FB_AXIS_CORRECTION corr = parameters_.pulse_correction[i];
+    if (corr.bValid)
+    {
+      int src_axis = corr.ulSourceAxis;
+      int dest_axis = corr.ulCorrectionAxis;
+      pulse_data.lPos[dest_axis] -= pulse_data.lPos[src_axis] * corr.fCorrectionRatio;
+    }
+  }
+  
+  // apply scaling (pulse->radians)
+  for (int i=0; i<parameters_.num_axes; ++i)
+    pos[i] = pulse_data.lPos[i] * parameters_.pulse_to_rad[i];
+    
+  return true;
+}
+  
+bool Controller::getNumRobotAxes(int ctrl_grp, int* numAxes)
+{
+    *numAxes = GP_getNumberOfAxes(ctrl_grp);
+    return (*numAxes >= 0);
+}
 
+bool Controller::getPulseToRadian(int ctrl_grp, float* pulse_to_radian)
+{
+  GB_PULSE_TO_RAD rData;
+
+  LOG_DEBUG("Retrieving PulseToRadian parameters.");
+  if (GP_getPulseToRad(ctrl_grp, &rData) != OK)
+  {
+    LOG_ERROR("Failed to retrieve PulseToRadian parameters.");
+    memset(pulse_to_radian, 0, MAX_PULSE_AXES*sizeof(float));  // clear scaling factors
+    return false;
+  }
+
+  for (int i=0; i<MAX_PULSE_AXES; ++i)
+    pulse_to_radian[i] = rData.PtoR[i];
+
+  return true;
+}
+
+bool Controller::getFBPulseCorrection(int ctrl_grp, FB_AXIS_CORRECTION* pulse_correction)
+{
+  FB_PULSE_CORRECTION_DATA rData;
+
+  LOG_DEBUG("Retrieving PulseCorrection parameters.");
+  if (GP_getFBPulseCorrection(ctrl_grp, &rData) != OK)
+  {
+    LOG_ERROR("Failed to retrieve FBPulseCorrection parameters.");
+    memset(pulse_correction, 0, MAX_PULSE_AXES*sizeof(FB_AXIS_CORRECTION));  // clear correction factors
+    return false;
+  }
+
+  for (int i=0; i<MAX_PULSE_AXES; ++i)
+    pulse_correction[i] = rData.correction[i];
+
+  return true;
+}
 
 } //controller
 } //motoman

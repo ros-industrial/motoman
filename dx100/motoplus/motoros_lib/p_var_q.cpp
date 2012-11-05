@@ -30,12 +30,13 @@
 */ 
 
 #include "p_var_q.h"
+#include "controller.h"
 #include "joint_data.h"
 #include "joint_motion_handler.h"
 #include "ros_conversion.h"
 #include "log_wrapper.h"
-#include "mp_wrapper.h"
 
+using motoman::controller::Controller;
 using motoman::joint_motion_handler;
 using motoman::ros_conversion;
 using industrial::joint_data;
@@ -49,10 +50,6 @@ namespace p_var_q
 
 PVarQ::PVarQ()
 {	
-
-  // Set up point variable
-  pointData_.usType = MP_RESTYPE_VAR_ROBOT;
-  
   // TODO: Should check constants such as Q_SIZE, MOTION_POINTER & BUFFER_POINTER for
   // consitency
   
@@ -84,7 +81,7 @@ void PVarQ::init(industrial::joint_data::JointData & point, double velocity_perc
   setPosition(0, point, this->TEMP_getVelocityPercent());
   
   // Set the minium buffer size
-  motoman::mp_wrapper::setInteger(MIN_BUF_START_POINTER_, PT_LOOK_AHEAD_);
+  Controller::setInteger(MIN_BUF_START_POINTER_, PT_LOOK_AHEAD_);
 }
 
 void PVarQ::addPoint(industrial::joint_data::JointData & joints, double velocity_percent)
@@ -167,7 +164,7 @@ void PVarQ::incBufferIndex()
   int bufferIdx = this->getBufferIndex();
   
   LOG_DEBUG("Incrementing buffer index from %d to %d", bufferIdx, bufferIdx + 1); 
-  motoman::mp_wrapper::setInteger(BUFFER_POINTER_, bufferIdx + 1);
+  Controller::setInteger(BUFFER_POINTER_, bufferIdx + 1);
 }
 
 
@@ -184,9 +181,8 @@ void PVarQ::setPosition(int index, industrial::joint_data::JointData & point,
   int convertedVelocity = 0;
   
   LOG_DEBUG("Setting joint position, index: %d", index);
-  motoman::mp_wrapper::toMpPosVarData(index, point, this->pointData_);
-  
-  while (mpPutPosVarData ( &(this->pointData_), 1 ) == ERROR) {
+
+  while (!Controller::setJointPositionVar(index, point)) {
     LOG_ERROR("Failed set position variable, index: %d, retrying...", index);
     mpTaskDelay(this->VAR_POLL_TICK_DELAY_);
   };
@@ -195,7 +191,7 @@ void PVarQ::setPosition(int index, industrial::joint_data::JointData & point,
   LOG_DEBUG("Converting percent velocity: %g to motoman integer value: %d", 
     velocity_percent, convertedVelocity);  
   LOG_DEBUG("Setting velocity, index: %d, value: %d", index, convertedVelocity);
-  motoman::mp_wrapper::setInteger(index, convertedVelocity);
+  Controller::setInteger(index, convertedVelocity);
 }
 
 

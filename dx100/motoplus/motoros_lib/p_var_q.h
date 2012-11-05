@@ -33,8 +33,8 @@
 #define __p_var_q_h
 
 #include "motoPlus.h"
+#include "controller.h"
 #include "joint_data.h"
-#include "mp_wrapper.h"
 
 /*
 Point variable queue
@@ -103,6 +103,7 @@ namespace p_var_q
 // Utility macro for some compile time checking.
 #define STATIC_ASSERT(COND,MSG) typedef char static_assertion_##MSG[(COND)?1:-1]
 
+using motoman::controller::Controller;
 
 class PVarQ
 // Holds data and functions for executing position variable queue motion
@@ -161,15 +162,15 @@ class PVarQ
   * \return motion pointer index
   */
     int getMotionIndex()
-    {return motoman::mp_wrapper::getInteger(MOTION_POINTER_);};
-    
+    {return Controller::getInteger(MOTION_POINTER_);};
+
           /**
   * \brief Return buffer pointer index
   *
   * \return buffer pointer index
   */
     int getBufferIndex()
-    {return motoman::mp_wrapper::getInteger(BUFFER_POINTER_);};
+    {return Controller::getInteger(BUFFER_POINTER_);};
   
              /**
   * \brief Return motion position variable index
@@ -215,19 +216,15 @@ class PVarQ
   * \return velocity percent
   */
     double TEMP_getVelocityPercent()
-    {return (double) motoman::mp_wrapper::getInteger(TEMP_VELOCITY_POINTER);};
+    {return (double) Controller::getInteger(TEMP_VELOCITY_POINTER);};
   
   
 		
   protected:
-    /**
-   * \brief motion point
-   */
-	MP_POSVAR_DATA pointData_;
-		
+
 	static const int VAR_POLL_TICK_DELAY_ = 10;
 	
-	 /**
+   /**
    * \brief number of ticks to delay between buffer polling
    */
 	static const int BUFFER_POLL_TICK_DELAY_ = 100;

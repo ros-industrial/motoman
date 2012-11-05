@@ -106,7 +106,7 @@ public:
   ~ByteArray(void);
 
   /**
-   * \brief Initializes or Reinitializes and empty buffer.
+   * \brief Initializes or Reinitializes an empty buffer.
    *
    * This method sets all values to 0 and resets the buffer size.
    *

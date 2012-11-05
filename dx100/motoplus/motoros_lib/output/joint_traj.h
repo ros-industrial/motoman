@@ -54,7 +54,10 @@ namespace joint_traj
 {
 
 /**
- * \brief Class encapsulated joint trajectory
+ * \brief Class encapsulated joint trajectory.  A joint trajectory includes
+ * an array of JointTrajPt data types.  The intention for this class is to
+ * be loaded into a single message for communication over a simple connection.
+ *
  * For simplicity and cross platform compliance, this is implemented as a
  * fixed size array.  The size of the trajectory cannot exceed the max size
  * of the array.

@@ -32,6 +32,8 @@
 #ifdef ROS
 #include "dx100/ros_conversion.h"
 #include "simple_message/log_wrapper.h"
+using std::min;           // MotoPlus provides min(), but not std::min()
+#define MAX_PULSE_AXES 8  // since MotoPlus.h is not availble in ROS
 #endif
 
 #ifdef MOTOPLUS
@@ -47,159 +49,44 @@ namespace motoman
 namespace ros_conversion
 {
 
-
-// Pulse to radian conversion factors (initialized on startup)
-float S_PULSE_TO_RAD	= 0;	    // pulses/rad
-float L_PULSE_TO_RAD	= 0;	    // pulses/rad
-float U_PULSE_TO_RAD	= 0;	    // pulses/rad
-float R_PULSE_TO_RAD    = 0;	    // pulses/rad
-float B_PULSE_TO_RAD	= 0;     	// pulses/rad
-float T_PULSE_TO_RAD	= 0;	    // pulses/rad
-float E_PULSE_TO_RAD	= 0;	    // pulses/rad
-
-
-
-
-void initJointConversion(MotomanRobotModel model_number)
+void toRosJoint(float* mp_joints, JointData & ros_joints)
 {
-    
-    LOG_INFO("Initializing joint conversion factors for: ");
-    switch (model_number)
-    {
-    case MotomanRobotModels::SIA_10D:
-        LOG_INFO("SIA_10D: %d", model_number);
-        S_PULSE_TO_RAD	= 58670.87822;	    
-        L_PULSE_TO_RAD	= 58670.87822;	 
-        U_PULSE_TO_RAD	= 65841.76588;	    
-        R_PULSE_TO_RAD  = 65841.76588;	  
-        B_PULSE_TO_RAD	= 65841.76588;    
-        T_PULSE_TO_RAD	= 33246.8329;	  
-        E_PULSE_TO_RAD	= 65841.76588;	
-        break;
+    // convert from float-array to JointData
+    JointData temp;
+    int minJoints = min(MAX_PULSE_AXES, ros_joints.getMaxNumJoints());
+    for (int i=0; i<minJoints; ++i)
+        temp.setJoint(i, mp_joints[i]);
         
-    case MotomanRobotModels::SIA_20D:
-        LOG_INFO("SIA_20D: %d", model_number);
-        S_PULSE_TO_RAD	= 58670.87822;	    
-        L_PULSE_TO_RAD	= 58670.87822;	 
-        U_PULSE_TO_RAD	= 58670.87822;	    
-        R_PULSE_TO_RAD  = 65841.76588;	  
-        B_PULSE_TO_RAD	= 65841.76588;    
-        T_PULSE_TO_RAD	= 33246.8329;	  
-        E_PULSE_TO_RAD	= 58670.87822;	
-        break;
-    
-    default:
-        LOG_ERROR("Failed to initialize conversion factors for model: %d", model_number);
-        break;
-    }
-}
-
-
-
-float toPulses(float radians, MotomanJointIndex joint)
-{
-    float rtn = 0.0;
-    switch (joint)
-    {
-      case MotomanJointIndexes::S:
-         rtn = radians * S_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::L:
-         rtn = radians * L_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::U:
-         rtn = radians * U_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::R:
-         rtn = radians * R_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::B:
-         rtn = radians * B_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::T:
-         rtn = radians * T_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::E:
-         rtn = radians * E_PULSE_TO_RAD;
-         break;
-         
-      default:
-        rtn = radians;
-    }
-        return rtn;
-}
-
-float toRadians(float pulses, MotomanJointIndex joint)
-{
-    float rtn = 0.0;
-    switch (joint)
-    {
-      case MotomanJointIndexes::S:
-         rtn = pulses / S_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::L:
-         rtn = pulses / L_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::U:
-         rtn = pulses / U_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::R:
-         rtn = pulses / R_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::B:
-         rtn = pulses / B_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::T:
-         rtn = pulses / T_PULSE_TO_RAD;
-         break;
-         
-      case MotomanJointIndexes::E:
-         rtn = pulses / E_PULSE_TO_RAD;
-         break;
-         
-      default:
-        rtn = pulses;
-    }
-        return rtn;
-}
-
-void toRosJoint(industrial::joint_data::JointData & mp_joints, 
-				industrial::joint_data::JointData & ros_joints)
-{
-
-	ros_joints.copyFrom(mp_joints);
-	// joints still in motoplus order for conversion
-	for (int i = 0; i < ros_joints.getMaxNumJoints() ; i++)
-	{
-		ros_joints.setJoint(i, toRadians(ros_joints.getJoint(i), 
-							(MotomanJointIndex)i));
-	}
-	toRosJointOrder(ros_joints);
+    // re-order joints to ROS ordering (for known joint-pairs)
+    ros_joints.copyFrom(temp);  // initialize to motoman ordering
+    ros_joints.setJoint(RosJointIndexes::S, temp.getJoint(MotomanJointIndexes::S));
+    ros_joints.setJoint(RosJointIndexes::L, temp.getJoint(MotomanJointIndexes::L));
+    ros_joints.setJoint(RosJointIndexes::U, temp.getJoint(MotomanJointIndexes::U));
+    ros_joints.setJoint(RosJointIndexes::R, temp.getJoint(MotomanJointIndexes::R));
+    ros_joints.setJoint(RosJointIndexes::B, temp.getJoint(MotomanJointIndexes::B));
+    ros_joints.setJoint(RosJointIndexes::T, temp.getJoint(MotomanJointIndexes::T));
+    ros_joints.setJoint(RosJointIndexes::E, temp.getJoint(MotomanJointIndexes::E));
 }
 
 void toMpJoint(industrial::joint_data::JointData & ros_joints,
-				industrial::joint_data::JointData & mp_joints)
+				float* mp_joints)
 {
+    // re-order joints to MotoPlus ordering (for known joint-pairs)
+    JointData temp;
+    temp.copyFrom(ros_joints);
+    temp.setJoint(MotomanJointIndexes::S, ros_joints.getJoint(RosJointIndexes::S));
+    temp.setJoint(MotomanJointIndexes::L, ros_joints.getJoint(RosJointIndexes::L));
+    temp.setJoint(MotomanJointIndexes::U, ros_joints.getJoint(RosJointIndexes::U));
+    temp.setJoint(MotomanJointIndexes::R, ros_joints.getJoint(RosJointIndexes::R));
+    temp.setJoint(MotomanJointIndexes::B, ros_joints.getJoint(RosJointIndexes::B));
+    temp.setJoint(MotomanJointIndexes::T, ros_joints.getJoint(RosJointIndexes::T));
+    temp.setJoint(MotomanJointIndexes::E, ros_joints.getJoint(RosJointIndexes::E));
 
-	mp_joints.copyFrom(ros_joints);
-	toMotomanJointOrder(mp_joints);
-	// joints in motoplus order for conversion
-	for (int i = 0; i < mp_joints.getMaxNumJoints() ; i++)
-	{
-		ros_joints.setJoint(i, toPulses(mp_joints.getJoint(i), 
-						(MotomanJointIndex)i));
-	}
+    // convert from JointData to float-array
+    memset(mp_joints, 0, MAX_PULSE_AXES*sizeof(float));  // initialize to zero
+    int minJoints = min(MAX_PULSE_AXES, ros_joints.getMaxNumJoints());
+    for (int i=0; i<minJoints; ++i)
+        mp_joints[i] = temp.getJoint(i);
 }
 
 			
