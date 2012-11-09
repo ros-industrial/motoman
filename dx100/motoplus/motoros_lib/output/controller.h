@@ -41,7 +41,21 @@ namespace motoman
 namespace controller
 {
 
+/**
+ * \brief Structure for storing robot parameters
+ */
+typedef struct
+{
+  int ctrl_grp;
+  int num_axes;
+  float pulses_per_rad[MAX_PULSE_AXES];
+  FB_AXIS_CORRECTION pulse_correction[MAX_PULSE_AXES];
+} RobotParameters;
 
+
+/**
+ * \brief Spedifies the drive name for DRAM (This should be defined in motoPlus.h)
+ */
 #define MP_DRAM_DEV_DOS "MPRAM1:"  //This macro is supposed to be defined in motoPlus.h
 
 /**
@@ -241,7 +255,7 @@ void delayTicks(int ticks) { mpTaskDelay(ticks);};
   */static bool getNumRobotAxes(int ctrl_grp, int* numAxes);
 
  /**
-  * \brief Reads the pulse-to-radian scaling factors from the controller's
+  * \brief Reads the pulse-per-radian scaling factors from the controller's
   * config parameters, based on the arm's gearing ratios.
   *    jntPosInRadians = jntPosInPulses * pulseToRadian
   *
@@ -250,7 +264,7 @@ void delayTicks(int ticks) { mpTaskDelay(ticks);};
   *
   * \return true if parameters successfully read
   */
- static bool getPulseToRadian(int ctrl_grp, float* pulse_to_radian);
+ static bool getPulsesPerRadian(int ctrl_grp, float* pulse_to_radian);
 
  /**
   * \brief Reads the pulse correction factors from the controller's
@@ -304,16 +318,6 @@ MP_STD_RSP_DATA job_error;
 // Hold variables
 MP_HOLD_SEND_DATA hold_data;
 MP_STD_RSP_DATA hold_error;
- 
-// Cache robot parameters locally, since GetParameters is expensive
-typedef struct
-{
-  int ctrl_grp;
-  int num_axes;
-  float pulse_to_rad[MAX_PULSE_AXES];
-  FB_AXIS_CORRECTION pulse_correction[MAX_PULSE_AXES];
-} RobotParameters;
-static RobotParameters parameters_;  // TBD - This may eventually be an array, to support multiple robot types
 
  //TODO: motion and job flags are just internal state variables, we may
  //want to make them query the appropriate motoplus API calls instead.

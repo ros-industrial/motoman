@@ -38,6 +38,13 @@
 namespace controller
 {
 
+// Global variable (to this source file) for storing cached robot parameters.
+// This used to be a static variable within the Controller class, but the motoman
+// controller would crash on loading.  It appears that a structure cannot be a
+// static variable.  The easiest fix was to move the variable here and use it as
+// a global.
+RobotParameters parameters_;  // TODO - This may eventually be an array, to support multiple robot types
+
 Controller::Controller()
 {
   this->jobStarted = false;
@@ -56,18 +63,18 @@ bool Controller::initParameters(int ctrl_grp)
 
   bool rslt = true;
   rslt &= getNumRobotAxes(ctrl_grp, &parameters_.num_axes);
-  rslt &= getPulseToRadian(ctrl_grp, parameters_.pulse_to_rad);
+  rslt &= getPulsesPerRadian(ctrl_grp, parameters_.pulses_per_rad);
   rslt &= getFBPulseCorrection(ctrl_grp, parameters_.pulse_correction);
   
-  printf("Controller Parameters retrieved for group #%d\n", ctrl_grp+1);
-  printf("  numAxes: %d\n", parameters_.num_axes);
-  printf("  pulse2rad: %8g", parameters_.pulse_to_rad[0]);
+  LOG_DEBUG("Controller Parameters retrieved for group #%d", ctrl_grp+1);
+  LOG_DEBUG("  numAxes: %d", parameters_.num_axes);
+  LOG_DEBUG("  pulse_per_rad: %8g", parameters_.pulses_per_rad[0]);
   for (int i=1; i<parameters_.num_axes; ++i)
-    printf(", %8g", parameters_.pulse_to_rad[i]);
-  printf("\n");
+    LOG_DEBUG(", %8g", parameters_.pulses_per_rad[i]);
+    
   for (int i=0; i<MAX_PULSE_AXES; ++i)
   {
-    printf("  pulseCorr[%d]: %d, %d, %8g\n", i,
+    LOG_DEBUG("  pulseCorr[%d]: %d, %d, %8g", i,
     parameters_.pulse_correction[i].ulSourceAxis,
     parameters_.pulse_correction[i].ulCorrectionAxis,
     parameters_.pulse_correction[i].fCorrectionRatio);
@@ -118,7 +125,7 @@ bool Controller::setJointPositionVar(int index, industrial::joint_data::JointDat
     // convert radians to pulses
     LONG mp_joints_pulses[MAX_PULSE_AXES];
   	for (int i=0; i<MAX_PULSE_AXES; ++i)
-    	mp_joints_pulses[i] = (long)floor(mp_joints_radians[i] / parameters_.pulse_to_rad[i]);
+    	mp_joints_pulses[i] = (long)floor(mp_joints_radians[i] * parameters_.pulses_per_rad[i]);
     
     // convert to MP_POSVAR_DATA structure
     const int MP_POSVAR_SIZE = 10;  // hardcoded in MP_POSVAR_DATA (not set to MAX_PULSE_AXES+2)
@@ -408,7 +415,7 @@ bool Controller::getActJointPos(float* pos)
   
   // apply scaling (pulse->radians)
   for (int i=0; i<parameters_.num_axes; ++i)
-    pos[i] = pulse_data.lPos[i] * parameters_.pulse_to_rad[i];
+    pos[i] = pulse_data.lPos[i] / parameters_.pulses_per_rad[i];
     
   return true;
 }
@@ -419,7 +426,7 @@ bool Controller::getNumRobotAxes(int ctrl_grp, int* numAxes)
     return (*numAxes >= 0);
 }
 
-bool Controller::getPulseToRadian(int ctrl_grp, float* pulse_to_radian)
+bool Controller::getPulsesPerRadian(int ctrl_grp, float* pulses_per_radian)
 {
   GB_PULSE_TO_RAD rData;
 
@@ -427,12 +434,12 @@ bool Controller::getPulseToRadian(int ctrl_grp, float* pulse_to_radian)
   if (GP_getPulseToRad(ctrl_grp, &rData) != OK)
   {
     LOG_ERROR("Failed to retrieve PulseToRadian parameters.");
-    memset(pulse_to_radian, 0, MAX_PULSE_AXES*sizeof(float));  // clear scaling factors
+    memset(pulses_per_radian, 0, MAX_PULSE_AXES*sizeof(float));  // clear scaling factors
     return false;
   }
 
   for (int i=0; i<MAX_PULSE_AXES; ++i)
-    pulse_to_radian[i] = rData.PtoR[i];
+    pulses_per_radian[i] = rData.PtoR[i];
 
   return true;
 }
