@@ -1,0 +1,536 @@
+<robot
+  name="">
+  <link name="world">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </link>
+  <joint 
+    name="world-base"
+    type="fixed">
+    <origin xyz="0 0 0" rpy="-1.57 0 0"/>
+    <parent link="world" />
+    <child link="Base"/>
+  </joint>
+  <link
+    name="Base">
+    <inertial>
+      <origin
+        xyz="0 -0.38593 0.00038879"
+        rpy="0 0 0" />
+      <mass
+        value="58.218" />
+      <inertia
+        ixx="2.6511"
+        ixy="-1.1752"
+        ixz="0.0028401"
+        iyy="1.2594"
+        iyz="0.0036428"
+        izz="3.7367" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Base.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Base.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Link_S">
+    <inertial>
+      <origin
+        xyz="0.0713429648957239 0.00038878770716122 0.0759347982352335"
+        rpy="0 0 0" />
+      <mass
+        value="58.2182620260339" />
+      <inertia
+        ixx="2.65106884807954"
+        ixy="0.00284009901475013"
+        ixz="1.17517191095636"
+        iyy="3.73671816977897"
+        iyz="-0.00364279439952084"
+        izz="1.2593903863305" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_S.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_S.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_S"
+    type="revolute">
+    <origin
+      xyz="0 -0.31 0"
+      rpy="1.5708 0 0" />
+    <parent
+      link="Base" />
+    <child
+      link="Link_S" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="0"
+      velocity="3.490658504" />
+    <calibration
+      rising="0"
+      falling="0" />
+    <dynamics
+      damping="0"
+      friction="0" />
+    <safety_controller
+      soft_lower_limit="0"
+      soft_upper_limit="0"
+      k_position="0"
+      k_velocity="0" />
+  </joint>
+  <link
+    name="Link_L">
+    <inertial>
+      <origin
+        xyz="0.0713429648957239 0.000388787707161235 0.0759347982352335"
+        rpy="0 0 0" />
+      <mass
+        value="58.2182620260339" />
+      <inertia
+        ixx="2.65106884807954"
+        ixy="0.00284009901475013"
+        ixz="1.17517191095636"
+        iyy="3.73671816977897"
+        iyz="-0.00364279439952084"
+        izz="1.2593903863305" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_L.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_L.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_L"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="Link_S" />
+    <child
+      link="Link_L" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-1.9199"
+      upper="1.9199"
+      effort="0"
+      velocity="3.490658504" />
+    <calibration
+      rising="0"
+      falling="0" />
+    <dynamics
+      damping="0"
+      friction="0" />
+    <safety_controller
+      soft_lower_limit="0"
+      soft_upper_limit="0"
+      k_position="0"
+      k_velocity="0" />
+  </joint>
+  <link
+    name="Link_E">
+    <inertial>
+      <origin
+        xyz="0.0713429648957236 0.000388787707160796 -0.194065201764766"
+        rpy="0 0 0" />
+      <mass
+        value="58.2182620260339" />
+      <inertia
+        ixx="2.65106884807954"
+        ixy="0.00284009901475013"
+        ixz="1.17517191095636"
+        iyy="3.73671816977897"
+        iyz="-0.00364279439952084"
+        izz="1.2593903863305" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_E.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_E.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_E"
+    type="revolute">
+    <origin
+      xyz="0 0 0.27"
+      rpy="0 0 0" />
+    <parent
+      link="Link_L" />
+    <child
+      link="Link_E" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-2.9671"
+      upper="2.9671"
+      effort="0"
+      velocity="3.490658504" />
+    <calibration
+      rising="0"
+      falling="0" />
+    <dynamics
+      damping="0"
+      friction="0" />
+    <safety_controller
+      soft_lower_limit="0"
+      soft_upper_limit="0"
+      k_position="0"
+      k_velocity="0" />
+  </joint>
+  <link
+    name="Link_U">
+    <inertial>
+      <origin
+        xyz="-0.0136570350302764 0.000388787707160791 -0.194065201764766"
+        rpy="0 0 0" />
+      <mass
+        value="58.2182620260339" />
+      <inertia
+        ixx="2.65106884807954"
+        ixy="0.00284009901475013"
+        ixz="1.17517191095636"
+        iyy="3.73671816977897"
+        iyz="-0.00364279439952084"
+        izz="1.2593903863305" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_U.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_U.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_U"
+    type="revolute">
+    <origin
+      xyz="0.085 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="Link_E" />
+    <child
+      link="Link_U" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-1.5708"
+      upper="2.0071"
+      effort="0"
+      velocity="3.490658504" />
+    <calibration
+      rising="0"
+      falling="0" />
+    <dynamics
+      damping="0"
+      friction="0" />
+    <safety_controller
+      soft_lower_limit="0"
+      soft_upper_limit="0"
+      k_position="0"
+      k_velocity="0" />
+  </joint>
+  <link
+    name="Link_R">
+    <inertial>
+      <origin
+        xyz="-0.283657035030276 0.000388787707160985 -0.254065201652766"
+        rpy="0 0 0" />
+      <mass
+        value="58.2182620260339" />
+      <inertia
+        ixx="2.65106884807954"
+        ixy="0.00284009901475013"
+        ixz="1.17517191095636"
+        iyy="3.73671816977897"
+        iyz="-0.00364279439952084"
+        izz="1.2593903863305" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_R.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_R.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_R"
+    type="revolute">
+    <origin
+      xyz="0.27 0 0.06"
+      rpy="0 0 0" />
+    <parent
+      link="Link_U" />
+    <child
+      link="Link_R" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="0"
+      velocity="3.490658504" />
+    <calibration
+      rising="0"
+      falling="0" />
+    <dynamics
+      damping="0"
+      friction="0" />
+    <safety_controller
+      soft_lower_limit="0"
+      soft_upper_limit="0"
+      k_position="0"
+      k_velocity="0" />
+  </joint>
+  <link
+    name="Link_B">
+    <inertial>
+      <origin
+        xyz="-0.283657035030276 0.000388787707160985 -0.254065201652766"
+        rpy="0 0 0" />
+      <mass
+        value="58.2182620260339" />
+      <inertia
+        ixx="2.65106884807954"
+        ixy="0.00284009901475013"
+        ixz="1.17517191095636"
+        iyy="3.73671816977897"
+        iyz="-0.00364279439952084"
+        izz="1.2593903863305" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_B.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_B.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_B"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="Link_R" />
+    <child
+      link="Link_B" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-1.9199"
+      upper="1.9199"
+      effort="0"
+      velocity="4.01425728" />
+    <calibration
+      rising="0"
+      falling="0" />
+    <dynamics
+      damping="0"
+      friction="0" />
+    <safety_controller
+      soft_lower_limit="0"
+      soft_upper_limit="0"
+      k_position="0"
+      k_velocity="0" />
+  </joint>
+  <link
+    name="Link_T">
+    <inertial>
+      <origin
+        xyz="-0.417657035030276 0.000388787707160985 -0.254065201652766"
+        rpy="0 0 0" />
+      <mass
+        value="58.2182620260339" />
+      <inertia
+        ixx="2.65106884807954"
+        ixy="0.00284009901475013"
+        ixz="1.17517191095636"
+        iyy="3.73671816977897"
+        iyz="-0.00364279439952084"
+        izz="1.2593903863305" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_T.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sia5_description/meshes/Link_T.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="joint_T"
+    type="revolute">
+    <origin
+      xyz="0.134 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="Link_B" />
+    <child
+      link="Link_T" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="0"
+      velocity="6.108652382" />
+    <calibration
+      rising="0"
+      falling="0" />
+    <dynamics
+      damping="0"
+      friction="0" />
+    <safety_controller
+      soft_lower_limit="0"
+      soft_upper_limit="0"
+      k_position="0"
+      k_velocity="0" />
+  </joint>
+</robot>

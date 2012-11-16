@@ -1,0 +1,5 @@
+<launch>
+
+	<param name="robot_description" textfile="$(find sia5_description)/urdf/sia5.urdf" />
+
+</launch>

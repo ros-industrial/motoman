@@ -1,0 +1,15 @@
+<stack>
+  <description brief="SIA5">
+    Stack with desciption for Motoman SIA5.
+    Created 2012-11-15.
+  </description>
+  <author>dsolomon</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/SIA5</url>
+  
+  <!-- depend stack=""/-->
+
+</stack>
+
+
