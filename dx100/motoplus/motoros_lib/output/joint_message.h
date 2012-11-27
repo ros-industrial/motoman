@@ -51,8 +51,6 @@ namespace industrial
 namespace joint_message
 {
 
-// TODO: The JointMessage is currently overloaded (i.e. a single message means multiple
-// things).  This is not ideal and seperate messages should be considered.
 /**
  * \brief Enumeration of special sequence values that signal the end of trajectory
  * or an immediate stop.
@@ -66,22 +64,20 @@ enum SpecialSeqValue
 }
 typedef SpecialSeqValues::SpecialSeqValue SpecialSeqValue;
 
-
-
 /**
  * \brief Class encapsulated joint message generation methods (either to or
- * from a SimpleMessage type.
- */
-//* JointMessage
-/**
- * The JOINT message structure is meant to contain joint position information
- * either related to a trajectory point or a joint feedback message.  The
- * data structure is as follow:
+ * from a SimpleMessage type.  This message represents the joint position data.
+ * NOTE: In earlier versions this was simply referred to as  JOINT message.  This
+ * caused confusion as there are many types of joint messages (position, velocity,
+ * feedback).  To remove confusion, this message was changed to JOINT_POSITION.
+ * Other types of messages will have to be created for velocity and other feedback.
  *
- * int SEQ_NUM identifies the order within a trajectory sequence (not valid for feedback)
- * real JOINTS[MAX_NUM_JOINTS] joint values.  The number of joints are fixed and assumed
- *                              to be in a known order (defined both by the order in ROS
- *                              and the order as defined by the robot.
+ * The byte representation of a joint message is as follow (in order lowest index
+ * to highest). The standard sizes are given, but can change based on type sizes:
+ *
+ *   member:             type                                      size
+ *   sequence            (industrial::shared_types::shared_int)    4  bytes
+ *   joints              (industrial::joint_data)                  40 bytes
  *
  *
  * THIS CLASS IS NOT THREAD-SAFE
@@ -157,7 +153,6 @@ public:
   // Overrides - SimpleSerialize
   bool load(industrial::byte_array::ByteArray *buffer);
   bool unload(industrial::byte_array::ByteArray *buffer);
-
 
   unsigned int byteLength()
   {

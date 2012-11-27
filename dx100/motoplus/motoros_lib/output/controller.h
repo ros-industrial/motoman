@@ -41,16 +41,44 @@ namespace motoman
 namespace controller
 {
 
-/**
- * \brief Structure for storing robot parameters
- */
-typedef struct
+// bitmask used to track which parameters have been initialized
+typedef enum
 {
-  int ctrl_grp;
+  GP_GETNUMBEROFAXES        = 0x01,
+  GP_GETPULSETORAD          = 0x02,
+  GP_GETFBPULSECORRECTION   = 0x04,
+  GP_GETQTYOFALLOWEDTASKS   = 0x08,
+  GP_GETINTERPOLATIONPERIOD = 0x10,
+  GP_GETMAXINCPERIPCYCLE    = 0x20,
+  GP_GETGOVFORINCMOTION     = 0x40,
+} param_func_t;
+
+/**
+ * \brief Structure for storing control-group parameters
+ */
+struct ctrl_grp_param_t
+{
+  int initialized;
   int num_axes;
   float pulses_per_rad[MAX_PULSE_AXES];
   FB_AXIS_CORRECTION pulse_correction[MAX_PULSE_AXES];
-} RobotParameters;
+  int max_incr_per_cycle[MAX_PULSE_AXES];
+  float incr_motion_limit;
+  
+  ctrl_grp_param_t() : initialized(0) {}  // default constructor to guarantee un-initialized at creation
+};
+
+/**
+ * \brief Structure for storing system parameters
+ */
+struct sys_param_t
+{
+  int initialized;
+  TASK_QTY_INFO tasks;
+  UINT16 interp_period;
+  
+  sys_param_t() : initialized(0) {}  // default constructor to guarantee un-initialized at creation
+};
 
 
 /**
@@ -95,17 +123,17 @@ public:
   /**
   * \brief Reads key values from parameter data-list.
   *
-  * \param Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  * \param ctrl_grp Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
   *
   * \return true if parameters successfully read
   */
- static bool initParameters(int ctrl_grp);
+ static bool initParameters(int ctrl_grp=0);
  
  /**
   * \brief Read integer data from the controller integer data table.  Function
   * blocks until data is read
   *
-  * \param index in data table
+  * \param index index in data table
   *
   * \return integer value
   */
@@ -116,8 +144,8 @@ static int getInteger(int index);
   * \brief Write integer data to the controller integer data table.  Function
   * blocks until data is written
   *
-  * \param index in data table
-  * \param value to write
+  * \param index index in data table
+  * \param value value to write
   */
 static void setInteger(int index, int value);
 
@@ -125,8 +153,8 @@ static void setInteger(int index, int value);
   * \brief Write position-variable data to the controller data table.  Function
   * blocks until data is written
   *
-  * \param index in data table
-  * \param joint positions to write (ROS-order, radians)
+  * \param index index in data table
+  * \param ros_joints joint positions to write (ROS-order, radians)
   *
   * \return true if variable set successfully
   */
@@ -136,8 +164,8 @@ static bool setJointPositionVar(int index, industrial::joint_data::JointData ros
   * \brief Utility function for setting a digital output in the
   * Universal output data table (most IO is accessible there).
   *
-  * \param bit offset in data table (0-2047)
-  * \param in incoming message
+  * \param bit_offset bit offset in data table (0-2047)
+  * \param value in incoming message
   *
   */
  void setDigitalOut(int bit_offset, bool value);
@@ -146,8 +174,8 @@ static bool setJointPositionVar(int index, industrial::joint_data::JointData ros
   * \brief Utility function for waiting for a digital input
   * in the Universal input data tabel (most IO is accessible there).
   *
-  * \param bit offset in data table (0-2047)
-  * \param in incoming message
+  * \param bit_offset bit offset in data table (0-2047)
+  * \param wait_value in incoming message
   *
   */
  void waitDigitalIn(int bit_offset, bool wait_value);
@@ -156,7 +184,7 @@ static bool setJointPositionVar(int index, industrial::joint_data::JointData ros
   * \brief Get the actual Joint Position from the robot encoders
   * NOTE: use getCmdJointPos to get the commanded joint positions
   *
-  * \param array to hold joint positions (in radians)
+  * \param pos array to hold joint positions (in radians)
   *
   * \return true if positions retrieved successfully
   */
@@ -208,7 +236,7 @@ void stopMotionJob(char* job_name);
  /**
 * \brief Stops motion job on the controller.  Disables motion
 *
-* \param # of ticks to delay
+* \param ticks # of ticks to delay
 */ 
 void delayTicks(int ticks) { mpTaskDelay(ticks);};
 
@@ -216,8 +244,8 @@ void delayTicks(int ticks) { mpTaskDelay(ticks);};
   * \brief Utility function for writing a job file in temporary DRAM (the memory
   * supported by all controllers)
   *
-  * \param full path and name of file to create
-  * \param full job string
+  * \param path full path and name of file to create
+  * \param job full job string
   *
   * \return true if file successfully opened
   */
@@ -228,8 +256,8 @@ void delayTicks(int ticks) { mpTaskDelay(ticks);};
   * supported by all controllers)  WARNING: This function is limited to the DRAM
   * root directory.
   *
-  * \param path of the file to load (pass "" if the root directory is used)
-  * \param name of file to load (may not work with a full path)
+  * \param path path of the file to load (pass "" if the root directory is used)
+  * \param job name of file to load (may not work with a full path)
   *
   * \return true if job successfully loaded
   */
@@ -248,36 +276,88 @@ void delayTicks(int ticks) { mpTaskDelay(ticks);};
   /**
   * \brief Reads the number of robot axes from the controller's config parameters.
   *
-  * \param Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
-  * \param Number of robot axes (return)
+  * \param ctrl_grp Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  * \param numAxes Number of robot axes (return)
   *
   * \return true if parameters successfully read
-  */static bool getNumRobotAxes(int ctrl_grp, int* numAxes);
+  */
+  static bool getNumRobotAxes(int ctrl_grp, int* numAxes);
+  static bool getNumRobotAxes(int* numAxes) { return getNumRobotAxes(active_ctrl_grp_, numAxes); }
 
  /**
   * \brief Reads the pulse-per-radian scaling factors from the controller's
   * config parameters, based on the arm's gearing ratios.
   *    jntPosInRadians = jntPosInPulses * pulseToRadian
   *
-  * \param Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
-  * \param array of scaling factors (return, in Motoman order, length=MAX_PULSE_AXES)
+  * \param[in] ctrl_grp Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  * \param[out] pulse_to_radian array of scaling factors (in Motoman order, length=MAX_PULSE_AXES)
   *
   * \return true if parameters successfully read
   */
  static bool getPulsesPerRadian(int ctrl_grp, float* pulse_to_radian);
+ static bool getPulsesPerRadian(float* pulse_to_radian) { return getPulsesPerRadian(active_ctrl_grp_, pulse_to_radian); }
 
  /**
   * \brief Reads the pulse correction factors from the controller's
   * config parameters, based on physical axis cross-coupling.
   *    pulsePos[ulCorrectionAxis] -= pulsePos[ulSourceAxis] * fCorrectionRatio
   *
-  * \param Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
-  * \param array of correction factors (return, length=MAX_PULSE_AXES)
+  * \param[in] ctrl_grp Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  * \param[out] pulse_correction array of correction factors (length=MAX_PULSE_AXES)
   *
   * \return true if parameters successfully read
   */
  static bool getFBPulseCorrection(int ctrl_grp, FB_AXIS_CORRECTION* pulse_correction);
+ static bool getFBPulseCorrection(FB_AXIS_CORRECTION* pulse_correction) { return getFBPulseCorrection(active_ctrl_grp_, pulse_correction); }
  
+ /**
+  * \brief Reads the number of allowed tasks from the controller's config parameters.
+  *
+  * \param[out] num_normal_tasks number of normal-priority tasks
+  * \param[out] num_highPrio_tasks number of high-priority tasks
+  * \param[out] num_out_files number of output files (??)
+  *
+  * \return true if parameters successfully read
+  */
+ static bool getNumTasks(int* num_normal_tasks, int* num_highPrio_tasks, int* num_out_files);
+
+ /**
+  * \brief Reads the number of milliseconds between each tick of the interpolation clock
+  *   from the controller's config parameters.
+  *
+  * \param[out] interp_period period between interpolation ticks (msec)
+  *
+  * \return true if parameters successfully read
+  */
+ static bool getInterpPeriod(UINT16* interp_period);
+
+ /**
+  * \brief Reads the max increment each joint can move per interpolation cycle
+  *   from the controller's config parameters.
+  *
+  * \param[in] ctrl_grp Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  * \param[out] max_incr array of maximum increment values for each joint (length=MAX_PULSE_AXES)
+  *
+  * \return true if parameters successfully read
+  */
+ static bool getMaxIncrPerCycle(int ctrl_grp, int* max_incr);
+ static bool getMaxIncrPerCycle(int* max_incr) { return getMaxIncrPerCycle(active_ctrl_grp_, max_incr); }
+
+ /**
+  * \brief Reads the maximum percentage (of maxIncrPerCycle) allowed for commanded motion
+  *   from the controller's config parameters.
+  *
+  * \param[in] ctrl_grp Robot Control Group to retrieve. Zero-based (i.e. 0 = Control Group 1)
+  * \param[out] limit percentage of MaxIncrPerCycle allowed for commanded motion
+  *
+  * \return true if parameters successfully read
+  */
+ static bool getIncrMotionLimit(int ctrl_grp, float* limit);
+ static bool getIncrMotionLimit(float* limit) { return getIncrMotionLimit(active_ctrl_grp_, limit); }
+
+ static int getCtrlGroup() { return active_ctrl_grp_; }
+ static void setCtrlGroup(int ctrl_grp) { active_ctrl_grp_ = ctrl_grp; }
+
 protected:
 
 /**
@@ -330,6 +410,12 @@ MP_STD_RSP_DATA hold_error;
   * \brief True if job started
   */
  bool jobStarted;
+ 
+ static int active_ctrl_grp_;
+ 
+ static bool is_valid_ctrl_grp(int ctrl_grp);
+ static bool is_bit_set(int i, param_func_t type) { return (i & type); }
+ static void set_bit(int* i, param_func_t type) { *i |= type; }
 };
 
 
