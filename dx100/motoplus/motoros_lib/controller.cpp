@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2011, Southwest Research Institute
@@ -67,7 +67,7 @@ bool Controller::initParameters(int ctrl_grp)
   setCtrlGroup(ctrl_grp);
 
   UINT16 dummyUInt;
-  int dummyInt;
+  int dummyInt, dummyIntAry[MAX_PULSE_AXES];
   float dummyFloat, dummyFloatAry[MAX_PULSE_AXES];
   FB_AXIS_CORRECTION dummyPulseCorrAry[MAX_PULSE_AXES];
 
@@ -79,7 +79,7 @@ bool Controller::initParameters(int ctrl_grp)
   rslt &= getFBPulseCorrection(ctrl_grp, dummyPulseCorrAry);
   rslt &= getNumTasks(&dummyInt, &dummyInt, &dummyInt);
   rslt &= getInterpPeriod(&dummyUInt);
-  rslt &= getMaxIncrPerCycle(ctrl_grp, &dummyInt);
+  rslt &= getMaxIncrPerCycle(ctrl_grp, dummyIntAry);
   rslt &= getIncrMotionLimit(ctrl_grp, &dummyFloat);
   
   ctrl_grp_param_t& cp = ctrl_grp_parameters_[ctrl_grp];
