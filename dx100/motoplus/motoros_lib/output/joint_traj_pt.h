@@ -48,8 +48,6 @@
 
 #endif
 
-
-
 namespace industrial
 {
 namespace joint_traj_pt
@@ -59,22 +57,33 @@ namespace SpecialSeqValues
 {
 enum SpecialSeqValue
 {
-  START_TRAJECTORY_DOWNLOAD = -1,
-  START_TRAJECOTRY_STREAMING = -2,
-  END_TRAJECTORY = -3,
-  STOP_TRAJECTORY = -4
+  START_TRAJECTORY_DOWNLOAD = -1, START_TRAJECOTRY_STREAMING = -2, END_TRAJECTORY = -3, STOP_TRAJECTORY = -4
 };
 }
 typedef SpecialSeqValues::SpecialSeqValue SpecialSeqValue;
 
 /**
  * \brief Class encapsulated joint trajectory point data.  The point data
- * serves as a waypoint along a trajectory.  This point differs from the ROS
- * trajectory point in that is specifies the joint velocity in an industrial
- * robot standard way (as a single value).
- */
-//* JointTrajPt
-/**
+ * serves as a waypoint along a trajectory and is meant to mirror the
+ * JointTrajectoryPoint message.
+ *
+ * This point differs from the ROS trajectory point in the following ways:
+ *
+ *  - The joint velocity in an industrial robot standard way (as a single value).
+ *  - The duration is somewhat different than the ROS timestamp.  The timestamp
+ *    specifies when the move should start, where as the duration is how long the
+ *    move should take.  A big assumption is that a sequence of points is continuously
+ *    executed.  This is generally true of a ROS trajectory but not required.
+ *
+ * The byte representation of a joint trajectory point is as follow (in order lowest index
+ * to highest). The standard sizes are given, but can change based on type sizes:
+ *
+ *   member:             type                                      size
+ *   sequence            (industrial::shared_types::shared_int)    4  bytes
+ *   joints              (industrial::joint_data)                  40 bytes
+ *   velocity            (industrial::shared_types::shared_real)   4  bytes
+ *   duration            (industrial::shared_types::shared_real)   4  bytes
+ *
  *
  * THIS CLASS IS NOT THREAD-SAFE
  *
@@ -89,7 +98,7 @@ public:
    * This method creates empty data.
    *
    */
-	JointTrajPt(void);
+  JointTrajPt(void);
   /**
    * \brief Destructor
    *
@@ -106,9 +115,8 @@ public:
    * \brief Initializes a complete trajectory point
    *
    */
-  void init(industrial::shared_types::shared_int sequence,
-		  industrial::joint_data::JointData & position,
-		  industrial::shared_types::shared_real velocity);
+  void init(industrial::shared_types::shared_int sequence, industrial::joint_data::JointData & position,
+            industrial::shared_types::shared_real velocity, industrial::shared_types::shared_real duration);
 
   /**
    * \brief Sets joint position data
@@ -117,7 +125,7 @@ public:
    */
   void setJointPosition(industrial::joint_data::JointData &position)
   {
-	  this->joint_position_.copyFrom(position);
+    this->joint_position_.copyFrom(position);
   }
 
   /**
@@ -127,7 +135,7 @@ public:
    */
   void getJointPosition(industrial::joint_data::JointData &dest)
   {
-	  dest.copyFrom(this->joint_position_);
+    dest.copyFrom(this->joint_position_);
   }
 
   /**
@@ -137,7 +145,7 @@ public:
    */
   void setSequence(industrial::shared_types::shared_int sequence)
   {
-	  this->sequence_ = sequence;
+    this->sequence_ = sequence;
   }
 
   /**
@@ -147,31 +155,49 @@ public:
    */
   industrial::shared_types::shared_int getSequence()
   {
-	  return this->sequence_;
+    return this->sequence_;
   }
 
   /**
-     * \brief Sets joint trajectory point velocity
+   * \brief Sets joint trajectory point velocity
+   *
+   * \param velocity value
+   */
+  void setVelocity(industrial::shared_types::shared_real velocity)
+  {
+    this->velocity_ = velocity;
+  }
+
+  /**
+   * \brief Returns joint trajectory point velocity
+   *
+   * \return joint trajectory velocity
+   */
+  industrial::shared_types::shared_real getVelocity()
+  {
+    return this->velocity_;
+  }
+
+  /**
+     * \brief Sets joint trajectory point duration
      *
      * \param velocity value
      */
-    void setVelocity(industrial::shared_types::shared_real velocity)
+    void setDuration(industrial::shared_types::shared_real duration)
     {
-  	  this->velocity_ = velocity;
+      this->duration_ = duration;
     }
 
     /**
-     * \brief Returns joint trajectory point velocity
+     * \brief Returns joint trajectory point duration
      *
      * \return joint trajectory velocity
      */
-    industrial::shared_types::shared_real getVelocity()
+    industrial::shared_types::shared_real getDuration()
     {
-  	  return this->velocity_;
+      return this->duration_;
     }
 
-
-  
   /**
    * \brief Copies the passed in value
    *
@@ -180,10 +206,10 @@ public:
   void copyFrom(JointTrajPt &src);
 
   /**
-     * \brief == operator implementation
-     *
-     * \return true if equal
-     */
+   * \brief == operator implementation
+   *
+   * \return true if equal
+   */
   bool operator==(JointTrajPt &rhs);
 
   // Overrides - SimpleSerialize
@@ -191,9 +217,8 @@ public:
   bool unload(industrial::byte_array::ByteArray *buffer);
   unsigned int byteLength()
   {
-	  return sizeof(industrial::shared_types::shared_real) +
-			  sizeof(industrial::shared_types::shared_int) +
-			  this->joint_position_.byteLength();
+    return sizeof(industrial::shared_types::shared_real) + sizeof(industrial::shared_types::shared_int)
+        + this->joint_position_.byteLength();
   }
 
 private:
@@ -210,6 +235,11 @@ private:
    * \brief trajectory sequence number
    */
   industrial::shared_types::shared_int sequence_;
+
+  /**
+   * \brief joint move duration
+   */
+  industrial::shared_types::shared_real duration_;
 
 };
 

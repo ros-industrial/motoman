@@ -36,17 +36,23 @@ rosbuild_add_library(motoman_lib
 	src/trajectory_job.cpp
 	src/ros_conversion.cpp
 	)
+target_link_libraries(motoman_lib simple_message)
 
 rosbuild_add_executable(system_inferface src/system_interface.cpp)
+target_link_libraries(system_inferface simple_message)
 
 rosbuild_add_executable(robot_state 
   src/robot_state.cpp
   src/joint_relay_handler.cpp)
+target_link_libraries(robot_state simple_message)
+
 
 rosbuild_add_executable(motion_interface
   src/motion_interface.cpp
   src/joint_trajectory_handler.cpp)
 rosbuild_link_boost(motion_interface thread)
+target_link_libraries(motion_interface simple_message)
+
 
 rosbuild_add_executable(motion_download_interface
   src/motion_download_interface.cpp
@@ -58,6 +64,7 @@ rosbuild_add_executable(joint_trajectory_action
   src/utils.cpp 
   src/joint_trajectory_action.cpp)
 rosbuild_link_boost(joint_trajectory_action thread)
+target_link_libraries(joint_trajectory_action simple_message)
 
 rosbuild_add_gtest(utest test/utest.cpp)
 target_link_libraries(utest motoman_lib)

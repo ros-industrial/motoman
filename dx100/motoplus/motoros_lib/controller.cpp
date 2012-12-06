@@ -33,10 +33,21 @@
  #include "log_wrapper.h"
  #include "ros_conversion.h"
  
- namespace motoman
+namespace motoman
 {
 namespace controller
 {
+
+// Global variable (to this source file) for storing cached robot parameters.
+// This used to be a static variable within the Controller class, but the motoman
+// controller would crash on loading.  It appears that a structure cannot be a
+// static variable.  The easiest fix was to move the variable here and use it as
+// a global.
+const int MAX_CTRL_GROUPS = 8;
+ctrl_grp_param_t ctrl_grp_parameters_[MAX_CTRL_GROUPS];
+sys_param_t sys_parameters_;
+
+int Controller::active_ctrl_grp_ = 0;  // assume default control group is #1
 
 Controller::Controller()
 {
@@ -52,26 +63,49 @@ Controller::~Controller()
 
 bool Controller::initParameters(int ctrl_grp)
 {
-  parameters_.ctrl_grp = ctrl_grp;
+  if (!is_valid_ctrl_grp(ctrl_grp)) return false;
+  setCtrlGroup(ctrl_grp);
 
+  UINT16 dummyUInt;
+  int dummyInt, dummyIntAry[MAX_PULSE_AXES];
+  float dummyFloat, dummyFloatAry[MAX_PULSE_AXES];
+  FB_AXIS_CORRECTION dummyPulseCorrAry[MAX_PULSE_AXES];
+
+  // call each read-parameter function, to save values into cache.
+  // Ignore the results here; later calls will read cached values.
   bool rslt = true;
-  rslt &= getNumRobotAxes(ctrl_grp, &parameters_.num_axes);
-  rslt &= getPulseToRadian(ctrl_grp, parameters_.pulse_to_rad);
-  rslt &= getFBPulseCorrection(ctrl_grp, parameters_.pulse_correction);
+  rslt &= getNumRobotAxes(ctrl_grp, &dummyInt);
+  rslt &= getPulsesPerRadian(ctrl_grp, dummyFloatAry);
+  rslt &= getFBPulseCorrection(ctrl_grp, dummyPulseCorrAry);
+  rslt &= getNumTasks(&dummyInt, &dummyInt, &dummyInt);
+  rslt &= getInterpPeriod(&dummyUInt);
+  rslt &= getMaxIncrPerCycle(ctrl_grp, dummyIntAry);
+  rslt &= getIncrMotionLimit(ctrl_grp, &dummyFloat);
   
-  printf("Controller Parameters retrieved for group #%d\n", ctrl_grp+1);
-  printf("  numAxes: %d\n", parameters_.num_axes);
-  printf("  pulse2rad: %8g", parameters_.pulse_to_rad[0]);
-  for (int i=1; i<parameters_.num_axes; ++i)
-    printf(", %8g", parameters_.pulse_to_rad[i]);
-  printf("\n");
+  ctrl_grp_param_t& cp = ctrl_grp_parameters_[ctrl_grp];
+  sys_param_t& sp = sys_parameters_;
+
+  LOG_DEBUG("Controller Parameters retrieved for group #%d", ctrl_grp+1);
+  LOG_DEBUG("  numAxes: %d", cp.num_axes);
+  LOG_DEBUG("  pulse_per_rad: %8g", cp.pulses_per_rad[0]);
+  for (int i=1; i<cp.num_axes; ++i)
+    LOG_DEBUG(", %8g", cp.pulses_per_rad[i]);
+    
   for (int i=0; i<MAX_PULSE_AXES; ++i)
   {
-    printf("  pulseCorr[%d]: %d, %d, %8g\n", i,
-    parameters_.pulse_correction[i].ulSourceAxis,
-    parameters_.pulse_correction[i].ulCorrectionAxis,
-    parameters_.pulse_correction[i].fCorrectionRatio);
+	FB_AXIS_CORRECTION& corr = cp.pulse_correction[i];
+    if (!corr.bValid) continue;
+
+    LOG_DEBUG("  pulseCorr[%d]: %d, %d, %8g", i, corr.ulSourceAxis, corr.ulCorrectionAxis, corr.fCorrectionRatio);
   }
+  
+  LOG_DEBUG("  numTasks: %d normal, %d highPrio, %d outFiles", sp.tasks.qtyOfNormalPriorityTasks,
+            sp.tasks.qtyOfHighPriorityTasks, sp.tasks.qtyOfOutFiles);
+  LOG_DEBUG("  interpPeriod: %d msec", sp.interp_period);
+  LOG_DEBUG("  maxIncrPerCycle: %8g", cp.max_incr_per_cycle[0]);
+  for (int i=01; i<cp.num_axes; ++i)
+    LOG_DEBUG(", %8g", cp.max_incr_per_cycle[i]);
+  LOG_DEBUG("  incrMotionLimit: %8g", cp.incr_motion_limit);
 
   return rslt;
 }
@@ -114,11 +148,15 @@ bool Controller::setJointPositionVar(int index, industrial::joint_data::JointDat
     // convert ROS joint-order to MP joint-order
     float mp_joints_radians[MAX_PULSE_AXES];
     ros_conversion::toMpJoint(ros_joints, mp_joints_radians);
-    
+
+    // get conversion scaling   
+    float pulses_per_rad[MAX_PULSE_AXES];
+    if (!getPulsesPerRadian(pulses_per_rad)) return false;
+
     // convert radians to pulses
     LONG mp_joints_pulses[MAX_PULSE_AXES];
   	for (int i=0; i<MAX_PULSE_AXES; ++i)
-    	mp_joints_pulses[i] = (long)floor(mp_joints_radians[i] / parameters_.pulse_to_rad[i]);
+    	mp_joints_pulses[i] = (long)floor(mp_joints_radians[i] * pulses_per_rad[i]);
     
     // convert to MP_POSVAR_DATA structure
     const int MP_POSVAR_SIZE = 10;  // hardcoded in MP_POSVAR_DATA (not set to MAX_PULSE_AXES+2)
@@ -379,14 +417,22 @@ void Controller::setDigitalOut(int bit_offset, bool value)
  
 bool Controller::getActJointPos(float* pos)
 {
+  int num_axes;
   LONG status = 0;
   MP_CTRL_GRP_SEND_DATA sData;
   MP_FB_PULSE_POS_RSP_DATA pulse_data;
+  FB_AXIS_CORRECTION pulse_corr[MAX_PULSE_AXES];
+  float pulses_per_rad[MAX_PULSE_AXES];
 
   memset(pos, 0, MAX_PULSE_AXES*sizeof(float));  // clear result, in case of error
   
+  // get parameters for currently-active ctrl_grp
+  if (!getFBPulseCorrection(pulse_corr)) return false;
+  if (!getNumRobotAxes(&num_axes)) return false;
+  if (!getPulsesPerRadian(pulses_per_rad)) return false;
+  
   // get raw (uncorrected/unscaled) joint positions
-  sData.sCtrlGrp = parameters_.ctrl_grp;
+  sData.sCtrlGrp = getCtrlGroup();
   status = mpGetFBPulsePos (&sData,&pulse_data);
   if (0 != status)
   {
@@ -397,63 +443,196 @@ bool Controller::getActJointPos(float* pos)
   // apply correction to account for cross-axis coupling
   for (int i=0; i<MAX_PULSE_AXES; ++i)
   {
-    FB_AXIS_CORRECTION corr = parameters_.pulse_correction[i];
+    FB_AXIS_CORRECTION corr = pulse_corr[i];
     if (corr.bValid)
     {
       int src_axis = corr.ulSourceAxis;
       int dest_axis = corr.ulCorrectionAxis;
-      pulse_data.lPos[dest_axis] -= pulse_data.lPos[src_axis] * corr.fCorrectionRatio;
+      pulse_data.lPos[dest_axis] -= (int)(pulse_data.lPos[src_axis] * corr.fCorrectionRatio);
     }
   }
   
   // apply scaling (pulse->radians)
-  for (int i=0; i<parameters_.num_axes; ++i)
-    pos[i] = pulse_data.lPos[i] * parameters_.pulse_to_rad[i];
+  for (int i=0; i<num_axes; ++i)
+    pos[i] = pulse_data.lPos[i] / pulses_per_rad[i];
     
   return true;
 }
-  
+
+bool Controller::is_valid_ctrl_grp(int ctrl_grp)
+{
+  bool valid = ((ctrl_grp >= 0) && (ctrl_grp < MAX_CTRL_GROUPS));
+  if (!valid)
+    LOG_ERROR("Invalid ctrl_grp (%d)", ctrl_grp);
+  return valid;
+}
+
 bool Controller::getNumRobotAxes(int ctrl_grp, int* numAxes)
 {
-    *numAxes = GP_getNumberOfAxes(ctrl_grp);
-    return (*numAxes >= 0);
+  if (!is_valid_ctrl_grp(ctrl_grp)) return false;
+ 
+  ctrl_grp_param_t& p = ctrl_grp_parameters_[ctrl_grp];
+  
+  // read parameters from controller, if not already cached
+  if (!is_bit_set(p.initialized, GP_GETNUMBEROFAXES))
+  {
+    p.num_axes = GP_getNumberOfAxes(ctrl_grp);
+    set_bit(&p.initialized, GP_GETNUMBEROFAXES);
+  }
+
+  *numAxes = p.num_axes;
+  return (*numAxes >= 0);
 }
 
 bool Controller::getPulseToRadian(int ctrl_grp, float* pulse_to_radian)
 {
-  GB_PULSE_TO_RAD rData;
+  if (!is_valid_ctrl_grp(ctrl_grp)) return false;
 
-  LOG_DEBUG("Retrieving PulseToRadian parameters.");
-  if (GP_getPulseToRad(ctrl_grp, &rData) != OK)
+  ctrl_grp_param_t& p = ctrl_grp_parameters_[ctrl_grp];
+  
+  // read parameters from controller, if not already cached
+  if (!is_bit_set(p.initialized, GP_GETPULSETORAD))
   {
-    LOG_ERROR("Failed to retrieve PulseToRadian parameters.");
-    memset(pulse_to_radian, 0, MAX_PULSE_AXES*sizeof(float));  // clear scaling factors
-    return false;
+    GB_PULSE_TO_RAD rData;
+
+    if (GP_getPulseToRad(ctrl_grp, &rData) != OK)
+    {
+      LOG_ERROR("Failed to retrieve PulseToRadian parameters.");
+      return false;
+    }
+    
+    for (int i=0; i<MAX_PULSE_AXES; ++i)
+      p.pulses_per_rad[i] = rData.PtoR[i];
+    set_bit(&p.initialized, GP_GETPULSETORAD);
   }
 
   for (int i=0; i<MAX_PULSE_AXES; ++i)
-    pulse_to_radian[i] = rData.PtoR[i];
+    pulses_per_radian[i] = p.pulses_per_rad[i];
 
   return true;
 }
 
 bool Controller::getFBPulseCorrection(int ctrl_grp, FB_AXIS_CORRECTION* pulse_correction)
 {
-  FB_PULSE_CORRECTION_DATA rData;
+  if (!is_valid_ctrl_grp(ctrl_grp)) return false;
 
-  LOG_DEBUG("Retrieving PulseCorrection parameters.");
-  if (GP_getFBPulseCorrection(ctrl_grp, &rData) != OK)
+  ctrl_grp_param_t& p = ctrl_grp_parameters_[ctrl_grp];
+
+  // read parameters from controller, if not already cached
+  if (!is_bit_set(p.initialized, GP_GETFBPULSECORRECTION))
   {
-    LOG_ERROR("Failed to retrieve FBPulseCorrection parameters.");
-    memset(pulse_correction, 0, MAX_PULSE_AXES*sizeof(FB_AXIS_CORRECTION));  // clear correction factors
-    return false;
+    FB_PULSE_CORRECTION_DATA rData;
+
+    if (GP_getFBPulseCorrection(ctrl_grp, &rData) != OK)
+    {
+      LOG_ERROR("Failed to retrieve FBPulseCorrection parameters.");
+      return false;
+    }
+    
+    for (int i=0; i<MAX_PULSE_AXES; ++i)
+      p.pulse_correction[i] = rData.correction[i];
+    set_bit(&p.initialized, GP_GETFBPULSECORRECTION);
   }
 
   for (int i=0; i<MAX_PULSE_AXES; ++i)
-    pulse_correction[i] = rData.correction[i];
+    pulse_correction[i] = p.pulse_correction[i];
 
   return true;
 }
+
+bool Controller::getNumTasks(int* num_normal_tasks, int* num_highPrio_tasks, int* num_out_files)
+{
+  sys_param_t& p = sys_parameters_;
+
+  // read parameters from controller, if not already cached
+  if (!is_bit_set(p.initialized, GP_GETQTYOFALLOWEDTASKS))
+  {
+    TASK_QTY_INFO rData;
+
+    if (GP_getQtyOfAllowedTasks(&rData) != OK)
+    {
+      LOG_ERROR("Failed to retrieve QtyOfAllowedTasks parameters.");
+      return false;
+    }
+    
+    p.tasks = rData;
+    set_bit(&p.initialized, GP_GETQTYOFALLOWEDTASKS);
+  }
+
+  *num_normal_tasks   = p.tasks.qtyOfNormalPriorityTasks;
+  *num_highPrio_tasks = p.tasks.qtyOfHighPriorityTasks;
+  *num_out_files      = p.tasks.qtyOfOutFiles;
+
+  return true;
+}
+
+bool Controller::getInterpPeriod(UINT16* interp_period)
+{
+  sys_param_t& p = sys_parameters_;
+
+  // read parameters from controller, if not already cached
+  if (!is_bit_set(p.initialized, GP_GETINTERPOLATIONPERIOD))
+  {
+    if (GP_getInterpolationPeriod(&(p.interp_period)) != OK)
+    {
+      LOG_ERROR("Failed to retrieve InterpolationPeriod parameters.");
+      return false;
+    }
+    
+    set_bit(&p.initialized, GP_GETINTERPOLATIONPERIOD);
+  }
+
+  *interp_period = p.interp_period;
+  return true;
+}
+
+bool Controller::getMaxIncrPerCycle(int ctrl_grp, int* max_incr)
+{
+  if (!is_valid_ctrl_grp(ctrl_grp)) return false;
+
+  ctrl_grp_param_t& p = ctrl_grp_parameters_[ctrl_grp];
+
+  // read parameters from controller, if not already cached
+  if (!is_bit_set(p.initialized, GP_GETMAXINCPERIPCYCLE))
+  {
+    MAX_INCREMENT_INFO rData;
+    UINT16 interp_period;
+    if (!getInterpPeriod(&interp_period)) return false;
+
+    if (GP_getMaxIncPerIpCycle(ctrl_grp, interp_period, &rData) != OK)
+    {
+      LOG_ERROR("Failed to retrieve MaxIncPerIpCycle parameters.");
+      return false;
+    }
+    
+    for (int i=0; i<MAX_PULSE_AXES; ++i)
+      p.max_incr_per_cycle[i] = rData.maxIncrement[i];
+    set_bit(&p.initialized, GP_GETMAXINCPERIPCYCLE);
+  }
+
+  for (int i=0; i<MAX_PULSE_AXES; ++i)
+    max_incr[i] = p.max_incr_per_cycle[i];
+
+  return true;
+}
+
+bool Controller::getIncrMotionLimit(int ctrl_grp, float* limit)
+{
+  if (!is_valid_ctrl_grp(ctrl_grp)) return false;
+
+  ctrl_grp_param_t& p = ctrl_grp_parameters_[ctrl_grp];
+
+  // read parameters from controller, if not already cached
+  if (!is_bit_set(p.initialized, GP_GETGOVFORINCMOTION))
+  {
+    p.incr_motion_limit = GP_getGovForIncMotion(ctrl_grp);
+    set_bit(&p.initialized, GP_GETGOVFORINCMOTION);
+  }
+
+  *limit = p.incr_motion_limit;
+  return (*limit >= 0);
+}
+
 
 } //controller
 } //motoman
