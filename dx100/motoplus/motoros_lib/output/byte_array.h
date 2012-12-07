@@ -55,10 +55,6 @@ class SimpleSerialize;
 }
 }
 
-
-
-
-
 namespace industrial
 {
 namespace byte_array
@@ -66,15 +62,15 @@ namespace byte_array
 
 /**
  * \brief The byte array wraps a traditional, fixed size, array of bytes (i.e. char*).
- */
-//* ByteArray
-/**
- * The byte array wraps a traditional, fixed size, array of bytes (i.e. char*).
  *
  * It  provides convenient methods for loading and unloading
  * data types to and from the byte array.  The class acts as an
  * interface definition to raw data (in case the underlying structure of the
  * raw data changes).  It's intended use is for socket communications.
+ *
+ * By default data using the load/unload methods is appended/removed from the end
+ * of the array.  As long as the standard load/unload methods are uses, this is
+ * transparent to the user.
  *
  * A fixed size array is used for simplicity (i.e. avoiding re-implementing
  * the STL vector class for those systems that don't have access to the STL,
@@ -114,34 +110,30 @@ public:
   void init();
 
   /**
-     * \brief initializes byte array from char* buffer
-     *
-     * This method creates a byte array containing a copy of the passed
-     * in buffer (up to byteSize)
-     *
-     * \param buffer pointer to byte buffer
-     * \param byte_size size of buffer to copy.  If the byte size is greater
-     * than the max buffer size then only the max buffer amount of bytes is
-     * copied
-     *
-     * \return true on success, false otherwise (max array size exceeded).
-     */
+   * \brief initializes byte array from char* buffer
+   *
+   * This method creates a byte array containing a copy of the passed
+   * in buffer (up to byteSize)
+   *
+   * \param buffer pointer to byte buffer
+   * \param byte_size size of buffer to copy.  If the byte size is greater
+   * than the max buffer size then only the max buffer amount of bytes is
+   * copied
+   *
+   * \return true on success, false otherwise (max array size exceeded).
+   */
   bool init(const char* buffer, const industrial::shared_types::shared_int byte_size);
 
-    /**
-      * \brief Deep-Copy
-      *
-      * This method creates a byte array containing a deep copy of the
-      * passed in buffer
-      *
-      * \param buffer buffer to copy
-      *
-      */
+  /**
+   * \brief Deep-Copy
+   *
+   * This method creates a byte array containing a deep copy of the
+   * passed in buffer
+   *
+   * \param buffer buffer to copy
+   *
+   */
   void copyFrom(ByteArray & buffer);
-
-
-
-
 
   /**
    * \brief loads a boolean into the byte array
@@ -154,7 +146,9 @@ public:
   bool load(industrial::shared_types::shared_bool value);
 
   /**
-   * \brief loads a double into the byte array
+   * \brief loads a float on the byte array.  If byte swapping is
+   * enabled, then the bytes are swapped (this assumes a common float
+   * representation)
    *
    * \param value to load
    *
@@ -164,7 +158,8 @@ public:
   bool load(industrial::shared_types::shared_real value);
 
   /**
-   * \brief loads an integer into the byte array
+   * \brief loads an integer into the byte array.  If byte swapping is
+   * enabled, then the bytes are swapped.
    *
    * \param value to load
    *
@@ -184,17 +179,18 @@ public:
   bool load(industrial::simple_serialize::SimpleSerialize &value);
 
   /**
-     * \brief loads a whole byte array into this byte array
-     *
-     * \param value to load
-     *
-     * \return true on success, false otherwise (max array size exceeded).
-     * Value not loaded
-     */
-    bool load(ByteArray &value);
+   * \brief loads a whole byte array into this byte array
+   *
+   * \param value to load
+   *
+   * \return true on success, false otherwise (max array size exceeded).
+   * Value not loaded
+   */
+  bool load(ByteArray &value);
 
   /**
-   * \brief loads a void* (treated as char*) into the byte array
+   * \brief loads a void* (treated as char*) into the byte array.
+   * WARNING: Byte swapping is not performed in this function.
    *
    * \param value to load
    * \byte_syze number of bytes to load
@@ -203,11 +199,6 @@ public:
    * Value not loaded
    */
   bool load(void* value, const industrial::shared_types::shared_int byte_size);
-
-
-
-
-
 
   /**
    * \brief unloads a boolean value from the byte array
@@ -219,7 +210,8 @@ public:
   bool unload(industrial::shared_types::shared_bool &value);
 
   /**
-   * \brief unloads a double value from the byte array
+   * \brief unloads a double value from the byte array. If byte swapping is
+   * enabled, then the bytes are swapped.
    *
    * \param value value to unload
    *
@@ -228,7 +220,8 @@ public:
   bool unload(industrial::shared_types::shared_real &value);
 
   /**
-   * \brief unloads an integer value from the byte array
+   * \brief unloads an integer value from the byte array.  If byte swapping is
+   * enabled, then the bytes are swapped.
    *
    * \param value value to unload
    *
@@ -246,18 +239,19 @@ public:
   bool unload(industrial::simple_serialize::SimpleSerialize &value);
 
   /**
-     * \brief unloads a partial byte array from the byte array into the
-     * passed in byte array (this is done using the byte array load method
-     * so any data in the passed in byte array remains intact)
-     *
-     * \param value value to unload
-     *
-     * \return true on success, false otherwise (array is empty)
-     */
+   * \brief unloads a partial byte array from the byte array into the
+   * passed in byte array (this is done using the byte array load method
+   * so any data in the passed in byte array remains intact)
+   *
+   * \param value value to unload
+   *
+   * \return true on success, false otherwise (array is empty)
+   */
   bool unload(ByteArray &value, const industrial::shared_types::shared_int byte_size);
 
   /**
-   * \brief unloads a void* (treated as char*) from the byte array
+   * \brief unloads a void* (treated as char*) from the byte array.
+   * WARNING: Byte swapping is not performed in this function.
    *
    * \param value to unload
    * \byte_syze number of bytes to unload
@@ -267,20 +261,41 @@ public:
   bool unload(void* value, const industrial::shared_types::shared_int byteSize);
 
   /**
-     * \brief unloads a void* (treated as char*) from the beginning of the array.
-     * WARNING: This method performs a memmove every time it is called (this is
-     * expensive).
-     *
-     * \param value to unload
-     * \byte_syze number of bytes to unload
-     *
-     * \return true on success, false otherwise (array is empty)
-     */
-    bool unloadFront(void* value, const industrial::shared_types::shared_int byteSize);
+   * \brief unloads a double value from the beginning of the byte array.
+   * If byte swapping is enabled, then the bytes are swapped.
+   * WARNING: This method performs a memmove every time it is called (this is
+   * expensive).
+   *
+   * \param value value to unload
+   *
+   * \return true on success, false otherwise (array is empty)
+   */
+  bool unloadFront(industrial::shared_types::shared_real &value);
 
+  /**
+   * \brief unloads an integer value from the beginning of the byte array.
+   * If byte swapping is enabled, then the bytes are swapped
+   * WARNING: This method performs a memmove every time it is called (this is
+   * expensive).
+   *
+   * \param value value to unload
+   *
+   * \return true on success, false otherwise (array is empty)
+   */
+  bool unloadFront(industrial::shared_types::shared_int &value);
 
-
-
+  /**
+   * \brief unloads a void* (treated as char*) from the beginning of the array.
+   * WARNING: This method performs a memmove every time it is called (this is
+   * expensive).
+   * WARNING: Byte swapping is not performed in this function.
+   *
+   * \param value to unload
+   * \byte_syze number of bytes to unload
+   *
+   * \return true on success, false otherwise (array is empty)
+   */
+  bool unloadFront(void* value, const industrial::shared_types::shared_int byteSize);
 
   /**
    * \brief returns a char* pointer to the raw data.
@@ -297,19 +312,27 @@ public:
   char* getRawDataPtr();
 
   /**
-     * \brief gets current buffer size
-     *
-     * \return buffer size
-     */
+   * \brief gets current buffer size
+   *
+   * \return buffer size
+   */
   unsigned int getBufferSize();
 
   /**
-       * \brief gets current buffer size
-       *
-       * \return buffer size
-       */
-    unsigned int getMaxBufferSize();
+   * \brief gets current buffer size
+   *
+   * \return buffer size
+   */
+  unsigned int getMaxBufferSize();
 
+  /**
+     * \brief returns true if byte swapping is enabled (this is a global
+     * option set by compiler flag).  This function gives the status of the
+     * compiler flag.
+     *
+     * \return true if byte swapping is enabled.
+     */
+  static bool isByteSwapEnabled();
 
 private:
   /**
@@ -332,7 +355,16 @@ private:
    */
   industrial::shared_types::shared_int buffer_size_;
 
-
+#ifdef BYTE_SWAPPING
+  /**
+   * \brief Swaps byte of value (in place)
+   *
+   * \param value to swap
+   * \param byteSize (in bytes)
+   *
+   */
+  void swap(void *value, industrial::shared_types::shared_int byteSize);
+#endif
 
   /**
    * \brief sets current buffer size
@@ -386,4 +418,3 @@ private:
 } // namespace byte_array
 
 #endif //BYTE_ARRAY_H
-

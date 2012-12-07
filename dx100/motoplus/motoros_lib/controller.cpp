@@ -484,7 +484,7 @@ bool Controller::getNumRobotAxes(int ctrl_grp, int* numAxes)
   return (*numAxes >= 0);
 }
 
-bool Controller::getPulseToRadian(int ctrl_grp, float* pulse_to_radian)
+bool Controller::getPulsesPerRadian(int ctrl_grp, float* pulses_per_radian)
 {
   if (!is_valid_ctrl_grp(ctrl_grp)) return false;
 

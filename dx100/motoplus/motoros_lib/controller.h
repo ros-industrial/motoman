@@ -285,7 +285,7 @@ void delayTicks(int ticks) { mpTaskDelay(ticks);};
   static bool getNumRobotAxes(int* numAxes) { return getNumRobotAxes(active_ctrl_grp_, numAxes); }
 
  /**
-  * \brief Reads the pulse-to-radian scaling factors from the controller's
+  * \brief Reads the pulse-per-radian scaling factors from the controller's
   * config parameters, based on the arm's gearing ratios.
   *    jntPosInRadians = jntPosInPulses * pulseToRadian
   *
@@ -294,8 +294,8 @@ void delayTicks(int ticks) { mpTaskDelay(ticks);};
   *
   * \return true if parameters successfully read
   */
- static bool getPulseToRadian(int ctrl_grp, float* pulse_to_radian);
- static bool getPulsesPerRadian(float* pulse_to_radian) { return getPulsesPerRadian(active_ctrl_grp_, pulse_to_radian); }
+ static bool getPulsesPerRadian(int ctrl_grp, float* pulses_per_radian);
+ static bool getPulsesPerRadian(float* pulses_per_radian) { return getPulsesPerRadian(active_ctrl_grp_, pulses_per_radian); }
 
  /**
   * \brief Reads the pulse correction factors from the controller's
@@ -399,33 +399,23 @@ MP_STD_RSP_DATA job_error;
 MP_HOLD_SEND_DATA hold_data;
 MP_STD_RSP_DATA hold_error;
  
-// Cache robot parameters locally, since GetParameters is expensive
-typedef struct
-{
-  int ctrl_grp;
-  int num_axes;
-  float pulse_to_rad[MAX_PULSE_AXES];
-  FB_AXIS_CORRECTION pulse_correction[MAX_PULSE_AXES];
-} RobotParameters;
-static RobotParameters parameters_;  // TBD - This may eventually be an array, to support multiple robot types
-
- //TODO: motion and job flags are just internal state variables, we may
- //want to make them query the appropriate motoplus API calls instead.
- /**
+//TODO: motion and job flags are just internal state variables, we may
+//want to make them query the appropriate motoplus API calls instead.
+/**
   * \brief True if motion enabled
   */
- bool motionEnabled;
+bool motionEnabled;
  
- /**
+/**
   * \brief True if job started
   */
- bool jobStarted;
+bool jobStarted;
  
- static int active_ctrl_grp_;
+static int active_ctrl_grp_;
  
- static bool is_valid_ctrl_grp(int ctrl_grp);
- static bool is_bit_set(int i, param_func_t type) { return (i & type); }
- static void set_bit(int* i, param_func_t type) { *i |= type; }
+static bool is_valid_ctrl_grp(int ctrl_grp);
+static bool is_bit_set(int i, param_func_t type) { return (i & type); }
+static void set_bit(int* i, param_func_t type) { *i |= type; }
 };
 
 

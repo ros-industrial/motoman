@@ -76,7 +76,7 @@ public:
    * This method creates an empty message.
    *
    */
-	JointTrajPtMessage(void);
+  JointTrajPtMessage(void);
   /**
    * \brief Destructor
    *
@@ -113,6 +113,13 @@ public:
   {
     return this->point_.byteLength();
   }
+
+  /**
+   * \brief Sets message sequence number
+   *
+   * \param message sequence number
+   */
+  void setSequence(industrial::shared_types::shared_int sequence) { point_.setSequence(sequence); }
 
   industrial::joint_traj_pt::JointTrajPt point_;
 

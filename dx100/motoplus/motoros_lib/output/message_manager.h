@@ -130,14 +130,14 @@ public:
   void spin();
 
   /**
-   * \brief Adds a message handler to the manager
+   * \brief Adds a message handler to the manager.
    *
-   * \param handler handler to add
+   * \param handler to add
+   * \param replace existing handler (of same msg-type), if exists
    *
-   * \return true if successful, otherwise false (max number of handlers
-   * reached or handler for message type already exists).
+   * \return true if successful, otherwise false (max # of handlers reached)
    */
-  bool add(industrial::message_handler::MessageHandler* handler);
+  bool add(industrial::message_handler::MessageHandler* handler, bool allow_replace = false);
 
   /**
    * \brief Gets number of handlers
@@ -148,7 +148,6 @@ public:
   {
     return this->num_handlers_;
   }
-  ;
 
   /**
    * \brief Gets maximumn number of handlers
@@ -159,7 +158,28 @@ public:
   {
     return this->MAX_NUM_HANDLERS;
   }
-  ;
+
+
+  /**
+   * \brief Gets communications fault handler
+   *
+   * \return reference to message handler or NULL if one doesn't exist
+   */
+  industrial::comms_fault_handler::CommsFaultHandler* getCommsFaultHandler()
+  {
+    return this->comms_hndlr_;
+  }
+
+  /**
+   * \brief Gets communications fault handler
+   *
+   * \param Pointer to message handler
+   */
+  void setCommsFaultHandler(industrial::comms_fault_handler::CommsFaultHandler* handler)
+  {
+    this->comms_hndlr_ = handler;
+  }
+
 
 private:
 
@@ -212,24 +232,13 @@ private:
   industrial::message_handler::MessageHandler* getHandler(int msg_type);
 
   /**
-   * \brief Gets communications fault handler
+   * \brief Gets index of message handler for specific message type
    *
-   * \return reference to message handler or NULL if one doesn't exist
-   */
-  industrial::comms_fault_handler::CommsFaultHandler* getCommsFaultHandler()
-  {
-    return this->comms_hndlr_;
-  }
-
-  /**
-   * \brief Gets communications fault handler
+   * \param message type to handle
    *
-   * \param Pointer to message handler
+   * \return index of matching handler or -1 if one doesn't exist
    */
-  void setCommsFaultHandler(industrial::comms_fault_handler::CommsFaultHandler* handler)
-  {
-    this->comms_hndlr_ = handler;
-  }
+  int getHandlerIdx(int msg_type);
 
   /**
    * \brief Gets default communications fault handler

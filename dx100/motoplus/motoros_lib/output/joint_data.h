@@ -48,8 +48,6 @@
 
 #endif
 
-
-
 namespace industrial
 {
 namespace joint_data
@@ -58,11 +56,16 @@ namespace joint_data
 /**
  * \brief Class encapsulated joint data (positions, accelerations, velocity,
  * torque, and/or effort).
+ *
  * For simplicity and cross platform compliance, this is implemented as a
  * fixed size array.
- */
-//* JointData
-/**
+ *
+ * The byte representation of a joint data is as follows. The standard sizes
+ * are given, but can change based on type sizes:
+ *
+ *   member:             type                                      size
+ *   joints              (industrial::shared_types::shared_real)   4 * MAX_NUM_JOINTS
+ *
  *
  * THIS CLASS IS NOT THREAD-SAFE
  *
@@ -77,7 +80,7 @@ public:
    * This method creates empty data.
    *
    */
-	JointData(void);
+  JointData(void);
   /**
    * \brief Destructor
    *
@@ -109,7 +112,7 @@ public:
    * \return true if value valid, otherwise false (index greater than max)
    */
   bool getJoint(industrial::shared_types::shared_int index, industrial::shared_types::shared_real & value);
-  
+
   /**
    * \brief Gets a joint value within the buffer (Only use this form if you are
    * sure the index is within bounds).
@@ -119,8 +122,7 @@ public:
    * \return joint value (returns 0.0 if index is out of bounds)
    */
   industrial::shared_types::shared_real getJoint(industrial::shared_types::shared_int index);
-  
-  
+
   /**
    * \brief Copies the passed in value
    *
@@ -139,10 +141,10 @@ public:
   }
 
   /**
-     * \brief == operator implementation
-     *
-     * \return true if equal
-     */
+   * \brief == operator implementation
+   *
+   * \return true if equal
+   */
   bool operator==(JointData &rhs);
 
   // Overrides - SimpleSerialize
