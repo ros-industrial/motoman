@@ -75,6 +75,7 @@ namespace StandardMsgTypes
 
  JOINT_TRAJ_PT = 11,  //Joint trajectory point message (typically for streaming)
  JOINT_TRAJ = 12,	  //Joint trajectory message (typically for trajectory downloading)
+ STATUS = 13,         //Robot status message (for reporting the robot state)
 
  // Begin vendor specific message types (only define the beginning enum value,
  // specific enum values should be defined locally, within in the range reserved

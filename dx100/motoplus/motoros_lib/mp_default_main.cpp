@@ -38,6 +38,8 @@
 #include "joint_motion_handler.h"
 #include "joint_data.h"
 #include "joint_message.h"
+#include "robot_status.h"
+#include "robot_status_message.h"
 #include "simple_message.h"
 #include "ros_conversion.h"
 
@@ -50,7 +52,7 @@ namespace mp_default_main
 {
 
 void motionServer(void)
-// Persistent UDP server that receives motion messages from Motoros node (ROS interface) and relays to parseMotionMessage
+// Persistent TCP server that receives motion messages from Motoros node (ROS interface) and relays to parseMotionMessage
 {
 
     using namespace industrial::simple_socket;
@@ -80,7 +82,7 @@ void motionServer(void)
 
 
 void systemServer(void)
-// Persistent UDP server that receives system messages from Motoros node (ROS interface) and relays to parseSystemMessage
+// Persistent TCP server that receives system messages from Motoros node (ROS interface) and relays to parseSystemMessage
 {
 
     using namespace industrial::simple_socket;
@@ -107,13 +109,20 @@ void stateServer(void)
     using namespace industrial::tcp_server;
     using namespace industrial::joint_message;
     using namespace industrial::joint_data;
+    using namespace industrial::robot_status;
+    using namespace industrial::robot_status_message;
     using namespace industrial::simple_message;
     using namespace motoman::ros_conversion;
     
     // Using TPC server for debugging (this should really be UDP)
     TcpServer connection;
+    
     JointData rosJoints;
     JointMessage msg;
+    
+    RobotStatus status;
+    RobotStatusMessage statusMsg;
+    
     SimpleMessage simpMsg;
     Controller controller;
     float mpJoints[MAX_PULSE_AXES];
@@ -132,6 +141,11 @@ void stateServer(void)
         toRosJoint(mpJoints, rosJoints);
         msg.init(0, rosJoints);
         msg.toTopic(simpMsg);
+        connection.sendMsg(simpMsg);
+        
+        controller.getStatus(status);
+        statusMsg.init(status);
+        statusMsg.toTopic(simpMsg);
         connection.sendMsg(simpMsg);
         
         mpTaskDelay(period);

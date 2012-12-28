@@ -130,9 +130,9 @@ public:
   void spin();
 
   /**
-   * \brief Adds a message handler to the manager.
+   * \brief Adds a message handler to the manager
    *
-   * \param handler to add
+   * \param handler handler to add
    * \param replace existing handler (of same msg-type), if exists
    *
    * \return true if successful, otherwise false (max # of handlers reached)

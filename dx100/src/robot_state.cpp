@@ -30,47 +30,48 @@
  */
 
 #include "ros/ros.h"
-#include "simple_message/socket/simple_socket.h"
-#include "simple_message/socket/udp_client.h"
+#include "industrial_robot_client/robot_state_interface.h"
+#include "simple_message/simple_message.h"
 #include "simple_message/socket/tcp_client.h"
-#include "dx100/joint_relay_handler.h"
-#include "simple_message/message_manager.h"
 
-using namespace industrial::udp_client;
+using industrial_robot_client::robot_state_interface::RobotStateInterface;
+using namespace industrial::simple_message;
 using namespace industrial::tcp_client;
-using namespace industrial::message_manager;
 using namespace industrial::simple_socket;
-using namespace motoman::joint_relay_handler;
 
 int main(int argc, char** argv)
 {
+
+  const unsigned int IP_ARG_IDX = 1;
   TcpClient connection;
-  MessageManager manager;
-	
-	const unsigned int IP_ARG_IDX = 1;
   ros::init(argc, argv, "state_interface");
-  ros::NodeHandle n;
 
-  JointRelayHandler jr_handler(n);
+  if (argc != 1) //Only one argument, the robot IP address is accepted
+  {
+    ROS_INFO("Robot state connecting to IP address: %s", argv[IP_ARG_IDX]);
+    connection.init(argv[IP_ARG_IDX], StandardSocketPorts::STATE);
 
-	if(argc != 1)  //Only one argument, the robot IP address is accepted
-	{
-		ROS_INFO("Robot state connecting to IP address: %s", argv[IP_ARG_IDX]);
-		connection.init(argv[IP_ARG_IDX], StandardSocketPorts::STATE);
-		connection.makeConnect();
+    std::vector<std::string> joint_names;
+    joint_names.push_back("joint_s");
+    joint_names.push_back("joint_l");
+    joint_names.push_back("joint_e");
+    joint_names.push_back("joint_u");
+    joint_names.push_back("joint_r");
+    joint_names.push_back("joint_b");
+    joint_names.push_back("joint_t");
 
-		jr_handler.init(&connection);
+    RobotStateInterface rsi;
+    if (rsi.init(&connection, joint_names))
+    {
+      rsi.run();
+    }
 
-		manager.init(&connection);
-		manager.add(&jr_handler);
-	}
-	else
-	{
-		ROS_ERROR("Missing command line arguments, usage: robot_state <robot ip address>");
-	}
+  }
+  else
+  {
+    ROS_ERROR("Missing command line arguments, usage: robot_state <robot ip address>");
+  }
 
-  manager.spin();
-
-	return 0;
+  return 0;
 }
 

@@ -7,3 +7,4 @@ COPY ..\motoros_lib\output\simple_message.h simple_message.h
 COPY ..\motoros_lib\output\simple_serialize.h simple_serialize.h
 COPY ..\motoros_lib\output\shared_types.h shared_types.h
 COPY ..\motoros_lib\output\byte_array.h byte_array.h
+COPY ..\motoros_lib\output\robot_status.h robot_status.h

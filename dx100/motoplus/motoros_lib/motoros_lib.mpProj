@@ -37,6 +37,10 @@
     <FileForProject>ping_handler.h</FileForProject>
     <FileForProject>ping_message.cpp</FileForProject>
     <FileForProject>ping_message.h</FileForProject>
+    <FileForProject>robot_status.cpp</FileForProject>
+    <FileForProject>robot_status.h</FileForProject>
+    <FileForProject>robot_status_message.cpp</FileForProject>
+    <FileForProject>robot_status_message.h</FileForProject>
     <FileForProject>ros_conversion.cpp</FileForProject>
     <FileForProject>ros_conversion.h</FileForProject>
     <FileForProject>shared_types.h</FileForProject>

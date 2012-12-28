@@ -35,6 +35,7 @@
 #include "motoPlus.h"
 #include "ParameterExtraction.h"  // new motoPlus library
 #include "joint_data.h"
+#include "robot_status.h"
 
 namespace motoman
 {
@@ -190,6 +191,16 @@ static bool setJointPositionVar(int index, industrial::joint_data::JointData ros
   */
  static bool getActJointPos(float* pos);
   
+  
+  /**
+  * \brief Gets the current robot status from the controller.
+  *
+  * \param status robot status data structure.
+  *
+  * \return true if robot status successfully retrieved.
+  */
+ bool getStatus(industrial::robot_status::RobotStatus & status);
+ 
    /**
 * \brief return true if motion is enabled (Based on internal class state
 * not MotoPlus call)
@@ -410,6 +421,15 @@ bool motionEnabled;
   * \brief True if job started
   */
 bool jobStarted;
+
+/**
+  * \brief Gets the current in motion status from the controller.  The
+  * funciton queries the actual joint speeds so it should be independent
+  * of any program state (which should be more reliable).
+  *
+  * \return motion status
+  */
+ industrial::robot_status::TriState getInMotionStatus();
  
 static int active_ctrl_grp_;
  

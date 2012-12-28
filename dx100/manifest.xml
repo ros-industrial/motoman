@@ -18,6 +18,8 @@
   <depend package="sensor_msgs" />
   <depend package="simple_message" />
   <depend package="urdf" />
+  <depend package="industrial_msgs"/>
+  <depend package="industrial_robot_client" />
 
   <export>
     <cpp cflags="-I${prefix}/include/"/>

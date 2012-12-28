@@ -14,6 +14,7 @@ COPY comms_fault_handler.h ..\..\..\..\industrial_core\simple_message\include\si
 COPY simple_comms_fault_handler.h ..\..\..\..\industrial_core\simple_message\include\simple_message\simple_comms_fault_handler.h
 COPY joint_traj.h ..\..\..\..\industrial_core\simple_message\include\simple_message\joint_traj.h
 COPY joint_traj_pt.h ..\..\..\..\industrial_core\simple_message\include\simple_message\joint_traj_pt.h
+COPY robot_status.h ..\..\..\..\industrial_core\simple_message\include\simple_message\robot_status.h
 COPY byte_array.cpp ..\..\..\..\industrial_core\simple_message\src\byte_array.cpp
 COPY simple_message.cpp ..\..\..\..\industrial_core\simple_message\src\simple_message.cpp
 COPY smpl_msg_connection.cpp ..\..\..\..\industrial_core\simple_message\src\smpl_msg_connection.cpp
@@ -23,6 +24,7 @@ COPY ping_handler.cpp ..\..\..\..\industrial_core\simple_message\src\ping_handle
 COPY joint_data.cpp ..\..\..\..\industrial_core\simple_message\src\joint_data.cpp
 COPY message_manager.cpp ..\..\..\..\industrial_core\simple_message\src\message_manager.cpp
 COPY joint_traj.cpp ..\..\..\..\industrial_core\simple_message\src\joint_traj.cpp
+COPY robot_status.cpp ..\..\..\..\industrial_core\simple_message\src\robot_status.cpp
 COPY joint_traj_pt.cpp ..\..\..\..\industrial_core\simple_message\src\joint_traj_pt.cpp
 COPY simple_comms_fault_handler.cpp ..\..\..\..\industrial_core\simple_message\src\simple_comms_fault_handler.cpp
 COPY simple_socket.h ..\..\..\..\industrial_core\simple_message\include\simple_message\socket\simple_socket.h
@@ -41,16 +43,14 @@ COPY udp_client.cpp ..\..\..\..\industrial_core\simple_message\src\socket\udp_cl
 COPY udp_server.cpp ..\..\..\..\industrial_core\simple_message\src\socket\udp_server.cpp
 COPY joint_traj_pt_message.h ..\..\..\..\industrial_core\simple_message\include\simple_message\messages\joint_traj_pt_message.h
 COPY joint_traj_pt_message.cpp ..\..\..\..\industrial_core\simple_message\src\messages\joint_traj_pt_message.cpp
+COPY robot_status_message.h ..\..\..\..\industrial_core\simple_message\include\simple_message\messages\robot_status_message.h
+COPY robot_status_message.cpp ..\..\..\..\industrial_core\simple_message\src\messages\robot_status_message.cpp
 COPY joint_message.h ..\..\..\..\industrial_core\simple_message\include\simple_message\messages\joint_message.h
 COPY joint_message.cpp ..\..\..\..\industrial_core\simple_message\src\messages\joint_message.cpp
 COPY trajectory_job.h ..\..\include\dx100\trajectory_job.h
 COPY trajectory_job.cpp ..\..\src\trajectory_job.cpp
 COPY ros_conversion.h ..\..\include\dx100\ros_conversion.h
 COPY ros_conversion.cpp ..\..\src\ros_conversion.cpp
-
-
-
-
 
 
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2011, Southwest Research Institute
@@ -172,6 +172,54 @@ bool Controller::setJointPositionVar(int index, industrial::joint_data::JointDat
 	
 	return result;
 }
+
+
+ bool Controller::getStatus(industrial::robot_status::RobotStatus & status)
+ {
+ 	status.init();  //reintializes status (sets all to unknown)
+    status.setInMotion(getInMotionStatus());
+ return true;
+ }
+ 
+ 
+ industrial::robot_status::TriState Controller::getInMotionStatus()
+ {
+ 	  industrial::robot_status::TriState rtn = 
+ 		industrial::robot_status::TriStates::TS_UNKNOWN;
+	
+	  
+	  LONG status = 0;
+	  MP_CTRL_GRP_SEND_DATA sData;
+	  MP_FB_SPEED_RSP_DATA pulse_speed;
+	  const int SPEED_THRESHOLD = 150; //pulses/sec
+	  
+	  // get raw (uncorrected/unscaled) joint positions
+	  sData.sCtrlGrp = getCtrlGroup();
+	  status = mpGetFBSpeed (&sData,&pulse_speed);
+	  if (MP_ERROR == status)
+	  {
+	    LOG_ERROR("Failed to get pulse feedback speed: %u", status);
+	  }
+	  else
+	  {
+		  // Assume we are not in motion.  If any of the joint speeds are
+		  // greater than the threshold, then set in motion (quit early).
+		  rtn = industrial::robot_status::TriStates::TS_FALSE;
+		  
+		  for (int i=0; i<MAX_PULSE_AXES; ++i)
+		  {
+		    if( abs(pulse_speed.lSpeed[i]) > SPEED_THRESHOLD )
+		    {
+		    	LOG_DEBUG("Speed detected, joint speed: %d and threshold: %d", 
+		    			pulse_speed.lSpeed[i], SPEED_THRESHOLD);
+		    	rtn = industrial::robot_status::TriStates::TS_TRUE;
+		    	break;
+		    }
+		  }
+	   }
+	  return rtn;
+  }
+
 
 void Controller::enableMotion(void)
 {

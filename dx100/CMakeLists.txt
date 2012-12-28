@@ -42,9 +42,8 @@ rosbuild_add_executable(system_inferface src/system_interface.cpp)
 target_link_libraries(system_inferface simple_message)
 
 rosbuild_add_executable(robot_state 
-  src/robot_state.cpp
-  src/joint_relay_handler.cpp)
-target_link_libraries(robot_state simple_message)
+  src/robot_state.cpp)
+target_link_libraries(robot_state industrial_robot_client)
 
 
 rosbuild_add_executable(motion_interface
