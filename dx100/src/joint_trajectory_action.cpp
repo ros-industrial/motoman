@@ -92,7 +92,7 @@ public:
 
   void robotStatusCB(const industrial_msgs::RobotStatusConstPtr &msg)
   {
-    last_robot_status_ = msg;  //caching robot status for later use.
+    last_robot_status_ = *msg;  //caching robot status for later use.
   }
 
   bool withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
@@ -249,7 +249,7 @@ private:
   double stopped_velocity_tolerance_;
 
   control_msgs::FollowJointTrajectoryFeedbackConstPtr last_controller_state_;
-  industrial_msgs::RobotStatusConstPtr last_robot_status_;
+  industrial_msgs::RobotStatus last_robot_status_;
 
   void controllerStateCB(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg)
   {
@@ -288,13 +288,13 @@ private:
       // be moving.  The current robot driver calls a motion stop if it receives
       // a new trajectory while it is still moving.  If the driver is not publishing
       // the motion state (i.e. old driver), this will still work, but it warns you.
-      if (last_robot_status_->in_motion.val == industrial_msgs::TriState::FALSE)
+      if (last_robot_status_.in_motion.val == industrial_msgs::TriState::FALSE)
       {
         ROS_INFO("Inside goal constraints, stopped moving, return success for action");
         active_goal_.setSucceeded();
         has_active_goal_ = false;
       }
-      else if (last_robot_status_->in_motion.val == industrial_msgs::TriState::UNKNOWN)
+      else if (last_robot_status_.in_motion.val == industrial_msgs::TriState::UNKNOWN)
       {
         ROS_INFO("Inside goal constraints, return success for action");
         ROS_WARN("Robot status: in motion unknown, the robot driver node and controller code should be updated");
