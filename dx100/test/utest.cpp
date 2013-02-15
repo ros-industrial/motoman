@@ -136,7 +136,7 @@ TEST(TrajectoryJob, init)
       //ROS_DEBUG("Initializing point: %d.%d", i, j);
       ASSERT_TRUE(init.setJoint(j, (i*(j+1))));
     }
-    pt.init(i, init, 11.1111);
+    pt.init(i, init, 11.1111, 22.2222);
     ASSERT_TRUE(traj.addPoint(pt));
   }
 
