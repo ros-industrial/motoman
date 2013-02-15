@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-
-<!--Generates a urdf from the macro in sia5.macro.xacro -->
-
-<robot name="sia5_urdf" xmlns:xacro="http://ros.org/wiki/xacro">
-	<include filename="$(find sia5_description)/urdf/sia5.macro.xacro"/>
-	<xacro:sia5_macro prefix=""/>
-</robot>
