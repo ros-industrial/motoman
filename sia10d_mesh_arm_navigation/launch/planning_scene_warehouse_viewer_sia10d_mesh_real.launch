@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="robot_ip" />
+  <arg name="robot_ip" default="" />
 
   <param name="/use_sim_time" value="true" />
   <include file="$(find sia10d_mesh_arm_navigation)/launch/sia10d_mesh_planning_environment.launch" />
