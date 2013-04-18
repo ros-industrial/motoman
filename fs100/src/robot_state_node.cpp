@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "fs100/robot_state_interface.h"
-#include "fs100/joint_feedback_relay_handler.h"
+#include "fs100/industrial_robot_client/robot_state_interface.h"
+#include "fs100/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "industrial_utils/param_utils.h"
 
 using industrial_robot_client::robot_state_interface::RobotStateInterface;

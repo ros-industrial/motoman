@@ -30,9 +30,9 @@ rosbuild_add_library(fs100_simple_message
 target_link_libraries(fs100_simple_message simple_message)
 
 rosbuild_add_library(fs100_industrial_robot_client
-                     src/joint_relay_handler.cpp
-                     src/joint_feedback_relay_handler.cpp
-                     src/robot_state_interface.cpp
+                     src/industrial_robot_client/joint_relay_handler.cpp
+                     src/industrial_robot_client/joint_feedback_relay_handler.cpp
+                     src/industrial_robot_client/robot_state_interface.cpp
                      )
 target_link_libraries(fs100_industrial_robot_client industrial_robot_client)
 

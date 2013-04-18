@@ -33,7 +33,7 @@
 #ifndef JOINT_FEEDBACK_RELAY_HANDLER_H
 #define JOINT_FEEDBACK_RELAY_HANDLER_H
 
-#include "fs100/joint_relay_handler.h"
+#include "fs100/industrial_robot_client/joint_relay_handler.h"
 #include "simple_message/messages/joint_feedback_message.h"
 
 namespace industrial_robot_client

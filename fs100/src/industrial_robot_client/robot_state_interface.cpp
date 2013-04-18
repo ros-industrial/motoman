@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "industrial_robot_client/robot_state_interface.h"
+#include "fs100/industrial_robot_client/robot_state_interface.h"
 #include "industrial_utils/param_utils.h"
 
 using industrial::smpl_msg_connection::SmplMsgConnection;
