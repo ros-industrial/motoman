@@ -21,10 +21,26 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
-rosbuild_add_library(test_lib src/simple_message/motoman_motion_ctrl.cpp
-	                          src/simple_message/motoman_motion_ctrl_message.cpp
-	                          src/simple_message/motoman_motion_reply.cpp
-	                          src/simple_message/motoman_motion_reply_message.cpp)
+rosbuild_add_library(fs100_simple_message
+                     src/simple_message/motoman_motion_ctrl.cpp
+                     src/simple_message/motoman_motion_ctrl_message.cpp
+                     src/simple_message/motoman_motion_reply.cpp
+                     src/simple_message/motoman_motion_reply_message.cpp
+		     )
+target_link_libraries(fs100_simple_message simple_message)
+
+rosbuild_add_library(fs100_industrial_robot_client
+                     src/joint_relay_handler.cpp
+                     src/joint_feedback_relay_handler.cpp
+                     src/robot_state_interface.cpp
+                     )
+target_link_libraries(fs100_industrial_robot_client industrial_robot_client)
+
+rosbuild_add_executable(robot_state
+                        src/robot_state_node.cpp)
+target_link_libraries(robot_state
+                      fs100_simple_message
+                      fs100_industrial_robot_client)
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)

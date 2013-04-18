@@ -13,6 +13,7 @@
   <depend package="roscpp"/>
   <depend package="control_msgs"/>
   <depend package="sensor_msgs"/>
+  <depend package="trajectory_msgs"/>
   <depend package="simple_message"/>
   <depend package="industrial_msgs"/>
   <depend package="industrial_robot_client"/>
