@@ -21,6 +21,6 @@ robot_interface.launch robot_ip:=<value>
 
 <!-- robot_state: publishes joint positions and robot-state data
 (from socket connection to robot) -->
-<node pkg="fs100" type="robot_state" name="robot_state"/>
+<node pkg="fs100" type="robot_state" name="robot_state" output="screen"/>
 
 </launch>

@@ -21,20 +21,25 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
+# NOTE: FS100 uses opposite byte-ordering from most i386-based PCs
+
 rosbuild_add_library(fs100_simple_message
                      src/simple_message/motoman_motion_ctrl.cpp
                      src/simple_message/motoman_motion_ctrl_message.cpp
                      src/simple_message/motoman_motion_reply.cpp
                      src/simple_message/motoman_motion_reply_message.cpp
 		     )
-target_link_libraries(fs100_simple_message simple_message)
+target_link_libraries(fs100_simple_message simple_message_bswap)
+set_target_properties(fs100_simple_message PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
 
 rosbuild_add_library(fs100_industrial_robot_client
                      src/industrial_robot_client/joint_relay_handler.cpp
                      src/industrial_robot_client/joint_feedback_relay_handler.cpp
                      src/industrial_robot_client/robot_state_interface.cpp
+                     src/industrial_robot_client/joint_trajectory_interface.cpp
+                     src/industrial_robot_client/joint_trajectory_streamer.cpp
                      )
-target_link_libraries(fs100_industrial_robot_client industrial_robot_client)
+target_link_libraries(fs100_industrial_robot_client industrial_robot_client_bswap)
 
 rosbuild_add_executable(robot_state
                         src/robot_state_node.cpp)
