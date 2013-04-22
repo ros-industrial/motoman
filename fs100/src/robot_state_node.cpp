@@ -49,7 +49,7 @@ int main(int argc, char** argv)
   // add the JointFeedbackRelayHandler to the state-interface's message manager
   JointFeedbackRelayHandler jointFeedbackHandler;
   std::vector<std::string> joint_names;
-  getJointNames("controller_joint_names", joint_names);
+  getJointNames("controller_joint_names", "robot_description", joint_names);
   jointFeedbackHandler.init(rsi.get_connection(), joint_names);
   rsi.add_handler(&jointFeedbackHandler);
 
