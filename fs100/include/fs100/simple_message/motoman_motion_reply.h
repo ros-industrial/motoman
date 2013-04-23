@@ -69,6 +69,44 @@ namespace MotionReplyResults
 }
 typedef MotionReplyResults::MotionReplyResult MotionReplyResult;
 
+/*
+ * \brief Enumeration of Motion reply subcodes
+ */
+namespace MotionReplySubcodes
+{
+namespace Invalid
+{
+enum InvalidCode
+{
+  UNSPECIFIED = 3000,
+  MSGSIZE,
+  MSGHEADER,
+  MSGTYPE,
+  GROUPNO,
+  SEQUENCE,
+  COMMAND,
+  DATA
+};
+}
+
+namespace NotReady
+{
+enum NotReadyCode
+{
+  UNSPECIFIED = 5000,
+  ALARM,
+  ERROR,
+  ESTOP,
+  NOT_PLAY,
+  NOT_REMOTE,
+  SERVO_OFF,
+  HOLD,
+  NOT_STARTED,
+  WAITING_ROS
+};
+}
+} // MotionReplySubcodes
+
 /**
  * \brief Class encapsulated motion control reply data.  These messages are sent
  * by the FS100 controller in response to MotionCtrl messages.  These control
@@ -139,7 +177,7 @@ public:
    *
    * \return robot_id
    */
-  industrial::shared_types::shared_int getRobotID()
+  industrial::shared_types::shared_int getRobotID() const
   {
     return this->robot_id_;
   }
@@ -159,7 +197,7 @@ public:
    *
    * \return sequence number
    */
-  industrial::shared_types::shared_int getSequence()
+  industrial::shared_types::shared_int getSequence() const
   {
     return this->sequence_;
   }
@@ -179,7 +217,7 @@ public:
    *
    * \return motion-control command value
    */
-  industrial::shared_types::shared_int getCommand()
+  industrial::shared_types::shared_int getCommand() const
   {
     return this->command_;
   }
@@ -199,7 +237,7 @@ public:
    *
    * \return motion-control result code
    */
-  industrial::shared_types::shared_int getResult()
+  industrial::shared_types::shared_int getResult() const
   {
     return this->result_;
   }
@@ -219,7 +257,7 @@ public:
    *
    * \return motion-control result sub-code
    */
-  industrial::shared_types::shared_int getSubcode()
+  industrial::shared_types::shared_int getSubcode() const
   {
     return this->subcode_;
   }
@@ -254,7 +292,7 @@ public:
    * \param idx data-index to get
    * \return data value
    */
-  industrial::shared_types::shared_real getData(size_t idx)
+  industrial::shared_types::shared_real getData(size_t idx) const
   {
     if (idx<MAX_DATA_CNT)
     {
@@ -268,6 +306,23 @@ public:
       return 0;
     }
   }
+
+  /*
+   * \brief Returns a string interpretation of a result code
+   * \param code result code
+   * \return string message associated with result code
+   */
+  static std::string getResultString(industrial::shared_types::shared_int code);
+  std::string getResultString() const { return getResultString(this->result_); }
+
+  /*
+   * \brief Returns a string interpretation of a result subcode
+   * \param code result subcode
+   * \return string message associated with result subcode
+   */
+  static std::string getSubcodeString(industrial::shared_types::shared_int code);
+  std::string getSubcodeString() const { return getSubcodeString(this->subcode_); }
+
 
   /**
    * \brief Copies the passed in value

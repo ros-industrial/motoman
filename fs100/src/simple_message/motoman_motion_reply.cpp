@@ -79,6 +79,76 @@ void MotionReply::init(shared_int robot_id, shared_int sequence,
   this->setData(0,data);
 }
 
+std::string MotionReply::getResultString(shared_int code)
+{
+  switch (code)
+  {
+    case MotionReplyResults::SUCCESS:
+      return "Success";
+    case MotionReplyResults::BUSY:
+      return "Busy";
+    case MotionReplyResults::FAILURE:
+      return "Failed";
+    case MotionReplyResults::INVALID:
+      return "Invalid message";
+    case MotionReplyResults::ALARM:
+      return "Controller alarm";
+    case MotionReplyResults::NOT_READY:
+      return "Not Ready";
+    case MotionReplyResults::MP_FAILURE:
+      return "MotoPlus Error";
+    default:
+      return "Unknown";
+  }
+}
+
+std::string MotionReply::getSubcodeString(shared_int code)
+{
+  switch (code)
+  {
+    case MotionReplySubcodes::Invalid::UNSPECIFIED:
+      return "Unknown";
+    case MotionReplySubcodes::Invalid::MSGSIZE:
+      return "Invalid message size";
+    case MotionReplySubcodes::Invalid::MSGHEADER:
+      return "Invalid header";
+    case MotionReplySubcodes::Invalid::MSGTYPE:
+      return "Invalid message type";
+    case MotionReplySubcodes::Invalid::GROUPNO:
+      return "Invalid robot ID";
+    case MotionReplySubcodes::Invalid::SEQUENCE:
+      return "Invalid sequence ID";
+    case MotionReplySubcodes::Invalid::COMMAND:
+      return "Invalid command";
+    case MotionReplySubcodes::Invalid::DATA:
+      return "Invalid data";
+
+    case MotionReplySubcodes::NotReady::UNSPECIFIED:
+      return "Unknown";
+    case MotionReplySubcodes::NotReady::ALARM:
+      return "Controller alarm active";
+    case MotionReplySubcodes::NotReady::ERROR:
+      return "Controller error";
+    case MotionReplySubcodes::NotReady::ESTOP:
+      return "E-Stop active";
+    case MotionReplySubcodes::NotReady::NOT_PLAY:
+      return "Controller in TEACH mode";
+    case MotionReplySubcodes::NotReady::NOT_REMOTE:
+      return "Controller not in REMOTE mode";
+    case MotionReplySubcodes::NotReady::SERVO_OFF:
+      return "Unable to enable drive power";
+    case MotionReplySubcodes::NotReady::HOLD:
+      return "Controller in HOLD state";
+    case MotionReplySubcodes::NotReady::NOT_STARTED:
+      return "MotoRos not started";
+    case MotionReplySubcodes::NotReady::WAITING_ROS:
+      return "Waiting on ROS";
+
+    default:
+      return "Unknown";
+  }
+}
+
 void MotionReply::copyFrom(MotionReply &src)
 {
   this->setRobotID(src.getRobotID());

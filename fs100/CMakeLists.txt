@@ -46,6 +46,13 @@ rosbuild_add_executable(robot_state
 target_link_libraries(robot_state
                       fs100_simple_message
                       fs100_industrial_robot_client)
+                      
+rosbuild_add_executable(motion_streaming_interface
+                        src/fs100_joint_streaming_node.cpp
+					    src/fs100_joint_trajectory_streamer.cpp)
+target_link_libraries(motion_streaming_interface
+					  fs100_simple_message
+					  fs100_industrial_robot_client)
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)

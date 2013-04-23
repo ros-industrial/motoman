@@ -23,4 +23,11 @@ robot_interface.launch robot_ip:=<value>
 (from socket connection to robot) -->
 <node pkg="fs100" type="robot_state" name="robot_state" output="screen"/>
 
+<!-- motion_streaming_interface: sends robot motion commands by STREAMING path to robot
+                                 (using socket connection to robot) -->
+<node pkg="fs100" type="motion_streaming_interface" name="motion_streaming_interface"/>
+
+<!-- joint_trajectory_action: provides actionlib interface for high-level robot control -->
+<node pkg="industrial_robot_client" type="joint_trajectory_action" name="joint_trajectory_action"/>
+
 </launch>
