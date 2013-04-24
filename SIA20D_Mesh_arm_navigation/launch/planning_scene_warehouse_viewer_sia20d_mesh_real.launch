@@ -38,10 +38,9 @@
   
   <!-- Start Motoman specific nodes -->
   <rosparam param="controller_joint_names">['joint_s','joint_l','joint_e','joint_u','joint_r','joint_b','joint_t']</rosparam>
-  <!--<node pkg="dx100" type="joint_trajectory_action" name="joint_trajectory_action"/>-->
+  <node pkg="industrial_robot_client" type="joint_trajectory_action" name="joint_trajectory_action"/>
   <node pkg="fs100" type="robot_state" name="robot_state" args="$(arg robot_ip)"/>
-  <!--<node pkg="dx100" type="motion_interface" name="motion_interface" args="$(arg robot_ip)"/>-->
-  <!--node pkg="dx100" type="motion_download_interface" name="motion_download_interface" args="$(arg robot_ip)"/-->
+  <node pkg="fs100" type="motion_streaming_interface" name="motion_streaming_interface" args="$(arg robot_ip)"/>
 
 
   <!-- Called when left arm executes trajectory using controllers -->

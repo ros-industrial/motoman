@@ -59,8 +59,10 @@ namespace MotionReplyResults
   enum MotionReplyResult
   {
     SUCCESS    = 0,
+    TRUE       = 0,
     BUSY       = 1,
     FAILURE    = 2,
+    FALSE      = 2,
     INVALID    = 3,
     ALARM      = 4,
     NOT_READY  = 5,

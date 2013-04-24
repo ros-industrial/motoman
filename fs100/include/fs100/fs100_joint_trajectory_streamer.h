@@ -35,6 +35,7 @@
 #include "fs100/industrial_robot_client/joint_trajectory_streamer.h"
 #include "fs100/simple_message/motoman_motion_ctrl.h"
 #include "fs100/simple_message/motoman_motion_reply.h"
+#include "simple_message/joint_data.h"
 #include "simple_message/simple_message.h"
 
 namespace motoman
@@ -92,6 +93,17 @@ public:
   virtual bool init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
                     const std::map<std::string, double> &velocity_limits = std::map<std::string, double>());
 
+  /**
+   * \brief Create SimpleMessage for sending to the robot
+   *
+   * \param[in] seq sequence # of this point in the overall trajectory
+   * \param[in] pt  trajectory point data
+   * \param[out] msg message for sending to robot
+   *
+   * \return true on success, false otherwise
+   */
+  virtual bool create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage* msg);
+
   virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
 protected:
@@ -103,6 +115,8 @@ protected:
   bool controllerReady();
   bool setTrajMode(bool enable);
   static std::string getErrorString(const MotionReply &reply);
+  static bool VectorToJointData(const std::vector<double> &vec,
+                                industrial::joint_data::JointData &joints);
 };
 
 } //fs100_joint_trajectory_streamer

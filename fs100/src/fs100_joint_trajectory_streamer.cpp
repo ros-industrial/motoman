@@ -32,9 +32,13 @@
 #include "fs100/fs100_joint_trajectory_streamer.h"
 #include "fs100/simple_message/motoman_motion_ctrl_message.h"
 #include "fs100/simple_message/motoman_motion_reply_message.h"
+#include "simple_message/messages/joint_traj_pt_full_message.h"
 
 using namespace motoman::simple_message::motion_ctrl;
 using namespace motoman::simple_message::motion_reply;
+using industrial::joint_data::JointData;
+using industrial::joint_traj_pt_full::JointTrajPtFull;
+using industrial::joint_traj_pt_full_message::JointTrajPtFullMessage;
 using motoman::simple_message::motion_ctrl_message::MotionCtrlMessage;
 using motoman::simple_message::motion_reply_message::MotionReplyMessage;
 
@@ -62,9 +66,84 @@ FS100_JointTrajectoryStreamer::~FS100_JointTrajectoryStreamer()
   setTrajMode(false);   // release TrajMode, so INFORM jobs can run
 }
 
+bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage *msg)
+{
+  JointTrajPtFull msg_data;
+  JointData values;
+
+  // copy position data
+  if (!pt.positions.empty())
+  {
+    if (VectorToJointData(pt.positions, values))
+      msg_data.setPositions(values);
+    else
+    {
+      ROS_ERROR("Failed to copy position data to JointTrajPtFullMessage");
+      return false;
+    }
+  }
+  else
+    msg_data.clearPositions();
+
+  // copy velocity data
+  if (!pt.velocities.empty())
+  {
+    if (VectorToJointData(pt.velocities, values))
+      msg_data.setVelocities(values);
+    else
+    {
+      ROS_ERROR("Failed to copy velocity data to JointTrajPtFullMessage");
+      return false;
+    }
+  }
+  else
+    msg_data.clearVelocities();
+
+  // copy acceleration data
+  if (!pt.accelerations.empty())
+  {
+    if (VectorToJointData(pt.accelerations, values))
+      msg_data.setAccelerations(values);
+    else
+    {
+      ROS_ERROR("Failed to copy acceleration data to JointTrajPtFullMessage");
+      return false;
+    }
+  }
+  else
+    msg_data.clearAccelerations();
+
+  // copy scalar data
+  msg_data.setSequence(seq);
+  msg_data.setTime(pt.time_from_start.toSec());
+
+  // convert to message
+  JointTrajPtFullMessage jtpf_msg;
+  jtpf_msg.init(msg_data);
+
+  return jtpf_msg.toRequest(*msg);  // assume "request" COMM_TYPE for now
+}
+
+bool FS100_JointTrajectoryStreamer::VectorToJointData(const std::vector<double> &vec,
+                                                      JointData &joints)
+{
+  if ( vec.size() > joints.getMaxNumJoints() )
+  {
+    ROS_ERROR("Failed to copy to JointData.  Len (%d) out of range (0 to %d)",
+              vec.size(), joints.getMaxNumJoints());
+    return false;
+  }
+
+  joints.init();
+  for (int i=0; i<vec.size(); ++i)
+    joints.setJoint(i, vec[i]);
+
+  return true;
+}
+
 bool FS100_JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
-  if (!controllerReady() || !setTrajMode(true))
+  if (!controllerReady() && !setTrajMode(true))
   {
     ROS_ERROR("Failed to initialize MotoRos motion.  Trajectory ABORTED.  Correct issue and re-send trajectory.");
     return false;
@@ -112,18 +191,13 @@ bool FS100_JointTrajectoryStreamer::sendMotionCtrlMsg(MotionControlCmd command, 
 
 bool FS100_JointTrajectoryStreamer::controllerReady()
 {
+  std::string err_str;
   MotionReply reply;
 
   if (!sendMotionCtrlMsg(MotionControlCmds::CHECK_MOTION_READY, reply))
     return false;
 
-  if (reply.getResult() != MotionReplyResults::SUCCESS)
-  {
-    ROS_ERROR_STREAM("Controller is NOT READY: " << getErrorString(reply));
-    return false;
-  }
-
-  return true;
+ return (reply.getResult() == MotionReplyResults::TRUE);
 }
 
 bool FS100_JointTrajectoryStreamer::setTrajMode(bool enable)
