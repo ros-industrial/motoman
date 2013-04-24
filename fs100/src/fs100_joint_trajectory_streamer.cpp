@@ -50,12 +50,15 @@ namespace fs100_joint_trajectory_streamer
 bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
                                    const std::map<std::string, double> &velocity_limits)
 {
-  //TODO: implement FS100_JointTrajectoryStreamer::init
   bool rtn = true;
 
   ROS_INFO("FS100_JointTrajectoryStreamer: init");
 
   rtn &= JointTrajectoryStreamer::init(connection, joint_names, velocity_limits);
+
+  // try to read robot_id parameter, if none specified
+  if ( (robot_id_ < 0) )
+    node_.param("robot_id", robot_id_, 0);
 
   return rtn;
 }
@@ -114,6 +117,7 @@ bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msg
     msg_data.clearAccelerations();
 
   // copy scalar data
+  msg_data.setRobotID(robot_id_);
   msg_data.setSequence(seq);
   msg_data.setTime(pt.time_from_start.toSec());
 

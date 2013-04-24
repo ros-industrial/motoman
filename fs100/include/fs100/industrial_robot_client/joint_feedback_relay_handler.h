@@ -43,6 +43,7 @@ namespace joint_feedback_relay_handler
 
 using industrial::joint_feedback_message::JointFeedbackMessage;
 using industrial::simple_message::SimpleMessage;
+using industrial::smpl_msg_connection::SmplMsgConnection;
 using industrial_robot_client::joint_relay_handler::JointRelayHandler;
 using trajectory_msgs::JointTrajectoryPoint;
 
@@ -61,7 +62,7 @@ public:
   /**
 * \brief Constructor
 */
-  JointFeedbackRelayHandler() {};
+  JointFeedbackRelayHandler(int robot_id=-1) : robot_id_(robot_id) {};
 
 
  /**
@@ -74,12 +75,11 @@ public:
   *
   * \return true on success, false otherwise (an invalid message type)
   */
- virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::vector<std::string> &joint_names)
- {
-   return JointRelayHandler::init(connection, (int)industrial::simple_message::StandardMsgTypes::JOINT_FEEDBACK, joint_names);
- }
+ virtual bool init(SmplMsgConnection* connection,
+                    std::vector<std::string> &joint_names);
 
 protected:
+ int robot_id_;
 
   /**
    * \brief Convert joint message into intermediate message-type
@@ -89,6 +89,10 @@ protected:
    */
   virtual bool convert_message(SimpleMessage& msg_in, JointTrajectoryPoint* joint_state);
 
+  // override JointRelayHandler::create_messages, to check robot_id w/o error msg
+  bool create_messages(SimpleMessage& msg_in,
+                       control_msgs::FollowJointTrajectoryFeedback* control_state,
+                       sensor_msgs::JointState* sensor_state);
 private:
 
   static bool JointDataToVector(const industrial::joint_data::JointData &joints,

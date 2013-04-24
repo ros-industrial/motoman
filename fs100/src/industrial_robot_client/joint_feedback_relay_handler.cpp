@@ -41,6 +41,35 @@ namespace industrial_robot_client
 namespace joint_feedback_relay_handler
 {
 
+bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
+                                     std::vector<std::string> &joint_names)
+{
+  bool rtn = JointRelayHandler::init(connection, (int)StandardMsgTypes::JOINT_FEEDBACK, joint_names);
+
+  // try to read robot_id parameter, if none specified
+  if ( (robot_id_ < 0) )
+    node_.param("robot_id", robot_id_, 0);
+
+  return rtn;
+}
+
+
+bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
+                                                control_msgs::FollowJointTrajectoryFeedback* control_state,
+                                                sensor_msgs::JointState* sensor_state)
+{
+  // inspect robot_id field first, to avoid "Failed to Convert" message
+  JointFeedbackMessage tmp_msg;
+  if (tmp_msg.init(msg_in) && (tmp_msg.getRobotID() != robot_id_))
+  {
+    LOG_COMM("Ignoring Message: robotID (%d) doesn't match expected (%d)",
+             tmp_msg.getRobotID(), robot_id_);
+    return false;
+  }
+
+  return JointRelayHandler::create_messages(msg_in, control_state, sensor_state);
+}
+
 bool JointFeedbackRelayHandler::convert_message(SimpleMessage& msg_in, JointTrajectoryPoint* joint_state)
 {
   JointFeedbackMessage joint_feedback_msg;

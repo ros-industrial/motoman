@@ -71,10 +71,10 @@ public:
   /**
    * \brief Default constructor
    *
-   * \param min_buffer_size minimum number of points as required by robot implementation
+   * \param robot_id robot group # on this controller (for multi-group systems)
    */
-  FS100_JointTrajectoryStreamer(int robot_id=0) : JointTrajectoryStreamer(1),
-                                                  robot_id_(robot_id) {};
+  FS100_JointTrajectoryStreamer(int robot_id=-1) : JointTrajectoryStreamer(1),
+                                                  robot_id_(robot_id) {}
 
   ~FS100_JointTrajectoryStreamer();
 
@@ -114,6 +114,7 @@ protected:
   bool sendMotionCtrlMsg(MotionControlCmd command, MotionReply &reply);
   bool controllerReady();
   bool setTrajMode(bool enable);
+
   static std::string getErrorString(const MotionReply &reply);
   static bool VectorToJointData(const std::vector<double> &vec,
                                 industrial::joint_data::JointData &joints);
