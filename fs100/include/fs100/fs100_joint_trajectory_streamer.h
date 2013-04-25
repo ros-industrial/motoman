@@ -35,6 +35,7 @@
 #include "fs100/industrial_robot_client/joint_trajectory_streamer.h"
 #include "fs100/simple_message/motoman_motion_ctrl.h"
 #include "fs100/simple_message/motoman_motion_reply.h"
+#include "sensor_msgs/JointState.h"
 #include "simple_message/joint_data.h"
 #include "simple_message/simple_message.h"
 
@@ -106,10 +107,19 @@ public:
 
   virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
+  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj, std::vector<SimpleMessage>* msgs);
+
 protected:
+  static const double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
+  static const double start_pos_tol_  = 1e-6; // max difference btwn start & current position, for validation (rad)
+
   int robot_id_;
+  sensor_msgs::JointState cur_pos_;
+  ros::Subscriber sub_cur_pos_;
 
   void trajectoryStop();
+  bool validateTrajectory(const trajectory_msgs::JointTrajectory &traj);
+  void jointStateCB(const sensor_msgs::JointStateConstPtr &msg);
 
   bool sendMotionCtrlMsg(MotionControlCmd command, MotionReply &reply);
   bool controllerReady();

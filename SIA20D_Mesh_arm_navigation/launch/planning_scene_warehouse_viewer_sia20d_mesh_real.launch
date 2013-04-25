@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="robot_ip" default=""/>
+  <arg name="robot_ip"/>
 
   <param name="/use_sim_time" value="true" />
   <include file="$(find SIA20D_Mesh_arm_navigation)/launch/SIA20D_Mesh_planning_environment.launch" />
@@ -37,10 +37,10 @@
   <node pkg="rviz" type="rviz" name='rviz_warehouse_viewer' args="-d $(find SIA20D_Mesh_arm_navigation)/config/planning_scene_warehouse_viewer.rviz" />
   
   <!-- Start Motoman specific nodes -->
-  <rosparam param="controller_joint_names">['joint_s','joint_l','joint_e','joint_u','joint_r','joint_b','joint_t']</rosparam>
+  <param name="robot_ip_address" value="$(arg robot_ip)" />
   <node pkg="industrial_robot_client" type="joint_trajectory_action" name="joint_trajectory_action"/>
-  <node pkg="fs100" type="robot_state" name="robot_state" args="$(arg robot_ip)"/>
-  <node pkg="fs100" type="motion_streaming_interface" name="motion_streaming_interface" args="$(arg robot_ip)"/>
+  <node pkg="fs100" type="robot_state" name="robot_state"/>
+  <node pkg="fs100" type="motion_streaming_interface" name="motion_streaming_interface"/>
 
 
   <!-- Called when left arm executes trajectory using controllers -->

@@ -33,6 +33,7 @@
 #include "fs100/simple_message/motoman_motion_ctrl_message.h"
 #include "fs100/simple_message/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
+#include "industrial_utils/utils.h"
 
 using namespace motoman::simple_message::motion_ctrl;
 using namespace motoman::simple_message::motion_reply;
@@ -47,6 +48,8 @@ namespace motoman
 namespace fs100_joint_trajectory_streamer
 {
 
+#define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
+
 bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
                                    const std::map<std::string, double> &velocity_limits)
 {
@@ -60,6 +63,10 @@ bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const st
   if ( (robot_id_ < 0) )
     node_.param("robot_id", robot_id_, 0);
 
+  // set up joint_state subscriber, for trajectory validation
+  sub_cur_pos_ = node_.subscribe("joint_states", 1,
+                                 &FS100_JointTrajectoryStreamer::jointStateCB, this);
+
   return rtn;
 }
 
@@ -67,6 +74,15 @@ FS100_JointTrajectoryStreamer::~FS100_JointTrajectoryStreamer()
 {
   //TODO Find better place to call StopTrajMode
   setTrajMode(false);   // release TrajMode, so INFORM jobs can run
+}
+
+bool FS100_JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj, std::vector<SimpleMessage>* msgs)
+{
+  // check for valid trajectory point
+  if (!validateTrajectory(*traj))
+    return false;
+
+  return JointTrajectoryStreamer::trajectory_to_msgs(traj, msgs);
 }
 
 bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage *msg)
@@ -80,10 +96,7 @@ bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msg
     if (VectorToJointData(pt.positions, values))
       msg_data.setPositions(values);
     else
-    {
-      ROS_ERROR("Failed to copy position data to JointTrajPtFullMessage");
-      return false;
-    }
+      ROS_ERROR_RETURN(false, "Failed to copy position data to JointTrajPtFullMessage");
   }
   else
     msg_data.clearPositions();
@@ -94,10 +107,7 @@ bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msg
     if (VectorToJointData(pt.velocities, values))
       msg_data.setVelocities(values);
     else
-    {
-      ROS_ERROR("Failed to copy velocity data to JointTrajPtFullMessage");
-      return false;
-    }
+      ROS_ERROR_RETURN(false, "Failed to copy velocity data to JointTrajPtFullMessage");
   }
   else
     msg_data.clearVelocities();
@@ -108,10 +118,7 @@ bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msg
     if (VectorToJointData(pt.accelerations, values))
       msg_data.setAccelerations(values);
     else
-    {
-      ROS_ERROR("Failed to copy acceleration data to JointTrajPtFullMessage");
-      return false;
-    }
+      ROS_ERROR_RETURN(false, "Failed to copy acceleration data to JointTrajPtFullMessage");
   }
   else
     msg_data.clearAccelerations();
@@ -132,11 +139,8 @@ bool FS100_JointTrajectoryStreamer::VectorToJointData(const std::vector<double> 
                                                       JointData &joints)
 {
   if ( vec.size() > joints.getMaxNumJoints() )
-  {
-    ROS_ERROR("Failed to copy to JointData.  Len (%d) out of range (0 to %d)",
-              vec.size(), joints.getMaxNumJoints());
-    return false;
-  }
+    ROS_ERROR_RETURN(false, "Failed to copy to JointData.  Len (%d) out of range (0 to %d)",
+                     vec.size(), joints.getMaxNumJoints());
 
   joints.init();
   for (int i=0; i<vec.size(); ++i)
@@ -148,10 +152,7 @@ bool FS100_JointTrajectoryStreamer::VectorToJointData(const std::vector<double> 
 bool FS100_JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
   if (!controllerReady() && !setTrajMode(true))
-  {
-    ROS_ERROR("Failed to initialize MotoRos motion.  Trajectory ABORTED.  Correct issue and re-send trajectory.");
-    return false;
-  }
+    ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion.  Trajectory ABORTED.  Correct issue and re-send trajectory.");
 
   return JointTrajectoryStreamer::send_to_robot(messages);
 }
@@ -170,6 +171,42 @@ void FS100_JointTrajectoryStreamer::trajectoryStop()
   }
 }
 
+bool FS100_JointTrajectoryStreamer::validateTrajectory(const trajectory_msgs::JointTrajectory &traj)
+{
+  for (int i=0; i<traj.points.size(); ++i)
+  {
+    const trajectory_msgs::JointTrajectoryPoint &pt = traj.points[i];
+
+    if (pt.positions.empty())
+      ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
+
+    if (pt.velocities.empty())
+      ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
+
+    if ((i > 0) && (pt.time_from_start.toSec() == 0))
+      ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
+  }
+
+  if ((cur_pos_.header.stamp - ros::Time::now()).toSec() > pos_stale_time_)
+    ROS_ERROR_RETURN(false, "Validation failed: Can't get current robot position.");
+
+  sensor_msgs::JointState start_pos;
+  start_pos.name = traj.joint_names;
+  start_pos.position = traj.points[0].positions;
+  ROS_DEBUG_STREAM("cur_pos: " << cur_pos_);
+  ROS_DEBUG_STREAM("start_pos: " << start_pos);
+  if (!industrial_utils::isSimilar(cur_pos_, start_pos, start_pos_tol_))
+    ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+
+  return true;
+}
+
+// copy robot JointState into local cache
+void FS100_JointTrajectoryStreamer::jointStateCB(const sensor_msgs::JointStateConstPtr &msg)
+{
+  this->cur_pos_ = *msg;
+}
+
 bool FS100_JointTrajectoryStreamer::sendMotionCtrlMsg(MotionControlCmd command, MotionReply &reply)
 {
   SimpleMessage req, res;
@@ -182,10 +219,7 @@ bool FS100_JointTrajectoryStreamer::sendMotionCtrlMsg(MotionControlCmd command, 
   ctrl_msg.toRequest(req);
 
   if (!this->connection_->sendAndReceiveMsg(req, res))
-  {
-    ROS_ERROR("Failed to send MotionCtrl message");
-    return false;
-  }
+    ROS_ERROR_RETURN(false, "Failed to send MotionCtrl message");
 
   ctrl_reply.init(res);
   reply.copyFrom(ctrl_reply.reply_);
