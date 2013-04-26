@@ -35,6 +35,7 @@
 #include "simple_message/messages/joint_traj_pt_full_message.h"
 #include "industrial_utils/utils.h"
 
+using namespace industrial::simple_message;
 using namespace motoman::simple_message::motion_ctrl;
 using namespace motoman::simple_message::motion_reply;
 using industrial::joint_data::JointData;
@@ -42,6 +43,7 @@ using industrial::joint_traj_pt_full::JointTrajPtFull;
 using industrial::joint_traj_pt_full_message::JointTrajPtFullMessage;
 using motoman::simple_message::motion_ctrl_message::MotionCtrlMessage;
 using motoman::simple_message::motion_reply_message::MotionReplyMessage;
+namespace TransferStates = industrial_robot_client::joint_trajectory_streamer::TransferStates;
 
 namespace motoman
 {
@@ -50,6 +52,7 @@ namespace fs100_joint_trajectory_streamer
 
 #define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
 
+// override init() to read "robot_id" parameter and subscribe to joint_states
 bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
                                    const std::map<std::string, double> &velocity_limits)
 {
@@ -76,6 +79,7 @@ FS100_JointTrajectoryStreamer::~FS100_JointTrajectoryStreamer()
   setTrajMode(false);   // release TrajMode, so INFORM jobs can run
 }
 
+// override trajectory_to_msgs to provide validateTrajectory() check before sending any points
 bool FS100_JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj, std::vector<SimpleMessage>* msgs)
 {
   // check for valid trajectory point
@@ -85,6 +89,7 @@ bool FS100_JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::Jo
   return JointTrajectoryStreamer::trajectory_to_msgs(traj, msgs);
 }
 
+// override create_message to generate JointTrajPtFull message (instead of default JointTrajPt)
 bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage *msg)
 {
   JointTrajPtFull msg_data;
@@ -149,6 +154,7 @@ bool FS100_JointTrajectoryStreamer::VectorToJointData(const std::vector<double> 
   return true;
 }
 
+// override send_to_robot to provide controllerReady() and setTrajMode() calls
 bool FS100_JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
   if (!controllerReady() && !setTrajMode(true))
@@ -157,6 +163,102 @@ bool FS100_JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessag
   return JointTrajectoryStreamer::send_to_robot(messages);
 }
 
+// override streamingThread, to provide check/retry of MotionReply.result=BUSY
+void FS100_JointTrajectoryStreamer::streamingThread()
+{
+  int connectRetryCount = 1;
+
+  ROS_INFO("Starting FS100 joint trajectory streamer thread");
+  while (ros::ok())
+  {
+    ros::Duration(0.005).sleep();
+
+    // automatically re-establish connection, if required
+    if (connectRetryCount-- > 0)
+    {
+      ROS_INFO("Connecting to robot motion server");
+      this->connection_->makeConnect();
+      ros::Duration(0.250).sleep();  // wait for connection
+
+      if (this->connection_->isConnected())
+        connectRetryCount = 0;
+      else if (connectRetryCount <= 0)
+      {
+        ROS_ERROR("Timeout connecting to robot controller.  Send new motion command to retry.");
+        this->state_ = TransferStates::IDLE;
+      }
+      continue;
+    }
+
+    this->mutex_.lock();
+
+    SimpleMessage msg, tmpMsg, reply;
+
+    switch (this->state_)
+    {
+      case TransferStates::IDLE:
+        ros::Duration(0.250).sleep();  //  slower loop while waiting for new trajectory
+        break;
+
+      case TransferStates::STREAMING:
+        if (this->current_point_ >= (int)this->current_traj_.size())
+        {
+          ROS_INFO("Trajectory streaming complete, setting state to IDLE");
+          this->state_ = TransferStates::IDLE;
+          break;
+        }
+
+        if (!this->connection_->isConnected())
+        {
+          ROS_DEBUG("Robot disconnected.  Attempting reconnect...");
+          connectRetryCount = 5;
+          break;
+        }
+
+        tmpMsg = this->current_traj_[this->current_point_];
+        msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
+                 ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
+
+        ROS_DEBUG("Sending joint trajectory point");
+        if (!this->connection_->sendAndReceiveMsg(msg, reply, false))
+          ROS_WARN("Failed sent joint point, will try again");
+        else
+        {
+          MotionReplyMessage reply_status;
+          if (!reply_status.init(reply))
+          {
+            ROS_ERROR("Aborting trajectory: Unable to parse JointTrajectoryPoint reply");
+            this->state_ = TransferStates::IDLE;
+            break;
+          }
+
+          if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
+            ROS_DEBUG("Point[%d of %d] sent to controller",
+                     this->current_point_++, (int)this->current_traj_.size());
+          else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
+            break;  // silently retry sending this point
+          else
+          {
+            ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point: " << reply_status.reply_.getResultString());
+            this->state_ = TransferStates::IDLE;
+            break;
+          }
+        }
+
+        break;
+      default:
+        ROS_ERROR("Joint trajectory streamer: unknown state");
+        this->state_ = TransferStates::IDLE;
+        break;
+    }
+
+    this->mutex_.unlock();
+  }
+
+  ROS_WARN("Exiting trajectory streamer thread");
+}
+
+// override trajectoryStop to send MotionCtrl message
 void FS100_JointTrajectoryStreamer::trajectoryStop()
 {
   MotionReply reply;

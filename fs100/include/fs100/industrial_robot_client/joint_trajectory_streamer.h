@@ -99,7 +99,7 @@ public:
 
   virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
 
-  void streamingThread();
+  virtual void streamingThread();
 
   bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
