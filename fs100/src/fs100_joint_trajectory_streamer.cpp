@@ -238,8 +238,11 @@ void FS100_JointTrajectoryStreamer::streamingThread()
           }
 
           if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
+          {
             ROS_DEBUG("Point[%d of %d] sent to controller",
-                     this->current_point_++, (int)this->current_traj_.size());
+                     this->current_point_, (int)this->current_traj_.size());
+            this->current_point_++;
+          }
           else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
             break;  // silently retry sending this point
           else

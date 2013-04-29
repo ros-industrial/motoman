@@ -190,8 +190,11 @@ void JointTrajectoryStreamer::streamingThread()
             
         ROS_DEBUG("Sending joint trajectory point");
         if (this->connection_->sendAndReceiveMsg(msg, reply, false))
+        {
           ROS_INFO("Point[%d of %d] sent to controller",
-                   this->current_point_++, (int)this->current_traj_.size());
+                   this->current_point_, (int)this->current_traj_.size());
+          this->current_point_++;
+        }
         else
           ROS_WARN("Failed sent joint point, will try again");
 
