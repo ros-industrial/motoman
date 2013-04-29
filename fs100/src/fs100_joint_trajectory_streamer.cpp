@@ -33,6 +33,7 @@
 #include "fs100/simple_message/motoman_motion_ctrl_message.h"
 #include "fs100/simple_message/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
+#include "industrial_utils/param_utils.h"
 #include "industrial_utils/utils.h"
 
 using namespace industrial::simple_message;
@@ -65,6 +66,10 @@ bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const st
   // try to read robot_id parameter, if none specified
   if ( (robot_id_ < 0) )
     node_.param("robot_id", robot_id_, 0);
+
+  // try to read velocity limits from URDF, if none specified
+  if (joint_vel_limits_.empty() && !industrial_utils::param::getJointVelocityLimits("robot_description", joint_vel_limits_))
+    ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
 
   // set up joint_state subscriber, for trajectory validation
   sub_cur_pos_ = node_.subscribe("joint_states", 1,
@@ -284,6 +289,15 @@ bool FS100_JointTrajectoryStreamer::validateTrajectory(const trajectory_msgs::Jo
 
     if (pt.velocities.empty())
       ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
+
+    for (int j=0; j<pt.velocities.size(); ++j)
+    {
+      std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
+      if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
+
+      if (std::abs(pt.velocities[j]) > max_vel->second)
+        ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
+    }
 
     if ((i > 0) && (pt.time_from_start.toSec() == 0))
       ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
