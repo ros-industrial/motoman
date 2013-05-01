@@ -271,6 +271,8 @@ void FS100_JointTrajectoryStreamer::trajectoryStop()
 {
   MotionReply reply;
 
+  this->state_ = TransferStates::IDLE;  // stop sending trajectory points
+
   if (!sendMotionCtrlMsg(MotionControlCmds::STOP_MOTION, reply))
     return;
 
