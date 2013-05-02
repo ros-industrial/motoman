@@ -1,0 +1,3 @@
+<launch>
+    <include file="$(find mh5_mesh_arm_navigation)/launch/move_manipulator.launch" />
+</launch>
