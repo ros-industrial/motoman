@@ -30,21 +30,18 @@
  */
 
 #include "fs100/fs100_joint_trajectory_streamer.h"
-#include "fs100/simple_message/motoman_motion_ctrl_message.h"
 #include "fs100/simple_message/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
 #include "industrial_utils/param_utils.h"
 #include "industrial_utils/utils.h"
 
 using namespace industrial::simple_message;
-using namespace motoman::simple_message::motion_ctrl;
-using namespace motoman::simple_message::motion_reply;
 using industrial::joint_data::JointData;
 using industrial::joint_traj_pt_full::JointTrajPtFull;
 using industrial::joint_traj_pt_full_message::JointTrajPtFullMessage;
-using motoman::simple_message::motion_ctrl_message::MotionCtrlMessage;
 using motoman::simple_message::motion_reply_message::MotionReplyMessage;
 namespace TransferStates = industrial_robot_client::joint_trajectory_streamer::TransferStates;
+namespace MotionReplyResults = motoman::simple_message::motion_reply::MotionReplyResults;
 
 namespace motoman
 {
@@ -67,6 +64,8 @@ bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const st
   if ( (robot_id_ < 0) )
     node_.param("robot_id", robot_id_, 0);
 
+  rtn &= motion_ctrl_.init(connection, robot_id_);
+
   // try to read velocity limits from URDF, if none specified
   if (joint_vel_limits_.empty() && !industrial_utils::param::getJointVelocityLimits("robot_description", joint_vel_limits_))
     ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
@@ -81,7 +80,7 @@ bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const st
 FS100_JointTrajectoryStreamer::~FS100_JointTrajectoryStreamer()
 {
   //TODO Find better place to call StopTrajMode
-  setTrajMode(false);   // release TrajMode, so INFORM jobs can run
+  motion_ctrl_.setTrajMode(false);   // release TrajMode, so INFORM jobs can run
 }
 
 // override trajectory_to_msgs to provide validateTrajectory() check before sending any points
@@ -162,7 +161,7 @@ bool FS100_JointTrajectoryStreamer::VectorToJointData(const std::vector<double> 
 // override send_to_robot to provide controllerReady() and setTrajMode() calls
 bool FS100_JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
-  if (!controllerReady() && !setTrajMode(true))
+  if (!motion_ctrl_.controllerReady() && !motion_ctrl_.setTrajMode(true))
     ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion.  Trajectory ABORTED.  Correct issue and re-send trajectory.");
 
   return JointTrajectoryStreamer::send_to_robot(messages);
@@ -269,18 +268,8 @@ void FS100_JointTrajectoryStreamer::streamingThread()
 // override trajectoryStop to send MotionCtrl message
 void FS100_JointTrajectoryStreamer::trajectoryStop()
 {
-  MotionReply reply;
-
   this->state_ = TransferStates::IDLE;  // stop sending trajectory points
-
-  if (!sendMotionCtrlMsg(MotionControlCmds::STOP_MOTION, reply))
-    return;
-
-  if (reply.getResult() != MotionReplyResults::SUCCESS)
-  {
-    ROS_ERROR_STREAM("Failed to Stop Motion: " << getErrorString(reply));
-    return;
-  }
+  motion_ctrl_.stopTrajectory();
 }
 
 bool FS100_JointTrajectoryStreamer::validateTrajectory(const trajectory_msgs::JointTrajectory &traj)
@@ -328,64 +317,7 @@ void FS100_JointTrajectoryStreamer::jointStateCB(const sensor_msgs::JointStateCo
   this->cur_pos_ = *msg;
 }
 
-bool FS100_JointTrajectoryStreamer::sendMotionCtrlMsg(MotionControlCmd command, MotionReply &reply)
-{
-  SimpleMessage req, res;
-  MotionCtrl data;
-  MotionCtrlMessage ctrl_msg;
-  MotionReplyMessage ctrl_reply;
-
-  data.init(robot_id_, 0, command, 0);
-  ctrl_msg.init(data);
-  ctrl_msg.toRequest(req);
-
-  if (!this->connection_->sendAndReceiveMsg(req, res))
-    ROS_ERROR_RETURN(false, "Failed to send MotionCtrl message");
-
-  ctrl_reply.init(res);
-  reply.copyFrom(ctrl_reply.reply_);
-
-  return true;
-}
-
-bool FS100_JointTrajectoryStreamer::controllerReady()
-{
-  std::string err_str;
-  MotionReply reply;
-
-  if (!sendMotionCtrlMsg(MotionControlCmds::CHECK_MOTION_READY, reply))
-    return false;
-
- return (reply.getResult() == MotionReplyResults::TRUE);
-}
-
-bool FS100_JointTrajectoryStreamer::setTrajMode(bool enable)
-{
-  MotionReply reply;
-  MotionControlCmd cmd = enable ? MotionControlCmds::START_TRAJ_MODE : MotionControlCmds::STOP_TRAJ_MODE;
-
-  if (!sendMotionCtrlMsg(cmd, reply))
-    return false;
-
-  if (reply.getResult() != MotionReplyResults::SUCCESS)
-  {
-    ROS_ERROR_STREAM("Failed to set TrajectoryMode: " << getErrorString(reply));
-    return false;
-  }
-
-  return true;
-}
-
-std::string FS100_JointTrajectoryStreamer::getErrorString(const MotionReply &reply)
-{
-  std::ostringstream ss;
-  ss << reply.getResultString() << " (" << reply.getResult() << ")";
-  ss << " : ";
-  ss << reply.getSubcodeString() << " (" << reply.getSubcode() << ")";
-  return ss.str();
-}
-
 
 } //fs100_joint_trajectory_streamer
-} //industrial_robot_client
+} //motoman
 

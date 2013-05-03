@@ -32,9 +32,8 @@
 #ifndef FS100_JOINT_TRAJECTORY_STREAMER_H
 #define FS100_JOINT_TRAJECTORY_STREAMER_H
 
+#include "fs100/fs100_motion_ctrl.h"
 #include "fs100/industrial_robot_client/joint_trajectory_streamer.h"
-#include "fs100/simple_message/motoman_motion_ctrl.h"
-#include "fs100/simple_message/motoman_motion_reply.h"
 #include "sensor_msgs/JointState.h"
 #include "simple_message/joint_data.h"
 #include "simple_message/simple_message.h"
@@ -44,11 +43,10 @@ namespace motoman
 namespace fs100_joint_trajectory_streamer
 {
 
+using motoman::fs100_motion_ctrl::FS100_MotionCtrl;
 using industrial_robot_client::joint_trajectory_streamer::JointTrajectoryStreamer;
 using industrial::simple_message::SimpleMessage;
 using industrial::smpl_msg_connection::SmplMsgConnection;
-using motoman::simple_message::motion_reply::MotionReply;
-typedef motoman::simple_message::motion_ctrl::MotionControlCmd MotionControlCmd;
 
 /**
  * \brief Message handler that streams joint trajectories to the robot controller.
@@ -118,16 +116,12 @@ protected:
   int robot_id_;
   sensor_msgs::JointState cur_pos_;
   ros::Subscriber sub_cur_pos_;
+  FS100_MotionCtrl motion_ctrl_;
 
   void trajectoryStop();
   bool validateTrajectory(const trajectory_msgs::JointTrajectory &traj);
   void jointStateCB(const sensor_msgs::JointStateConstPtr &msg);
 
-  bool sendMotionCtrlMsg(MotionControlCmd command, MotionReply &reply);
-  bool controllerReady();
-  bool setTrajMode(bool enable);
-
-  static std::string getErrorString(const MotionReply &reply);
   static bool VectorToJointData(const std::vector<double> &vec,
                                 industrial::joint_data::JointData &joints);
 };

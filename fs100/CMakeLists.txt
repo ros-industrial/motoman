@@ -49,7 +49,8 @@ target_link_libraries(robot_state
                       
 rosbuild_add_executable(motion_streaming_interface
                         src/fs100_joint_streaming_node.cpp
-					    src/fs100_joint_trajectory_streamer.cpp)
+					    src/fs100_joint_trajectory_streamer.cpp
+					    src/fs100_motion_ctrl.cpp)
 target_link_libraries(motion_streaming_interface
 					  fs100_simple_message
 					  fs100_industrial_robot_client)
