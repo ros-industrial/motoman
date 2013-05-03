@@ -133,6 +133,6 @@ protected:
 };
 
 } //fs100_joint_trajectory_streamer
-} //industrial_robot_client
+} //motoman
 
 #endif /* FS100_JOINT_TRAJECTORY_STREAMER_H */

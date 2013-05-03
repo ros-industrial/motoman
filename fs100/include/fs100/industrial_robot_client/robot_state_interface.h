@@ -40,6 +40,7 @@
 #include "simple_message/message_handler.h"
 #include "simple_message/socket/tcp_client.h"
 #include "fs100/industrial_robot_client/joint_relay_handler.h"
+#include "fs100/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "industrial_robot_client/robot_status_relay_handler.h"
 
 namespace industrial_robot_client
@@ -52,6 +53,7 @@ using industrial::message_manager::MessageManager;
 using industrial::message_handler::MessageHandler;
 using industrial::tcp_client::TcpClient;
 using industrial_robot_client::joint_relay_handler::JointRelayHandler;
+using industrial_robot_client::joint_feedback_relay_handler::JointFeedbackRelayHandler;
 using industrial_robot_client::robot_status_relay_handler::RobotStatusRelayHandler;
 
 /**
@@ -140,6 +142,7 @@ public:
 protected:
   TcpClient default_tcp_connection_;
   JointRelayHandler default_joint_handler_;
+  JointFeedbackRelayHandler default_joint_feedback_handler_;
   RobotStatusRelayHandler default_robot_status_handler_;
 
   SmplMsgConnection* connection_;

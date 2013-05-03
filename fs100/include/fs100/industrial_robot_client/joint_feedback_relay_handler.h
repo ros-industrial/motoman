@@ -112,4 +112,4 @@ private:
 }//industrial_robot_cliet
 
 
-#endif /* JOINT_RELAY_HANDLER_H */
+#endif /* JOINT_FEEDBACK_RELAY_HANDLER_H */
