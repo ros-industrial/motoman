@@ -246,7 +246,8 @@ void FS100_JointTrajectoryStreamer::streamingThread()
             break;  // silently retry sending this point
           else
           {
-            ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point: " << reply_status.reply_.getResultString());
+            ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point: "
+                             << FS100_MotionCtrl::getErrorString(reply_status.reply_));
             this->state_ = TransferStates::IDLE;
             break;
           }

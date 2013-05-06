@@ -122,6 +122,8 @@ std::string MotionReply::getSubcodeString(shared_int code)
       return "Invalid command";
     case MotionReplySubcodes::Invalid::DATA:
       return "Invalid data";
+    case MotionReplySubcodes::Invalid::DATA_START_POS:
+      return "Trajectory start position doesn't match current robot position";
 
     case MotionReplySubcodes::NotReady::UNSPECIFIED:
       return "Unknown";

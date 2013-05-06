@@ -87,7 +87,8 @@ enum InvalidCode
   GROUPNO,
   SEQUENCE,
   COMMAND,
-  DATA
+  DATA = 3010,
+  DATA_START_POS
 };
 }
 
