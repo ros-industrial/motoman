@@ -55,6 +55,7 @@ using industrial::tcp_client::TcpClient;
 using industrial_robot_client::joint_relay_handler::JointRelayHandler;
 using industrial_robot_client::joint_feedback_relay_handler::JointFeedbackRelayHandler;
 using industrial_robot_client::robot_status_relay_handler::RobotStatusRelayHandler;
+namespace StandardSocketPorts = industrial::simple_socket::StandardSocketPorts;
 
 /**
  * \brief Generic template that reads state-data from a robot controller
@@ -77,9 +78,14 @@ public:
   /**
    * \brief Initialize robot connection using default method.
    *
+   * \param default_ip default IP address to use for robot connection [OPTIONAL]
+   *                    - this value will be used if ROS param "robot_ip_address" cannot be read
+   * \param default_port default port to use for robot connection [OPTIONAL]
+   *                    - this value will be used if ROS param "~port" cannot be read
+   *
    * \return true on success, false otherwise
    */
-  bool init();
+  bool init(std::string default_ip = "", int default_port = StandardSocketPorts::STATE);
 
   /**
    * \brief Initialize robot connection using specified method.

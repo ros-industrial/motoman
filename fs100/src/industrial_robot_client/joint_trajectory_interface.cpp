@@ -36,7 +36,6 @@
 
 using namespace industrial_utils::param;
 using industrial::simple_message::SimpleMessage;
-namespace StandardSocketPorts = industrial::simple_socket::StandardSocketPorts;
 namespace SpecialSeqValues = industrial::joint_traj_pt::SpecialSeqValues;
 typedef industrial::joint_traj_pt::JointTrajPt rbt_JointTrajPt;
 typedef trajectory_msgs::JointTrajectoryPoint  ros_JointTrajPt;
@@ -46,20 +45,30 @@ namespace industrial_robot_client
 namespace joint_trajectory_interface
 {
 
-bool JointTrajectoryInterface::init()
+bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
 {
-  std::string s;
+  std::string ip;
+  int port;
 
-  // initialize default connection, if one not specified.
-  if (!node_.getParam("robot_ip_address", s))
+  // override IP/port with ROS params, if available
+  ros::param::param<std::string>("robot_ip_address", ip, default_ip);
+  ros::param::param<int>("~port", port, default_port);
+
+  // check for valid parameter values
+  if (ip.empty())
   {
-    ROS_ERROR("Robot State failed to get param 'robot_ip_address'");
+    ROS_ERROR("No valid robot IP address found.  Please set ROS 'robot_ip_address' param");
+    return false;
+  }
+  if (port <= 0)
+  {
+    ROS_ERROR("No valid robot IP port found.  Please set ROS '~port' param");
     return false;
   }
 
-  char* ip_addr = strdup(s.c_str());  // connection.init() requires "char*", not "const char*"
-  ROS_INFO("Joint Trajectory Interface connecting to IP address: %s", ip_addr);
-  default_tcp_connection_.init(ip_addr, StandardSocketPorts::MOTION);
+  char* ip_addr = strdup(ip.c_str()); // connection.init() requires "char*", not "const char*"
+  ROS_INFO("Joint Trajectory Interface connecting to IP address: '%s:%d'", ip_addr, port);
+  default_tcp_connection_.init(ip_addr, port);
   free(ip_addr);
 
   return init(&default_tcp_connection_);

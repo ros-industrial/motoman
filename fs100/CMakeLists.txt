@@ -42,7 +42,7 @@ rosbuild_add_library(fs100_industrial_robot_client
 target_link_libraries(fs100_industrial_robot_client industrial_robot_client_bswap)
 
 rosbuild_add_executable(robot_state
-                        src/industrial_robot_client/generic_robot_state_node.cpp)
+                        src/fs100_robot_state_node.cpp)
 target_link_libraries(robot_state
                       fs100_simple_message
                       fs100_industrial_robot_client)

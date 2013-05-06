@@ -36,12 +36,14 @@ using motoman::fs100_joint_trajectory_streamer::FS100_JointTrajectoryStreamer;
 
 int main(int argc, char** argv)
 {
+  const int FS100_motion_port = 11000;  // FS100 uses a "non-standard" port to comply with MotoPlus guidelines
+
   // initialize node
   ros::init(argc, argv, "motion_interface");
 
   // launch the FS100 JointTrajectoryStreamer connection/handlers
   FS100_JointTrajectoryStreamer motionInterface;
-  motionInterface.init();
+  motionInterface.init("", FS100_motion_port);
   motionInterface.run();
 
   return 0;
