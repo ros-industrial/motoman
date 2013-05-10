@@ -35,7 +35,7 @@ using industrial_robot_client::robot_state_interface::RobotStateInterface;
 
 int main(int argc, char** argv)
 {
-  const int FS100_state_port = 11002;  // FS100 uses a "non-standard" port to comply with MotoPlus guidelines
+  const int FS100_state_port = 50241;  // FS100 uses a "non-standard" port to comply with MotoPlus guidelines
 
   // initialize node
   ros::init(argc, argv, "state_interface");

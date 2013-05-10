@@ -124,6 +124,14 @@ std::string MotionReply::getSubcodeString(shared_int code)
       return "Invalid data";
     case MotionReplySubcodes::Invalid::DATA_START_POS:
       return "Trajectory start position doesn't match current robot position";
+    case MotionReplySubcodes::Invalid::DATA_POSITION:
+      return "Invalid position data";
+    case MotionReplySubcodes::Invalid::DATA_SPEED:
+      return "Invalid velocity data";
+    case MotionReplySubcodes::Invalid::DATA_ACCEL:
+      return "Invalid acceleration data";    
+    case MotionReplySubcodes::Invalid::DATA_INSUFFICIENT:
+      return "Insufficient trajectory data.  Must supply valid time, pos, and velocity fields.";
 
     case MotionReplySubcodes::NotReady::UNSPECIFIED:
       return "Unknown";
