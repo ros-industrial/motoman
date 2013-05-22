@@ -34,7 +34,6 @@
 
 #include "fs100/fs100_motion_ctrl.h"
 #include "fs100/industrial_robot_client/joint_trajectory_streamer.h"
-#include "sensor_msgs/JointState.h"
 #include "simple_message/joint_data.h"
 #include "simple_message/simple_message.h"
 
@@ -114,12 +113,9 @@ protected:
   static const double start_pos_tol_  = 1e-4; // max difference btwn start & current position, for validation (rad)
 
   int robot_id_;
-  sensor_msgs::JointState cur_pos_;
-  ros::Subscriber sub_cur_pos_;
   FS100_MotionCtrl motion_ctrl_;
 
   void trajectoryStop();
-  void jointStateCB(const sensor_msgs::JointStateConstPtr &msg);
   bool is_valid(const trajectory_msgs::JointTrajectory &traj);
 
   static bool VectorToJointData(const std::vector<double> &vec,

@@ -66,14 +66,6 @@ bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const st
 
   rtn &= motion_ctrl_.init(connection, robot_id_);
 
-  // try to read velocity limits from URDF, if none specified
-  if (joint_vel_limits_.empty() && !industrial_utils::param::getJointVelocityLimits("robot_description", joint_vel_limits_))
-    ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
-
-  // set up joint_state subscriber, for trajectory validation
-  sub_cur_pos_ = node_.subscribe("joint_states", 1,
-                                 &FS100_JointTrajectoryStreamer::jointStateCB, this);
-
   return rtn;
 }
 
@@ -279,25 +271,19 @@ bool FS100_JointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTraject
       ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
   }
 
-  if ((cur_pos_.header.stamp - ros::Time::now()).toSec() > pos_stale_time_)
+  if ((cur_joint_pos_.header.stamp - ros::Time::now()).toSec() > pos_stale_time_)
     ROS_ERROR_RETURN(false, "Validation failed: Can't get current robot position.");
 
   // FS100 requires trajectory start at current position
   sensor_msgs::JointState start_pos;
   start_pos.name = traj.joint_names;
   start_pos.position = traj.points[0].positions;
-  ROS_DEBUG_STREAM("cur_pos: " << cur_pos_);
+  ROS_DEBUG_STREAM("cur_pos: " << cur_joint_pos_);
   ROS_DEBUG_STREAM("start_pos: " << start_pos);
-  if (!industrial_utils::isSimilar(cur_pos_, start_pos, start_pos_tol_))
+  if (!industrial_utils::isSimilar(cur_joint_pos_, start_pos, start_pos_tol_))
     ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
 
   return true;
-}
-
-// copy robot JointState into local cache
-void FS100_JointTrajectoryStreamer::jointStateCB(const sensor_msgs::JointStateConstPtr &msg)
-{
-  this->cur_pos_ = *msg;
 }
 
 

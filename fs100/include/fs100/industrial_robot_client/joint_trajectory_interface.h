@@ -39,6 +39,7 @@
 #include "ros/ros.h"
 #include "industrial_msgs/CmdJointTrajectory.h"
 #include "industrial_msgs/StopMotion.h"
+#include "sensor_msgs/JointState.h"
 #include "simple_message/simple_message.h"
 #include "simple_message/smpl_msg_connection.h"
 #include "simple_message/socket/tcp_client.h"
@@ -231,10 +232,18 @@ protected:
    */
   virtual bool is_valid(const trajectory_msgs::JointTrajectory &traj);
 
+  /*
+   * \brief Callback for JointState topic
+   *
+   * \param msg JointState message
+   */
+  virtual void jointStateCB(const sensor_msgs::JointStateConstPtr &msg);
+
   TcpClient default_tcp_connection_;
 
   ros::NodeHandle node_;
   SmplMsgConnection* connection_;
+  ros::Subscriber sub_cur_pos_;  // handle for joint-state topic subscription
   ros::Subscriber sub_joint_trajectory_; // handle for joint-trajectory topic subscription
   ros::ServiceServer srv_joint_trajectory_;  // handle for joint-trajectory service
   ros::ServiceServer srv_stop_motion_;   // handle for stop_motion service
@@ -243,6 +252,7 @@ protected:
   double default_vel_ratio_;  // default velocity ratio to use for joint commands, if no velocity or max_vel specified
   double default_duration_;   // default duration to use for joint commands, if no
   std::map<std::string, double> joint_vel_limits_;  // cache of max joint velocities from URDF
+  sensor_msgs::JointState cur_joint_pos_;  // cache of last received joint state
 
 private:
   /**
