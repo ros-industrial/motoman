@@ -223,6 +223,14 @@ protected:
   virtual bool stopMotionCB(industrial_msgs::StopMotion::Request &req,
                             industrial_msgs::StopMotion::Response &res);
 
+  /**
+   * \brief Validate that trajectory command meets minimum requirements
+   *
+   * \param traj incoming trajectory
+   * \return true if trajectory is valid, false otherwise
+   */
+  virtual bool is_valid(const trajectory_msgs::JointTrajectory &traj);
+
   TcpClient default_tcp_connection_;
 
   ros::NodeHandle node_;

@@ -83,16 +83,6 @@ FS100_JointTrajectoryStreamer::~FS100_JointTrajectoryStreamer()
   motion_ctrl_.setTrajMode(false);   // release TrajMode, so INFORM jobs can run
 }
 
-// override trajectory_to_msgs to provide validateTrajectory() check before sending any points
-bool FS100_JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj, std::vector<SimpleMessage>* msgs)
-{
-  // check for valid trajectory point
-  if (!validateTrajectory(*traj))
-    return false;
-
-  return JointTrajectoryStreamer::trajectory_to_msgs(traj, msgs);
-}
-
 // override create_message to generate JointTrajPtFull message (instead of default JointTrajPt)
 bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage *msg)
 {
@@ -274,34 +264,25 @@ void FS100_JointTrajectoryStreamer::trajectoryStop()
   motion_ctrl_.stopTrajectory();
 }
 
-bool FS100_JointTrajectoryStreamer::validateTrajectory(const trajectory_msgs::JointTrajectory &traj)
+// override is_valid to include FS100-specific checks
+bool FS100_JointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajectory &traj)
 {
+  if (!JointTrajectoryInterface::is_valid(traj))
+    return false;
+
   for (int i=0; i<traj.points.size(); ++i)
   {
     const trajectory_msgs::JointTrajectoryPoint &pt = traj.points[i];
 
-    if (pt.positions.empty())
-      ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
-
+    // FS100 requires valid velocity data
     if (pt.velocities.empty())
       ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
-
-    for (int j=0; j<pt.velocities.size(); ++j)
-    {
-      std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
-      if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
-
-      if (std::abs(pt.velocities[j]) > max_vel->second)
-        ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
-    }
-
-    if ((i > 0) && (pt.time_from_start.toSec() == 0))
-      ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
   }
 
   if ((cur_pos_.header.stamp - ros::Time::now()).toSec() > pos_stale_time_)
     ROS_ERROR_RETURN(false, "Validation failed: Can't get current robot position.");
 
+  // FS100 requires trajectory start at current position
   sensor_msgs::JointState start_pos;
   start_pos.name = traj.joint_names;
   start_pos.position = traj.points[0].positions;

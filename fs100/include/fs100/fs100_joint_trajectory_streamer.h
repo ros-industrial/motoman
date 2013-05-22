@@ -64,8 +64,10 @@ class FS100_JointTrajectoryStreamer : public JointTrajectoryStreamer
 
 public:
 
-  // since this class defines a different init(), this helps find the base-class init()
+  // since this class overrides some base-class methods,
+  // these statements help find the base-class versions
   using JointTrajectoryStreamer::init;
+  using JointTrajectoryInterface::is_valid;
 
   /**
    * \brief Default constructor
@@ -105,8 +107,6 @@ public:
 
   virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
-  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj, std::vector<SimpleMessage>* msgs);
-
   virtual void streamingThread();
 
 protected:
@@ -119,8 +119,8 @@ protected:
   FS100_MotionCtrl motion_ctrl_;
 
   void trajectoryStop();
-  bool validateTrajectory(const trajectory_msgs::JointTrajectory &traj);
   void jointStateCB(const sensor_msgs::JointStateConstPtr &msg);
+  bool is_valid(const trajectory_msgs::JointTrajectory &traj);
 
   static bool VectorToJointData(const std::vector<double> &vec,
                                 industrial::joint_data::JointData &joints);

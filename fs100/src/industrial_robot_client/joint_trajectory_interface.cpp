@@ -45,6 +45,8 @@ namespace industrial_robot_client
 namespace joint_trajectory_interface
 {
 
+#define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
+
 bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
 {
   std::string ip;
@@ -141,6 +143,10 @@ void JointTrajectoryInterface::jointTrajectoryCB(const trajectory_msgs::JointTra
 bool JointTrajectoryInterface::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj, std::vector<SimpleMessage>* msgs)
 {
   msgs->clear();
+
+  // check for valid trajectory
+  if (!is_valid(*traj))
+    return false;
 
   for (size_t i=0; i<traj->points.size(); ++i)
   {
@@ -326,6 +332,34 @@ bool JointTrajectoryInterface::stopMotionCB(industrial_msgs::StopMotion::Request
   res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
 
   return true;  // always return true.  To distinguish between call-failed and service-unavailable.
+}
+
+bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &traj)
+{
+  for (int i=0; i<traj.points.size(); ++i)
+  {
+    const trajectory_msgs::JointTrajectoryPoint &pt = traj.points[i];
+
+    // check for non-empty positions
+    if (pt.positions.empty())
+      ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
+
+    // check for joint velocity limits
+    for (int j=0; j<pt.velocities.size(); ++j)
+    {
+      std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
+      if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
+
+      if (std::abs(pt.velocities[j]) > max_vel->second)
+        ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
+    }
+
+    // check for valid timestamp
+    if ((i > 0) && (pt.time_from_start.toSec() == 0))
+      ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
+  }
+
+  return true;
 }
 
 } //joint_trajectory_interface
