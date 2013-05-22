@@ -88,6 +88,7 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
 
 bool RobotStateInterface::init(SmplMsgConnection* connection, std::vector<std::string>& joint_names)
 {
+  this->joint_names_ = joint_names;
   this->connection_ = connection;
   connection_->makeConnect();
 
@@ -96,11 +97,11 @@ bool RobotStateInterface::init(SmplMsgConnection* connection, std::vector<std::s
     return false;
 
   // initialize default handlers
-  if (!default_joint_handler_.init(connection_, joint_names))
+  if (!default_joint_handler_.init(connection_, joint_names_))
     return false;
   this->add_handler(&default_joint_handler_);
 
-  if (!default_joint_feedback_handler_.init(connection_, joint_names))
+  if (!default_joint_feedback_handler_.init(connection_, joint_names_))
     return false;
   this->add_handler(&default_joint_feedback_handler_);
 

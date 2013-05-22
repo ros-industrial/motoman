@@ -133,6 +133,11 @@ public:
     return &this->manager_;
   }
 
+  std::vector<std::string> get_joint_names()
+  {
+    return this->joint_names_;
+  }
+
 
   /**
    * \brief Add a new handler.
@@ -153,6 +158,8 @@ protected:
 
   SmplMsgConnection* connection_;
   MessageManager manager_;
+  std::vector<std::string> joint_names_;
+
 };//class RobotStateInterface
 
 }//robot_state_interface

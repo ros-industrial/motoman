@@ -80,7 +80,10 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
 {
   std::vector<std::string> joint_names;
   if (!getJointNames("controller_joint_names", "robot_description", joint_names))
-    ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
+  {
+    ROS_ERROR("Failed to initialize joint_names.  Aborting");
+    return false;
+  }
 
   return init(connection, joint_names);
 }
