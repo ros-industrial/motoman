@@ -32,8 +32,8 @@
 #include "fs100/fs100_joint_trajectory_streamer.h"
 #include "fs100/simple_message/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
+#include "industrial_robot_client/utils.h"
 #include "industrial_utils/param_utils.h"
-#include "industrial_utils/utils.h"
 
 using namespace industrial::simple_message;
 using industrial::joint_data::JointData;
@@ -275,13 +275,13 @@ bool FS100_JointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTraject
     ROS_ERROR_RETURN(false, "Validation failed: Can't get current robot position.");
 
   // FS100 requires trajectory start at current position
-  sensor_msgs::JointState start_pos;
-  start_pos.name = traj.joint_names;
-  start_pos.position = traj.points[0].positions;
-  ROS_DEBUG_STREAM("cur_pos: " << cur_joint_pos_);
-  ROS_DEBUG_STREAM("start_pos: " << start_pos);
-  if (!industrial_utils::isSimilar(cur_joint_pos_, start_pos, start_pos_tol_))
+  namespace IRC_utils = industrial_robot_client::utils;
+  if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
+                                traj.joint_names, traj.points[0].positions,
+                                start_pos_tol_))
+  {
     ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+  }
 
   return true;
 }
