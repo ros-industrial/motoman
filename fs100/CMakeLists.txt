@@ -11,6 +11,9 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
 
+# The definition is copied from the CMakeList for the simple_message package.
+add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
+
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
