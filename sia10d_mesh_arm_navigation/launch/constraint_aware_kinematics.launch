@@ -5,6 +5,7 @@
     <param name="group" type="string" value="manipulator"/>
     <param name="manipulator/root_name" type="string" value="base_link"/>
     <param name="manipulator/tip_name" type="string" value="link_t"/>
-    <param name="kinematics_solver" type="string" value="sia10d_mesh_manipulator_kinematics/IKFastKinematicsPlugin"/>
+    <param name="kinematics_solver" type="string" value="arm_kinematics_constraint_aware/KDLArmKinematicsPlugin" />
+    <param name="kinematics_solver_DEPRECATED" type="string" value="SIA20D_Mesh_manipulator_kinematics/IKFastKinematicsPlugin"/>
   </node>
 </launch>

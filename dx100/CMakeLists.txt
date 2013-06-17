@@ -1,68 +1,98 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+# http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
+cmake_minimum_required(VERSION 2.8.3)
+project(dx100)
+# Load catkin and all dependencies required for this package
+find_package(catkin REQUIRED COMPONENTS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs control_msgs sensor_msgs simple_message urdf industrial_msgs industrial_robot_client industrial_utils)
+find_package(Boost REQUIRED COMPONENTS system thread)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
-rosbuild_init()
-
-# The definition is copied from the CMakeList for the simple_message package.
+#######################################
+## Adding directories and definitions #
+#######################################
+include_directories(include motoplus inform ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
 add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
+#add_definitions(-MOTOPLUS=1)
+add_definitions(-DROS=1)
 
 #set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+#set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-#uncomment if you have defined messages
-#rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
+#######################################
+## Declare ROS messages and services ##
+#######################################
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(joint_trajectory_action src/joint_trajectory_action.cpp)
-rosbuild_add_library(motoman_lib 
+## Generate messages in the 'msg' folder
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
+
+## Generate services in the 'srv' folder
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
+
+## Generate added messages and services with any dependencies listed here
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs
+# )
+
+###################################
+## catkin specific configuration ##
+###################################
+## Declare artifacts to be passed to dependent projects
+## LIBRARIES: libraries you create in this project that dependent projects also need
+## CATKIN_DEPENDS: catkin_packages dependent projects also need
+## DEPENDS: system dependencies of this project that dependent projects also need
+catkin_package(
+    DEPENDS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs control_msgs sensor_msgs simple_message urdf industrial_msgs industrial_robot_client
+    CATKIN_DEPENDS 
+    INCLUDE_DIRS include
+    LIBRARIES 
+)
+
+###########
+## Build ##
+###########
+add_library(motoman_lib 
 	src/utils.cpp
 	src/trajectory_job.cpp
 	src/ros_conversion.cpp
 	)
-target_link_libraries(motoman_lib simple_message)
+target_link_libraries(motoman_lib ${catkin_LIBRARIES})
 
-rosbuild_add_executable(system_inferface src/system_interface.cpp)
-target_link_libraries(system_inferface simple_message)
+add_executable(system_interface src/system_interface.cpp)
+target_link_libraries(system_interface motoman_lib)
 
-rosbuild_add_executable(robot_state 
+add_executable(dx100_robot_state 
   src/robot_state.cpp)
-target_link_libraries(robot_state industrial_robot_client)
+target_link_libraries(dx100_robot_state motoman_lib)
+set_target_properties(dx100_robot_state PROPERTIES OUTPUT_NAME robot_state PREFIX "")
 
-
-rosbuild_add_executable(motion_interface
+add_executable(dx100_motion_interface
   src/motion_interface.cpp
   src/joint_trajectory_handler.cpp)
-rosbuild_link_boost(motion_interface thread)
-target_link_libraries(motion_interface simple_message)
+target_link_libraries(dx100_motion_interface ${catkin_LIBRARIES})
+set_target_properties(dx100_motion_interface PROPERTIES OUTPUT_NAME motion_interfacee PREFIX "")
 
-
-rosbuild_add_executable(motion_download_interface
+add_executable(dx100_motion_download_interface
   src/motion_download_interface.cpp
   src/joint_trajectory_downloader.cpp
   )
-target_link_libraries(motion_download_interface motoman_lib)
+target_link_libraries(dx100_motion_download_interface motoman_lib ${catkin_LIBRARIES})
+set_target_properties(dx100_motion_download_interface PROPERTIES OUTPUT_NAME motion_download_interface PREFIX "")
 
-rosbuild_add_executable(joint_trajectory_action
+add_executable(dx100_joint_trajectory_action
   src/utils.cpp 
   src/joint_trajectory_action.cpp)
-rosbuild_link_boost(joint_trajectory_action thread)
-target_link_libraries(joint_trajectory_action simple_message)
+target_link_libraries(dx100_joint_trajectory_action ${catkin_LIBRARIES})
+set_target_properties(dx100_joint_trajectory_action PROPERTIES OUTPUT_NAME joint_trajectory_action PREFIX "")
 
-rosbuild_add_gtest(utest test/utest.cpp)
-target_link_libraries(utest motoman_lib)
+catkin_add_gtest(dx100_utest test/utest.cpp)
+target_link_libraries(dx100_utest motoman_lib ${catkin_LIBRARIES})
+set_target_properties(dx100_utest PROPERTIES OUTPUT_NAME dx100 PREFIX "")
