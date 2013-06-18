@@ -1,5 +1,8 @@
 ﻿// SimpleMessage.c
 //
+// History:
+// 06/12/2013: Fix reply to ROS_MSG_JOINT_TRAJ_PT_FULL message
+// 06/12/2013: Release v.1.0.1
 /*
 * Software License Agreement (BSD License) 
 *
@@ -89,6 +92,7 @@ int Ros_SimpleMsg_JointFeedback(CtrlGroup* ctrlGroup, SimpleMsg* sendMsg)
 
 // Creates a simple message of type MOTO_MOTION_REPLY to reply to a received message 
 // result code and subcode indication result of the processing of the received message
+// 06/12/2013: Modified to fix reply to ROS_MSG_JOINT_TRAJ_PT_FULL message
 int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg)
 {
 	//initialize memory
@@ -109,11 +113,11 @@ int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, Si
 		replyMsg->body.motionReply.sequence = receiveMsg->body.motionCtrl.sequence;
 		replyMsg->body.motionReply.command = receiveMsg->body.motionCtrl.command;
 	}
-	else if(receiveMsg->header.msgType == ROS_MSG_MOTO_MOTION_CTRL)
+	else if(receiveMsg->header.msgType == ROS_MSG_JOINT_TRAJ_PT_FULL)
 	{
-		replyMsg->body.motionReply.groupNo = receiveMsg->body.motionCtrl.groupNo;
-		replyMsg->body.motionReply.sequence = receiveMsg->body.motionCtrl.sequence;
-		replyMsg->body.motionReply.command = ROS_MSG_MOTO_MOTION_CTRL;
+		replyMsg->body.motionReply.groupNo = receiveMsg->body.jointTrajData.groupNo;
+		replyMsg->body.motionReply.sequence = receiveMsg->body.jointTrajData.sequence;
+		replyMsg->body.motionReply.command = ROS_MSG_JOINT_TRAJ_PT_FULL;
 	}
 	else
 	{
