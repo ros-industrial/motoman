@@ -1,5 +1,10 @@
 ﻿// MotionServer.c
 //
+// History:
+// 05/22/2013: Original release v.1.0.0
+// 06/05/2013: Fix for multi-arm control to prevent return -3 (Invalid group) 
+//			   when calling function mpExRcsIncrementMove.
+// 06/12/2013: Release v.1.0.1
 /*
 * Software License Agreement (BSD License) 
 *
@@ -1072,6 +1077,7 @@ BOOL Ros_MotionServer_HasDataInQueue(Controller* controller)
 
 //-------------------------------------------------------------------
 // Task to move the robot at each interpolation increment
+// 06/05/13: Modified to always send information for all defined groups even if the inc_q is empty
 //-------------------------------------------------------------------
 void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK priority task
 {
@@ -1089,6 +1095,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 
 	for(i=0; i<controller->numGroup; i++)
 	{
+		moveData.ctrl_grp |= (0x01 << i); 
 		moveData.grp_pos_info[i].pos_tag.data[0] = Ros_CtrlGroup_GetAxisConfig(controller->ctrlGroups[i]);
 	}
 
@@ -1099,7 +1106,6 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 		if (controller->bRobotJobReady && Ros_MotionServer_HasDataInQueue(controller) && !controller->bStopMotion)
 		{
 			//bNoData = FALSE;   // for testing
-			moveData.ctrl_grp = 0;
 			
 			for(i=0; i<controller->numGroup; i++)
 			{
@@ -1112,8 +1118,6 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 					{
 						time = q->data[q->idx].time;
 						q_time = controller->ctrlGroups[i]->q_time;
-						moveData.ctrl_grp |= (0x01 << i);
-						moveData.grp_pos_info[i].pos_tag.data[0] = Ros_CtrlGroup_GetAxisConfig(controller->ctrlGroups[i]);
 						moveData.grp_pos_info[i].pos_tag.data[2] = q->data[q->idx].tool;
 						moveData.grp_pos_info[i].pos_tag.data[3] = q->data[q->idx].frame;
 						moveData.grp_pos_info[i].pos_tag.data[4] = q->data[q->idx].user;
@@ -1162,6 +1166,9 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 					}
 					else
 					{
+						moveData.grp_pos_info[i].pos_tag.data[2] = 0;
+						moveData.grp_pos_info[i].pos_tag.data[3] = MP_INC_PULSE_DTYPE;
+						moveData.grp_pos_info[i].pos_tag.data[4] = 0;
 						memset(&moveData.grp_pos_info[i].pos, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
 					}
 					
@@ -1179,7 +1186,12 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 			ret = mpExRcsIncrementMove(&moveData);
 			
 			if(ret != 0)
-				printf("mpExRcsIncrementMove returned: %d\r\n", ret);
+			{
+				if(ret == -3)
+					printf("mpExRcsIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
+				else
+					printf("mpExRcsIncrementMove returned: %d\r\n", ret);
+			}
 		}
 		//else  // for testing
 		//{
