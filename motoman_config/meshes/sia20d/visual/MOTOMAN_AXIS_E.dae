@@ -44,7 +44,8 @@
                             <color>0 0 0 1</color>
                         </ambient>
                         <diffuse>
-                            <texture texture="texture0" texcoord="UVSET0"/>
+				<color>.07 .06 .7 1</color>
+                            <!--<texture texture="texture0" texcoord="UVSET0"/>-->
                         </diffuse>
                         <specular>
                             <color>0 0 0 1</color>
