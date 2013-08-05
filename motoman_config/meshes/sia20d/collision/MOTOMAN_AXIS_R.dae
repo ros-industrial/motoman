@@ -9,11 +9,6 @@
         <created>Tue Jul 23 02:25:37 2013</created>
         <modified>Tue Jul 23 02:25:37 2013</modified>
     </asset>
-    <library_images>
-        <image id="texture0" name="texture0">
-            <init_from>blue.png</init_from>
-        </image>
-    </library_images>
     <library_materials>
         <material id="material0" name="material0">
             <instance_effect url="#material0-fx"/>
@@ -45,7 +40,6 @@
                         </ambient>
                         <diffuse>
 				<color>.07 .06 .7 1</color>
-                            <!--<texture texture="texture0" texcoord="UVSET0"/>-->
                         </diffuse>
                         <specular>
                             <color>0 0 0 1</color>

@@ -1,5 +1,4 @@
-				<color>.95 .95 .89 1</color>
-                            <!--<texture texture="texture0" texcoord="UVSET0"/>--><?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
     <asset>
         <contributor>
@@ -10,11 +9,6 @@
         <created>Thu Jul 18 21:00:40 2013</created>
         <modified>Thu Jul 18 21:00:40 2013</modified>
     </asset>
-    <library_images>
-        <image id="texture0" name="texture0">
-            <init_from>white.png</init_from>
-        </image>
-    </library_images>
     <library_materials>
         <material id="material0" name="material0">
             <instance_effect url="#material0-fx"/>
@@ -45,8 +39,7 @@
                             <color>0 0 0 1</color>
                         </ambient>
                         <diffuse>
-				<color>.95 .95 .89 1</color>
-                            <!--<texture texture="texture0" texcoord="UVSET0"/>-->
+			    <color>.95 .95 .89 1</color>
                         </diffuse>
                         <specular>
                             <color>0 0 0 1</color>
