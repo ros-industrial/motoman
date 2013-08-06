@@ -64,28 +64,49 @@ add_library(motoman_lib
 	src/trajectory_job.cpp
 	src/ros_conversion.cpp
 	)
-target_link_libraries(motoman_lib ${catkin_LIBRARIES})
 
-add_executable(system_interface src/system_interface.cpp)
-target_link_libraries(system_interface motoman_lib)
+add_executable(system_interface 
+  src/system_interface.cpp)
+  
+target_link_libraries(system_interface  
+  motoman_lib
+  industrial_robot_client  
+  simple_message
+  ${catkin_LIBRARIES})
+
 
 add_executable(dx100_robot_state 
   src/robot_state.cpp)
-target_link_libraries(dx100_robot_state motoman_lib)
+target_link_libraries(dx100_robot_state 
+  motoman_lib
+  industrial_robot_client  
+  simple_message
+  ${catkin_LIBRARIES})
 set_target_properties(dx100_robot_state PROPERTIES OUTPUT_NAME robot_state PREFIX "")
+
 
 add_executable(dx100_motion_interface
   src/motion_interface.cpp
   src/joint_trajectory_handler.cpp)
-target_link_libraries(dx100_motion_interface ${catkin_LIBRARIES})
+target_link_libraries(dx100_motion_interface
+  motoman_lib
+  industrial_robot_client  
+  simple_message
+  ${catkin_LIBRARIES})
 set_target_properties(dx100_motion_interface PROPERTIES OUTPUT_NAME motion_interfacee PREFIX "")
+
 
 add_executable(dx100_motion_download_interface
   src/motion_download_interface.cpp
   src/joint_trajectory_downloader.cpp
   )
-target_link_libraries(dx100_motion_download_interface motoman_lib ${catkin_LIBRARIES})
+target_link_libraries(dx100_motion_download_interface 
+  motoman_lib
+  industrial_robot_client  
+  simple_message
+  ${catkin_LIBRARIES})
 set_target_properties(dx100_motion_download_interface PROPERTIES OUTPUT_NAME motion_download_interface PREFIX "")
+
 
 add_executable(dx100_joint_trajectory_action
   src/utils.cpp 
