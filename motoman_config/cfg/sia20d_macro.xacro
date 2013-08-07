@@ -9,7 +9,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_BASE_COLLISION.dae" />
+        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_BASE.dae" />
       </geometry>
     </collision>
   </link>
@@ -25,12 +25,12 @@
   <link name="${prefix}Link_S">
     <visual>
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia20d/visual/MOTOMAN_AXIS_S.dae.dae" />
+        <mesh filename="package://motoman_config/meshes/sia20d/visual/MOTOMAN_AXIS_S.dae" />
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_S_COLLISION.dae" />
+        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_S.dae" />
       </geometry>
     </collision>
   </link>
@@ -51,7 +51,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_L_COLLISION.dae" />
+        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_L.dae" />
       </geometry>
     </collision>
   </link>
@@ -72,7 +72,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_E_COLLISION.dae" />
+        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_E.dae" />
       </geometry>
     </collision>
   </link>
@@ -93,7 +93,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_U_COLLISION.dae" />
+        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_U.dae" />
       </geometry>
     </collision>
   </link>
@@ -114,7 +114,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_R_COLLISION.dae" />
+        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_R.dae" />
       </geometry>
     </collision>
   </link>
@@ -135,7 +135,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_B_COLLISION.dae" />
+        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_B.dae" />
       </geometry>
     </collision>
   </link>
@@ -156,7 +156,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_T_COLLISION.dae" />
+        <mesh filename="package://motoman_config/meshes/sia20d/collision/MOTOMAN_AXIS_T.dae" />
       </geometry>
     </collision>
   </link>
