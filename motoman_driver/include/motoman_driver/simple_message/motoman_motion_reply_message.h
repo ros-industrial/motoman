@@ -35,8 +35,8 @@
 #ifdef ROS
 #include "simple_message/typed_message.h"
 #include "simple_message/shared_types.h"
-#include "fs100/simple_message/motoman_simple_message.h"
-#include "fs100/simple_message/motoman_motion_reply.h"
+#include "motoman_driver/simple_message/motoman_simple_message.h"
+#include "motoman_driver/simple_message/motoman_motion_reply.h"
 
 #endif
 

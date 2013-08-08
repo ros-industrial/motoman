@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "fs100/industrial_robot_client/joint_trajectory_streamer.h"
+#include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
 
 using namespace industrial::simple_message;
 

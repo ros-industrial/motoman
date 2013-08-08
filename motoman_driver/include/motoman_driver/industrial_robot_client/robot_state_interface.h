@@ -39,8 +39,8 @@
 #include "simple_message/message_manager.h"
 #include "simple_message/message_handler.h"
 #include "simple_message/socket/tcp_client.h"
-#include "fs100/industrial_robot_client/joint_relay_handler.h"
-#include "fs100/industrial_robot_client/joint_feedback_relay_handler.h"
+#include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
+#include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "industrial_robot_client/robot_status_relay_handler.h"
 
 namespace industrial_robot_client

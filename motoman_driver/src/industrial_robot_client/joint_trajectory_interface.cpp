@@ -30,7 +30,7 @@
  */
 
 #include <algorithm>
-#include "fs100/industrial_robot_client/joint_trajectory_interface.h"
+#include "motoman_driver/industrial_robot_client/joint_trajectory_interface.h"
 #include "simple_message/joint_traj_pt.h"
 #include "industrial_utils/param_utils.h"
 

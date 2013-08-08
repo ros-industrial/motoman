@@ -30,7 +30,7 @@
  */
 
 #ifdef ROS
-#include "fs100/simple_message/motoman_motion_reply_message.h"
+#include "motoman_driver/simple_message/motoman_motion_reply_message.h"
 #include "simple_message/byte_array.h"
 #include "simple_message/log_wrapper.h"
 #endif

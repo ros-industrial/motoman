@@ -32,8 +32,8 @@
 #ifndef FS100_JOINT_TRAJECTORY_STREAMER_H
 #define FS100_JOINT_TRAJECTORY_STREAMER_H
 
-#include "fs100/fs100_motion_ctrl.h"
-#include "fs100/industrial_robot_client/joint_trajectory_streamer.h"
+#include "motoman_driver/motion_ctrl.h"
+#include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
 #include "simple_message/joint_data.h"
 #include "simple_message/simple_message.h"
 

@@ -33,7 +33,7 @@
 #define JOINT_TRAJECTORY_STREAMER_H
 
 #include <boost/thread/thread.hpp>
-#include "fs100/industrial_robot_client/joint_trajectory_interface.h"
+#include "motoman_driver/industrial_robot_client/joint_trajectory_interface.h"
 
 namespace industrial_robot_client
 {

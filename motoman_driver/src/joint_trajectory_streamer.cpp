@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "fs100/fs100_joint_trajectory_streamer.h"
-#include "fs100/simple_message/motoman_motion_reply_message.h"
+#include "motoman_driver/joint_trajectory_streamer.h"
+#include "motoman_driver/simple_message/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
 #include "industrial_robot_client/utils.h"
 #include "industrial_utils/param_utils.h"

@@ -29,7 +29,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "fs100/industrial_robot_client/joint_feedback_relay_handler.h"
+#include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "simple_message/log_wrapper.h"
 
 using industrial::joint_data::JointData;

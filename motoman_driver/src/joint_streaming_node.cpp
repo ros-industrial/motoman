@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "fs100/fs100_joint_trajectory_streamer.h"
+#include "motoman_driver/joint_trajectory_streamer.h"
 #include "industrial_utils/param_utils.h"
 
 using motoman::fs100_joint_trajectory_streamer::FS100_JointTrajectoryStreamer;

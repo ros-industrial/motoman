@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #ifdef ROS
-#include "fs100/simple_message/motoman_motion_ctrl.h"
-#include "fs100/simple_message/motoman_motion_reply.h"
+#include "motoman_driver/simple_message/motoman_motion_ctrl.h"
+#include "motoman_driver/simple_message/motoman_motion_reply.h"
 #include "simple_message/shared_types.h"
 #include "simple_message/log_wrapper.h"
 #endif

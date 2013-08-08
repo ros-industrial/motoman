@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "fs100/industrial_robot_client/robot_state_interface.h"
+#include "motoman_driver/industrial_robot_client/robot_state_interface.h"
 
 using industrial_robot_client::robot_state_interface::RobotStateInterface;
 

@@ -33,8 +33,8 @@
 #define FS100_MOTION_CTRL_H
 
 #include "simple_message/smpl_msg_connection.h"
-#include "fs100/simple_message/motoman_motion_ctrl.h"
-#include "fs100/simple_message/motoman_motion_reply.h"
+#include "motoman_driver/simple_message/motoman_motion_ctrl.h"
+#include "motoman_driver/simple_message/motoman_motion_reply.h"
 
 namespace motoman
 {

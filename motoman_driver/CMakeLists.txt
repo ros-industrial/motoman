@@ -72,7 +72,7 @@ target_link_libraries(motoman_motion_streaming_interface
   motoman_simple_message 
   motoman_industrial_robot_client 
   industrial_utils)
-set_target_properties(motoman)motion_streaming_interface 
+set_target_properties(motoman_motion_streaming_interface 
   PROPERTIES OUTPUT_NAME motion_streaming_interface 
   PREFIX "")
 
@@ -100,7 +100,7 @@ target_link_libraries(motoman_robot_state_bswap
   motoman_industrial_robot_client_bswap
   industrial_utils)
 set_target_properties(motoman_robot_state_bswap
-  PROPERTIES OUTPUT_NAME robot_state_swap
+  PROPERTIES OUTPUT_NAME robot_state_bswap
   PREFIX "")
               
 # Motion streaming node                      

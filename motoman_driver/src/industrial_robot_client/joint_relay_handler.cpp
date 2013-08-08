@@ -31,7 +31,7 @@
 
 #include <algorithm>
 
-#include "fs100/industrial_robot_client/joint_relay_handler.h"
+#include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
 #include "simple_message/log_wrapper.h"
 
 using industrial::message_handler::MessageHandler;
