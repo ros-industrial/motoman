@@ -19,56 +19,100 @@ catkin_package(
     LIBRARIES 
 )
 
-###########
-## Build ##
-###########
-# NOTE: FS100 uses opposite byte-ordering from most i386-based PCs
 
-# Changes below made for DX100
-
-# Simple message library
-add_library(fs100_simple_message
+set(MSG_SRC_FILES 
   src/simple_message/motoman_motion_ctrl.cpp
   src/simple_message/motoman_motion_ctrl_message.cpp
   src/simple_message/motoman_motion_reply.cpp
   src/simple_message/motoman_motion_reply_message.cpp)
-target_link_libraries(fs100_simple_message 
+  
+set(CLIENT_SRC_FILES
+  src/industrial_robot_client/joint_relay_handler.cpp
+  src/industrial_robot_client/joint_feedback_relay_handler.cpp
+  src/industrial_robot_client/robot_state_interface.cpp
+  src/industrial_robot_client/joint_trajectory_interface.cpp
+  src/industrial_robot_client/joint_trajectory_streamer.cpp)
+	
+###########
+## Build ##
+###########
+
+
+#-------------------------------------------------------------
+# fs100 uses same byte-ordering as most i386-based PCs
+
+# Simple message library
+add_library(dx100_simple_message ${MSG_SRC_FILES})
+target_link_libraries(dx100_simple_message 
   simple_message)
 
 # Industrial client library
-add_library(fs100_industrial_robot_client
-                     src/industrial_robot_client/joint_relay_handler.cpp
-                     src/industrial_robot_client/joint_feedback_relay_handler.cpp
-                     src/industrial_robot_client/robot_state_interface.cpp
-                     src/industrial_robot_client/joint_trajectory_interface.cpp
-                     src/industrial_robot_client/joint_trajectory_streamer.cpp
-                     )
-target_link_libraries(fs100_industrial_robot_client 
+add_library(dx100_industrial_robot_client ${CLIENT_SRC_FILES})
+target_link_libraries(dx100_industrial_robot_client 
   industrial_robot_client
   industrial_utils)
 
 # Robot state node
+add_executable(dx100_robot_state 
+  src/robot_state_node.cpp)
+target_link_libraries(dx100_robot_state	
+  dx100_simple_message
+  dx100_industrial_robot_client 
+  industrial_utils)
+set_target_properties(dx100_robot_state 
+  PROPERTIES OUTPUT_NAME dx100_robot_state 
+  PREFIX "")
+              
+# Motion streaming node                      
+add_executable(dx100_motion_streaming_interface
+	src/joint_streaming_node.cpp
+	src/joint_trajectory_streamer.cpp
+	src/motion_ctrl.cpp)
+target_link_libraries(dx100_motion_streaming_interface 
+  dx100_simple_message 
+  dx100_industrial_robot_client 
+  industrial_utils)
+set_target_properties(dx100_motion_streaming_interface 
+  PROPERTIES OUTPUT_NAME dx100_motion_streaming_interface 
+  PREFIX "")
+
+
+#----------------------------------------------------------------
+# FS100 uses opposite byte-ordering from most i386-based PCs
+# Simple message library
+add_library(fs100_simple_message ${MSG_SRC_FILES})
+set_target_properties(fs100_simple_message PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
+target_link_libraries(fs100_simple_message 
+  simple_message_bswap)
+
+# Industrial client library
+add_library(fs100_industrial_robot_client ${CLIENT_SRC_FILES})
+set_target_properties(fs100_industrial_robot_client PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
+target_link_libraries(fs100_industrial_robot_client 
+  industrial_robot_client_bswap
+  industrial_utils)
+
+# Robot state node
 add_executable(fs100_robot_state 
-  src/fs100_robot_state_node.cpp)
+  src/robot_state_node.cpp)
 target_link_libraries(fs100_robot_state	
   fs100_simple_message
   fs100_industrial_robot_client 
   industrial_utils)
 set_target_properties(fs100_robot_state 
-  PROPERTIES OUTPUT_NAME robot_state 
+  PROPERTIES OUTPUT_NAME fs100_robot_state 
   PREFIX "")
               
 # Motion streaming node                      
 add_executable(fs100_motion_streaming_interface
-	src/fs100_joint_streaming_node.cpp
-	src/fs100_joint_trajectory_streamer.cpp
-	src/fs100_motion_ctrl.cpp)
+	src/joint_streaming_node.cpp
+	src/joint_trajectory_streamer.cpp
+	src/motion_ctrl.cpp)
 target_link_libraries(fs100_motion_streaming_interface 
   fs100_simple_message 
   fs100_industrial_robot_client 
   industrial_utils)
 set_target_properties(fs100_motion_streaming_interface 
-  PROPERTIES OUTPUT_NAME motion_streaming_interface 
+  PROPERTIES OUTPUT_NAME fs100_motion_streaming_interface 
   PREFIX "")
-
 
