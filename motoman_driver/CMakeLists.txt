@@ -42,77 +42,77 @@ set(CLIENT_SRC_FILES
 # fs100 uses same byte-ordering as most i386-based PCs
 
 # Simple message library
-add_library(dx100_simple_message ${MSG_SRC_FILES})
-target_link_libraries(dx100_simple_message 
+add_library(motoman_simple_message ${MSG_SRC_FILES})
+target_link_libraries(motoman_simple_message 
   simple_message)
 
 # Industrial client library
-add_library(dx100_industrial_robot_client ${CLIENT_SRC_FILES})
-target_link_libraries(dx100_industrial_robot_client 
+add_library(motoman_industrial_robot_client ${CLIENT_SRC_FILES})
+target_link_libraries(motoman_industrial_robot_client 
   industrial_robot_client
   industrial_utils)
 
 # Robot state node
-add_executable(dx100_robot_state 
+add_executable(motoman_robot_state 
   src/robot_state_node.cpp)
-target_link_libraries(dx100_robot_state	
-  dx100_simple_message
-  dx100_industrial_robot_client 
+target_link_libraries(motoman_robot_state	
+  motoman_simple_message
+  motoman_industrial_robot_client 
   industrial_utils)
-set_target_properties(dx100_robot_state 
-  PROPERTIES OUTPUT_NAME dx100_robot_state 
+set_target_properties(motoman_robot_state 
+  PROPERTIES OUTPUT_NAME robot_state 
   PREFIX "")
               
 # Motion streaming node                      
-add_executable(dx100_motion_streaming_interface
+add_executable(motoman_motion_streaming_interface
 	src/joint_streaming_node.cpp
 	src/joint_trajectory_streamer.cpp
 	src/motion_ctrl.cpp)
-target_link_libraries(dx100_motion_streaming_interface 
-  dx100_simple_message 
-  dx100_industrial_robot_client 
+target_link_libraries(motoman_motion_streaming_interface 
+  motoman_simple_message 
+  motoman_industrial_robot_client 
   industrial_utils)
-set_target_properties(dx100_motion_streaming_interface 
-  PROPERTIES OUTPUT_NAME dx100_motion_streaming_interface 
+set_target_properties(motoman)motion_streaming_interface 
+  PROPERTIES OUTPUT_NAME motion_streaming_interface 
   PREFIX "")
 
 
 #----------------------------------------------------------------
 # FS100 uses opposite byte-ordering from most i386-based PCs
 # Simple message library
-add_library(fs100_simple_message ${MSG_SRC_FILES})
-set_target_properties(fs100_simple_message PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
-target_link_libraries(fs100_simple_message 
+add_library(motoman_simple_message_bswap ${MSG_SRC_FILES})
+set_target_properties(motoman_simple_message_bswap PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
+target_link_libraries(motoman_simple_message_bswap
   simple_message_bswap)
 
 # Industrial client library
-add_library(fs100_industrial_robot_client ${CLIENT_SRC_FILES})
-set_target_properties(fs100_industrial_robot_client PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
-target_link_libraries(fs100_industrial_robot_client 
+add_library(motoman_industrial_robot_client_bswap ${CLIENT_SRC_FILES})
+set_target_properties(motoman_industrial_robot_client PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
+target_link_libraries(motoman_industrial_robot_client_bswap 
   industrial_robot_client_bswap
   industrial_utils)
 
 # Robot state node
-add_executable(fs100_robot_state 
+add_executable(motoman_robot_state_bswap
   src/robot_state_node.cpp)
-target_link_libraries(fs100_robot_state	
-  fs100_simple_message
-  fs100_industrial_robot_client 
+target_link_libraries(motoman_robot_state_bswap
+  motoman_simple_message_bswap
+  motoman_industrial_robot_client_bswap
   industrial_utils)
-set_target_properties(fs100_robot_state 
-  PROPERTIES OUTPUT_NAME fs100_robot_state 
+set_target_properties(motoman_robot_state_bswap
+  PROPERTIES OUTPUT_NAME robot_state_swap
   PREFIX "")
               
 # Motion streaming node                      
-add_executable(fs100_motion_streaming_interface
+add_executable(motoman_motion_streaming_interface_bswap
 	src/joint_streaming_node.cpp
 	src/joint_trajectory_streamer.cpp
 	src/motion_ctrl.cpp)
-target_link_libraries(fs100_motion_streaming_interface 
-  fs100_simple_message 
-  fs100_industrial_robot_client 
+target_link_libraries(motoman_motion_streaming_interface_bswap
+  motoman_simple_message_bswap
+  motoman_industrial_robot_client_bswap
   industrial_utils)
-set_target_properties(fs100_motion_streaming_interface 
-  PROPERTIES OUTPUT_NAME fs100_motion_streaming_interface 
+set_target_properties(motoman_motion_streaming_interface_bswap
+  PROPERTIES OUTPUT_NAME motion_streaming_interface_bswap
   PREFIX "")
 
