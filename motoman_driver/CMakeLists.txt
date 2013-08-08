@@ -1,6 +1,6 @@
 # http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
 cmake_minimum_required(VERSION 2.8.3)
-project(fs100)
+project(motoman_driver)
 # Load catkin and all dependencies required for this package
 find_package(catkin REQUIRED COMPONENTS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs control_msgs sensor_msgs urdf industrial_msgs industrial_robot_client industrial_utils simple_message)
 find_package(Boost REQUIRED COMPONENTS system thread)
