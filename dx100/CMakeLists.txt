@@ -115,5 +115,8 @@ target_link_libraries(dx100_joint_trajectory_action ${catkin_LIBRARIES})
 set_target_properties(dx100_joint_trajectory_action PROPERTIES OUTPUT_NAME joint_trajectory_action PREFIX "")
 
 catkin_add_gtest(dx100_utest test/utest.cpp)
-target_link_libraries(dx100_utest motoman_lib ${catkin_LIBRARIES})
+target_link_libraries(dx100_utest 
+  motoman_lib 
+  simple_message
+  ${catkin_LIBRARIES})
 set_target_properties(dx100_utest PROPERTIES OUTPUT_NAME dx100 PREFIX "")
