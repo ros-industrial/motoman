@@ -1,6 +1,7 @@
 <launch>
 
-  <arg name="robot_ip" default="" />
+  <arg name="robot_ip"/>
+  <ara name="controller"/>
 
   <param name="/use_sim_time" value="true" />
   <include file="$(find sia10d_mesh_arm_navigation)/launch/sia10d_mesh_planning_environment.launch" />
@@ -38,11 +39,9 @@
 
   
   <!-- Start Motoman specific nodes -->
-  <node pkg="dx100" type="joint_trajectory_action" name="joint_trajectory_action"/>
-  <node pkg="dx100" type="robot_state" name="robot_state" args="$(arg robot_ip)"/>
-  <node pkg="dx100" type="motion_interface" name="motion_interface" args="$(arg robot_ip)"/>
-  <!--node pkg="dx100" type="motion_download_interface" name="motion_download_interface args="$(arg robot_ip)""/-->
-
+  <include file="$(find motoman_driver)/launch/robot_interface_$(arg controller).launch">
+  	<arg name="robot_ip"   value="$(arg robot_ip)" />
+  </include>
 
   <!-- Called when left arm executes trajectory using controllers -->
   <param name="execute_left_trajectory" value="/joint_trajectory_action" />
