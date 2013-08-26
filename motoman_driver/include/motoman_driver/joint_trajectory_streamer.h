@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef FS100_JOINT_TRAJECTORY_STREAMER_H
-#define FS100_JOINT_TRAJECTORY_STREAMER_H
+#ifndef MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
+#define MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 
 #include "motoman_driver/motion_ctrl.h"
 #include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
@@ -39,10 +39,10 @@
 
 namespace motoman
 {
-namespace fs100_joint_trajectory_streamer
+namespace joint_trajectory_streamer
 {
 
-using motoman::fs100_motion_ctrl::FS100_MotionCtrl;
+using motoman::motion_ctrl::MotomanMotionCtrl;
 using industrial_robot_client::joint_trajectory_streamer::JointTrajectoryStreamer;
 using industrial::simple_message::SimpleMessage;
 using industrial::smpl_msg_connection::SmplMsgConnection;
@@ -58,7 +58,7 @@ using industrial::smpl_msg_connection::SmplMsgConnection;
  * THIS CLASS IS NOT THREAD-SAFE
  *
  */
-class FS100_JointTrajectoryStreamer : public JointTrajectoryStreamer
+class MotomanJointTrajectoryStreamer : public JointTrajectoryStreamer
 {
 
 public:
@@ -73,10 +73,10 @@ public:
    *
    * \param robot_id robot group # on this controller (for multi-group systems)
    */
-  FS100_JointTrajectoryStreamer(int robot_id=-1) : JointTrajectoryStreamer(1),
+  MotomanJointTrajectoryStreamer(int robot_id=-1) : JointTrajectoryStreamer(1),
                                                   robot_id_(robot_id) {}
 
-  ~FS100_JointTrajectoryStreamer();
+  ~MotomanJointTrajectoryStreamer();
 
   /**
    * \brief Class initializer
@@ -113,7 +113,7 @@ protected:
   static const double start_pos_tol_  = 1e-4; // max difference btwn start & current position, for validation (rad)
 
   int robot_id_;
-  FS100_MotionCtrl motion_ctrl_;
+  MotomanMotionCtrl motion_ctrl_;
 
   void trajectoryStop();
   bool is_valid(const trajectory_msgs::JointTrajectory &traj);
@@ -122,7 +122,7 @@ protected:
                                 industrial::joint_data::JointData &joints);
 };
 
-} //fs100_joint_trajectory_streamer
+} //joint_trajectory_streamer
 } //motoman
 
-#endif /* FS100_JOINT_TRAJECTORY_STREAMER_H */
+#endif /* MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H */

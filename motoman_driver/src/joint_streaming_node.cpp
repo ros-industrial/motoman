@@ -32,7 +32,7 @@
 #include "motoman_driver/joint_trajectory_streamer.h"
 #include "industrial_utils/param_utils.h"
 
-using motoman::fs100_joint_trajectory_streamer::FS100_JointTrajectoryStreamer;
+using motoman::joint_trajectory_streamer::MotomanJointTrajectoryStreamer;
 
 int main(int argc, char** argv)
 {
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "motion_interface");
 
   // launch the FS100 JointTrajectoryStreamer connection/handlers
-  FS100_JointTrajectoryStreamer motionInterface;
+  MotomanJointTrajectoryStreamer motionInterface;
   motionInterface.init("", FS100_motion_port);
   motionInterface.run();
 

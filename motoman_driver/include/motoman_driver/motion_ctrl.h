@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef FS100_MOTION_CTRL_H
-#define FS100_MOTION_CTRL_H
+#ifndef MOTOMAN_DRIVER_MOTION_CTRL_H
+#define MOTOMAN_DRIVER_MOTION_CTRL_H
 
 #include "simple_message/smpl_msg_connection.h"
 #include "motoman_driver/simple_message/motoman_motion_ctrl.h"
@@ -38,17 +38,17 @@
 
 namespace motoman
 {
-namespace fs100_motion_ctrl
+namespace motion_ctrl
 {
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using motoman::simple_message::motion_reply::MotionReply;
 typedef motoman::simple_message::motion_ctrl::MotionControlCmd MotionControlCmd;
 
 /**
- * \brief Wrapper class around FS100-specific motion control commands
+ * \brief Wrapper class around Motoman-specific motion control commands
  */
 
-class FS100_MotionCtrl
+class MotomanMotionCtrl
 {
 
 public:
@@ -56,7 +56,7 @@ public:
   /**
    * \brief Default constructor
    */
-  FS100_MotionCtrl() {}
+  MotomanMotionCtrl() {}
 
   bool init(SmplMsgConnection* connection, int robot_id);
 
@@ -75,7 +75,7 @@ protected:
 
 };
 
-} //fs100_motion_ctrl
+} //motion_ctrl
 } //motoman
 
-#endif /* FS100_MOTION_CTRL_H */
+#endif /* MOTOMAN_DRIVER_MOTION_CTRL_H */

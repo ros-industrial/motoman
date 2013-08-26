@@ -43,17 +43,17 @@ using industrial::simple_message::SimpleMessage;
 
 namespace motoman
 {
-namespace fs100_motion_ctrl
+namespace motion_ctrl
 {
 
-bool FS100_MotionCtrl::init(SmplMsgConnection* connection, int robot_id)
+bool MotomanMotionCtrl::init(SmplMsgConnection* connection, int robot_id)
 {
   connection_ = connection;
   robot_id_ = robot_id;
   return true;
 }
 
-bool FS100_MotionCtrl::controllerReady()
+bool MotomanMotionCtrl::controllerReady()
 {
   std::string err_str;
   MotionReply reply;
@@ -68,7 +68,7 @@ bool FS100_MotionCtrl::controllerReady()
 }
 
 
-bool FS100_MotionCtrl::setTrajMode(bool enable)
+bool MotomanMotionCtrl::setTrajMode(bool enable)
 {
   MotionReply reply;
   MotionControlCmd cmd = enable ? MotionControlCmds::START_TRAJ_MODE : MotionControlCmds::STOP_TRAJ_MODE;
@@ -88,7 +88,7 @@ bool FS100_MotionCtrl::setTrajMode(bool enable)
   return true;
 }
 
-bool FS100_MotionCtrl::stopTrajectory()
+bool MotomanMotionCtrl::stopTrajectory()
 {
   MotionReply reply;
 
@@ -107,7 +107,7 @@ bool FS100_MotionCtrl::stopTrajectory()
   return true;
 }
 
-bool FS100_MotionCtrl::sendAndReceive(MotionControlCmd command, MotionReply &reply)
+bool MotomanMotionCtrl::sendAndReceive(MotionControlCmd command, MotionReply &reply)
 {
   SimpleMessage req, res;
   MotionCtrl data;
@@ -130,7 +130,7 @@ bool FS100_MotionCtrl::sendAndReceive(MotionControlCmd command, MotionReply &rep
   return true;
 }
 
-std::string FS100_MotionCtrl::getErrorString(const MotionReply &reply)
+std::string MotomanMotionCtrl::getErrorString(const MotionReply &reply)
 {
   std::ostringstream ss;
   ss << reply.getResultString() << " (" << reply.getResult() << ")";

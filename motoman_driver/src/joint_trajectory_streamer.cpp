@@ -45,18 +45,18 @@ namespace MotionReplyResults = motoman::simple_message::motion_reply::MotionRepl
 
 namespace motoman
 {
-namespace fs100_joint_trajectory_streamer
+namespace joint_trajectory_streamer
 {
 
 #define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
 
 // override init() to read "robot_id" parameter and subscribe to joint_states
-bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
+bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
                                    const std::map<std::string, double> &velocity_limits)
 {
   bool rtn = true;
 
-  ROS_INFO("FS100_JointTrajectoryStreamer: init");
+  ROS_INFO("MotomanJointTrajectoryStreamer: init");
 
   rtn &= JointTrajectoryStreamer::init(connection, joint_names, velocity_limits);
 
@@ -69,14 +69,14 @@ bool FS100_JointTrajectoryStreamer::init(SmplMsgConnection* connection, const st
   return rtn;
 }
 
-FS100_JointTrajectoryStreamer::~FS100_JointTrajectoryStreamer()
+MotomanJointTrajectoryStreamer::~MotomanJointTrajectoryStreamer()
 {
   //TODO Find better place to call StopTrajMode
   motion_ctrl_.setTrajMode(false);   // release TrajMode, so INFORM jobs can run
 }
 
 // override create_message to generate JointTrajPtFull message (instead of default JointTrajPt)
-bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage *msg)
+bool MotomanJointTrajectoryStreamer::create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage *msg)
 {
   JointTrajPtFull msg_data;
   JointData values;
@@ -126,7 +126,7 @@ bool FS100_JointTrajectoryStreamer::create_message(int seq, const trajectory_msg
   return jtpf_msg.toRequest(*msg);  // assume "request" COMM_TYPE for now
 }
 
-bool FS100_JointTrajectoryStreamer::VectorToJointData(const std::vector<double> &vec,
+bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double> &vec,
                                                       JointData &joints)
 {
   if ( vec.size() > joints.getMaxNumJoints() )
@@ -141,7 +141,7 @@ bool FS100_JointTrajectoryStreamer::VectorToJointData(const std::vector<double> 
 }
 
 // override send_to_robot to provide controllerReady() and setTrajMode() calls
-bool FS100_JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
+bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
   if (!motion_ctrl_.controllerReady() && !motion_ctrl_.setTrajMode(true))
     ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion.  Trajectory ABORTED.  Correct issue and re-send trajectory.");
@@ -150,11 +150,11 @@ bool FS100_JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessag
 }
 
 // override streamingThread, to provide check/retry of MotionReply.result=BUSY
-void FS100_JointTrajectoryStreamer::streamingThread()
+void MotomanJointTrajectoryStreamer::streamingThread()
 {
   int connectRetryCount = 1;
 
-  ROS_INFO("Starting FS100 joint trajectory streamer thread");
+  ROS_INFO("Starting Motoman joint trajectory streamer thread");
   while (ros::ok())
   {
     ros::Duration(0.005).sleep();
@@ -230,7 +230,7 @@ void FS100_JointTrajectoryStreamer::streamingThread()
           {
             ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point"
                              << " (#" << this->current_point_ << "): "
-                             << FS100_MotionCtrl::getErrorString(reply_status.reply_));
+                             << MotomanMotionCtrl::getErrorString(reply_status.reply_));
             this->state_ = TransferStates::IDLE;
             break;
           }
@@ -250,14 +250,14 @@ void FS100_JointTrajectoryStreamer::streamingThread()
 }
 
 // override trajectoryStop to send MotionCtrl message
-void FS100_JointTrajectoryStreamer::trajectoryStop()
+void MotomanJointTrajectoryStreamer::trajectoryStop()
 {
   this->state_ = TransferStates::IDLE;  // stop sending trajectory points
   motion_ctrl_.stopTrajectory();
 }
 
 // override is_valid to include FS100-specific checks
-bool FS100_JointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajectory &traj)
+bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajectory &traj)
 {
   if (!JointTrajectoryInterface::is_valid(traj))
     return false;
@@ -287,6 +287,6 @@ bool FS100_JointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTraject
 }
 
 
-} //fs100_joint_trajectory_streamer
+} //motoman_joint_trajectory_streamer
 } //motoman
 
