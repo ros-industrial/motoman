@@ -3,7 +3,7 @@
 
 
   Usage:
-    robot_interface_fs100.launch robot_ip:=<value>
+    robot_interface_streaming_fs100.launch robot_ip:=<value>
 -->
 <launch>
 	<arg name="robot_ip" />

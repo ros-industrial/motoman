@@ -1,5 +1,9 @@
 <launch>
 
+<!-- WARNING THIS LAUNCH FILE IS DEPRECATED, USE THE APPROPRIATE
+"robot_interface_streaming_<controller>.launch" file or "robot_interface_streaming.launch"
+instead.-->
+
 <!-- This launch file provides a socket-based connection to the Motoman controllers
 using the standard ROS Industrial simple_message protocol.
 

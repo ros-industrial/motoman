@@ -1,7 +1,17 @@
+<!--
+  Planning scene warehouse viewer for real robot
+
+
+  Usage:
+    planning_scene_warehouse_viewer_sia10d_mesh_real.launch robot_ip:=<value> controller:=<value>
+-->
 <launch>
 
+  <!-- robot_ip: IP-address of the robot's socket-messaging server -->
   <arg name="robot_ip"/>
-  <ara name="controller"/>
+
+  <!-- controller: Controller name (fs100 or dx100) -->
+  <arg name="controller"/>
 
   <param name="/use_sim_time" value="true" />
   <include file="$(find sia10d_mesh_arm_navigation)/launch/sia10d_mesh_planning_environment.launch" />
@@ -39,7 +49,7 @@
 
   
   <!-- Start Motoman specific nodes -->
-  <include file="$(find motoman_driver)/launch/robot_interface_$(arg controller).launch">
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
   	<arg name="robot_ip"   value="$(arg robot_ip)" />
   </include>
 

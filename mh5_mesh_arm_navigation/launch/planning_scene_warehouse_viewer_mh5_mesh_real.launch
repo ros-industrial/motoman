@@ -1,7 +1,17 @@
+<!--
+  Planning scene warehouse viewer for real robot
+
+
+  Usage:
+    planning_scene_warehouse_viewer_mh5_mesh_real.launch robot_ip:=<value> controller:=<value>
+-->
 <launch>
 
+  <!-- robot_ip: IP-address of the robot's socket-messaging server -->
   <arg name="robot_ip"/>
-  <ara name="controller"/>
+
+  <!-- controller: Controller name (fs100 or dx100) -->
+  <arg name="controller"/>
 
   <param name="/use_sim_time" value="true" />
   <include file="$(find mh5_mesh_arm_navigation)/launch/mh5_mesh_planning_environment.launch" />
@@ -38,7 +48,7 @@
   <node pkg="rviz" type="rviz" name='rviz_warehouse_viewer' args="-d $(find mh5_mesh_arm_navigation)/config/planning_scene_warehouse_viewer.rviz" />
   
     <!-- Start Motoman specific nodes -->
-  <include file="$(find motoman_driver)/launch/robot_interface_$(arg controller).launch">
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
   	<arg name="robot_ip"   value="$(arg robot_ip)" />
   </include> 
   
