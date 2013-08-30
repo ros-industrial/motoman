@@ -47,6 +47,7 @@ void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE
 void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE_AXES], 
 									long pulsePos[MAX_PULSE_AXES]);
 UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup);
+BOOL Ros_CtrlGroup_IsRobot(CtrlGroup* ctrlGroup);
 
 //-----------------------
 // Function implementation
@@ -78,11 +79,18 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 	CtrlGroup* ctrlGroup;
 	int numAxes;
 	int i;
-
+#ifdef DX100		
+	float speedCap;
+#endif
+	long maxSpeedPulse[MP_GRP_AXES_NUM];
+	STATUS status;
+	BOOL bInitOk;
+	
 	// Check if group is defined
 	numAxes = GP_getNumberOfAxes(groupNo);
 	if(numAxes > 0)
 	{
+		bInitOk = TRUE;
 		// Allocate and initialize memory
 		ctrlGroup = mpMalloc(sizeof(CtrlGroup));
 		memset(ctrlGroup, 0x00, sizeof(CtrlGroup));
@@ -91,20 +99,34 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		ctrlGroup->groupNo = groupNo;
 		ctrlGroup->numAxes = numAxes;
 		ctrlGroup->groupId = Ros_CtrlGroup_FindGrpId(groupNo);
-		GP_getPulseToRad(groupNo, &ctrlGroup->pulseToRad);
-		GP_getFBPulseCorrection(groupNo, &ctrlGroup->correctionData);
-		GP_getMaxIncPerIpCycle(groupNo, interpolPeriod , &ctrlGroup->maxInc);
+		
+		status = GP_getPulseToRad(groupNo, &ctrlGroup->pulseToRad);
+		if(status!=OK)
+			bInitOk = FALSE;
+
+		status = GP_getFBPulseCorrection(groupNo, &ctrlGroup->correctionData);
+		if(status!=OK)
+			bInitOk = FALSE;
+
+		status = GP_getMaxIncPerIpCycle(groupNo, interpolPeriod , &ctrlGroup->maxInc);
+		if(status!=OK)
+			bInitOk = FALSE;
+
 		memset(&ctrlGroup->inc_q, 0x00, sizeof(Incremental_q));
 		ctrlGroup->inc_q.q_lock = mpSemBCreate(SEM_Q_FIFO, SEM_FULL);
 
 #ifdef DX100		
-		float speedCap = GP_getGovForIncMotion() / 100.0;
-		for(i=0; i<numAxes; i++)
-			ctrlGroup->maxInc.maxIncrement[i] *= speedCap;
+		speedCap = GP_getGovForIncMotion(groupNo);
+		if(speedCap != -1)
+		{
+			for(i=0; i<numAxes; i++)
+				ctrlGroup->maxInc.maxIncrement[i] *= speedCap;
+		}
+		else
+			bInitOk = FALSE;
 #endif
 
 		// Calculate maximum speed in radian per second
-		long maxSpeedPulse[MP_GRP_AXES_NUM];
 		memset(maxSpeedPulse, 0x00, sizeof(maxSpeedPulse));
 		for(i=0; i<numAxes; i++)
 			maxSpeedPulse[i] = ctrlGroup->maxInc.maxIncrement[i] * 1000.0 / interpolPeriod; 
@@ -119,8 +141,13 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 			ctrlGroup->maxSpeedRad[3],ctrlGroup->maxSpeedRad[4],ctrlGroup->maxSpeedRad[5],
 			ctrlGroup->maxSpeedRad[6]);
 
-		
 		ctrlGroup->tidAddToIncQueue = INVALID_TASK;
+		
+		if(bInitOk == FALSE)
+		{
+			mpFree(ctrlGroup);
+			ctrlGroup = NULL;
+		}
 	}
 	else
 	{
@@ -309,4 +336,12 @@ UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup)
 		axisConfig |= (0x01 << i);
 		
 	return (UCHAR)axisConfig;
+}
+
+//-------------------------------------------------------------------
+// Returns TRUE is the specified group is defined as a robot
+//-------------------------------------------------------------------
+BOOL Ros_CtrlGroup_IsRobot(CtrlGroup* ctrlGroup)
+{
+	return((ctrlGroup->groupId == MP_R1_GID) || (ctrlGroup->groupId == MP_R2_GID));
 }

@@ -32,15 +32,20 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+//#define DX100          // Define to compile for DX100 controller  
+
 #define TCP_PORT_MOTION	50240
 #define TCP_PORT_STATE	50241
 
 #define IO_FEEDBACK_WAITING_MP_INCMOVE	  11120  //output# 889 
 #define IO_FEEDBACK_MP_INCMOVE_DONE	  	  11121  //output# 890 
-
+#define IO_FEEDBACK_INITIALIZATION_DONE	  11122  //output# 891 
 #define IO_FEEDBACK_CONNECTSERVERRUNNING  11123	 //output# 892 
 #define IO_FEEDBACK_MOTIONSERVERCONNECTED 11124	 //output# 893 
 #define IO_FEEDBACK_STATESERVERCONNECTED  11125	 //output# 894 
+#define IO_FEEDBACK_FAILURE				  11127  //output# 896
+
+#define IO_
 
 #define MAX_MOTION_CONNECTIONS	1
 #define MAX_STATE_CONNECTIONS	4
@@ -79,6 +84,7 @@ typedef struct
 {
 	UINT16 interpolPeriod;									// Interpolation period of the controller
 	int numGroup;											// Actual number of defined group
+	int numRobot;											// Actual number of defined robot
 	CtrlGroup* ctrlGroups[MP_GRP_NUM];						// Array of the controller control group
 	
 	// Controller Status
@@ -100,10 +106,15 @@ typedef struct
 	int	sdMotionConnections[MAX_MOTION_CONNECTIONS];		// Socket Descriptor array for Motion Server
 	int	tidMotionConnections[MAX_MOTION_CONNECTIONS];  		// ThreadId array for Motion Server
 	int tidIncMoveThread;  									// ThreadId for sending the incremental move to the controller
+
+#ifdef DX100
+	BOOL bSkillMotionReady[2];								// Boolean indicating that the SKILL command required for DX100 is active
+	int RosListenForSkillID[2];								// ThreadId for listening to SkillSend command
+#endif
 	
 } Controller;
 
-extern void Ros_Controller_Init(Controller* controller);
+extern BOOL Ros_Controller_Init(Controller* controller);
 extern BOOL Ros_Controller_IsValidGroupNo(Controller* controller, int groupNo);
 extern void Ros_Controller_ConnectionServer_Start(Controller* controller);
 
@@ -120,11 +131,16 @@ extern BOOL Ros_Controller_IsHold(Controller* controller);
 extern BOOL Ros_Controller_IsServoOn(Controller* controller);
 extern BOOL Ros_Controller_IsEStop(Controller* controller);
 extern BOOL Ros_Controller_IsWaitingRos(Controller* controller);
+extern BOOL Ros_Controller_IsMotionReady(Controller* controller);
 extern int Ros_Controller_GetNotReadySubcode(Controller* controller);
 extern int Ros_Controller_StatusToMsg(Controller* controller, SimpleMsg* sendMsg);
 
 extern BOOL Ros_Controller_GetIOState(ULONG signal);
 extern void Ros_Controller_SetIOState(ULONG signal, BOOL status);
 extern void Ros_Controller_ErrNo_ToString(int errNo, char errMsg[ERROR_MSG_MAX_SIZE], int errMsgSize);
+
+#ifdef DX100
+extern void Ros_Controller_ListenForSkill(Controller* controller, int sl);
+#endif
 
 #endif

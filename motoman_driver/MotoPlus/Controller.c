@@ -49,7 +49,8 @@ extern STATUS setsockopt
 //-----------------------
 // Function Declarations
 //-----------------------
-void Ros_Controller_Init(Controller* controller);
+BOOL Ros_Controller_Init(Controller* controller);
+BOOL Ros_Controller_WaitInitReady(Controller* controller);
 BOOL Ros_Controller_IsValidGroupNo(Controller* controller, int groupNo);
 int Ros_Controller_OpenSocket(int tcpPort);
 void Ros_Controller_ConnectionServer_Start(Controller* controller);
@@ -72,7 +73,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller);
 // Wrapper around MPFunctions
 BOOL Ros_Controller_GetIOState(ULONG signal);
 void Ros_Controller_SetIOState(ULONG signal, BOOL status);
-int Ros_Controller_GetAlarmCode(Controller* controller);
+int Ros_Controller_GetAlarmCode();
 void Ros_Controller_ErrNo_ToString(int errNo, char errMsg[ERROR_MSG_MAX_SIZE], int errMsgSize);
 
 //-----------------------
@@ -83,25 +84,64 @@ void Ros_Controller_ErrNo_ToString(int errNo, char errMsg[ERROR_MSG_MAX_SIZE], i
 // Initialize the controller structure
 // This should be done before the controller is used for anything
 //------------------------------------------------------------------- 
-void Ros_Controller_Init(Controller* controller)
+BOOL Ros_Controller_Init(Controller* controller)
 {
 	int grpNo;
 	int i;
+	BOOL bInitOk;
+	STATUS status;
+	
+	printf("Initializing controller\r\n");
+
+	// Turn off all I/O signal
+	Ros_Controller_SetIOState(IO_FEEDBACK_WAITING_MP_INCMOVE, FALSE);
+	Ros_Controller_SetIOState(IO_FEEDBACK_MP_INCMOVE_DONE, FALSE);
+	Ros_Controller_SetIOState(IO_FEEDBACK_INITIALIZATION_DONE, FALSE);
+	Ros_Controller_SetIOState(IO_FEEDBACK_CONNECTSERVERRUNNING, FALSE);
+	Ros_Controller_SetIOState(IO_FEEDBACK_MOTIONSERVERCONNECTED, FALSE);
+	Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, FALSE);
+	Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, FALSE);
+	
+	// Init variables and controller status
+	bInitOk = TRUE;
+	controller->bRobotJobReady = FALSE;
+	controller->bRobotJobReadyRaised = FALSE;
+	controller->bStopMotion = FALSE;
+	Ros_Controller_StatusInit(controller);
+	Ros_Controller_StatusRead(controller, controller->ioStatus);
+	
+	// wait for controller to be ready for reading parameter
+	Ros_Controller_WaitInitReady(controller);
 	
 	// Get the interpolation clock
-	GP_getInterpolationPeriod(&controller->interpolPeriod);
+	status = GP_getInterpolationPeriod(&controller->interpolPeriod);
+	if(status!=OK)
+		bInitOk = FALSE;
+	
+	// Get the number of groups
+	controller->numGroup = GP_getNumberOfGroups();
+	if(controller->numGroup < 1)
+		bInitOk = FALSE;
+	
+	controller->numRobot = 0;
 	
 	// Check for each group
-	for(grpNo=0; grpNo<MP_GRP_NUM; grpNo++)
+	for(grpNo=0; grpNo < MP_GRP_NUM; grpNo++)
 	{
-		// Determine if specific group exists and allocate memory for it
-		controller->ctrlGroups[grpNo] = Ros_CtrlGroup_Create(grpNo, controller->interpolPeriod);
-		
-		// Check if group was created and update the number of group accordingly
-		if(controller->ctrlGroups[grpNo] != NULL)
+		if(grpNo < controller->numGroup)
 		{
-			controller->numGroup = grpNo + 1;
+			// Determine if specific group exists and allocate memory for it
+			controller->ctrlGroups[grpNo] = Ros_CtrlGroup_Create(grpNo, controller->interpolPeriod);
+			if(controller->ctrlGroups[grpNo] != NULL)
+			{
+				if(Ros_CtrlGroup_IsRobot(controller->ctrlGroups[grpNo]))
+					controller->numRobot++;
+			}
+			else
+				bInitOk = FALSE;
 		}
+		else
+			controller->ctrlGroups[grpNo] = NULL;
 	}
 	
 	// Initialize Thread ID and Socket to invalid value
@@ -119,14 +159,39 @@ void Ros_Controller_Init(Controller* controller)
     	controller->tidMotionConnections[i] = INVALID_TASK;
     }
 	controller->tidIncMoveThread = INVALID_TASK;
-
 	
-	// Other variables
-	controller->bRobotJobReady = FALSE;
-	controller->bRobotJobReadyRaised = FALSE;
-	controller->bStopMotion = FALSE;
-	Ros_Controller_StatusInit(controller);
-	Ros_Controller_StatusRead(controller, controller->ioStatus);
+#ifdef DX100
+	controller->bSkillMotionReady[0] = FALSE;
+	controller->bSkillMotionReady[1] = FALSE;
+#endif
+
+	if(bInitOk)
+	{
+		// Turn on initialization done I/O signal
+		Ros_Controller_SetIOState(IO_FEEDBACK_INITIALIZATION_DONE, TRUE);
+	}
+	else
+	{
+		Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+		printf("Failure to initialize controller\r\n");
+	}
+	
+	return bInitOk;
+}
+
+
+//-------------------------------------------------------------------
+// Wait for the controller to be ready to start initialization
+//------------------------------------------------------------------- 
+BOOL Ros_Controller_WaitInitReady(Controller* controller)
+{
+	while(Ros_Controller_IsAlarm(controller))
+	{
+		mpTaskDelay(1000);
+		Ros_Controller_StatusRead(controller, controller->ioStatus);
+	}
+
+	return TRUE;
 }
 
 
@@ -196,12 +261,13 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 {
     int		sdMotionServer = INVALID_SOCKET;
     int		sdStateServer = INVALID_SOCKET;
-    fd_set  fds;
+    struct	fd_set  fds;
     struct  timeval tv;
-    int     sdAccepted = INVALID_SOCKET;;
+    int     sdAccepted = INVALID_SOCKET;
     struct  sockaddr_in     clientSockAddr;
     int     sizeofSockAddr;
 	int 	useNoDelay = 1;
+	STATUS  s;
 
 	//Set feedback signal (Application is installed and running)
 	Ros_Controller_SetIOState(IO_FEEDBACK_CONNECTSERVERRUNNING, TRUE);
@@ -244,7 +310,7 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 	        
 	        printf("Accepted connection from client PC\r\n");
 	          
-    		STATUS s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
+    		s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
     		if( OK != s )
     		{
       			printf("Failed to set TCP_NODELAY.\r\n");
@@ -287,7 +353,7 @@ void Ros_Controller_StatusInit(Controller* controller)
 	controller->ioStatusAddr[IOSTATUS_ERROR].ulAddr = 50014;			// Error
 	controller->ioStatusAddr[IOSTATUS_PLAY].ulAddr = 50054;				// Play
 	controller->ioStatusAddr[IOSTATUS_TEACH].ulAddr = 50053;			// Teach
-	controller->ioStatusAddr[IOSTATUS_REMOTE].ulAddr = 50056;			// Remote
+	controller->ioStatusAddr[IOSTATUS_REMOTE].ulAddr = 80011; //50056;	// Remote  // Modified E.M. 7/9/2013
 	controller->ioStatusAddr[IOSTATUS_OPERATING].ulAddr = 50070;		// Operating
 	controller->ioStatusAddr[IOSTATUS_HOLD].ulAddr = 50071;				// Hold
 	controller->ioStatusAddr[IOSTATUS_SERVO].ulAddr = 50073;   			// Servo ON
@@ -354,6 +420,18 @@ BOOL Ros_Controller_IsWaitingRos(Controller* controller)
 	return ((controller->ioStatus[IOSTATUS_WAITING_ROS]!=0));
 }
 
+BOOL Ros_Controller_IsMotionReady(Controller* controller)
+{
+#ifdef DX100
+	if(controller->numRobot < 2)
+		return (controller->bRobotJobReady && controller->bSkillMotionReady[0]);
+	else
+		return (controller->bRobotJobReady && controller->bSkillMotionReady[0] && controller->bSkillMotionReady[1]);
+#else
+	return (controller->bRobotJobReady);
+#endif
+}
+
 int Ros_Controller_GetNotReadySubcode(Controller* controller)
 {
 	// Check alarm
@@ -391,6 +469,10 @@ int Ros_Controller_GetNotReadySubcode(Controller* controller)
 	// Check ready I/O signal (should confirm wait)
 	if(!Ros_Controller_IsWaitingRos(controller))
 		return ROS_RESULT_NOT_READY_WAITING_ROS;
+
+	// Check skill send command
+	if(!Ros_Controller_IsMotionReady(controller))
+		return ROS_RESULT_NOT_READY_SKILLSEND;
 		
 	return ROS_RESULT_NOT_READY_UNSPECIFIED;
 }
@@ -421,7 +503,7 @@ int Ros_Controller_StatusToMsg(Controller* controller, SimpleMsg* sendMsg)
 		sendMsg->body.robotStatus.mode = 2;
 	else
 		sendMsg->body.robotStatus.mode = 1;
-	sendMsg->body.robotStatus.motion_possible = (int)(controller->bRobotJobReady);
+	sendMsg->body.robotStatus.motion_possible = (int)(Ros_Controller_IsMotionReady(controller));
 	
 	return(sendMsg->prefix.length + sizeof(SmPrefix));
 }
@@ -462,7 +544,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 						if(ioStatus[i] == 0)
 							controller->alarmCode = 0;
 						else
-							controller->alarmCode = Ros_Controller_GetAlarmCode(controller);
+							controller->alarmCode = Ros_Controller_GetAlarmCode();
 					}
 					//case IOSTATUS_ERROR: // error
 					//		if(ioStatus[i] != 0)
@@ -491,7 +573,8 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 								&& (Ros_Controller_IsRemote(controller)) )
 							{
 								controller->bRobotJobReady = TRUE;
-								printf("Robot job is ready for ROS commands.\r\n");
+								if(Ros_Controller_IsMotionReady(controller))
+									printf("Robot job is ready for ROS commands.\r\n");
 							}
 						}
 						break;
@@ -547,7 +630,7 @@ void Ros_Controller_SetIOState(ULONG signal, BOOL status)
 //-------------------------------------------------------------------
 // Get the code of the first alarm on the controller
 //-------------------------------------------------------------------
-int Ros_Controller_GetAlarmCode(Controller* controller)
+int Ros_Controller_GetAlarmCode()
 {
 	MP_ALARM_CODE_RSP_DATA alarmData;
 	memset(&alarmData, 0x00, sizeof(alarmData));
@@ -585,4 +668,64 @@ void Ros_Controller_ErrNo_ToString(int errNo, char errMsg[ERROR_MSG_MAX_SIZE], i
 		default: memcpy(errMsg, "Unspecified reason", errMsgSize); break;
 	}
 }
+
+
+#ifdef DX100
+
+void Ros_Controller_ListenForSkill(Controller* controller, int sl)
+{
+	SYS2MP_SENS_MSG	skillMsg;
+	STATUS	apiRet;
+	
+	controller->bSkillMotionReady[sl - MP_SL_ID1] = FALSE;
+	memset(&skillMsg, 0x00, sizeof(SYS2MP_SENS_MSG));
+	
+	FOREVER
+	{			
+		//SKILL complete
+		//This will cause the SKILLSND command to complete the cursor to move to the next line.
+		//Make sure all preparation is complete to move.
+		//mpEndSkillCommandProcess(sl, &skillMsg); 
+		mpEndSkillCommandProcess(sl, &skillMsg);
+	
+		mpTaskDelay(4); //sleepy time
+				
+		//Get SKILL command
+		//task will wait for a skillsnd command in INFORM
+		apiRet = mpReceiveSkillCommand(sl, &skillMsg);
+		
+		if (skillMsg.main_comm != MP_SKILL_COMM)
+		{
+			printf("Ignoring command, because it's not a SKILL command\n");
+			continue;
+		}
+		
+		//Process SKILL command
+		switch(skillMsg.sub_comm)
+		{
+		case MP_SKILL_SEND:	
+			if(strcmp(skillMsg.cmd, "ROS-START") == 0)
+			{
+				controller->bSkillMotionReady[sl - MP_SL_ID1] = TRUE;
+				if(Ros_Controller_IsMotionReady(controller))
+					printf("Robot job is ready for ROS commands.\r\n");
+			}
+			else if(strcmp(skillMsg.cmd, "ROS-STOP") == 0)
+			{
+				controller->bSkillMotionReady[sl - MP_SL_ID1] = FALSE;
+			}
+			else
+			{
+				printf ("MP_SKILL_SEND(SL_ID=%d) - %s \n", sl, skillMsg.cmd);
+			}
+			break;
+			
+		case MP_SKILL_END:
+			//ABORT!!!
+			controller->bSkillMotionReady[sl - MP_SL_ID1] = FALSE;		
+			break;
+		}
+	}
+}
+#endif
 

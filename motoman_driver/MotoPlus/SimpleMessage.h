@@ -182,7 +182,8 @@ typedef enum
 	ROS_RESULT_NOT_READY_SERVO_OFF,
 	ROS_RESULT_NOT_READY_HOLD,
 	ROS_RESULT_NOT_READY_NOT_STARTED,
-	ROS_RESULT_NOT_READY_WAITING_ROS
+	ROS_RESULT_NOT_READY_WAITING_ROS,
+	ROS_RESULT_NOT_READY_SKILLSEND
 } SmNotReadySubcode;
 	
 
@@ -226,5 +227,12 @@ typedef struct _SimpleMsg	SimpleMsg;
 extern int Ros_SimpleMsg_JointFeedback(CtrlGroup* ctrlGroup, SimpleMsg* sendMsg);
 
 extern int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg);
+
+//#define DEBUG
+
+#ifdef DEBUG
+// function to dump data structure for debugging
+extern void Ros_SimpleMsg_DumpTrajPtFull(SmBodyJointTrajPtFull* data);
+#endif
 
 #endif

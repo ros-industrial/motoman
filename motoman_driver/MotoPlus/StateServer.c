@@ -104,6 +104,7 @@ void Ros_StateServer_SendState(Controller* controller)
 	int msgSize;
 	
 	printf("Starting State Server Send State task\r\n");
+	printf("Controller number of group = %d\r\n", controller->numGroup);
 	
 	while(bHasConnections)
 	{
@@ -114,6 +115,10 @@ void Ros_StateServer_SendState(Controller* controller)
 			if(msgSize > 0)
 			{
 				bHasConnections = Ros_StateServer_SendMsgToAllClient(controller, &sendMsg, msgSize);
+			}
+			else
+			{
+				printf("Ros_SimpleMsg_JointFeedback returned a message size of 0\r\n");
 			}
 		}
 

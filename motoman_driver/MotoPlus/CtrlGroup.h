@@ -79,7 +79,7 @@ typedef struct
 	GB_PULSE_TO_RAD pulseToRad;					// conversion ratio between pulse and radian
 	FB_PULSE_CORRECTION_DATA correctionData;  	// compensation for axes coupling
 	MAX_INCREMENT_INFO maxInc;					// maximum increment per interpolation cycle
-	float maxSpeedRad[MP_GRP_AXES_NUM];			// maximum joint speed in radian
+	float maxSpeedRad[MP_GRP_AXES_NUM];			// maximum joint speed in radian/sec
 	
 	Incremental_q inc_q;						// incremental queue
 	long q_time;								// time to which the queue as been processed
@@ -107,5 +107,7 @@ extern void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MA
 extern void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE_AXES], long pulsePos[MAX_PULSE_AXES]);
 
 extern UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup);
+
+extern BOOL Ros_CtrlGroup_IsRobot(CtrlGroup* ctrlGroup);
 
 #endif

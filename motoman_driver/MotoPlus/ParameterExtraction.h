@@ -1,4 +1,4 @@
-/* ParameterExtraction.h - Parameter Extraction definitions header file */
+﻿/* ParameterExtraction.h - Parameter Extraction definitions header file */
 
 /*
 * Software License Agreement (BSD License) 
@@ -82,6 +82,26 @@ typedef struct
 } MAX_INC_PIPC;
 	
 /******************************************************************************/
+/* << 2 >>                                                              	  */
+/* Function name : int  GP_getNumberOfGroups()								  */
+/* Functionality : Retrieves the Number of Defined Groups					  */
+/* Parameter	 : NONE														  */
+/* Return value	 : Success = Number of Groups								  */
+/*				 : Failure = -1												  */	
+/******************************************************************************/
+extern int  	GP_getNumberOfGroups();
+
+/******************************************************************************/
+/* << 3 >>                                                              	  */
+/* Function name : int  GP_getNumberOfAxes()								  */
+/* Functionality : Retrieves the Number of Axes								  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/* Return value	 : Success = Number of Axes									  */
+/*				 : Failure = -1												  */	
+/******************************************************************************/
+extern int  	GP_getNumberOfAxes(int ctrlGrp);
+
+/******************************************************************************/
 /* << 4 >>                                                              	  */
 /* Function name : STATUS GP_getPulseToRad()								  */
 /* Functionality : Gets the Pulse to radians conversion factors				  */
@@ -91,16 +111,6 @@ typedef struct
 /*				 : Failure = NG												  */	
 /******************************************************************************/
 extern STATUS 	GP_getPulseToRad(int ctrlGrp, GB_PULSE_TO_RAD *PulseToRad);
-
-/******************************************************************************/
-/* << 6 >>                                                              	  */
-/* Function name : int  GP_getNumberOfAxes()								  */
-/* Functionality : Retrieves the Number of Axes								  */
-/* Parameter	 : NONE														  */
-/* Return value	 : Success = Number of Axes									  */
-/*				 : Failure = -1												  */	
-/******************************************************************************/
-extern int  	GP_getNumberOfAxes(int ctrlGrp);
 	
 /******************************************************************************/
 /* << 11 >>                                                             	  */

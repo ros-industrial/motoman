@@ -1,4 +1,12 @@
 ﻿/* mp_main.c - MotoPlus Test Application for Real Time Process */
+// History:
+// 06/12/2013: Fix reply to ROS_MSG_JOINT_TRAJ_PT_FULL message
+// 06/12/2013: Release v.1.0.1
+// 07/15/2013: Added DX100 compiler option
+//     		   Change "REMOTE" mode I/O signal to #80011
+//			   Listen for skill send
+// 08/14/2013: Check initialization success and added extra I/O Feedback 
+//             Release v.1.1.1
 /*
 * Software License Agreement (BSD License) 
 *
@@ -36,18 +44,24 @@
 #include "StateServer.h"
 #include "MotionServer.h"
 
-void RosInitTask();
-
 //GLOBAL DATA DEFINITIONS
+
+void RosInitTask();
 int RosInitTaskID;
 
 void mpUsrRoot(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10)
-{	
+{
+
+#ifdef DX100
+	mpTaskDelay(10000);  // 10 sec. delay to enable DX100 system to complete initialization
+#endif
+	
 	//Creates and starts a new task in a seperate thread of execution.
 	//All arguments will be passed to the new task if the function
 	//prototype will accept them.
 	RosInitTaskID = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, (FUNCPTR)RosInitTask,
 						arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+									
 	//Ends the initialization task.
 	mpExitUsrRoot;
 }
@@ -56,12 +70,39 @@ void RosInitTask()
 {
 	Controller ros_controller;
 
-	Ros_Controller_Init(&ros_controller);
+	if(!Ros_Controller_Init(&ros_controller))
+	{
+		mpDeleteSelf;
+		return;
+	}
 
 	ros_controller.tidConnectionSrv = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
 						(FUNCPTR)Ros_Controller_ConnectionServer_Start,
 						(int)&ros_controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-						
+		
+#ifdef DX100
+	// DX100 need to execute a SKILLSEND command prior to the WAIT in order for the 
+	// incremental motion function to work.  These tasks monitor for those commands
+	// This supports a maximum of two robots which should be assigned to slave id
+	// MP_SL_ID1 and MP_SL_ID2 respectively.
+	
+	// first robot
+	ros_controller.RosListenForSkillID[0] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
+						(FUNCPTR)Ros_Controller_ListenForSkill,
+						(int)&ros_controller, MP_SL_ID1, 0, 0, 0, 0, 0, 0, 0, 0);
+	// if second robot
+	if(ros_controller.numRobot > 1)
+	{
+		ros_controller.RosListenForSkillID[1] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
+							(FUNCPTR)Ros_Controller_ListenForSkill,
+							(int)&ros_controller, MP_SL_ID2, 0, 0, 0, 0, 0, 0, 0, 0);	
+	}
+	else
+	{
+		ros_controller.RosListenForSkillID[1] = INVALID_TASK;
+	}
+#endif
+		
 	// start loop to monitor controller state
 	FOREVER
 	{
@@ -71,4 +112,6 @@ void RosInitTask()
 		mpTaskDelay(CONTROLLER_STATUS_UPDATE_PERIOD);
 	}
 }
+
+
 

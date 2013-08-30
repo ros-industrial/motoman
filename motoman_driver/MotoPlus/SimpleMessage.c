@@ -132,3 +132,23 @@ int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, Si
 	return(replyMsg->prefix.length + sizeof(SmPrefix));
 }
 
+#ifdef DEBUG
+// function to dump data structure for debugging
+void Ros_SimpleMsg_DumpTrajPtFull(SmBodyJointTrajPtFull* data)
+{
+	printf("Dumping SmBodyJointTrajPtFull:\r\n");
+	printf("  groupNo=%d\r\n", data->groupNo);
+	printf("  sequence=%d\r\n", data->sequence);
+	printf("  validFields=%d\r\n", data->validFields);
+	printf("  time=%%.5f\r\n", data->time);
+	printf("  pos: %.5f, %.5f, %.5f, %.5f, %.5f, %.5f, %.5f\r\n", 
+		data->pos[0], data->pos[1], data->pos[2], data->pos[3], 
+		data->pos[4], data->pos[5], data->pos[6]);
+	printf("  vel: %.5f, %.5f, %.5f, %.5f, %.5f, %.5f, %.5f\r\n", 
+		data->vel[0], data->vel[1], data->vel[2], data->vel[3], 
+		data->vel[4], data->vel[5], data->vel[6]);
+	printf("  acc: %.5f, %.5f, %.5f, %.5f, %.5f, %.5f, %.5f\r\n", 
+		data->acc[0], data->acc[1], data->acc[2], data->acc[3], 
+		data->acc[4], data->acc[5], data->acc[6]);
+}
+#endif
