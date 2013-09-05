@@ -8,9 +8,8 @@
   <author email="sedwards@swri.org">Shaun Edwards</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-
-  <run_depend>dx100</run_depend>
-  <run_depend>fs100</run_depend>
+  
+  <run_depend>motoman_driver</run_depend>
   <run_depend>SIA20D_Mesh_arm_navigation</run_depend>
   <run_depend>motoman_config</run_depend>
   <run_depend>sia10d_mesh_arm_navigation</run_depend>
