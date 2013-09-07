@@ -116,3 +116,38 @@ set_target_properties(motoman_motion_streaming_interface_bswap
   PROPERTIES OUTPUT_NAME motion_streaming_interface_bswap
   PREFIX "")
 
+
+#############
+## Install ##
+#############
+
+# binaries
+install(TARGETS
+    motoman_robot_state
+    motoman_motion_streaming_interface
+    motoman_robot_state_bswap
+    motoman_motion_streaming_interface_bswap
+
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+# libraries
+install(TARGETS
+    motoman_simple_message
+    motoman_industrial_robot_client
+    motoman_simple_message_bswap
+    motoman_industrial_robot_client_bswap
+
+    DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+
+# headers
+install(DIRECTORY include/${PROJECT_NAME}/
+    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
+# other files
+foreach(dir Inform launch MotoPlus)
+   install(DIRECTORY ${dir}/
+      DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
+endforeach(dir)
