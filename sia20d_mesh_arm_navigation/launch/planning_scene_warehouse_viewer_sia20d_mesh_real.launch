@@ -14,14 +14,14 @@
   <arg name="controller"/>
 
   <param name="/use_sim_time" value="true" />
-  <include file="$(find sia20d_mesh_arm_navigation)/launch/SIA20D_Mesh_planning_environment.launch" />
+  <include file="$(find sia20d_mesh_arm_navigation)/launch/sia20d_mesh_planning_environment.launch" />
   <node pkg="industrial_deprecated" name="wall_clock_server" type="fake_time.py" />
 
   <param name="warehouse_host" value="localhost"/>
   <param name="warehouse_port" value="27020"/>
   <node name="mongo" type="mongo_wrapper_ros.py" pkg="warehouse_ros">
     <param name="overwrite" value="false"/>
-    <param name="database_path" value="arm_navigation_dbs/SIA20D_Mesh"/>
+    <param name="database_path" value="arm_navigation_dbs/sia20d_mesh"/>
   </node>
 
   <include file="$(find planning_environment)/launch/environment_server.launch">
@@ -36,12 +36,12 @@
 
   <node name="interpolated_ik_node_right" pkg="interpolated_ik_motion_planner" 
 	type="interpolated_ik_motion_planner.py" args="r" respawn="false" output="screen">
-    <param name="robot_prefix" type="string" value="SIA20D_Mesh"/>
+    <param name="robot_prefix" type="string" value="sia20d_mesh"/>
     <param name="consistent_angle" type="double" value="1.05"/>
   </node>
   <node name="interpolated_ik_node_left" pkg="interpolated_ik_motion_planner" 
 	type="interpolated_ik_motion_planner.py" args="l" respawn="false" output="screen">
-    <param name="robot_prefix" type="string" value="SIA20D_Mesh"/>
+    <param name="robot_prefix" type="string" value="sia20d_mesh"/>
     <param name="consistent_angle" type="double" value="1.05"/>
   </node>
 
@@ -58,13 +58,13 @@
   <!-- Called when right arm executes trajectory using controllers -->
   <param name="execute_right_trajectory" value="none" />
   <!-- Called to get left arm inverse kinematics with collision checking -->
-  <param name="left_ik_name" value="/SIA20D_Mesh_manipulator_kinematics/get_constraint_aware_ik" />
+  <param name="left_ik_name" value="/sia20d_mesh_manipulator_kinematics/get_constraint_aware_ik" />
   <!-- Called to get right arm inverse kinematics with collision checking -->
-  <param name="right_ik_name" value="/SIA20D_Mesh_none_kinematics/get_constraint_aware_ik" />
+  <param name="right_ik_name" value="/sia20d_mesh_none_kinematics/get_constraint_aware_ik" />
   <!-- Called to get left arm inverse kinematics without collision checking -->
-  <param name="non_coll_left_ik_name" value="/SIA20D_Mesh_manipulator_kinematics/get_ik" />
+  <param name="non_coll_left_ik_name" value="/sia20d_mesh_manipulator_kinematics/get_ik" />
   <!-- Called to get right arm inverse kinematics without collision checking -->
-  <param name="non_coll_right_ik_name" value="/SIA20D_Mesh_none_kinematics/get_ik" />
+  <param name="non_coll_right_ik_name" value="/sia20d_mesh_none_kinematics/get_ik" />
   <!-- Kinematic chain group name representing the left arm -->
   <param name="left_arm_group" value="manipulator" />
   <!-- Kinematic chain group name representing the right arm -->
