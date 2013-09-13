@@ -1,6 +1,6 @@
 # http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
 cmake_minimum_required(VERSION 2.8.3)
-project(SIA20D_Mesh_arm_navigation)
+project(sia20d_mesh_arm_navigation)
 
 find_package(catkin REQUIRED)
 catkin_package()
