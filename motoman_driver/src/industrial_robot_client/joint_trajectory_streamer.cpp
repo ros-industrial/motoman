@@ -135,7 +135,7 @@ bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTra
 
 void JointTrajectoryStreamer::streamingThread()
 {
-  int connectRetryCount = 1;.
+  int connectRetryCount = 1;
   double timeoutStart = ros::Time::now().toSec();
 
   ROS_INFO("Starting joint trajectory streamer thread");
