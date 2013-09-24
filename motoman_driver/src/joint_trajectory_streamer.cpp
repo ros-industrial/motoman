@@ -153,6 +153,7 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
 void MotomanJointTrajectoryStreamer::streamingThread()
 {
   int connectRetryCount = 1;
+  double timeoutStart = ros::Time::now().toSec();
 
   ROS_INFO("Starting Motoman joint trajectory streamer thread");
   while (ros::ok())
@@ -189,8 +190,12 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       case TransferStates::STREAMING:
         if (this->current_point_ >= (int)this->current_traj_.size())
         {
-          ROS_INFO("Trajectory streaming complete, setting state to IDLE");
-          this->state_ = TransferStates::IDLE;
+		  if(ros::Time::now().toSec() - timeoutStart > timeout_)
+		  {
+			ROS_INFO("Trajectory streaming complete, setting state to IDLE");
+			this->state_ = TransferStates::IDLE;
+		  }
+		  else ROS_INFO("Waiting for a new point");
           break;
         }
 
@@ -235,6 +240,8 @@ void MotomanJointTrajectoryStreamer::streamingThread()
             break;
           }
         }
+
+		timeoutStart = ros::Time::now().toSec();   // keep track of the timeout
 
         break;
       default:

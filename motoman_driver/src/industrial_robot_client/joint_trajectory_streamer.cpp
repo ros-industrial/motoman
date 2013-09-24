@@ -135,7 +135,8 @@ bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTra
 
 void JointTrajectoryStreamer::streamingThread()
 {
-  int connectRetryCount = 1;
+  int connectRetryCount = 1;.
+  double timeoutStart = ros::Time::now().toSec();
 
   ROS_INFO("Starting joint trajectory streamer thread");
   while (ros::ok())
@@ -172,8 +173,12 @@ void JointTrajectoryStreamer::streamingThread()
       case TransferStates::STREAMING:
         if (this->current_point_ >= (int)this->current_traj_.size())
         {
-          ROS_INFO("Trajectory streaming complete, setting state to IDLE");
-          this->state_ = TransferStates::IDLE;
+          if(ros::Time::now().toSec() - timeoutStart > timeout_)
+		  {
+			ROS_INFO("Trajectory streaming complete, setting state to IDLE");
+			this->state_ = TransferStates::IDLE;
+		  }
+		  else ROS_INFO("Waiting for a new point");
           break;
         }
 
@@ -197,6 +202,8 @@ void JointTrajectoryStreamer::streamingThread()
         }
         else
           ROS_WARN("Failed sent joint point, will try again");
+
+		timeoutStart = ros::Time::now().toSec();   // keep track of the timeout
 
         break;
       default:
