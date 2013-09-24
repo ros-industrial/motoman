@@ -73,15 +73,8 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   ROS_DEBUG("Current state is: %d", state);
   if (TransferStates::IDLE != state)
   {
-    if (msg->points.empty())
-      ROS_INFO("Empty trajectory received, canceling current trajectory");
-    else
-      ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
-
-	this->mutex_.lock();
-    trajectoryStop();
-	this->mutex_.unlock();
-    return;
+    if (!msg->points.empty())
+      ROS_WARNING("Trajectory splicing not yet implemented, switching to this new trajectory.");
   }
 
   if (msg->points.empty())
@@ -155,7 +148,9 @@ void JointTrajectoryStreamer::streamingThread()
       else if (connectRetryCount <= 0)
       {
         ROS_ERROR("Timeout connecting to robot controller.  Send new motion command to retry.");
-        this->state_ = TransferStates::IDLE;
+        this->mutex_.lock();
+		trajectoryStop();
+		this->mutex_.unlock();
       }
       continue;
     }
@@ -176,7 +171,9 @@ void JointTrajectoryStreamer::streamingThread()
           if(ros::Time::now().toSec() - timeoutStart > timeout_)
 		  {
 			ROS_INFO("Trajectory streaming complete, setting state to IDLE");
-			this->state_ = TransferStates::IDLE;
+		    this->mutex_.lock();
+			trajectoryStop();
+			this->mutex_.unlock();
 		  }
 		  else ROS_INFO("Waiting for a new point");
           break;
@@ -208,7 +205,9 @@ void JointTrajectoryStreamer::streamingThread()
         break;
       default:
         ROS_ERROR("Joint trajectory streamer: unknown state");
-        this->state_ = TransferStates::IDLE;
+        this->mutex_.lock();
+		trajectoryStop();
+		this->mutex_.unlock();
         break;
     }
 
