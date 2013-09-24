@@ -51,10 +51,12 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
 {
   std::string ip;
   int port;
+  double timeout;
 
-  // override IP/port with ROS params, if available
+  // override IP/port/timeout with ROS params, if available
   ros::param::param<std::string>("robot_ip_address", ip, default_ip);
   ros::param::param<int>("~port", port, default_port);
+  ros::param::param<double>("timeout", timeout, timeout_);
 
   // check for valid parameter values
   if (ip.empty())
@@ -65,6 +67,11 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
   if (port <= 0)
   {
     ROS_ERROR("No valid robot IP port found.  Please set ROS '~port' param");
+    return false;
+  }
+  if(!setTimeout(timeout)) 
+  {
+	ROS_ERROR("Invalid timeout. Please set ROS 'timeout' param to a positive value (in seconds)");
     return false;
   }
 
