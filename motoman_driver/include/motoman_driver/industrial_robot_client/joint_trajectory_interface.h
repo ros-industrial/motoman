@@ -116,6 +116,28 @@ public:
    */
   virtual void run() { ros::spin(); }
 
+  /**
+   * \brief Setter function for the timeout parameter.
+   * 
+   * \param timeout Timeout value in seconds (must be greater than 0).
+   * \return true if the timeout value is correct, false otherwise.
+   */
+  bool setTimeout(double timeout) { 
+	  if(timeout > 0)
+	  {
+		timeout_ = timeout;
+		return true;
+	  }
+	  else return false;
+  }
+
+   /**
+   * \brief Getter function for the timeout parameter.
+   *
+   * \return Current timeout value in seconds.
+   */
+  double getTimeout() { return timeout_; }
+
 protected:
 
   /**
@@ -253,6 +275,7 @@ protected:
   double default_duration_;   // default duration to use for joint commands, if no
   std::map<std::string, double> joint_vel_limits_;  // cache of max joint velocities from URDF
   sensor_msgs::JointState cur_joint_pos_;  // cache of last received joint state
+  double timeout_ = 0.2;   // Time in seconds between the last sent point to the controller and going back to IDLE state. By default 200ms.
 
 private:
   /**
