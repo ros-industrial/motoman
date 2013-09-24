@@ -74,7 +74,7 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   if (TransferStates::IDLE != state)
   {
     if (!msg->points.empty())
-      ROS_WARNING("Trajectory splicing not yet implemented, switching to this new trajectory.");
+      ROS_WARN("Trajectory splicing not yet implemented, switching to this new trajectory.");
   }
 
   if (msg->points.empty())
