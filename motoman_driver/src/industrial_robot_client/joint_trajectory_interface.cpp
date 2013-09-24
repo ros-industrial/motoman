@@ -53,7 +53,7 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
   int port;
   double timeout;
 
-  // override IP/port with ROS params, if available
+  // override IP/port/timeout with ROS params, if available
   ros::param::param<std::string>("robot_ip_address", ip, default_ip);
   ros::param::param<int>("~port", port, default_port);
   ros::param::param<double>("timeout", timeout, timeout_);

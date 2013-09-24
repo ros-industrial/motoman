@@ -71,7 +71,7 @@ public:
  /**
   * \brief Default constructor.
   */
-    JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0) {};
+    JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0), timeout_(0.2) {};
 
     /**
      * \brief Initialize robot connection using default method.
@@ -275,7 +275,7 @@ protected:
   double default_duration_;   // default duration to use for joint commands, if no
   std::map<std::string, double> joint_vel_limits_;  // cache of max joint velocities from URDF
   sensor_msgs::JointState cur_joint_pos_;  // cache of last received joint state
-  double timeout_ = 0.2;   // Time in seconds between the last sent point to the controller and going back to IDLE state. By default 200ms.
+  double timeout_;   // Time in seconds between the last sent point to the controller and going back to IDLE state. By default 200ms.
 
 private:
   /**
