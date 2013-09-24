@@ -172,7 +172,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       else if (connectRetryCount <= 0)
       {
         ROS_ERROR("Timeout connecting to robot controller.  Send new motion command to retry.");
-        this->state_ = TransferStates::IDLE;
+        this->mutex_.lock();
+		trajectoryStop();
+		this->mutex_.unlock();
       }
       continue;
     }
@@ -193,7 +195,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 		  if(ros::Time::now().toSec() - timeoutStart > timeout_)
 		  {
 			ROS_INFO("Trajectory streaming complete, setting state to IDLE");
-			this->state_ = TransferStates::IDLE;
+			this->mutex_.lock();
+			trajectoryStop();
+			this->mutex_.unlock();
 		  }
 		  else ROS_INFO("Waiting for a new point");
           break;
@@ -219,7 +223,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           if (!reply_status.init(reply))
           {
             ROS_ERROR("Aborting trajectory: Unable to parse JointTrajectoryPoint reply");
-            this->state_ = TransferStates::IDLE;
+            this->mutex_.lock();
+			trajectoryStop();
+			this->mutex_.unlock();
             break;
           }
 
@@ -236,7 +242,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
             ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point"
                              << " (#" << this->current_point_ << "): "
                              << MotomanMotionCtrl::getErrorString(reply_status.reply_));
-            this->state_ = TransferStates::IDLE;
+            this->mutex_.lock();
+			trajectoryStop();
+			this->mutex_.unlock();
             break;
           }
         }
@@ -246,7 +254,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         break;
       default:
         ROS_ERROR("Joint trajectory streamer: unknown state");
-        this->state_ = TransferStates::IDLE;
+        this->mutex_.lock();
+		trajectoryStop();
+		this->mutex_.unlock();
         break;
     }
 
