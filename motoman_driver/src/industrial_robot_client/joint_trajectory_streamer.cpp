@@ -171,9 +171,7 @@ void JointTrajectoryStreamer::streamingThread()
           if(ros::Time::now().toSec() - timeoutStart > timeout_)
 		  {
 			ROS_INFO("Trajectory streaming complete, setting state to IDLE");
-		    this->mutex_.lock();
 			trajectoryStop();
-			this->mutex_.unlock();
 		  }
 		  else ROS_INFO("Waiting for a new point");
           break;
@@ -205,9 +203,7 @@ void JointTrajectoryStreamer::streamingThread()
         break;
       default:
         ROS_ERROR("Joint trajectory streamer: unknown state");
-        this->mutex_.lock();
 		trajectoryStop();
-		this->mutex_.unlock();
         break;
     }
 
