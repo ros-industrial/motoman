@@ -287,7 +287,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
   namespace IRC_utils = industrial_robot_client::utils;
   if(this->state_ == TransferStates::IDLE)
   {
-	  if(traj.header.frame_id != 0)
+	  if(traj.header.seq != 0)
 		  ROS_WARN("When switching from IDLE to STREAMING the frame id of the trajectory should be 0.");
 	  if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
 									traj.joint_names, traj.points[0].positions,
