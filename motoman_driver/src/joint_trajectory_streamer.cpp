@@ -285,11 +285,16 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
 
   // FS100 requires trajectory start at current position
   namespace IRC_utils = industrial_robot_client::utils;
-  if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
-                                traj.joint_names, traj.points[0].positions,
-                                start_pos_tol_))
+  if(this->state_ == TransferStates::IDLE)
   {
-    ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+	  if(traj.header.frame_id != 0)
+		  ROS_WARN("When switching from IDLE to STREAMING the frame id of the trajectory should be 0.");
+	  if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
+									traj.joint_names, traj.points[0].positions,
+									start_pos_tol_))
+	  {
+		ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+	  }
   }
 
   return true;
