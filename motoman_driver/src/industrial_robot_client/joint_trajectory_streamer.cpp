@@ -174,7 +174,7 @@ void JointTrajectoryStreamer::streamingThread()
 			ROS_INFO("Trajectory streaming complete, setting state to IDLE");
 			trajectoryStop();
 		  }
-		  else ROS_INFO("Waiting for a new point");
+		  else ROS_DEBUG("Waiting for a new point");
           break;
         }
 
