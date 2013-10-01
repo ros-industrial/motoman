@@ -39,7 +39,7 @@ namespace joint_trajectory_streamer
 {
 
 bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
-                                   const std::map<std::string, double> &velocity_limits)
+  const std::map<std::string, double> &velocity_limits)
 {
   bool rtn = true;
 
@@ -51,7 +51,7 @@ bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vec
   this->current_point_ = 0;
   this->state_ = TransferStates::IDLE;
   this->streaming_thread_ =
-      new boost::thread(boost::bind(&JointTrajectoryStreamer::streamingThread, this));
+    new boost::thread(boost::bind(&JointTrajectoryStreamer::streamingThread, this));
   ROS_INFO("Unlocking mutex");
   this->mutex_.unlock();
 
@@ -80,7 +80,7 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   if (msg->points.empty())
   {
     ROS_INFO("Empty trajectory received while in IDLE state, nothing is done");
-	trajectoryStop();
+    trajectoryStop();
     return;
   }
 
@@ -150,8 +150,8 @@ void JointTrajectoryStreamer::streamingThread()
       {
         ROS_ERROR("Timeout connecting to robot controller.  Send new motion command to retry.");
         this->mutex_.lock();
-		trajectoryStop();
-		this->mutex_.unlock();
+        trajectoryStop();
+        this->mutex_.unlock();
       }
       continue;
     }
@@ -159,53 +159,53 @@ void JointTrajectoryStreamer::streamingThread()
     this->mutex_.lock();
 
     SimpleMessage msg, tmpMsg, reply;
-        
+
     switch (this->state_)
     {
-      case TransferStates::IDLE:
-        ros::Duration(0.250).sleep();  //  slower loop while waiting for new trajectory
-        break;
+    case TransferStates::IDLE:
+      ros::Duration(0.250).sleep();  //  slower loop while waiting for new trajectory
+      break;
 
-      case TransferStates::STREAMING:
-        if (this->current_point_ >= (int)this->current_traj_.size())
+    case TransferStates::STREAMING:
+      if (this->current_point_ >= (int)this->current_traj_.size())
+      {
+        if(ros::Time::now() - timeoutStart > timeout_)
         {
-          if(ros::Time::now() - timeoutStart > timeout_)
-		  {
-			ROS_INFO("Trajectory streaming complete, setting state to IDLE");
-			trajectoryStop();
-		  }
-		  else ROS_DEBUG("Waiting for a new point");
-          break;
+          ROS_INFO("Trajectory streaming complete, setting state to IDLE");
+          trajectoryStop();
         }
-
-        if (!this->connection_->isConnected())
-        {
-          ROS_DEBUG("Robot disconnected.  Attempting reconnect...");
-          connectRetryCount = 5;
-          break;
-        }
-
-        tmpMsg = this->current_traj_[this->current_point_];
-        msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
-                 ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
-            
-        ROS_DEBUG("Sending joint trajectory point");
-        if (this->connection_->sendAndReceiveMsg(msg, reply, false))
-        {
-          ROS_INFO("Point[%d of %d] sent to controller",
-                   this->current_point_, (int)this->current_traj_.size());
-          this->current_point_++;
-        }
-        else
-          ROS_WARN("Failed sent joint point, will try again");
-
-		timeoutStart = ros::Time::now();   // keep track of the timeout
-
+        else ROS_DEBUG("Waiting for a new point");
         break;
-      default:
-        ROS_ERROR("Joint trajectory streamer: unknown state");
-		trajectoryStop();
+      }
+
+      if (!this->connection_->isConnected())
+      {
+        ROS_DEBUG("Robot disconnected.  Attempting reconnect...");
+        connectRetryCount = 5;
         break;
+      }
+
+      tmpMsg = this->current_traj_[this->current_point_];
+      msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
+        ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
+
+      ROS_DEBUG("Sending joint trajectory point");
+      if (this->connection_->sendAndReceiveMsg(msg, reply, false))
+      {
+        ROS_INFO("Point[%d of %d] sent to controller",
+          this->current_point_, (int)this->current_traj_.size());
+        this->current_point_++;
+      }
+      else
+        ROS_WARN("Failed sent joint point, will try again");
+
+      timeoutStart = ros::Time::now();   // keep track of the timeout
+
+      break;
+    default:
+      ROS_ERROR("Joint trajectory streamer: unknown state");
+      trajectoryStop();
+      break;
     }
 
     this->mutex_.unlock();
