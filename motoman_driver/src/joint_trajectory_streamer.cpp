@@ -153,7 +153,7 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
 void MotomanJointTrajectoryStreamer::streamingThread()
 {
   int connectRetryCount = 1;
-  double timeoutStart = ros::Time::now();
+  ros::Time timeoutStart = ros::Time::now();
 
   ROS_INFO("Starting Motoman joint trajectory streamer thread");
   while (ros::ok())
