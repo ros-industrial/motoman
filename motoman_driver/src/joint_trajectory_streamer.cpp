@@ -81,6 +81,8 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const trajectory_ms
   JointTrajPtFull msg_data;
   JointData values;
 
+  seq+=this->seq_offset_;
+
   // copy position data
   if (!pt.positions.empty())
   {
@@ -145,6 +147,9 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
 {
   if (!motion_ctrl_.controllerReady() && !motion_ctrl_.setTrajMode(true))
     ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion.  Trajectory ABORTED.  Correct issue and re-send trajectory.");
+
+  this->seq_offset_+=messages.size();
+  ROS_DEBUG("seq_offset_ is now %d", this->seq_offset_);
 
   return JointTrajectoryStreamer::send_to_robot(messages);
 }
@@ -261,7 +266,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 // override trajectoryStop to send MotionCtrl message
 void MotomanJointTrajectoryStreamer::trajectoryStop()
 {
+  ROS_INFO("trajectoryStop() called");
   this->state_ = TransferStates::IDLE;  // stop sending trajectory points
+  this->seq_offset_ = 0;
   motion_ctrl_.stopTrajectory();
 }
 
