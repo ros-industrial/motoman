@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys, yaml
-import roslib; roslib.load_manifest('fs100')
+import roslib; roslib.load_manifest('motoman_driver')
 import rospy, rosbag
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
