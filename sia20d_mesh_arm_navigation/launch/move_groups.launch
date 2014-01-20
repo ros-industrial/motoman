@@ -1,3 +1,0 @@
-<launch>
-    <include file="$(find sia20d_mesh_arm_navigation)/launch/move_manipulator.launch" />
-</launch>

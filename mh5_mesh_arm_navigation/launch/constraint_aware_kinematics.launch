@@ -1,9 +1,0 @@
-<launch>
-    <include file="$(find mh5_mesh_arm_navigation)/launch/mh5_mesh_planning_environment.launch" />
-    <node pkg="arm_kinematics_constraint_aware" type="arm_kinematics_constraint_aware" name="mh5_mesh_manipulator_kinematics">
-        <param name="group" type="string" value="manipulator" />
-        <param name="manipulator/root_name" type="string" value="base_link" />
-        <param name="manipulator/tip_name" type="string" value="link_t" />
-        <param name="kinematics_solver" type="string" value="arm_kinematics_constraint_aware/KDLArmKinematicsPlugin" />
-    </node>
-</launch>
