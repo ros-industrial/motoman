@@ -131,7 +131,8 @@
 				</geometry>
 				<material name="yellow"/>
 			</collision>
-		</link>	
+		</link>
+    <link name="${prefix}tool0" />
 		<!-- end of link list -->
 		<!-- joint list -->
 		<joint name="${prefix}joint_s" type="revolute">
@@ -183,6 +184,11 @@
 			<axis xyz="0 0 -1" />
 			<limit lower="-3.1416" upper="3.1416" effort="100" velocity="6.97" />
 		</joint>
+    <joint name="${prefix}link_t-tool0" type="fixed" >
+      <origin xyz="0 0 0.0" rpy="0 0 -3.1416"/>
+      <parent link="${prefix}link_t" />
+      <child link="${prefix}tool0" />
+    </joint>
 		<!-- end of joint list -->
 	</xacro:macro>
 </robot>

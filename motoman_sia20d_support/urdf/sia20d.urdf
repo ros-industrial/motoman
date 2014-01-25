@@ -134,6 +134,7 @@
       <material name="yellow"/>
     </collision>
   </link>
+  <link name="tool0"/>
   <joint name="joint_s" type="revolute">
     <parent link="base_link"/>
     <child link="link_s"/>
@@ -182,5 +183,10 @@
     <origin rpy="0 0 0" xyz="0 0 0.18"/>
     <axis xyz="0 0 -1"/>
     <limit effort="100" lower="-3.1416" upper="3.1416" velocity="6.97"/>
+  </joint>
+  <joint name="link_t-tool0" type="fixed">
+    <origin rpy="0 0 -3.1416" xyz="0 0 0.0"/>
+    <parent link="link_t"/>
+    <child link="tool0"/>
   </joint>
 </robot>
