@@ -11,7 +11,7 @@
 	<arg name="robot_ip" />
 
   <!-- controller: Controller name (fs100 or dx100) -->
-  <arg name="controller"/>
+  <arg name="controller" />
 
 	<rosparam command="load" file="$(find motoman_sia20d_support)/config/joint_names_sia20d.yaml" />
 
