@@ -12,6 +12,9 @@
   <run_depend>urdf</run_depend>
 
   <export>
-
+    <deprecated>
+      This package will be removed in ROS Indigo.  The configuration data included in this
+      package can now be found in the various support packages (i.e. motoman_[model]_support)
+    </deprecated>
   </export>
 </package>
