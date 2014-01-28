@@ -9,11 +9,13 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   
-  <run_depend>motoman_driver</run_depend>
-  <run_depend>sia20d_mesh_arm_navigation</run_depend>
   <run_depend>motoman_config</run_depend>
-  <run_depend>sia10d_mesh_arm_navigation</run_depend>
-  <run_depend>mh5_mesh_arm_navigation</run_depend>
+  <run_depend>motoman_driver</run_depend>
+  <run_depend>motoman_mh5_support</run_depend>
+  <run_depend>motoman_sia10d_support</run_depend>
+  <run_depend>motoman_sia20d_moveit_config</run_depend>
+  <run_depend>motoman_sia20d_support</run_depend>
+  <run_depend>motoman_sia5d_support</run_depend>
 
   <export>
     <metapackage/>
