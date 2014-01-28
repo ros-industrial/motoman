@@ -15,10 +15,10 @@ add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
 add_definitions(-DROS=1)
 
 catkin_package(
-    DEPENDS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs
+    DEPENDS
+    CATKIN_DEPENDS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs
             control_msgs sensor_msgs simple_message urdf industrial_msgs
-            industrial_robot_client simple_message
-    CATKIN_DEPENDS 
+            industrial_robot_client
     INCLUDE_DIRS include
     LIBRARIES 
 )
