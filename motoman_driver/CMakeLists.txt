@@ -2,7 +2,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(motoman_driver)
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs control_msgs sensor_msgs urdf industrial_msgs industrial_robot_client industrial_utils simple_message)
+find_package(catkin REQUIRED COMPONENTS std_msgs roscpp actionlib
+    trajectory_msgs actionlib_msgs control_msgs sensor_msgs urdf
+    industrial_msgs industrial_robot_client industrial_utils simple_message)
 find_package(Boost REQUIRED COMPONENTS system thread)
 
 #######################################
@@ -13,7 +15,9 @@ add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
 add_definitions(-DROS=1)
 
 catkin_package(
-    DEPENDS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs control_msgs sensor_msgs simple_message urdf industrial_msgs industrial_robot_client simple_message
+    DEPENDS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs
+            control_msgs sensor_msgs simple_message urdf industrial_msgs
+            industrial_robot_client simple_message
     CATKIN_DEPENDS 
     INCLUDE_DIRS include
     LIBRARIES 
@@ -58,7 +62,7 @@ add_executable(motoman_robot_state
 target_link_libraries(motoman_robot_state	
   motoman_simple_message
   motoman_industrial_robot_client 
-  industrial_utils)
+  ${catkin_LIBRARIES})
 set_target_properties(motoman_robot_state 
   PROPERTIES OUTPUT_NAME robot_state 
   PREFIX "")
@@ -71,7 +75,7 @@ add_executable(motoman_motion_streaming_interface
 target_link_libraries(motoman_motion_streaming_interface 
   motoman_simple_message 
   motoman_industrial_robot_client 
-  industrial_utils)
+  ${catkin_LIBRARIES})
 set_target_properties(motoman_motion_streaming_interface 
   PROPERTIES OUTPUT_NAME motion_streaming_interface 
   PREFIX "")
@@ -98,7 +102,7 @@ add_executable(motoman_robot_state_bswap
 target_link_libraries(motoman_robot_state_bswap
   motoman_simple_message_bswap
   motoman_industrial_robot_client_bswap
-  industrial_utils)
+  ${catkin_LIBRARIES})
 set_target_properties(motoman_robot_state_bswap
   PROPERTIES OUTPUT_NAME robot_state_bswap
   PREFIX "")
@@ -111,7 +115,7 @@ add_executable(motoman_motion_streaming_interface_bswap
 target_link_libraries(motoman_motion_streaming_interface_bswap
   motoman_simple_message_bswap
   motoman_industrial_robot_client_bswap
-  industrial_utils)
+  ${catkin_LIBRARIES})
 set_target_properties(motoman_motion_streaming_interface_bswap
   PROPERTIES OUTPUT_NAME motion_streaming_interface_bswap
   PREFIX "")
