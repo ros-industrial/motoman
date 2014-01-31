@@ -2,8 +2,8 @@
 Changelog for package motoman_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.1 (2014-01-30)
+------------------
 * Synchronized versions for bloom release
 * driver: move DEPENDS to CATKIN_DEPENDS. Fix `#24 <https://github.com/shaun-edwards/motoman/issues/24>`_.
 * driver: link against catkin_LIBRARIES. Fix `#23 <https://github.com/shaun-edwards/motoman/issues/23>`_.

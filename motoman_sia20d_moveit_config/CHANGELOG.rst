@@ -2,8 +2,8 @@
 Changelog for package motoman_sia20d_moveit_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.1 (2014-01-30)
+------------------
 * Synchronized versions for bloom release
 * Corrected motoman robot name (added motoman prefix)
 * Updated joint limits based on previous arm navigation (acceleration limits are not accurate)

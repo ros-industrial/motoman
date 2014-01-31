@@ -2,8 +2,8 @@
 Changelog for package motoman
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.1 (2014-01-30)
+------------------
 * Synchronized versions for bloom release
 * Updated motoman meta-package to include new packages
 * Changed directory name from fs100 to motoman_driver

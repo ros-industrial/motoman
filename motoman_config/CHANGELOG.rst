@@ -2,8 +2,8 @@
 Changelog for package motoman_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.1 (2014-01-30)
+------------------
 * Synchronized versions for bloom release
 * Removed soft-links.
 * Added deprecated tag to motoman_config package

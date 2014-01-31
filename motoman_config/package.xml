@@ -1,6 +1,6 @@
 <package>
   <name>motoman_config</name>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <description>The motoman_config package includes common configurations and 3D models for motoman manipulators</description>
   <maintainer email="sedwards@swri.org">Shaun Edwards</maintainer>
   <license>BSD</license>
