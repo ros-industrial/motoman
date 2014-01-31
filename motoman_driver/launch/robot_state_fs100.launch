@@ -3,11 +3,11 @@
 
 
   Usage:
-    robot_interface_streaming_fs100.launch robot_ip:=<value>
+    robot_state_fs100.launch robot_ip:=<value>
 -->
 <launch>
 	<arg name="robot_ip" />
-	<arg name="use_bswap" default="true" />
+	<arg name="use_bswap" value="true" />
 
 	<!--rosparam command="load" file="$(find motoman_config)/?" /-->
 
