@@ -1,6 +1,0 @@
-<?xml version='1.0' encoding='ASCII'?>
-<library path="lib/libsia20d_mesh_kinematics_lib">
-  <class name="sia20d_mesh_manipulator_kinematics/IKFastKinematicsPlugin" type="sia20d_mesh_manipulator_kinematics::IKFastKinematicsPlugin" base_class_type="kinematics::KinematicsBase">
-    <description>A plugin created by using OpenRAVE's IK Fast component</description>
-  </class>
-</library>
