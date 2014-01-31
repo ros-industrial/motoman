@@ -1,0 +1,13 @@
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package motoman_config
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Forthcoming
+-----------
+* Synchronized versions for bloom release
+* Removed soft-links.
+* Added deprecated tag to motoman_config package
+* rosbuild motoman stack has been converted to catkin metapackage
+* added prefix to joint elements in sia20d macro
+* added mh5 xacro and xml files
+* Contributors: Josiah Taylor, Shaun Edwards, dpsolomon, jrgnicho, shaun-edwards, somudrog
