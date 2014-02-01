@@ -2,6 +2,10 @@
 Changelog for package motoman_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* No changes
+
 0.3.1 (2014-01-30)
 ------------------
 * Synchronized versions for bloom release

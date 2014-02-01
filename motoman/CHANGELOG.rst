@@ -2,6 +2,10 @@
 Changelog for package motoman
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Added build dependency on roslaunch to support packages
+
 0.3.1 (2014-01-30)
 ------------------
 * Synchronized versions for bloom release

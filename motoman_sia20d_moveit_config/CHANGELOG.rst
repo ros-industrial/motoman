@@ -2,6 +2,10 @@
 Changelog for package motoman_sia20d_moveit_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* No changes
+
 0.3.1 (2014-01-30)
 ------------------
 * Synchronized versions for bloom release
