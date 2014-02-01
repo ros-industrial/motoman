@@ -2,8 +2,8 @@
 Changelog for package motoman
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.2 (2014-01-31)
+------------------
 * Added build dependency on roslaunch to support packages
 
 0.3.1 (2014-01-30)
