@@ -1,33 +1,33 @@
 /*
- * Software License Agreement (BSD License)
- *
- * Copyright (c) 2013, Southwest Research Institute
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Southwest Research Institute, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+* Software License Agreement (BSD License)
+*
+* Copyright (c) 2013, Southwest Research Institute
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* 	* Redistributions of source code must retain the above copyright
+* 	notice, this list of conditions and the following disclaimer.
+* 	* Redistributions in binary form must reproduce the above copyright
+* 	notice, this list of conditions and the following disclaimer in the
+* 	documentation and/or other materials provided with the distribution.
+* 	* Neither the name of the Southwest Research Institute, nor the names
+*	of its contributors may be used to endorse or promote products derived
+*	from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+* POSSIBILITY OF SUCH DAMAGE.
+*/
 
 #include "motoman_driver/joint_trajectory_streamer.h"
 #include "motoman_driver/simple_message/motoman_motion_reply_message.h"
@@ -52,7 +52,7 @@ namespace joint_trajectory_streamer
 
 // override init() to read "robot_id" parameter and subscribe to joint_states
 bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
-                                   const std::map<std::string, double> &velocity_limits)
+  const std::map<std::string, double> &velocity_limits)
 {
   bool rtn = true;
 
@@ -80,6 +80,8 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const trajectory_ms
 {
   JointTrajPtFull msg_data;
   JointData values;
+
+  seq+=this->seq_offset_;
 
   // copy position data
   if (!pt.positions.empty())
@@ -127,11 +129,11 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const trajectory_ms
 }
 
 bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double> &vec,
-                                                      JointData &joints)
+  JointData &joints)
 {
   if ( vec.size() > joints.getMaxNumJoints() )
     ROS_ERROR_RETURN(false, "Failed to copy to JointData.  Len (%d) out of range (0 to %d)",
-                     vec.size(), joints.getMaxNumJoints());
+    vec.size(), joints.getMaxNumJoints());
 
   joints.init();
   for (int i=0; i<vec.size(); ++i)
@@ -146,6 +148,9 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
   if (!motion_ctrl_.controllerReady() && !motion_ctrl_.setTrajMode(true))
     ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion.  Trajectory ABORTED.  Correct issue and re-send trajectory.");
 
+  this->seq_offset_+=messages.size();
+  ROS_DEBUG("seq_offset_ is now %d", this->seq_offset_);
+
   return JointTrajectoryStreamer::send_to_robot(messages);
 }
 
@@ -153,6 +158,7 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
 void MotomanJointTrajectoryStreamer::streamingThread()
 {
   int connectRetryCount = 1;
+  ros::Time timeoutStart = ros::Time::now();
 
   ROS_INFO("Starting Motoman joint trajectory streamer thread");
   while (ros::ok())
@@ -171,7 +177,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       else if (connectRetryCount <= 0)
       {
         ROS_ERROR("Timeout connecting to robot controller.  Send new motion command to retry.");
-        this->state_ = TransferStates::IDLE;
+        this->mutex_.lock();
+        trajectoryStop();
+        this->mutex_.unlock();
       }
       continue;
     }
@@ -182,65 +190,71 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 
     switch (this->state_)
     {
-      case TransferStates::IDLE:
-        ros::Duration(0.250).sleep();  //  slower loop while waiting for new trajectory
-        break;
+    case TransferStates::IDLE:
+      //ros::Duration(0.250).sleep();  //  slower loop while waiting for new trajectory
+      break;
 
-      case TransferStates::STREAMING:
-        if (this->current_point_ >= (int)this->current_traj_.size())
+    case TransferStates::STREAMING:
+      if (this->current_point_ >= (int)this->current_traj_.size())
+      {
+        if(ros::Time::now() - timeoutStart > timeout_)
         {
           ROS_INFO("Trajectory streaming complete, setting state to IDLE");
-          this->state_ = TransferStates::IDLE;
-          break;
+          trajectoryStop();
         }
+        else ROS_DEBUG("Waiting for a new point");
+        break;
+      }
 
-        if (!this->connection_->isConnected())
+      if (!this->connection_->isConnected())
+      {
+        ROS_DEBUG("Robot disconnected.  Attempting reconnect...");
+        connectRetryCount = 5;
+        break;
+      }
+
+      tmpMsg = this->current_traj_[this->current_point_];
+      msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
+        ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
+
+      ROS_DEBUG("Sending joint trajectory point");
+      if (!this->connection_->sendAndReceiveMsg(msg, reply, false))
+        ROS_WARN("Failed sent joint point, will try again");
+      else
+      {
+        MotionReplyMessage reply_status;
+        if (!reply_status.init(reply))
         {
-          ROS_DEBUG("Robot disconnected.  Attempting reconnect...");
-          connectRetryCount = 5;
+          ROS_ERROR("Aborting trajectory: Unable to parse JointTrajectoryPoint reply");
+          trajectoryStop();
           break;
         }
 
-        tmpMsg = this->current_traj_[this->current_point_];
-        msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
-                 ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
-
-        ROS_DEBUG("Sending joint trajectory point");
-        if (!this->connection_->sendAndReceiveMsg(msg, reply, false))
-          ROS_WARN("Failed sent joint point, will try again");
+        if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
+        {
+          ROS_DEBUG("Point[%d of %d] sent to controller",
+            this->current_point_, (int)this->current_traj_.size());
+          this->current_point_++;
+        }
+        else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
+          break;  // silently retry sending this point
         else
         {
-          MotionReplyMessage reply_status;
-          if (!reply_status.init(reply))
-          {
-            ROS_ERROR("Aborting trajectory: Unable to parse JointTrajectoryPoint reply");
-            this->state_ = TransferStates::IDLE;
-            break;
-          }
-
-          if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
-          {
-            ROS_DEBUG("Point[%d of %d] sent to controller",
-                     this->current_point_, (int)this->current_traj_.size());
-            this->current_point_++;
-          }
-          else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
-            break;  // silently retry sending this point
-          else
-          {
-            ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point"
-                             << " (#" << this->current_point_ << "): "
-                             << MotomanMotionCtrl::getErrorString(reply_status.reply_));
-            this->state_ = TransferStates::IDLE;
-            break;
-          }
+          ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point"
+            << " (#" << this->current_point_ << "): "
+            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
+          trajectoryStop();
+          break;
         }
+      }
 
-        break;
-      default:
-        ROS_ERROR("Joint trajectory streamer: unknown state");
-        this->state_ = TransferStates::IDLE;
-        break;
+      timeoutStart = ros::Time::now();   // keep track of the timeout
+
+      break;
+    default:
+      ROS_ERROR("Joint trajectory streamer: unknown state");
+      trajectoryStop();
+      break;
     }
 
     this->mutex_.unlock();
@@ -252,7 +266,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 // override trajectoryStop to send MotionCtrl message
 void MotomanJointTrajectoryStreamer::trajectoryStop()
 {
+  ROS_INFO("trajectoryStop() called");
   this->state_ = TransferStates::IDLE;  // stop sending trajectory points
+  this->seq_offset_ = 0;
   motion_ctrl_.stopTrajectory();
 }
 
@@ -276,11 +292,16 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
 
   // FS100 requires trajectory start at current position
   namespace IRC_utils = industrial_robot_client::utils;
-  if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
-                                traj.joint_names, traj.points[0].positions,
-                                start_pos_tol_))
+  if(this->state_ == TransferStates::IDLE)
   {
-    ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+    if(traj.header.seq != 0)
+      ROS_WARN("When switching from IDLE to STREAMING the frame id of the trajectory should be 0.");
+    if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
+      traj.joint_names, traj.points[0].positions,
+      start_pos_tol_))
+    {
+      ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+    }
   }
 
   return true;

@@ -51,10 +51,12 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
 {
   std::string ip;
   int port;
+  double timeout;
 
-  // override IP/port with ROS params, if available
+  // override IP/port/timeout with ROS params, if available
   ros::param::param<std::string>("robot_ip_address", ip, default_ip);
   ros::param::param<int>("~port", port, default_port);
+  ros::param::param<double>("timeout", timeout, timeout_.toSec());
 
   // check for valid parameter values
   if (ip.empty())
@@ -65,6 +67,11 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
   if (port <= 0)
   {
     ROS_ERROR("No valid robot IP port found.  Please set ROS '~port' param");
+    return false;
+  }
+  if(!setTimeout(timeout)) 
+  {
+    ROS_ERROR("Invalid timeout. Please set ROS 'timeout' param to a positive value (in seconds)");
     return false;
   }
 
@@ -89,7 +96,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
 }
 
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
-                                    const std::map<std::string, double> &velocity_limits)
+  const std::map<std::string, double> &velocity_limits)
 {
   this->connection_ = connection;
   this->all_joint_names_ = joint_names;
@@ -115,7 +122,7 @@ JointTrajectoryInterface::~JointTrajectoryInterface()
 }
 
 bool JointTrajectoryInterface::jointTrajectoryCB(industrial_msgs::CmdJointTrajectory::Request &req,
-                                                 industrial_msgs::CmdJointTrajectory::Response &res)
+  industrial_msgs::CmdJointTrajectory::Response &res)
 {
   trajectory_msgs::JointTrajectoryPtr traj_ptr(new trajectory_msgs::JointTrajectory);
   *traj_ptr = req.trajectory;  // copy message data
@@ -180,7 +187,7 @@ bool JointTrajectoryInterface::trajectory_to_msgs(const trajectory_msgs::JointTr
 }
 
 bool JointTrajectoryInterface::select(const std::vector<std::string>& ros_joint_names, const ros_JointTrajPt& ros_pt,
-                      const std::vector<std::string>& rbt_joint_names, ros_JointTrajPt* rbt_pt)
+  const std::vector<std::string>& rbt_joint_names, ros_JointTrajPt* rbt_pt)
 {
   ROS_ASSERT(ros_joint_names.size() == ros_pt.positions.size());
 
@@ -254,7 +261,7 @@ bool JointTrajectoryInterface::calc_velocity(const trajectory_msgs::JointTraject
 
   // find largest velocity-ratio (closest to max joint-speed)
   int max_idx = std::max_element(vel_ratios.begin(), vel_ratios.end()) - vel_ratios.begin();
-  
+
   if (vel_ratios[max_idx] > 0)
     *rbt_velocity = vel_ratios[max_idx];
   else
@@ -268,7 +275,7 @@ bool JointTrajectoryInterface::calc_velocity(const trajectory_msgs::JointTraject
     ROS_WARN("computed velocity (%.1f %%) is out-of-range.  Clipping to [0-100%%]", *rbt_velocity * 100);
     *rbt_velocity = std::min(1.0, std::max(0.0, *rbt_velocity));  // clip to [0,1]
   }
-  
+
   return true;
 }
 
@@ -323,7 +330,7 @@ void JointTrajectoryInterface::trajectoryStop()
 }
 
 bool JointTrajectoryInterface::stopMotionCB(industrial_msgs::StopMotion::Request &req,
-                                            industrial_msgs::StopMotion::Response &res)
+  industrial_msgs::StopMotion::Response &res)
 {
   trajectoryStop();
 

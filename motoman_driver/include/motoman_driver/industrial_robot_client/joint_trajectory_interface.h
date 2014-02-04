@@ -71,7 +71,7 @@ public:
  /**
   * \brief Default constructor.
   */
-    JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0) {};
+    JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0), timeout_(ros::Duration(0.2)) {};
 
     /**
      * \brief Initialize robot connection using default method.
@@ -115,6 +115,28 @@ public:
    * \brief Begin processing messages and publishing topics.
    */
   virtual void run() { ros::spin(); }
+
+  /**
+   * \brief Setter function for the timeout parameter.
+   * 
+   * \param timeout double Timeout value in seconds (must be greater than 0).
+   * \return true if the timeout value is correct, false otherwise.
+   */
+  bool setTimeout(double timeout) { 
+	  if(timeout > 0)
+	  {
+		timeout_ = ros::Duration(timeout);
+		return true;
+	  }
+	  else return false;
+  }
+
+   /**
+   * \brief Getter function for the timeout parameter.
+   *
+   * \return Current timeout value in ros::Duration.
+   */
+  ros::Duration getTimeout() { return timeout_; }
 
 protected:
 
@@ -253,6 +275,7 @@ protected:
   double default_duration_;   // default duration to use for joint commands, if no
   std::map<std::string, double> joint_vel_limits_;  // cache of max joint velocities from URDF
   sensor_msgs::JointState cur_joint_pos_;  // cache of last received joint state
+  ros::Duration timeout_;   // Time in seconds between the last sent point to the controller and going back to IDLE state. By default 200ms.
 
 private:
   /**

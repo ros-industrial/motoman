@@ -74,7 +74,7 @@ public:
    * \param robot_id robot group # on this controller (for multi-group systems)
    */
   MotomanJointTrajectoryStreamer(int robot_id=-1) : JointTrajectoryStreamer(1),
-                                                  robot_id_(robot_id) {}
+                                                  robot_id_(robot_id), seq_offset_(0) {}
 
   ~MotomanJointTrajectoryStreamer();
 
@@ -111,6 +111,8 @@ public:
 protected:
   static const double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
   static const double start_pos_tol_  = 1e-4; // max difference btwn start & current position, for validation (rad)
+
+  size_t seq_offset_;
 
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
