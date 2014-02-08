@@ -40,7 +40,6 @@
     <child link="link_s"/>
     <axis xyz="0 0 1"/>
     <limit effort="0" lower="-3.14159274" upper="3.14159274" velocity="3.4906586"/>
-    <safety_controller k_position="0" k_velocity="0" soft_lower_limit="0" soft_upper_limit="0"/>
   </joint>
   <link name="link_l">
     <visual>
@@ -62,7 +61,6 @@
     <child link="link_l"/>
     <axis xyz="0 1 0"/>
     <limit effort="0" lower="-1.91986223" upper="1.91986223" velocity="3.4906586"/>
-    <safety_controller k_position="0" k_velocity="0" soft_lower_limit="0" soft_upper_limit="0"/>
   </joint>
   <link name="link_e">
     <visual>
@@ -84,7 +82,6 @@
     <child link="link_e"/>
     <axis xyz="0 0 1"/>
     <limit effort="0" lower="-2.96705981" upper="2.96705981" velocity="3.4906586"/>
-    <safety_controller k_position="0" k_velocity="0" soft_lower_limit="0" soft_upper_limit="0"/>
   </joint>
   <link name="link_u">
     <visual>
@@ -106,7 +103,6 @@
     <child link="link_u"/>
     <axis xyz="0 1 0"/>
     <limit effort="0" lower="-1.57079637" upper="2.007128695" velocity="3.4906586"/>
-    <safety_controller k_position="0" k_velocity="0" soft_lower_limit="0" soft_upper_limit="0"/>
   </joint>
   <link name="link_r">
     <visual>
@@ -128,7 +124,6 @@
     <child link="link_r"/>
     <axis xyz="-1 0 0"/>
     <limit effort="0" lower="-1.57079637" upper="1.57079637" velocity="3.4906586"/>
-    <safety_controller k_position="0" k_velocity="0" soft_lower_limit="0" soft_upper_limit="0"/>
   </joint>
   <link name="link_b">
     <visual>
@@ -150,7 +145,6 @@
     <child link="link_b"/>
     <axis xyz="0 1 0"/>
     <limit effort="0" lower="-1.91986223" upper="1.91986223" velocity="4.01425739"/>
-    <safety_controller k_position="0" k_velocity="0" soft_lower_limit="0" soft_upper_limit="0"/>
   </joint>
   <link name="link_t">
     <visual>
@@ -172,7 +166,6 @@
     <child link="link_t"/>
     <axis xyz="-1 0 0"/>
     <limit effort="0" lower="-1.57079637" upper="1.57079637" velocity="6.10865255"/>
-    <safety_controller k_position="0" k_velocity="0" soft_lower_limit="0" soft_upper_limit="0"/>
   </joint>
   <link name="tool0"/>
   <joint name="link_t-tool0" type="fixed">
