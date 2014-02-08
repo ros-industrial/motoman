@@ -42,7 +42,6 @@
     <child link="${prefix}link_s" />
     <axis xyz="0 0 1" />
     <limit lower="${-180*deg}" upper="${180*deg}" effort="0" velocity="${200*deg}" />
-    <safety_controller soft_lower_limit="0" soft_upper_limit="0" k_position="0" k_velocity="0" />
   </joint>
 
   <link name="${prefix}link_l">
@@ -66,7 +65,6 @@
     <child link="${prefix}link_l" />
     <axis xyz="0 1 0" />
     <limit lower="${-110*deg}" upper="${110*deg}" effort="0" velocity="${200*deg}" />
-    <safety_controller soft_lower_limit="0" soft_upper_limit="0" k_position="0" k_velocity="0" />
   </joint>
 
   <link name="${prefix}link_e">
@@ -90,7 +88,6 @@
     <child link="${prefix}link_e" />
     <axis xyz="0 0 1" />
     <limit lower="${-170*deg}" upper="${170*deg}" effort="0" velocity="${200*deg}" />
-    <safety_controller soft_lower_limit="0" soft_upper_limit="0" k_position="0" k_velocity="0" />
   </joint>
   
   <link name="${prefix}link_u">
@@ -114,7 +111,6 @@
     <child link="${prefix}link_u" />
     <axis xyz="0 1 0" />
     <limit lower="${-90*deg}" upper="${115*deg}" effort="0"  velocity="${200*deg}" />
-    <safety_controller soft_lower_limit="0" soft_upper_limit="0" k_position="0" k_velocity="0" />
   </joint>
 
   <link name="${prefix}link_r">
@@ -138,7 +134,6 @@
     <child link="${prefix}link_r" />
     <axis xyz="-1 0 0" />
     <limit lower="${-90*deg}" upper="${90*deg}" effort="0" velocity="${200*deg}" />
-    <safety_controller soft_lower_limit="0" soft_upper_limit="0" k_position="0" k_velocity="0" />
   </joint>
 
   <link name="${prefix}link_b">
@@ -162,7 +157,6 @@
     <child link="${prefix}link_b" />
     <axis xyz="0 1 0" />
     <limit lower="${-110*deg}" upper="${110*deg}" effort="0" velocity="${230*deg}" />
-    <safety_controller soft_lower_limit="0" soft_upper_limit="0" k_position="0" k_velocity="0" />
   </joint>
 
   <link name="${prefix}link_t">
@@ -186,7 +180,6 @@
     <child link="${prefix}link_t" />
     <axis xyz="-1 0 0" />
     <limit lower="${-90*deg}" upper="${90*deg}" effort="0" velocity="${350*deg}" />
-    <safety_controller soft_lower_limit="0" soft_upper_limit="0" k_position="0" k_velocity="0" />
   </joint>
   
   <link name="${prefix}tool0" />
