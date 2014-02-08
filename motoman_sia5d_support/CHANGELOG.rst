@@ -2,8 +2,8 @@
 Changelog for package motoman_sia5d_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.3 (2014-02-07)
+------------------
 * sia5d: remove incorrect safety ctrlr tags. Fix `#29 <https://github.com/shaun-edwards/motoman/issues/29>`_.
 * Contributors: gavanderhoorn
 

@@ -2,8 +2,8 @@
 Changelog for package motoman_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.3 (2014-02-07)
+------------------
 * No changes
 
 0.3.2 (2014-01-31)
