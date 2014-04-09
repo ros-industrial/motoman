@@ -99,6 +99,74 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   send_to_robot(new_traj_msgs);
 }
 
+void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTrajectoryConstPtr &msg)
+{
+  // read current state value (should be atomic)
+  int state = this->state_;
+
+  ROS_DEBUG("Current state is: %d", state);
+  
+  //If current state is idle, set to POINT_STREAMING
+  if (TransferStates::IDLE == state)
+  {
+    this->mutex_.lock();
+      this->state_ = TransferStates::POINT_STREAMING;
+      this->current_point_ = 0;
+      this->streaming_sequence = 0;
+      this->streaming_start_ = ros::Time::now();
+    this->mutex_.unlock();
+    state = TransferStates::POINT_STREAMING;
+    ROS_INFO("First joint point received. Starting on-the-fly streaming.");  
+  }
+  
+  //if current state is POINT_STREAMING, process incoming point.
+  if (TransferStates::POINT_STREAMING == state)
+  {
+    if (msg->points.empty())
+    {
+      ROS_INFO("Empty point received, cancelling current trajectory");
+      return;
+    }
+    
+    //Else, Push point into queue
+    SimpleMessage message;
+    trajectory_msgs::JointTrajectoryPoint rbt_pt, xform_pt;
+
+    // select / reorder joints for sending to robot
+    if (!select(msg->joint_names, msg->points[0], this->all_joint_names_, &rbt_pt))
+      return;
+
+    // transform point data (e.g. for joint-coupling)
+    if (!transform(rbt_pt, &xform_pt))
+      return;
+
+    // convert trajectory point to ROS message
+    if (!create_message(this->streaming_sequence, xform_pt, &message))
+      return;
+       
+    //Points get pushed into queue here. They will be popped in the Streaming Thread and sent to controller.
+    this->mutex_.lock();
+      this->streaming_queue_.push(message);
+      this->streaming_sequence++;
+    this->mutex_.unlock();
+  }
+  
+  //Else, cannot splice. Cancel current motion.
+  else
+  {
+    if (msg->points.empty())
+      ROS_INFO("Empty trajectory received, canceling current trajectory");
+    else
+      ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+
+	  this->mutex_.lock();
+      trajectoryStop();
+	  this->mutex_.unlock();
+    return;
+  }  
+}
+
+
 bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
   ROS_INFO("Loading trajectory, setting state to streaming");
@@ -199,8 +267,41 @@ void JointTrajectoryStreamer::streamingThread()
           ROS_WARN("Failed sent joint point, will try again");
 
         break;
+      case TransferStates::POINT_STREAMING:
+        ROS_INFO("I'm streaming, sir.");
+        //if no points in queue, streaming complete, set to idle.
+        if(this->streaming_queue_.empty())
+        {
+          ROS_INFO("Point streaming complete, setting state to IDLE");
+          this->state_ = TransferStates::IDLE;
+          break;
+        }
+        //if not connected, reconnect.
+         if (!this->connection_->isConnected())
+        {
+          ROS_DEBUG("Robot disconnected.  Attempting reconnect...");
+          connectRetryCount = 5;
+          break;
+        }
+        //otherwise, send point to robot.
+        tmpMsg = this->streaming_queue_.front();
+        this->streaming_queue_.pop();
+        msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
+                 ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
+            
+        ROS_DEBUG("Sending joint trajectory point");
+        if (this->connection_->sendAndReceiveMsg(msg, reply, false))
+        {
+          ROS_INFO("Point[%d] sent to controller", this->current_point_);
+          this->current_point_++;
+        }
+        else
+          ROS_WARN("Failed sent joint point, will try again");
+
+        break;
+        //consider checking for controller point starvation here. use a timer to check if the state is popping in and out of POINT_STREAMING mode, indicating something is trying to send streaming points, but is doing so too slowly. It may, in fact, not matter other than motion won't be smooth.
       default:
-        ROS_ERROR("Joint trajectory streamer: unknown state");
+        ROS_ERROR("Joint trajectory streamer: unknown state, %d", this->state_);
         this->state_ = TransferStates::IDLE;
         break;
     }
