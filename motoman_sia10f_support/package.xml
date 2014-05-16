@@ -1,25 +1,25 @@
 
 <package>
- <name>motoman_sia5d_support</name>
- <version>0.3.3</version>
+ <name>motoman_sia10f_support</name>
+ <version>0.0.1</version>
  <description>
   <p>
-      ROS Industrial support for the Motoman sia5d (and variants).
+      ROS Industrial support for the Motoman sia10f (and variants).
     </p>
   <p>
       This package contains configuration data, 3D models and launch files
-      for Motoman sia5d manipulators.
+      for Motoman sia10f manipulators.
     </p>
   <p>
    <b>Specifications</b>
   </p>
   <ul>
-   <li>sia5d - Default</li>
+   <li>sia10f - Default</li>
   </ul>
   <p>
       Joint limits and maximum joint velocities are based on the information 
       found in the online 
-      http://www.motoman.com/datasheets/sia5d.pdf
+      http://www.motoman.com/datasheets/sia10f.pdf
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
@@ -29,10 +29,10 @@
       robot model and configuration you intend to use them with.
     </p>
  </description>
- <author>Shaun Edwards</author>
- <maintainer email="shaun.edwards@gmail.com"/>
+ <author>Thiago de Freitas</author>
+ <maintainer email="tdf@ipa.fhg.de"/>
  <license>BSD</license>
- <url type="website">http://ros.org/wiki/motoman_sia5d_support</url>
+ <url type="website">http://ros.org/wiki/motoman_sia10f_support</url>
  <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
  <url type="repository">https://github.com/ros-industrial/motoman</url>
  <buildtool_depend>catkin</buildtool_depend>
