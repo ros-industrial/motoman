@@ -7,6 +7,9 @@
 //			   Listen for skill send
 // 08/14/2013: Check initialization success and added extra I/O Feedback 
 //             Release v.1.1.1
+// June 2014:	Release v1.2.0
+//				Add support for multiple control groups.
+//				Add support for DX200 controller.
 /*
 * Software License Agreement (BSD License) 
 *
@@ -72,6 +75,8 @@ void RosInitTask()
 
 	if(!Ros_Controller_Init(&ros_controller))
 	{
+		//set feedback signal to notify failure
+		Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
 		mpDeleteSelf;
 		return;
 	}
@@ -107,7 +112,8 @@ void RosInitTask()
 	FOREVER
 	{
 		// Check controller status
-		Ros_Controller_StatusUpdate(&ros_controller);
+		if (!Ros_Controller_StatusUpdate(&ros_controller))
+			puts("Failed to update controller status.  Check robot parameters.");
 	
 		mpTaskDelay(CONTROLLER_STATUS_UPDATE_PERIOD);
 	}
