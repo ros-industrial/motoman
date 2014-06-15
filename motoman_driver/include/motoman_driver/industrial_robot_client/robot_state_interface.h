@@ -40,7 +40,9 @@
 #include "simple_message/message_handler.h"
 #include "simple_message/socket/tcp_client.h"
 #include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
+#include "motoman_driver/industrial_robot_client/robot_group.h"
 #include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
+#include "motoman_driver/industrial_robot_client/joint_feedback_ex_relay_handler.h"
 #include "industrial_robot_client/robot_status_relay_handler.h"
 
 namespace industrial_robot_client
@@ -54,6 +56,7 @@ using industrial::message_handler::MessageHandler;
 using industrial::tcp_client::TcpClient;
 using industrial_robot_client::joint_relay_handler::JointRelayHandler;
 using industrial_robot_client::joint_feedback_relay_handler::JointFeedbackRelayHandler;
+using industrial_robot_client::joint_feedback_ex_relay_handler::JointFeedbackExRelayHandler;
 using industrial_robot_client::robot_status_relay_handler::RobotStatusRelayHandler;
 namespace StandardSocketPorts = industrial::simple_socket::StandardSocketPorts;
 
@@ -65,6 +68,7 @@ namespace StandardSocketPorts = industrial::simple_socket::StandardSocketPorts;
  * to implement robot-specific behavior.
  */
 //* RobotStateInterface
+
 class RobotStateInterface
 {
 
@@ -74,6 +78,7 @@ public:
    * \brief Default constructor.
    */
   RobotStateInterface();
+
 
   /**
    * \brief Initialize robot connection using default method.
@@ -85,7 +90,7 @@ public:
    *
    * \return true on success, false otherwise
    */
-  bool init(std::string default_ip = "", int default_port = StandardSocketPorts::STATE);
+  bool init(std::string default_ip = "", int default_port = StandardSocketPorts::STATE, bool legacy_mode=false);
 
   /**
    * \brief Initialize robot connection using specified method.
@@ -107,6 +112,18 @@ public:
    * \return true on success, false otherwise
    */
   bool init(SmplMsgConnection* connection, std::vector<std::string>& joint_names);
+
+  /**
+   * \brief Initialize robot connection using specified method and joint-names.
+   *
+   * \param connection new robot-connection instance (ALREADY INITIALIZED).
+   * \param joint_names list of joint-names for ROS topic
+   *   - Count and order should match data sent to robot connection.
+   *   - Use blank-name to skip (not publish) a joint-position
+   *
+   * \return true on success, false otherwise
+   */
+  bool init(SmplMsgConnection* connection, std::map<int, RobotGroup> robot_groups);
 
   /**
    * \brief Begin processing messages and publishing topics.
@@ -138,6 +155,10 @@ public:
     return this->joint_names_;
   }
 
+  std::map<int, RobotGroup> get_robot_groups()
+  {
+      return this->robot_groups_;
+  }
 
   /**
    * \brief Add a new handler.
@@ -154,11 +175,16 @@ protected:
   TcpClient default_tcp_connection_;
   JointRelayHandler default_joint_handler_;
   JointFeedbackRelayHandler default_joint_feedback_handler_;
+  JointFeedbackExRelayHandler default_joint_feedback_ex_handler_;
   RobotStatusRelayHandler default_robot_status_handler_;
 
   SmplMsgConnection* connection_;
   MessageManager manager_;
   std::vector<std::string> joint_names_;
+
+  std::map<int,RobotGroup> robot_groups_;
+
+  bool legacy_mode_;
 
 };//class RobotStateInterface
 

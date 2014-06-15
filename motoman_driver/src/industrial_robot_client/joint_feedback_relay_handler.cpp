@@ -42,8 +42,21 @@ namespace joint_feedback_relay_handler
 {
 
 bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
+                                     std::map<int, RobotGroup> &robot_groups)
+{
+    this->legacy_mode_ = false;
+  bool rtn = JointRelayHandler::init(connection, (int)StandardMsgTypes::JOINT_FEEDBACK, robot_groups);
+  // try to read robot_id parameter, if none specified
+  if ( (robot_id_ < 0) )
+    node_.param("robot_id", robot_id_, 0);
+
+  return rtn;
+}
+
+bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
                                      std::vector<std::string> &joint_names)
 {
+  this->legacy_mode_ = true;
   bool rtn = JointRelayHandler::init(connection, (int)StandardMsgTypes::JOINT_FEEDBACK, joint_names);
 
   // try to read robot_id parameter, if none specified
@@ -60,14 +73,35 @@ bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
 {
   // inspect robot_id field first, to avoid "Failed to Convert" message
   JointFeedbackMessage tmp_msg;
-  if (tmp_msg.init(msg_in) && (tmp_msg.getRobotID() != robot_id_))
+
+  tmp_msg.init(msg_in);
+
+
+//  if (tmp_msg.getRobotID() != robot_id_)
+//  {
+//    LOG_COMM("Ignoring Message: robotID (%d) doesn't match expected (%d)",
+//             tmp_msg.getRobotID(), robot_id_);
+//    return false;
+//  }
+
+ if(this->legacy_mode_)
+    return JointRelayHandler::create_messages(msg_in, control_state, sensor_state);
+ else
+    return JointRelayHandler::create_messages(msg_in, control_state, sensor_state, tmp_msg.getRobotID());
+}
+
+
+bool JointFeedbackRelayHandler::convert_message(SimpleMessage& msg_in, DynamicJointPoint* joint_state, int robot_id)
+{
+  JointFeedbackMessage joint_feedback_msg;
+
+  if (!joint_feedback_msg.init(msg_in))
   {
-    LOG_COMM("Ignoring Message: robotID (%d) doesn't match expected (%d)",
-             tmp_msg.getRobotID(), robot_id_);
+    LOG_ERROR("Failed to initialize joint feedback message");
     return false;
   }
 
-  return JointRelayHandler::create_messages(msg_in, control_state, sensor_state);
+  return convert_message(joint_feedback_msg, joint_state, robot_id);
 }
 
 bool JointFeedbackRelayHandler::convert_message(SimpleMessage& msg_in, JointTrajectoryPoint* joint_state)
@@ -97,6 +131,55 @@ bool JointFeedbackRelayHandler::JointDataToVector(const JointData &joints,
   vec.resize(len);
   for (int i=0; i<len; ++i)
     vec[i] = joints.getJoint(i);
+
+  return true;
+}
+
+bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointPoint* joint_state, int robot_id)
+{
+  JointData values;
+
+  int num_jnts = robot_groups_[robot_id].get_joint_names().size();
+
+  // copy position data
+  if (msg_in.getPositions(values))
+  {
+    if (!JointDataToVector(values, joint_state->positions, num_jnts))
+    {
+      LOG_ERROR("Failed to parse position data from JointFeedbackMessage");
+      return false;
+    }
+  } else
+    joint_state->positions.clear();
+
+  // copy velocity data
+  if (msg_in.getVelocities(values))
+  {
+    if (!JointDataToVector(values, joint_state->velocities, num_jnts))
+    {
+      LOG_ERROR("Failed to parse velocity data from JointFeedbackMessage");
+      return false;
+    }
+  } else
+    joint_state->velocities.clear();
+
+  // copy acceleration data
+  if (msg_in.getAccelerations(values))
+  {
+    if (!JointDataToVector(values, joint_state->accelerations, num_jnts))
+    {
+      LOG_ERROR("Failed to parse acceleration data from JointFeedbackMessage");
+      return false;
+    }
+  } else
+    joint_state->accelerations.clear();
+
+  // copy timestamp data
+  shared_real value;
+  if (msg_in.getTime(value))
+    joint_state->time_from_start = ros::Duration(value);
+  else
+    joint_state->time_from_start = ros::Duration(0);
 
   return true;
 }

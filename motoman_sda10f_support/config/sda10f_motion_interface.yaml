@@ -1,0 +1,17 @@
+topic_list
+    - name: sda10f_r1_controller
+      ns: sda10f_r1
+      group: 1
+      joints: ['joint_r1_s', 'joint_r1_l', 'joint_r1_e', 'joint_r1_u', 'joint_r1_r', 'joint_r1_b', 'joint_r1_t']
+    - name: sda10f_r2_controller
+      ns: sda10f_r2
+      group: 2
+      joints: ['joint_r2_s', 'joint_r2_l', 'joint_r2_e', 'joint_r2_u', 'joint_r2_r', 'joint_r2_b', 'joint_r2_t']
+    - name: sda10f_b1_controller
+      ns: sda10f_b1
+      group: 3
+      joints: ['joint_b1']
+    - name: sda10f_b2_controller
+      ns: sda10f_b2
+      group: 4
+      joints: ['joint_b2']

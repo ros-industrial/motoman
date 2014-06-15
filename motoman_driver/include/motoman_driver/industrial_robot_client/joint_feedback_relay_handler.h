@@ -35,6 +35,7 @@
 
 #include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
 #include "simple_message/messages/joint_feedback_message.h"
+#include "industrial_msgs/DynamicJointPoint.h"
 
 namespace industrial_robot_client
 {
@@ -46,6 +47,7 @@ using industrial::simple_message::SimpleMessage;
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using industrial_robot_client::joint_relay_handler::JointRelayHandler;
 using trajectory_msgs::JointTrajectoryPoint;
+using industrial_msgs::DynamicJointPoint;
 
 /**
  * \brief Message handler that relays joint positions (converts simple message
@@ -78,8 +80,13 @@ public:
  virtual bool init(SmplMsgConnection* connection,
                     std::vector<std::string> &joint_names);
 
+  virtual bool init(SmplMsgConnection* connection,
+                    std::map<int, RobotGroup> &robot_groups);
+
 protected:
  int robot_id_;
+ bool legacy_mode_;
+
 
   /**
    * \brief Convert joint message into intermediate message-type
@@ -88,6 +95,14 @@ protected:
    * \param[out] joint_state JointTrajectoryPt message for intermediate processing
    */
   virtual bool convert_message(SimpleMessage& msg_in, JointTrajectoryPoint* joint_state);
+
+ /**
+  * \brief Convert joint message into intermediate message-type
+  *
+  * \param[in] msg_in Message from robot connection
+  * \param[out] joint_state JointTrajectoryPt message for intermediate processing
+  */
+ virtual bool convert_message(SimpleMessage& msg_in, DynamicJointPoint* joint_state, int robot_id);
 
   // override JointRelayHandler::create_messages, to check robot_id w/o error msg
   bool create_messages(SimpleMessage& msg_in,
@@ -105,6 +120,14 @@ private:
    * \param[out] joint_state JointTrajectoryPt message for intermediate processing
    */
   bool convert_message(JointFeedbackMessage& msg_in, JointTrajectoryPoint* joint_state);
+
+  /**
+   * \brief Convert joint feedback message into intermediate message-type
+   *
+   * \param[in] msg_in JointFeedbackMessage from robot connection
+   * \param[out] joint_state JointTrajectoryPt message for intermediate processing
+   */
+  bool convert_message(JointFeedbackMessage& msg_in, DynamicJointPoint* joint_state, int robot_id);
 
 };//class JointFeedbackRelayHandler
 
