@@ -1,4 +1,4 @@
-﻿Build started 5/30/2014 3:43:50 PM.
+﻿Build started 6/16/2014 10:14:35 AM.
      1>Project "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\MpRosAllControllers.vcxproj" on node 2 (Build target(s)).
      1>Build:
          mpbuilder.exe -c DX200 -p "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\\" -n "MotoRosDX200" -o build
@@ -7,6 +7,7 @@
          Compiling CtrlGroup.c
          Compiling MotionServer.c
          Compiling mpMain.c
+     1>mpMain.c(52,3): warning : #warning Debug messages in MotoPlus *will* affect application performance
          Compiling SimpleMessage.c
          Compiling StateServer.c
          Building MotoRosDX200.out
@@ -16,4 +17,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.18
+Time Elapsed 00:00:03.09

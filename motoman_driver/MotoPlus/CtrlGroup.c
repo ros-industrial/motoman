@@ -88,6 +88,9 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 	
 	// Check if group is defined
 	numAxes = GP_getNumberOfAxes(groupNo);
+#ifdef DEBUG
+	printf("Group %d: Num Axes %d\n", groupNo, numAxes);
+#endif
 	if(numAxes > 0)
 	{
 		bInitOk = TRUE;

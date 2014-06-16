@@ -463,7 +463,9 @@ BOOL Ros_Controller_IsMotionReady(Controller* controller)
 	if(controller->numRobot < 2)
 		return (controller->bRobotJobReady && controller->bSkillMotionReady[0]);
 	else
+	{
 		return (controller->bRobotJobReady && controller->bSkillMotionReady[0] && controller->bSkillMotionReady[1]);
+	}
 #elif (FS100 || DX200)
 	return (controller->bRobotJobReady);
 #endif
@@ -744,8 +746,6 @@ void Ros_Controller_ListenForSkill(Controller* controller, int sl)
 			if(strcmp(skillMsg.cmd, "ROS-START") == 0)
 			{
 				controller->bSkillMotionReady[sl - MP_SL_ID1] = TRUE;
-				if(Ros_Controller_IsMotionReady(controller))
-					printf("Robot job is ready for ROS commands.\r\n");
 			}
 			else if(strcmp(skillMsg.cmd, "ROS-STOP") == 0)
 			{
@@ -755,6 +755,12 @@ void Ros_Controller_ListenForSkill(Controller* controller, int sl)
 			{
 				printf ("MP_SKILL_SEND(SL_ID=%d) - %s \n", sl, skillMsg.cmd);
 			}
+#ifdef DEBUG
+			printf("controller->bSkillMotionReady[%d] = %d\n", (sl - MP_SL_ID1), controller->bSkillMotionReady[sl - MP_SL_ID1]);
+#endif
+
+			if(Ros_Controller_IsMotionReady(controller))
+				printf("Robot job is ready for ROS commands.\r\n");
 			break;
 			
 		case MP_SKILL_END:

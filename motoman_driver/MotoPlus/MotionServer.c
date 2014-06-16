@@ -73,6 +73,9 @@ int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo);
 void Ros_MotionServer_IncMoveLoopStart(Controller* controller);
 // Utility functions:
 void Ros_MotionServer_ConvertToJointMotionData(SmBodyJointTrajPtFull* jointTrajData, JointMotionData* jointMotionData);
+// IO functions:
+int Ros_MotionServer_ReadIO(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+int Ros_MotionServer_WriteIO(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 
 
 //-----------------------
@@ -270,6 +273,19 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 				case ROS_MSG_JOINT_FEEDBACK_EX:
 					expectedSize = minSize + sizeof(SmBodyJointFeedbackEx);
 					break;
+					
+				case ROS_MSG_MOTO_READ_SINGLE_IO:
+					expectedSize = minSize + sizeof(SmBodyMotoReadSingleIO);
+					break;
+				case ROS_MSG_MOTO_READ_SINGLE_IO_REPLY:
+					expectedSize = minSize + sizeof(SmBodyMotoReadSingleIOReply);
+					break;
+				case ROS_MSG_MOTO_WRITE_SINGLE_IO:
+					expectedSize = minSize + sizeof(SmBodyMotoWriteSingleIO);
+					break;
+				case ROS_MSG_MOTO_WRITE_SINGLE_IO_REPLY:
+					expectedSize = minSize + sizeof(SmBodyMotoWriteSingleIOReply);
+					break;
         	}
         }
         
@@ -341,6 +357,25 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 		else
 			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
 		break;
+
+	case ROS_MSG_MOTO_READ_SINGLE_IO:
+		// Check that the appropriate message size was received
+		expectedBytes += sizeof(SmBodyMotoReadSingleIO);
+		if(expectedBytes == byteSize)
+			ret = Ros_MotionServer_ReadIO(controller, receiveMsg, replyMsg);
+		else
+			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
+		break;
+	case ROS_MSG_MOTO_WRITE_SINGLE_IO:
+		// Check that the appropriate message size was received
+		expectedBytes += sizeof(SmBodyMotoWriteSingleIO);
+		if(expectedBytes == byteSize)
+			ret = Ros_MotionServer_WriteIO(controller, receiveMsg, replyMsg);
+		else
+			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
+		break;
+
+
 	default:
 		printf("Invalid message type: %d\n", receiveMsg->header.msgType);
 		invalidSubcode = ROS_RESULT_INVALID_MSGTYPE;
@@ -355,6 +390,67 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	}
 		
 	return ret;
+}
+
+int Ros_MotionServer_ReadIO(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
+{
+	int apiRet;
+	MP_IO_INFO ioReadInfo;
+	USHORT ioValue;
+	int resultCode;
+
+	//initialize memory
+	memset(replyMsg, 0x00, sizeof(SimpleMsg));
+	
+	// set prefix: length of message excluding the prefix
+	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoReadSingleIOReply);
+
+	// set header information of the reply
+	replyMsg->header.msgType = ROS_MSG_MOTO_READ_SINGLE_IO_REPLY;
+	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+	
+	ioReadInfo.ulAddr = receiveMsg->body.readSingleIo.ioAddress;
+	apiRet = mpReadIO(&ioReadInfo, &ioValue, 1);
+
+	if (apiRet == OK)
+		resultCode = ROS_REPLY_SUCCESS;
+	else
+		resultCode = ROS_REPLY_FAILURE;
+
+	replyMsg->body.readSingleIoReply.value = ioValue;
+	replyMsg->body.readSingleIoReply.resultCode = resultCode;
+	replyMsg->header.replyType = (SmReplyType)resultCode;
+	return OK;
+}
+
+int Ros_MotionServer_WriteIO(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
+{	
+	int apiRet;
+	MP_IO_DATA ioWriteData;
+	int resultCode;
+
+	//initialize memory
+	memset(replyMsg, 0x00, sizeof(SimpleMsg));
+	
+	// set prefix: length of message excluding the prefix
+	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoWriteSingleIOReply);
+
+	// set header information of the reply
+	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_SINGLE_IO_REPLY;
+	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+	
+	ioWriteData.ulAddr = receiveMsg->body.writeSingleIo.ioAddress;
+	ioWriteData.ulValue = receiveMsg->body.writeSingleIo.ioValue;
+	apiRet = mpWriteIO(&ioWriteData, 1);
+
+	if (apiRet == OK)
+		resultCode = ROS_REPLY_SUCCESS;
+	else
+		resultCode = ROS_REPLY_FAILURE;
+
+	replyMsg->body.writeSingleIoReply.resultCode = resultCode;
+	replyMsg->header.replyType = (SmReplyType)resultCode;
+	return OK;
 }
 
 
@@ -1027,7 +1123,7 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 	}
 	else
 	{
-		printf("ERROR: Time difference between prevTrajData and newTrajData is 0 or less.\r\n");
+		printf("Warning: Group %d - Time difference between prevTrajData and newTrajData is 0 or less.\r\n", groupNo);
 	}
 	
 	// Initialize calculation variable before entering while loop

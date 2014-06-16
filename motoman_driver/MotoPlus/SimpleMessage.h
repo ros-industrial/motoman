@@ -56,7 +56,11 @@ typedef enum
 	ROS_MSG_JOINT_TRAJ_PT_FULL_EX = 16,
 	ROS_MSG_JOINT_FEEDBACK_EX = 17,
 	ROS_MSG_MOTO_MOTION_CTRL = 2001,
-	ROS_MSG_MOTO_MOTION_REPLY = 2002
+	ROS_MSG_MOTO_MOTION_REPLY = 2002,
+	ROS_MSG_MOTO_READ_SINGLE_IO = 2003,
+	ROS_MSG_MOTO_READ_SINGLE_IO_REPLY = 2004,
+	ROS_MSG_MOTO_WRITE_SINGLE_IO = 2005,
+	ROS_MSG_MOTO_WRITE_SINGLE_IO_REPLY = 2006
 } SmMsgType;
 
 
@@ -230,6 +234,33 @@ struct _SmBodyJointFeedbackEx
 typedef struct _SmBodyJointFeedbackEx	SmBodyJointFeedbackEx;
 
 
+struct _SmBodyMotoReadSingleIO
+{
+	UINT32 ioAddress;
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoReadSingleIO	SmBodyMotoReadSingleIO;
+
+struct _SmBodyMotoReadSingleIOReply
+{
+	UINT32 value;
+	UINT32 resultCode;
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoReadSingleIOReply	SmBodyMotoReadSingleIOReply;
+
+struct _SmBodyMotoWriteSingleIO
+{
+	UINT32 ioAddress;
+	UINT32 ioValue;
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoWriteSingleIO	SmBodyMotoWriteSingleIO;
+
+struct _SmBodyMotoWriteSingleIOReply
+{
+	UINT32 resultCode;
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoWriteSingleIOReply	SmBodyMotoWriteSingleIOReply;
+
+
 typedef union
 {
 	SmBodyRobotStatus robotStatus;
@@ -239,6 +270,10 @@ typedef union
 	SmBodyMotoMotionReply motionReply;
 	SmBodyJointTrajPtFullEx jointTrajDataEx;
 	SmBodyJointFeedbackEx jointFeedbackEx;
+	SmBodyMotoReadSingleIO readSingleIo;
+	SmBodyMotoReadSingleIOReply readSingleIoReply;
+	SmBodyMotoWriteSingleIO writeSingleIo;
+	SmBodyMotoWriteSingleIOReply writeSingleIoReply;
 } SmBody;
 
 
@@ -264,7 +299,8 @@ extern int Ros_SimpleMsg_JointFeedbackEx_Build(int groupIndex, SimpleMsg* src_ms
 
 extern int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg);
 
-#define DEBUG
+//Uncomment the DEBUG definition to enable debug-messages at runtime
+ #define DEBUG  
 
 #ifdef DEBUG
 // function to dump data structure for debugging

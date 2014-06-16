@@ -37,13 +37,13 @@
     <None Include="FS100LinkerArguments.mps">
       <Filter>Compile Settings</Filter>
     </None>
-    <None Include="ParameterExtraction_DX100.mpLib">
-      <Filter>MotoPlus Libraries</Filter>
-    </None>
     <None Include="ParameterExtraction_FS100.fsLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
     <None Include="ParameterExtraction_DX200.dnLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="ParameterExtraction_DX100.mpLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
   </ItemGroup>

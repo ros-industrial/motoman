@@ -47,6 +47,11 @@
 #include "StateServer.h"
 #include "MotionServer.h"
 
+
+#ifdef DEBUG
+	#warning Debug messages in MotoPlus *will* affect application performance
+#endif
+
 //GLOBAL DATA DEFINITIONS
 
 void RosInitTask();
