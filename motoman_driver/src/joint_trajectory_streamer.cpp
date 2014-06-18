@@ -51,6 +51,25 @@ namespace joint_trajectory_streamer
 #define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
 
 // override init() to read "robot_id" parameter and subscribe to joint_states
+bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::map<int,RobotGroup> &robot_groups,
+                                   const std::map<std::string, double> &velocity_limits)
+{
+  bool rtn = true;
+
+  ROS_INFO("MotomanJointTrajectoryStreamer: init");
+
+  rtn &= JointTrajectoryStreamer::init(connection, robot_groups, velocity_limits);
+
+  // try to read robot_id parameter, if none specified
+  if ( (robot_id_ < 0) )
+    node_.param("robot_id", robot_id_, 0);
+
+  rtn &= motion_ctrl_.init(connection, robot_id_);
+
+  return rtn;
+}
+
+// override init() to read "robot_id" parameter and subscribe to joint_states
 bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
                                    const std::map<std::string, double> &velocity_limits)
 {

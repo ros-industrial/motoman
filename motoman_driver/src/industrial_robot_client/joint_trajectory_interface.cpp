@@ -39,6 +39,7 @@ using industrial::simple_message::SimpleMessage;
 namespace SpecialSeqValues = industrial::joint_traj_pt::SpecialSeqValues;
 typedef industrial::joint_traj_pt::JointTrajPt rbt_JointTrajPt;
 typedef trajectory_msgs::JointTrajectoryPoint  ros_JointTrajPt;
+typedef industrial_msgs::DynamicJointPoint ros_dynamicPoint;
 
 namespace industrial_robot_client
 {
@@ -47,8 +48,9 @@ namespace joint_trajectory_interface
 
 #define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
 
-bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
+bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bool legacy_mode)
 {
+  this->legacy_mode_ = legacy_mode;
   std::string ip;
   int port;
 
@@ -78,14 +80,84 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port)
 
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
 {
-  std::vector<std::string> joint_names;
-  if (!getJointNames("controller_joint_names", "robot_description", joint_names))
-  {
-    ROS_ERROR("Failed to initialize joint_names.  Aborting");
-    return false;
-  }
+    if(this->legacy_mode_)
+    {
+     std::vector<std::string> joint_names;
+     if (!getJointNames("controller_joint_names", "robot_description", joint_names))
+       ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
 
-  return init(connection, joint_names);
+     return init(connection, joint_names);
+    }
+
+    else{
+
+       std::map<int,RobotGroup> robot_groups;
+
+       std::string value;
+       ros::param::search("topics_list", value);
+
+       ROS_INFO("%s", value.c_str());
+
+       XmlRpc::XmlRpcValue topics_list_rpc;
+       ros::param::get(value,topics_list_rpc);
+
+
+       std::vector<XmlRpc::XmlRpcValue> topics_list;
+
+       for (int i=0; i < topics_list_rpc.size();i++)
+       {
+           XmlRpc::XmlRpcValue state_value;
+           state_value = topics_list_rpc[i];
+           topics_list.push_back(state_value);
+       }
+
+       std::vector<XmlRpc::XmlRpcValue> groups_list;
+       //TODO: check the consistency of the group numbers
+       for (int i=0; i< topics_list[0]["state"].size();i++)
+       {
+           XmlRpc::XmlRpcValue group_value;
+           group_value = topics_list[0]["state"][i];
+           groups_list.push_back(group_value);
+           std::cout << i << std::endl;
+       }
+
+
+       for (int i=0; i < groups_list.size();i++)
+       {
+           RobotGroup rg;
+           std::vector<std::string> rg_joint_names;
+
+           XmlRpc::XmlRpcValue joints;
+
+           joints = groups_list[i]["group"][0]["joints"];
+           for (int jt=0; jt<joints.size(); jt++)
+                      rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
+
+           XmlRpc::XmlRpcValue group_number;
+           group_number = groups_list[i]["group"][0]["group_number"];
+
+           ROS_ERROR("group_number: %d", static_cast<int>(group_number));
+
+           group_number = static_cast<int>(group_number);
+
+           XmlRpc::XmlRpcValue name;
+           name = groups_list[i]["group"][0]["name"];
+
+           ROS_ERROR("name: %s", static_cast<std::string>(name).c_str());
+
+           XmlRpc::XmlRpcValue ns;
+           ns = groups_list[i]["group"][0]["ns"];
+
+           ROS_ERROR("ns: %s", static_cast<std::string>(ns).c_str());
+
+           rg.set_group_id(group_number);
+           rg.set_joint_names(rg_joint_names);
+
+           robot_groups[group_number] = rg;
+       }
+
+       return init(connection, robot_groups);
+    }
 }
 
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
@@ -103,6 +175,38 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ve
   this->srv_stop_motion_ = this->node_.advertiseService("stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
   this->srv_joint_trajectory_ = this->node_.advertiseService("joint_path_command", &JointTrajectoryInterface::jointTrajectoryCB, this);
   this->sub_joint_trajectory_ = this->node_.subscribe("joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryCB, this);
+  if(!this->legacy_mode_)
+  {
+      this->srv_joint_trajectory_ex_ = this->node_.advertiseService("joint_path_ex_command", &JointTrajectoryInterface::jointTrajectoryExCB, this);
+      this->sub_joint_trajectory_ex_ = this->node_.subscribe("joint_path_ex_command", 0, &JointTrajectoryInterface::jointTrajectoryExCB, this);
+  }
+  this->sub_cur_pos_ = this->node_.subscribe("joint_states", 1, &JointTrajectoryInterface::jointStateCB, this);
+
+  return true;
+}
+
+bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::map<int,RobotGroup> &robot_groups,
+                                    const std::map<std::string, double> &velocity_limits)
+{
+  LOG_ERROR("INITIALIZINGJKHNEJSHEJHSJHDJSHJDHSJD");
+  this->connection_ = connection;
+  this->robot_groups_ = robot_groups;
+  this->joint_vel_limits_ = velocity_limits;
+  connection_->makeConnect();
+
+  // try to read velocity limits from URDF, if none specified
+  if (joint_vel_limits_.empty() && !industrial_utils::param::getJointVelocityLimits("robot_description", joint_vel_limits_))
+    ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
+
+  this->srv_stop_motion_ = this->node_.advertiseService("stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
+  this->srv_joint_trajectory_ = this->node_.advertiseService("joint_path_command", &JointTrajectoryInterface::jointTrajectoryCB, this);
+  this->sub_joint_trajectory_ = this->node_.subscribe("joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryCB, this);
+  if(!this->legacy_mode_)
+  {
+      LOG_ERROR("INITIALIZINGJKHNEdsfdsfdsffdsdfdfsfdsfdssfdJSHEJHSJHDJSHJDHSJD");
+      this->srv_joint_trajectory_ex_ = this->node_.advertiseService("joint_path_ex_command", &JointTrajectoryInterface::jointTrajectoryExCB, this);
+      this->sub_joint_trajectory_ex_ = this->node_.subscribe("joint_path_ex_command", 0, &JointTrajectoryInterface::jointTrajectoryExCB, this);
+  }
   this->sub_cur_pos_ = this->node_.subscribe("joint_states", 1, &JointTrajectoryInterface::jointStateCB, this);
 
   return true;
@@ -114,18 +218,64 @@ JointTrajectoryInterface::~JointTrajectoryInterface()
   this->sub_joint_trajectory_.shutdown();
 }
 
-bool JointTrajectoryInterface::jointTrajectoryCB(industrial_msgs::CmdJointTrajectory::Request &req,
-                                                 industrial_msgs::CmdJointTrajectory::Response &res)
+bool JointTrajectoryInterface::jointTrajectoryExCB(industrial_msgs::CmdJointTrajectoryEx::Request &req,
+                                                 industrial_msgs::CmdJointTrajectoryEx::Response &res)
 {
-  trajectory_msgs::JointTrajectoryPtr traj_ptr(new trajectory_msgs::JointTrajectory);
+    ROS_ERROR("Getting in to the JointTrajectory Interface");
+  industrial_msgs::DynamicJointTrajectoryPtr traj_ptr(new industrial_msgs::DynamicJointTrajectory);
   *traj_ptr = req.trajectory;  // copy message data
-  this->jointTrajectoryCB(traj_ptr);
+  this->jointTrajectoryExCB(traj_ptr);
 
   // no success/fail result from jointTrajectoryCB.  Assume success.
   res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
 
   return true;  // always return true.  To distinguish between call-failed and service-unavailable.
 }
+
+
+bool JointTrajectoryInterface::jointTrajectoryCB(industrial_msgs::CmdJointTrajectory::Request &req,
+                                                 industrial_msgs::CmdJointTrajectory::Response &res)
+{
+ if(this->legacy_mode_)
+ {
+  trajectory_msgs::JointTrajectoryPtr traj_ptr(new trajectory_msgs::JointTrajectory);
+  *traj_ptr = req.trajectory;  // copy message data
+  this->jointTrajectoryCB(traj_ptr);
+ }
+// else
+// {
+//     industrial_msgs::DynamicJointTrajectoryPtr traj_ptr(new industrial_msgs::DynamicJointTrajectory);
+//     *traj_ptr = req.trajectory;
+//     this->jointTrajectoryCB(traj_ptr);
+// }
+  // no success/fail result from jointTrajectoryCB.  Assume success.
+  res.code.val = industrial_msgs::ServiceReturnCode::SUCCESS;
+
+  return true;  // always return true.  To distinguish between call-failed and service-unavailable.
+}
+
+void JointTrajectoryInterface::jointTrajectoryExCB(const industrial_msgs::DynamicJointTrajectoryConstPtr &msg)
+{
+  ROS_ERROR("Receiving joint trajectory message");
+  ROS_ERROR("%d", msg->num_groups);
+
+//  // check for STOP command
+//  if (msg->points.empty())
+//  {
+//    ROS_INFO("Empty trajectory received, canceling current trajectory");
+//    trajectoryStop();
+//    return;
+//  }
+
+//  // convert trajectory into robot-format
+//  std::vector<SimpleMessage> robot_msgs;
+//  if (!trajectory_to_msgs(msg, &robot_msgs))
+//    return;
+
+//  // send command messages to robot
+//  send_to_robot(robot_msgs);
+}
+
 
 void JointTrajectoryInterface::jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg)
 {
@@ -146,6 +296,37 @@ void JointTrajectoryInterface::jointTrajectoryCB(const trajectory_msgs::JointTra
 
   // send command messages to robot
   send_to_robot(robot_msgs);
+}
+
+bool JointTrajectoryInterface::trajectory_to_msgs(const industrial_msgs::DynamicJointPointConstPtr& traj, std::vector<SimpleMessage>* msgs)
+{
+//  msgs->clear();
+
+//  // check for valid trajectory
+//  if (!is_valid(*traj))
+//    return false;
+
+//  for (size_t i=0; i<traj->points.size(); ++i)
+//  {
+//    SimpleMessage msg;
+//    ros_JointTrajPt rbt_pt, xform_pt;
+
+//    // select / reorder joints for sending to robot
+//    if (!select(traj->joint_names, traj->points[i], this->all_joint_names_, &rbt_pt))
+//      return false;
+
+//    // transform point data (e.g. for joint-coupling)
+//    if (!transform(rbt_pt, &xform_pt))
+//      return false;
+
+//    // convert trajectory point to ROS message
+//    if (!create_message(i, xform_pt, &msg))
+//      return false;
+
+//    msgs->push_back(msg);
+//  }
+
+  return true;
 }
 
 bool JointTrajectoryInterface::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj, std::vector<SimpleMessage>* msgs)
@@ -178,6 +359,47 @@ bool JointTrajectoryInterface::trajectory_to_msgs(const trajectory_msgs::JointTr
 
   return true;
 }
+
+bool JointTrajectoryInterface::select(const std::vector<std::string>& ros_joint_names, const ros_dynamicPoint& ros_pt,
+                      const std::vector<std::string>& rbt_joint_names, ros_dynamicPoint* rbt_pt)
+{
+  ROS_ASSERT(ros_joint_names.size() == ros_pt.positions.size());
+
+  // initialize rbt_pt
+  *rbt_pt = ros_pt;
+  rbt_pt->positions.clear(); rbt_pt->velocities.clear(); rbt_pt->accelerations.clear();
+
+  for (size_t rbt_idx=0; rbt_idx < rbt_joint_names.size(); ++rbt_idx)
+  {
+    bool is_empty = rbt_joint_names[rbt_idx].empty();
+
+    // find matching ROS element
+    size_t ros_idx = std::find(ros_joint_names.begin(), ros_joint_names.end(), rbt_joint_names[rbt_idx]) - ros_joint_names.begin();
+    bool is_found = ros_idx < ros_joint_names.size();
+
+    // error-chk: required robot joint not found in ROS joint-list
+    if (!is_empty && !is_found)
+    {
+      ROS_ERROR("Expected joint (%s) not found in JointTrajectory.  Aborting command.", rbt_joint_names[rbt_idx].c_str());
+      return false;
+    }
+
+    if (is_empty)
+    {
+      if (!ros_pt.positions.empty()) rbt_pt->positions.push_back(default_joint_pos_);
+      if (!ros_pt.velocities.empty()) rbt_pt->velocities.push_back(-1);
+      if (!ros_pt.accelerations.empty()) rbt_pt->accelerations.push_back(-1);
+    }
+    else
+    {
+      if (!ros_pt.positions.empty()) rbt_pt->positions.push_back(ros_pt.positions[ros_idx]);
+      if (!ros_pt.velocities.empty()) rbt_pt->velocities.push_back(ros_pt.velocities[ros_idx]);
+      if (!ros_pt.accelerations.empty()) rbt_pt->accelerations.push_back(ros_pt.accelerations[ros_idx]);
+    }
+  }
+  return true;
+}
+
 
 bool JointTrajectoryInterface::select(const std::vector<std::string>& ros_joint_names, const ros_JointTrajPt& ros_pt,
                       const std::vector<std::string>& rbt_joint_names, ros_JointTrajPt* rbt_pt)
@@ -357,6 +579,13 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
     if ((i > 0) && (pt.time_from_start.toSec() == 0))
       ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
   }
+
+  return true;
+}
+
+bool JointTrajectoryInterface::is_valid(const industrial_msgs::DynamicJointTrajectory &traj)
+{
+ //TODO: implement this verification
 
   return true;
 }

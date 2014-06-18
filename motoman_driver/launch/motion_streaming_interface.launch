@@ -13,8 +13,8 @@
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
 
 	<!-- load the correct version of the motion streaming node -->
-	<!--<node if="$(arg use_bswap)" name="motion_streaming_interface"
+	<node if="$(arg use_bswap)" name="motion_streaming_interface"
 		pkg="motoman_driver" type="motion_streaming_interface_bswap" />
 	<node unless="$(arg use_bswap)" name="motion_streaming_interface"
-		pkg="motoman_driver" type="motion_streaming_interface" /> -->
+		pkg="motoman_driver" type="motion_streaming_interface" />
 </launch>

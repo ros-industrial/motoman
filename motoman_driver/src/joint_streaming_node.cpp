@@ -43,7 +43,8 @@ int main(int argc, char** argv)
 
   // launch the FS100 JointTrajectoryStreamer connection/handlers
   MotomanJointTrajectoryStreamer motionInterface;
-  motionInterface.init("", FS100_motion_port);
+  //TODO: put legacy_mode as a command line argument
+  motionInterface.init("", FS100_motion_port, true);
   motionInterface.run();
 
   return 0;

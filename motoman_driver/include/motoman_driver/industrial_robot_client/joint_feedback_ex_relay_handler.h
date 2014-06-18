@@ -6,6 +6,7 @@
 #include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "simple_message/messages/joint_feedback_ex_message.h"
 #include "industrial_msgs/DynamicJointPoint.h"
+#include "industrial_msgs/DynamicJointTrajectoryFeedback.h"
 
 namespace industrial_robot_client
 {
@@ -20,6 +21,7 @@ using industrial_robot_client::joint_relay_handler::JointRelayHandler;
 using industrial_robot_client::joint_feedback_relay_handler::JointFeedbackRelayHandler;
 using trajectory_msgs::JointTrajectoryPoint;
 using industrial_msgs::DynamicJointPoint;
+using industrial_msgs::DynamicJointTrajectoryFeedback;
 
 /**
  * \brief Message handler that relays joint positions (converts simple message
@@ -58,6 +60,10 @@ public:
 protected:
  int groups_number_;
  bool legacy_mode_;
+
+ ros::Publisher pub_joint_control_state_;
+ ros::Publisher dynamic_pub_joint_control_state_;
+ ros::Publisher pub_joint_sensor_state_;
 
  /**
   * \brief Convert joint message into intermediate message-type

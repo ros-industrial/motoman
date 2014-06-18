@@ -43,8 +43,8 @@ namespace robot_state_interface
 RobotStateInterface::RobotStateInterface()
 {
   this->connection_ = NULL;
- // this->add_handler(&default_joint_handler_);
-//  this->add_handler(&default_joint_feedback_handler_);
+  this->add_handler(&default_joint_handler_);
+  this->add_handler(&default_joint_feedback_handler_);
   this->add_handler(&default_joint_feedback_ex_handler_);
   this->add_handler(&default_robot_status_handler_);
 }
@@ -172,13 +172,13 @@ bool RobotStateInterface::init(SmplMsgConnection* connection, std::map<int, Robo
     return false;
 
   // initialize default handlers
-  //if (!default_joint_handler_.init(connection_, robot_groups_))
-   // return false;
-  //this->add_handler(&default_joint_handler_);
+  if (!default_joint_handler_.init(connection_, robot_groups_))
+    return false;
+  this->add_handler(&default_joint_handler_);
 
-//  if (!default_joint_feedback_handler_.init(connection_, robot_groups_))
-//    return false;
-//  this->add_handler(&default_joint_feedback_handler_);
+  if (!default_joint_feedback_handler_.init(connection_, robot_groups_))
+    return false;
+  this->add_handler(&default_joint_feedback_handler_);
 
   if (!default_joint_feedback_ex_handler_.init(connection_, robot_groups_))
     return false;

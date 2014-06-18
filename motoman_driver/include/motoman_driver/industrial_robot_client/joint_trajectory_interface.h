@@ -38,6 +38,7 @@
 
 #include "ros/ros.h"
 #include "industrial_msgs/CmdJointTrajectory.h"
+#include "industrial_msgs/CmdJointTrajectoryEx.h"
 #include "industrial_msgs/StopMotion.h"
 #include "sensor_msgs/JointState.h"
 #include "simple_message/simple_message.h"
@@ -45,6 +46,7 @@
 #include "simple_message/socket/tcp_client.h"
 #include "simple_message/messages/joint_traj_pt_message.h"
 #include "trajectory_msgs/JointTrajectory.h"
+#include "motoman_driver/industrial_robot_client/robot_group.h"
 
 namespace industrial_robot_client
 {
@@ -83,7 +85,7 @@ public:
      *
      * \return true on success, false otherwise
      */
-    virtual bool init(std::string default_ip = "", int default_port = StandardSocketPorts::MOTION);
+    virtual bool init(std::string default_ip = "", int default_port = StandardSocketPorts::MOTION, bool legacy_mode=false);
 
     /**
      * \brief Initialize robot connection using specified method.
@@ -93,6 +95,21 @@ public:
      * \return true on success, false otherwise
      */
     virtual bool init(SmplMsgConnection* connection);
+
+    /**
+     * \brief Class initializer
+     *
+     * \param connection simple message connection that will be used to send commands to robot (ALREADY INITIALIZED)
+     * \param joint_names list of expected joint-names.
+     *   - Count and order should match data sent to robot connection.
+     *   - Use blank-name to insert a placeholder joint position (typ. 0.0).
+     *   - Joints in the incoming JointTrajectory stream that are NOT listed here will be ignored.
+     * \param velocity_limits map of maximum velocities for each joint
+     *   - leave empty to lookup from URDF
+     * \return true on success, false otherwise (an invalid message type)
+     */
+    virtual bool init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
+                      const std::map<std::string, double> &velocity_limits = std::map<std::string, double>());
 
   /**
    * \brief Class initializer
@@ -106,7 +123,7 @@ public:
    *   - leave empty to lookup from URDF
    * \return true on success, false otherwise (an invalid message type)
    */
-  virtual bool init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
+  virtual bool init(SmplMsgConnection* connection, const std::map<int,RobotGroup> &robot_groups,
                     const std::map<std::string, double> &velocity_limits = std::map<std::string, double>());
 
   virtual ~JointTrajectoryInterface();
@@ -122,6 +139,17 @@ protected:
    * \brief Send a stop command to the robot
    */
   virtual void trajectoryStop();
+
+    /**
+     * \brief Convert ROS trajectory message into stream of SimpleMessages for sending to robot.
+     *   Also includes various joint transforms that can be overridden for robot-specific behavior.
+     *
+     * \param[in] traj ROS JointTrajectory message
+     * \param[out] msgs list of SimpleMessages for sending to robot
+     *
+     * \return true on success, false otherwise
+     */
+    virtual bool trajectory_to_msgs(const industrial_msgs::DynamicJointPointConstPtr &traj, std::vector<SimpleMessage>* msgs);
 
   /**
    * \brief Convert ROS trajectory message into stream of SimpleMessages for sending to robot.
@@ -148,6 +176,20 @@ protected:
     *pt_out = pt_in;  // by default, no transform is applied
     return true;
   }
+
+    /**
+     * \brief Select specific joints for sending to the robot
+     *
+     * \param[in] ros_joint_names joint names from ROS command
+     * \param[in] ros_pt target pos/vel from ROS command
+     * \param[in] rbt_joint_names joint names, in order/count expected by robot connection
+     * \param[out] rbt_pt target pos/vel, matching rbt_joint_names
+     *
+     * \return true on success, false otherwise
+     */
+    virtual bool select(const std::vector<std::string>& ros_joint_names, const industrial_msgs::DynamicJointPoint& ros_pt,
+                        const std::vector<std::string>& rbt_joint_names, industrial_msgs::DynamicJointPoint* rbt_pt);
+
 
   /**
    * \brief Select specific joints for sending to the robot
@@ -205,6 +247,14 @@ protected:
    */
   virtual bool send_to_robot(const std::vector<SimpleMessage>& messages)=0;
 
+    /**
+     * \brief Callback function registered to ROS topic-subscribe.
+     *   Transform ROS message into SimpleMessage objects and send commands to robot.
+     *
+     * \param msg DynamicJointTrajectory message from ROS trajectory-planner
+     */
+    virtual void jointTrajectoryExCB(const industrial_msgs::DynamicJointTrajectoryConstPtr &msg);
+
   /**
    * \brief Callback function registered to ROS topic-subscribe.
    *   Transform ROS message into SimpleMessage objects and send commands to robot.
@@ -223,6 +273,14 @@ protected:
    */
   virtual bool stopMotionCB(industrial_msgs::StopMotion::Request &req,
                             industrial_msgs::StopMotion::Response &res);
+
+    /**
+     * \brief Validate that trajectory command meets minimum requirements
+     *
+     * \param traj incoming trajectory
+     * \return true if trajectory is valid, false otherwise
+     */
+    virtual bool is_valid(const industrial_msgs::DynamicJointTrajectory &traj);
 
   /**
    * \brief Validate that trajectory command meets minimum requirements
@@ -246,8 +304,12 @@ protected:
   ros::Subscriber sub_cur_pos_;  // handle for joint-state topic subscription
   ros::Subscriber sub_joint_trajectory_; // handle for joint-trajectory topic subscription
   ros::ServiceServer srv_joint_trajectory_;  // handle for joint-trajectory service
+  ros::Subscriber sub_joint_trajectory_ex_; // handle for joint-trajectory topic subscription
+  ros::ServiceServer srv_joint_trajectory_ex_;  // handle for joint-trajectory service
   ros::ServiceServer srv_stop_motion_;   // handle for stop_motion service
   std::vector<std::string> all_joint_names_;
+  std::map<int,RobotGroup> robot_groups_;
+  bool legacy_mode_;
   double default_joint_pos_;  // default position to use for "dummy joints", if none specified
   double default_vel_ratio_;  // default velocity ratio to use for joint commands, if no velocity or max_vel specified
   double default_duration_;   // default duration to use for joint commands, if no
@@ -265,6 +327,9 @@ private:
    */
   bool jointTrajectoryCB(industrial_msgs::CmdJointTrajectory::Request &req,
                          industrial_msgs::CmdJointTrajectory::Response &res);
+
+  bool jointTrajectoryExCB(industrial_msgs::CmdJointTrajectoryEx::Request &req,
+                         industrial_msgs::CmdJointTrajectoryEx::Response &res);
 };
 
 } //joint_trajectory_interface

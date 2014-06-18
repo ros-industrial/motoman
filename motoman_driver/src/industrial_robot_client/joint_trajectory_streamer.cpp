@@ -38,6 +38,26 @@ namespace industrial_robot_client
 namespace joint_trajectory_streamer
 {
 
+bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::map<int, RobotGroup> &robot_groups,
+                                   const std::map<std::string, double> &velocity_limits)
+{
+  bool rtn = true;
+
+  ROS_INFO("JointTrajectoryStreamer: init");
+
+  rtn &= JointTrajectoryInterface::init(connection, robot_groups, velocity_limits);
+
+  this->mutex_.lock();
+  this->current_point_ = 0;
+  this->state_ = TransferStates::IDLE;
+  this->streaming_thread_ =
+      new boost::thread(boost::bind(&JointTrajectoryStreamer::streamingThread, this));
+  ROS_INFO("Unlocking mutex");
+  this->mutex_.unlock();
+
+  return rtn;
+}
+
 bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
                                    const std::map<std::string, double> &velocity_limits)
 {
