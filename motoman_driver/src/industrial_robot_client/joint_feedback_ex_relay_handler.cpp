@@ -56,14 +56,13 @@ bool JointFeedbackExRelayHandler::create_messages(SimpleMessage& msg_in,
 
   tmp_msg.init(msg_in);
 
-  LOG_ERROR("IDEX, %d", tmp_msg.getGroupsNumber());
 
   industrial_msgs::DynamicJointTrajectoryFeedback dynamic_control_state;
 
   for(int i=0; i< tmp_msg.getJointMessages().size();i++)
   {
       int group_number = tmp_msg.getJointMessages()[i].getRobotID();
-      LOG_ERROR("%d", group_number);
+
       create_messages(tmp_msg.getJointMessages()[i], control_state, sensor_state, group_number);
       industrial_msgs::DynamicJointState dyn_joint_state;
       dyn_joint_state.num_joints = control_state->joint_names.size();
@@ -98,13 +97,13 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
                                         control_msgs::FollowJointTrajectoryFeedback* control_state,
                                         sensor_msgs::JointState* sensor_state, int robot_id)
 {
-    ROS_ERROR("Executing %d", robot_id);
   DynamicJointPoint all_joint_state;
   if (!JointFeedbackExRelayHandler::convert_message(msg_in, &all_joint_state, robot_id))
   {
     LOG_ERROR("Failed to convert SimpleMessage");
     return false;
   }
+
   // apply transform, if required
   DynamicJointPoint xform_joint_state;
   if (!transform(all_joint_state, &xform_joint_state))
@@ -123,16 +122,17 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
     return false;
   }
 
+
   //TODO: change this to publish on the dynamic joint state topic
   // assign values to messages
   *control_state = control_msgs::FollowJointTrajectoryFeedback();  // always start with a "clean" message
   control_state->header.stamp = ros::Time::now();
   control_state->joint_names = pub_joint_names;
-  LOG_ERROR("pub_joint_names %s", pub_joint_names[0].c_str() );
   control_state->actual.positions = pub_joint_state.positions;
   control_state->actual.velocities = pub_joint_state.velocities;
   control_state->actual.accelerations = pub_joint_state.accelerations;
   control_state->actual.time_from_start = pub_joint_state.time_from_start;
+
 
   this->pub_joint_control_state_.publish(*control_state);
 
@@ -141,6 +141,7 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
   sensor_state->name = pub_joint_names;
   sensor_state->position = pub_joint_state.positions;
   sensor_state->velocity = pub_joint_state.velocities;
+
 
   this->pub_joint_sensor_state_.publish(*sensor_state);
 

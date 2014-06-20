@@ -14,9 +14,29 @@ public:
       return this->joint_names_;
     }
 
+    std::string get_name()
+    {
+        return this->name_;
+    }
+
+    std::string get_ns()
+    {
+        return this->ns_;
+    }
+
     int get_group_id()
     {
       return this->GroupID_;
+    }
+
+    void set_name(std::string name)
+    {
+        this->name_ = name;
+    }
+
+   void set_ns(std::string ns)
+    {
+        this->ns_ = ns;
     }
 
     void set_group_id(int gid)
@@ -34,6 +54,8 @@ protected:
 
     std::vector<std::string> joint_names_;
     int GroupID_;
+    std::string name_;
+    std::string ns_;
 
 };
 

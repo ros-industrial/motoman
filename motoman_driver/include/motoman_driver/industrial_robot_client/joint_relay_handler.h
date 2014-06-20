@@ -71,7 +71,7 @@ public:
 */
   JointRelayHandler() {};
 
-
+  typedef std::map<int, RobotGroup>::iterator it_type;
   /**
    * \brief Class initializer
    *
@@ -110,6 +110,9 @@ protected:
   ros::Publisher pub_joint_control_state_;
   ros::Publisher pub_joint_sensor_state_;
   ros::NodeHandle node_;
+
+  std::map<int, ros::Publisher> pub_controls_;
+  std::map<int, ros::Publisher> pub_states_;
 
   /**
    * \brief Class initializer

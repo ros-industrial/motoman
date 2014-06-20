@@ -119,6 +119,8 @@ public:
    */
   virtual bool create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage* msg);
 
+  virtual bool create_message(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage* msg);
+
   virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
   virtual void streamingThread();
@@ -132,6 +134,7 @@ protected:
 
   void trajectoryStop();
   bool is_valid(const trajectory_msgs::JointTrajectory &traj);
+  bool is_valid(const industrial_msgs::DynamicJointTrajectory &traj);
 
   static bool VectorToJointData(const std::vector<double> &vec,
                                 industrial::joint_data::JointData &joints);

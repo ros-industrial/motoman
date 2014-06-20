@@ -48,10 +48,24 @@ bool JointRelayHandler::init(SmplMsgConnection* connection, int msg_type, std::m
 {
   this->robot_groups_ = robot_groups;
 
-  this->pub_joint_control_state_ =
-          this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>("feedback_states", 1);
+   for(it_type iterator = robot_groups.begin(); iterator != robot_groups.end(); iterator++)
+   {
+       std::string name_str, ns_str;
+       int robot_id = iterator->first;
+       name_str = iterator->second.get_name();
+       ns_str = iterator->second.get_ns();
 
-  this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>("joint_states",1);
+        this->pub_joint_control_state_ =
+                this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>(ns_str+"/"+name_str+"/feedback_states", 1);
+
+       this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>(ns_str+"/"+name_str+"/joint_states",1);
+
+       this->pub_controls_[robot_id] = this->pub_joint_control_state_;
+       this->pub_states_[robot_id] = this->pub_joint_sensor_state_;
+   }
+
+
+
 
   return MessageHandler::init(msg_type, connection);
 }
@@ -82,8 +96,7 @@ bool JointRelayHandler::internalCB(SimpleMessage& msg_in)
 
   if (create_messages(msg_in, &control_state, &sensor_state))
   {
-    this->pub_joint_control_state_.publish(control_state);
-    this->pub_joint_sensor_state_.publish(sensor_state);
+    rtn=true;
   }
   else
     rtn = false;
@@ -146,6 +159,9 @@ bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
   sensor_state->position = pub_joint_state.positions;
   sensor_state->velocity = pub_joint_state.velocities;
 
+  this->pub_joint_control_state_.publish(*control_state);
+  this->pub_joint_sensor_state_.publish(*sensor_state);
+
   return true;
 }
 
@@ -193,6 +209,9 @@ bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
   sensor_state->position = pub_joint_state.positions;
   sensor_state->velocity = pub_joint_state.velocities;
 
+  this->pub_controls_[robot_id].publish(*control_state);
+  this->pub_states_[robot_id].publish(*sensor_state);
+
   return true;
 }
 
@@ -225,7 +244,6 @@ bool JointRelayHandler::convert_message(SimpleMessage& msg_in, DynamicJointPoint
 bool JointRelayHandler::convert_message(JointMessage& msg_in, JointTrajectoryPoint* joint_state)
 {
 
-    LOG_ERROR("INICIO DE CONVERT");
   // copy position data
   int num_jnts = all_joint_names_.size();
   joint_state->positions.resize(num_jnts);
@@ -234,7 +252,6 @@ bool JointRelayHandler::convert_message(JointMessage& msg_in, JointTrajectoryPoi
     shared_real value;
     if (msg_in.getJoints().getJoint(i, value))
     {
-      LOG_ERROR("HAJHSJAHJSHAJHSJAHJSHAJHAHSHJSJAH %d %f", i , value);
       joint_state->positions[i] = value;
     }
     else
@@ -246,14 +263,11 @@ bool JointRelayHandler::convert_message(JointMessage& msg_in, JointTrajectoryPoi
   joint_state->accelerations.clear();
   joint_state->time_from_start = ros::Duration(0);
 
-
-  LOG_ERROR("FIM DE CONVERT");
   return true;
 }
 
 bool JointRelayHandler::convert_message(JointMessage& msg_in, DynamicJointPoint* joint_state, int robot_id)
 {
-    LOG_ERROR("INICIO DE CONVERT");
   // copy position data
   int num_jnts = robot_groups_[robot_id].get_joint_names().size();
   joint_state->positions.resize(num_jnts);
@@ -262,11 +276,10 @@ bool JointRelayHandler::convert_message(JointMessage& msg_in, DynamicJointPoint*
     shared_real value;
     if (msg_in.getJoints().getJoint(i, value))
     {
-      LOG_ERROR("HAJHSJAHJSHAJHSJAHJSHAJHAHSHJSJAH %d %f", i , value);
       joint_state->positions[i] = value;
     }
     else
-      LOG_ERROR("Failed to parse position #%d from JointMessage", i);
+    LOG_ERROR("Failed to convert message");
   }
 
   // these fields are not provided by JointMessage
@@ -274,7 +287,6 @@ bool JointRelayHandler::convert_message(JointMessage& msg_in, DynamicJointPoint*
   joint_state->accelerations.clear();
   joint_state->time_from_start = ros::Duration(0);
 
-    LOG_ERROR("FIM DE CONVERT");
   return true;
 }
 

@@ -83,6 +83,42 @@ JointTrajectoryStreamer::~JointTrajectoryStreamer()
   delete this->streaming_thread_;
 }
 
+void JointTrajectoryStreamer::jointTrajectoryCB(const industrial_msgs::DynamicJointTrajectoryConstPtr &msg)
+{
+  ROS_INFO("Receiving joint trajectory message");
+
+  // read current state value (should be atomic)
+  int state = this->state_;
+
+  ROS_DEBUG("Current state is: %d", state);
+  if (TransferStates::IDLE != state)
+  {
+    if (msg->points.empty())
+      ROS_INFO("Empty trajectory received, canceling current trajectory");
+    else
+      ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+
+    this->mutex_.lock();
+    trajectoryStop();
+    this->mutex_.unlock();
+    return;
+  }
+
+  if (msg->points.empty())
+  {
+    ROS_INFO("Empty trajectory received while in IDLE state, nothing is done");
+    return;
+  }
+
+  // calc new trajectory
+  std::vector<SimpleMessage> new_traj_msgs;
+  if (!trajectory_to_msgs(msg, &new_traj_msgs))
+    return;
+
+  // send command messages to robot
+  send_to_robot(new_traj_msgs);
+}
+
 void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg)
 {
   ROS_INFO("Receiving joint trajectory message");
@@ -136,6 +172,23 @@ bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& me
 }
 
 bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs)
+{
+  // use base function to transform points
+  if (!JointTrajectoryInterface::trajectory_to_msgs(traj, msgs))
+    return false;
+
+  // pad trajectory as required for minimum streaming buffer size
+  if (!msgs->empty() && (msgs->size() < (size_t)min_buffer_size_))
+  {
+    ROS_DEBUG("Padding trajectory: current(%d) => minimum(%d)", (int)msgs->size(), min_buffer_size_);
+    while (msgs->size() < (size_t)min_buffer_size_)
+      msgs->push_back(msgs->back());
+  }
+
+  return true;
+}
+
+bool JointTrajectoryStreamer::trajectory_to_msgs(const industrial_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs)
 {
   // use base function to transform points
   if (!JointTrajectoryInterface::trajectory_to_msgs(traj, msgs))

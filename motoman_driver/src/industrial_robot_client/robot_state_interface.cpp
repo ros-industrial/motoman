@@ -131,28 +131,39 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
         XmlRpc::XmlRpcValue joints;
 
         joints = groups_list[i]["group"][0]["joints"];
-        for (int jt=0; jt<joints.size(); jt++)
+        for (int jt=0; jt<joints.size(); jt++){
                    rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
+        }
 
         XmlRpc::XmlRpcValue group_number;
+
+
         group_number = groups_list[i]["group"][0]["group_number"];
+        int group_number_int = static_cast<int>(group_number);
 
-        ROS_ERROR("group_number: %d", static_cast<int>(group_number));
-
-        group_number = static_cast<int>(group_number);
+        ROS_ERROR("group_number: %d", group_number_int);
 
         XmlRpc::XmlRpcValue name;
-        name = groups_list[i]["group"][0]["name"];
+        std::string name_string;
 
-        ROS_ERROR("name: %s", static_cast<std::string>(name).c_str());
+        name = groups_list[i]["group"][0]["name"];
+        name_string = static_cast<std::string>(name);
+
+        ROS_ERROR("name: %s", name_string.c_str());
 
         XmlRpc::XmlRpcValue ns;
+        std::string ns_string;
+
         ns = groups_list[i]["group"][0]["ns"];
 
-        ROS_ERROR("ns: %s", static_cast<std::string>(ns).c_str());
+        ns_string = static_cast<std::string>(ns);
 
-        rg.set_group_id(group_number);
+        ROS_ERROR("ns: %s", ns_string.c_str());
+
+        rg.set_group_id(group_number_int);
         rg.set_joint_names(rg_joint_names);
+        rg.set_name(name_string);
+        rg.set_ns(ns_string);
 
         robot_groups[group_number] = rg;
     }

@@ -74,6 +74,7 @@ public:
   * \brief Default constructor.
   */
     JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0) {};
+    typedef std::map<int, RobotGroup>::iterator it_type;
 
     /**
      * \brief Initialize robot connection using default method.
@@ -149,7 +150,7 @@ protected:
      *
      * \return true on success, false otherwise
      */
-    virtual bool trajectory_to_msgs(const industrial_msgs::DynamicJointPointConstPtr &traj, std::vector<SimpleMessage>* msgs);
+    virtual bool trajectory_to_msgs(const industrial_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
 
   /**
    * \brief Convert ROS trajectory message into stream of SimpleMessages for sending to robot.
@@ -176,6 +177,12 @@ protected:
     *pt_out = pt_in;  // by default, no transform is applied
     return true;
   }
+
+    virtual bool transform(const industrial_msgs::DynamicJointPoint& pt_in, industrial_msgs::DynamicJointPoint* pt_out)
+    {
+      *pt_out = pt_in;  // by default, no transform is applied
+      return true;
+    }
 
     /**
      * \brief Select specific joints for sending to the robot
@@ -215,6 +222,8 @@ protected:
    */
   virtual bool create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage* msg);
 
+     virtual bool create_message(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage* msg);
+
   /**
    * \brief Reduce the ROS velocity commands (per-joint velocities) to a single scalar for communication to the robot.
    *   If unneeded by the robot server, set to 0 (or any value).
@@ -226,6 +235,17 @@ protected:
    */
   virtual bool calc_velocity(const trajectory_msgs::JointTrajectoryPoint& pt, double* rbt_velocity);
 
+    /**
+     * \brief Reduce the ROS velocity commands (per-joint velocities) to a single scalar for communication to the robot.
+     *   If unneeded by the robot server, set to 0 (or any value).
+     *
+     * \param[in] pt trajectory point data, in order/count expected by robot connection
+     * \param[out] rbt_velocity computed velocity scalar for robot message (if needed by robot)
+     *
+     * \return true on success, false otherwise
+     */
+    virtual bool calc_velocity(const industrial_msgs::DynamicJointPoint& pt, double* rbt_velocity);
+
   /**
    * \brief Compute the expected move duration for communication to the robot.
    *   If unneeded by the robot server, set to 0 (or any value).
@@ -236,6 +256,17 @@ protected:
    * \return true on success, false otherwise
    */
   virtual bool calc_duration(const trajectory_msgs::JointTrajectoryPoint& pt, double* rbt_duration);
+
+    /**
+     * \brief Compute the expected move duration for communication to the robot.
+     *   If unneeded by the robot server, set to 0 (or any value).
+     *
+     * \param[in] pt trajectory point data, in order/count expected by robot connection
+     * \param[out] rbt_duration computed move duration for robot message (if needed by robot)
+     *
+     * \return true on success, false otherwise
+     */
+    virtual bool calc_duration(const industrial_msgs::DynamicJointPoint& pt, double* rbt_duration);
 
   /**
    * \brief Send trajectory to robot, using this node's robot-connection.
@@ -297,6 +328,8 @@ protected:
    */
   virtual void jointStateCB(const sensor_msgs::JointStateConstPtr &msg);
 
+  virtual void jointStateCB(const sensor_msgs::JointStateConstPtr &msg, int robot_id);
+
   TcpClient default_tcp_connection_;
 
   ros::NodeHandle node_;
@@ -307,6 +340,12 @@ protected:
   ros::Subscriber sub_joint_trajectory_ex_; // handle for joint-trajectory topic subscription
   ros::ServiceServer srv_joint_trajectory_ex_;  // handle for joint-trajectory service
   ros::ServiceServer srv_stop_motion_;   // handle for stop_motion service
+
+  std::map<int, ros::ServiceServer> srv_stops_;
+  std::map<int, ros::ServiceServer> srv_joints_;
+  std::map<int, ros::Subscriber> sub_joint_trajectories_;
+  std::map<int, ros::Subscriber> sub_cur_positions_;
+
   std::vector<std::string> all_joint_names_;
   std::map<int,RobotGroup> robot_groups_;
   bool legacy_mode_;
@@ -315,6 +354,8 @@ protected:
   double default_duration_;   // default duration to use for joint commands, if no
   std::map<std::string, double> joint_vel_limits_;  // cache of max joint velocities from URDF
   sensor_msgs::JointState cur_joint_pos_;  // cache of last received joint state
+
+  std::map<int, sensor_msgs::JointState> cur_joint_pos_map_;
 
 private:
   /**
