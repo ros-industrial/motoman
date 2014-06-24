@@ -224,6 +224,8 @@ protected:
 
      virtual bool create_message(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage* msg);
 
+    virtual bool create_message_ex(int seq, const industrial_msgs::DynamicJointTrajectory &pt, SimpleMessage* msg);
+
   /**
    * \brief Reduce the ROS velocity commands (per-joint velocities) to a single scalar for communication to the robot.
    *   If unneeded by the robot server, set to 0 (or any value).
@@ -368,6 +370,7 @@ private:
    */
   bool jointTrajectoryCB(industrial_msgs::CmdJointTrajectory::Request &req,
                          industrial_msgs::CmdJointTrajectory::Response &res);
+
 
   bool jointTrajectoryExCB(industrial_msgs::CmdJointTrajectoryEx::Request &req,
                          industrial_msgs::CmdJointTrajectoryEx::Response &res);

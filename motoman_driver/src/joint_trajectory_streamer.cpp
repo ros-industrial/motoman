@@ -32,6 +32,7 @@
 #include "motoman_driver/joint_trajectory_streamer.h"
 #include "motoman_driver/simple_message/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
+#include "simple_message/messages/joint_traj_pt_full_ex_message.h"
 #include "industrial_robot_client/utils.h"
 #include "industrial_utils/param_utils.h"
 
@@ -39,6 +40,9 @@ using namespace industrial::simple_message;
 using industrial::joint_data::JointData;
 using industrial::joint_traj_pt_full::JointTrajPtFull;
 using industrial::joint_traj_pt_full_message::JointTrajPtFullMessage;
+using industrial::joint_traj_pt_full_ex::JointTrajPtFullEx;
+using industrial::joint_traj_pt_full_ex_message::JointTrajPtFullExMessage;
+
 using motoman::simple_message::motion_reply_message::MotionReplyMessage;
 namespace TransferStates = industrial_robot_client::joint_trajectory_streamer::TransferStates;
 namespace MotionReplyResults = motoman::simple_message::motion_reply::MotionReplyResults;
@@ -137,11 +141,97 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const trajectory_ms
   msg_data.setSequence(seq);
   msg_data.setTime(pt.time_from_start.toSec());
 
+
   // convert to message
   JointTrajPtFullMessage jtpf_msg;
   jtpf_msg.init(msg_data);
 
   return jtpf_msg.toRequest(*msg);  // assume "request" COMM_TYPE for now
+}
+
+bool MotomanJointTrajectoryStreamer::create_message_ex(int seq, const industrial_msgs::DynamicJointTrajectory &traj, SimpleMessage *msg)
+{
+  JointTrajPtFullEx msg_data_ex;
+  JointTrajPtFullExMessage jtpf_msg_ex;
+  std::vector<industrial::joint_traj_pt_full::JointTrajPtFull> msg_data_vector;
+  std::vector<std::string> ros_joint_names = traj.joint_names;
+  JointData values;
+
+  int num_groups = traj.num_groups;
+
+  for(int i=0; i < num_groups; i++)
+  {
+      JointTrajPtFull msg_data;
+
+      industrial_msgs::DynamicJointPoint pt;
+
+      pt = traj.points[i];
+
+      if(pt.positions.size() < 10)
+      {
+          int size_to_complete = 10 - pt.positions.size();
+
+          ROS_ERROR("SIze to complete %d", size_to_complete);
+
+          std::vector<double> positions(size_to_complete,0.0);
+          std::vector<double> velocities(size_to_complete,0.0);
+          std::vector<double> accelerations(size_to_complete,0.0);
+
+          pt.positions.insert(pt.positions.end(), positions.begin(), positions.end());
+          pt.velocities.insert(pt.velocities.end(), velocities.begin(), velocities.end());
+          pt.accelerations.insert(pt.accelerations.end(), accelerations.begin(), accelerations.end());
+      }
+
+
+      // copy position data
+      if (!pt.positions.empty())
+      {
+        if (VectorToJointData(pt.positions, values))
+          msg_data.setPositions(values);
+        else
+          ROS_ERROR_RETURN(false, "Failed to copy position data to JointTrajPtFullMessage");
+      }
+      else
+        msg_data.clearPositions();
+
+      // copy velocity data
+      if (!pt.velocities.empty())
+      {
+        if (VectorToJointData(pt.velocities, values))
+          msg_data.setVelocities(values);
+        else
+          ROS_ERROR_RETURN(false, "Failed to copy velocity data to JointTrajPtFullMessage");
+      }
+      else
+        msg_data.clearVelocities();
+
+      // copy acceleration data
+      if (!pt.accelerations.empty())
+      {
+        if (VectorToJointData(pt.accelerations, values))
+          msg_data.setAccelerations(values);
+        else
+          ROS_ERROR_RETURN(false, "Failed to copy acceleration data to JointTrajPtFullMessage");
+      }
+      else
+        msg_data.clearAccelerations();
+
+      // copy scalar data
+      msg_data.setRobotID(pt.group_number);
+      msg_data.setSequence(seq);
+      msg_data.setTime(pt.time_from_start.toSec());
+
+      // convert to message
+      msg_data_vector.push_back(msg_data);
+
+  }
+
+  msg_data_ex.setMultiJointTrajPtData(msg_data_vector);
+  msg_data_ex.setNumGroups(num_groups);
+  msg_data_ex.setSequence(seq);
+  jtpf_msg_ex.init(msg_data_ex);
+
+  return jtpf_msg_ex.toRequest(*msg);  // assume "request" COMM_TYPE for now
 }
 
 bool MotomanJointTrajectoryStreamer::create_message(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage *msg)
@@ -204,8 +294,10 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
                      vec.size(), joints.getMaxNumJoints());
 
   joints.init();
-  for (int i=0; i<vec.size(); ++i)
+  for (int i=0; i<vec.size(); ++i){
+
     joints.setJoint(i, vec[i]);
+  }
 
   return true;
 }
@@ -272,10 +364,11 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         }
 
         tmpMsg = this->current_traj_[this->current_point_];
+        ROS_ERROR("%d", tmpMsg.getMessageType());
         msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
                  ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
 
-        ROS_DEBUG("Sending joint trajectory point");
+        ROS_ERROR("Sending joint trajectory point");
         if (!this->connection_->sendAndReceiveMsg(msg, reply, false))
           ROS_WARN("Failed sent joint point, will try again");
         else
@@ -290,7 +383,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 
           if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
           {
-            ROS_DEBUG("Point[%d of %d] sent to controller",
+            ROS_ERROR("Point[%d of %d] sent to controller",
                      this->current_point_, (int)this->current_traj_.size());
             this->current_point_++;
           }
@@ -378,15 +471,12 @@ bool MotomanJointTrajectoryStreamer::is_valid(const industrial_msgs::DynamicJoin
 
   // FS100 requires trajectory start at current position
   namespace IRC_utils = industrial_robot_client::utils;
-  ROS_ERROR("ssss%s", cur_joint_pos_map_[group_number].name[0].c_str());
-   ROS_ERROR("NNNssss%s", traj.joint_names[0].c_str());
-    ROS_ERROR("PPssss%f", cur_joint_pos_map_[group_number].position[0]);
-     ROS_ERROR("PTssss%f", traj.points[0].positions[0]);
 
   if (!IRC_utils::isWithinRange(cur_joint_pos_map_[group_number].name, cur_joint_pos_map_[group_number].position,
                                 traj.joint_names, traj.points[0].positions,
                                 start_pos_tol_))
   {
+      ROS_ERROR("teste");
     ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
   }
 

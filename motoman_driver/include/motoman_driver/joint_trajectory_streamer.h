@@ -121,6 +121,8 @@ public:
 
   virtual bool create_message(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage* msg);
 
+  virtual bool create_message_ex(int seq, const industrial_msgs::DynamicJointTrajectory &traj, SimpleMessage* msg);
+
   virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
   virtual void streamingThread();
