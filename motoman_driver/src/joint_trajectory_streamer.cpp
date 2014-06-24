@@ -62,12 +62,23 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   ROS_INFO("MotomanJointTrajectoryStreamer: init");
 
+  this->robot_groups_ = robot_groups;
   rtn &= JointTrajectoryStreamer::init(connection, robot_groups, velocity_limits);
 
-  // try to read robot_id parameter, if none specified
-  if ( (robot_id_ < 0) )
-    node_.param("robot_id", robot_id_, 0);
-  rtn &= motion_ctrl_.init(connection, robot_id_);
+//  // try to read robot_id parameter, if none specified
+//  if ( (robot_id_ < 0) )
+//    node_.param("robot_id", robot_id_, 0);
+
+  motion_ctrl_.init(connection,0);
+  for(int i=0; i<robot_groups_.size();i++)
+  {
+    MotomanMotionCtrl motion_ctrl;
+
+    int robot_id = robot_groups_[i].get_group_id();
+    rtn &= motion_ctrl.init(connection, robot_id);
+
+    motion_ctrl_map_[robot_id] = motion_ctrl;
+  }
 
   return rtn;
 }
@@ -149,23 +160,25 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const trajectory_ms
   return jtpf_msg.toRequest(*msg);  // assume "request" COMM_TYPE for now
 }
 
-bool MotomanJointTrajectoryStreamer::create_message_ex(int seq, const industrial_msgs::DynamicJointTrajectory &traj, SimpleMessage *msg)
+bool MotomanJointTrajectoryStreamer::create_message_ex(int seq, const industrial_msgs::DynamicJointPoint &point, SimpleMessage *msg)
 {
   JointTrajPtFullEx msg_data_ex;
   JointTrajPtFullExMessage jtpf_msg_ex;
   std::vector<industrial::joint_traj_pt_full::JointTrajPtFull> msg_data_vector;
-  std::vector<std::string> ros_joint_names = traj.joint_names;
+  //std::vector<std::string> ros_joint_names = point.
   JointData values;
 
-  int num_groups = traj.num_groups;
+  int num_groups = point.num_groups;
 
   for(int i=0; i < num_groups; i++)
   {
       JointTrajPtFull msg_data;
 
-      industrial_msgs::DynamicJointPoint pt;
+      industrial_msgs::DynamicJointsGroup pt;
 
-      pt = traj.points[i];
+      industrial_msgs::DynamicJointPoint dpoint;
+
+      pt = point.groups[i];
 
       if(pt.positions.size() < 10)
       {
@@ -234,11 +247,11 @@ bool MotomanJointTrajectoryStreamer::create_message_ex(int seq, const industrial
   return jtpf_msg_ex.toRequest(*msg);  // assume "request" COMM_TYPE for now
 }
 
-bool MotomanJointTrajectoryStreamer::create_message(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage *msg)
+bool MotomanJointTrajectoryStreamer::create_message(int seq, const industrial_msgs::DynamicJointsGroup &pt, SimpleMessage *msg)
 {
   JointTrajPtFull msg_data;
   JointData values;
-
+    ROS_ERROR("creating message");
   // copy position data
   if (!pt.positions.empty())
   {
@@ -273,6 +286,7 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const industrial_ms
     msg_data.clearAccelerations();
 
   // copy scalar data
+  ROS_ERROR("Valid Fields:%d",msg_data.getValidFields());
   msg_data.setRobotID(pt.group_number);
   ROS_ERROR("GID%d", pt.group_number);
   msg_data.setSequence(seq);
@@ -317,6 +331,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
   int connectRetryCount = 1;
 
   ROS_INFO("Starting Motoman joint trajectory streamer thread");
+  ROS_ERROR("Starting Motoman joint trajectory streamer thread");
   while (ros::ok())
   {
     ros::Duration(0.005).sleep();
@@ -373,6 +388,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           ROS_WARN("Failed sent joint point, will try again");
         else
         {
+
           MotionReplyMessage reply_status;
           if (!reply_status.init(reply))
           {
@@ -457,28 +473,34 @@ bool MotomanJointTrajectoryStreamer::is_valid(const industrial_msgs::DynamicJoin
   int group_number;
   for (int i=0; i<traj.points.size(); ++i)
   {
-    const industrial_msgs::DynamicJointPoint &pt = traj.points[i];
-    time_stamp = cur_joint_pos_map_[pt.group_number].header.stamp;
-    //TODO: adjust for more joints
-    group_number = pt.group_number;
-    // FS100 requires valid velocity data
-    if (pt.velocities.empty())
-      ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
+    for(int gr=0;gr<traj.points[i].num_groups;gr++)
+    {
+        const industrial_msgs::DynamicJointsGroup &pt = traj.points[i].groups[gr];
+        time_stamp = cur_joint_pos_map_[pt.group_number].header.stamp;
+        //TODO: adjust for more joints
+        group_number = pt.group_number;
+        // FS100 requires valid velocity data
+        if (pt.velocities.empty())
+          ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
+
+        // FS100 requires trajectory start at current position
+        namespace IRC_utils = industrial_robot_client::utils;
+
+        if (!IRC_utils::isWithinRange(cur_joint_pos_map_[group_number].name, cur_joint_pos_map_[group_number].position,
+                                      traj.joint_names, traj.points[0].groups[gr].positions,
+                                      start_pos_tol_))
+        {
+            ROS_ERROR("teste");
+          ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+        }
+    }
+
   }
 
   if ((time_stamp - ros::Time::now()).toSec() > pos_stale_time_)
     ROS_ERROR_RETURN(false, "Validation failed: Can't get current robot position.");
 
-  // FS100 requires trajectory start at current position
-  namespace IRC_utils = industrial_robot_client::utils;
 
-  if (!IRC_utils::isWithinRange(cur_joint_pos_map_[group_number].name, cur_joint_pos_map_[group_number].position,
-                                traj.joint_names, traj.points[0].positions,
-                                start_pos_tol_))
-  {
-      ROS_ERROR("teste");
-    ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
-  }
 
   return true;
 }

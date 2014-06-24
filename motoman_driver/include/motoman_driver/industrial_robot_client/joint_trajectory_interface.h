@@ -178,7 +178,7 @@ protected:
     return true;
   }
 
-    virtual bool transform(const industrial_msgs::DynamicJointPoint& pt_in, industrial_msgs::DynamicJointPoint* pt_out)
+    virtual bool transform(const industrial_msgs::DynamicJointsGroup& pt_in, industrial_msgs::DynamicJointsGroup* pt_out)
     {
       *pt_out = pt_in;  // by default, no transform is applied
       return true;
@@ -194,8 +194,8 @@ protected:
      *
      * \return true on success, false otherwise
      */
-    virtual bool select(const std::vector<std::string>& ros_joint_names, const industrial_msgs::DynamicJointPoint& ros_pt,
-                        const std::vector<std::string>& rbt_joint_names, industrial_msgs::DynamicJointPoint* rbt_pt);
+    virtual bool select(const std::vector<std::string>& ros_joint_names, const industrial_msgs::DynamicJointsGroup& ros_pt,
+                        const std::vector<std::string>& rbt_joint_names, industrial_msgs::DynamicJointsGroup* rbt_pt);
 
 
   /**
@@ -211,6 +211,7 @@ protected:
   virtual bool select(const std::vector<std::string>& ros_joint_names, const trajectory_msgs::JointTrajectoryPoint& ros_pt,
                       const std::vector<std::string>& rbt_joint_names, trajectory_msgs::JointTrajectoryPoint* rbt_pt);
 
+
   /**
    * \brief Create SimpleMessage for sending to the robot
    *
@@ -222,9 +223,9 @@ protected:
    */
   virtual bool create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage* msg);
 
-     virtual bool create_message(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage* msg);
+     virtual bool create_message(int seq, const industrial_msgs::DynamicJointsGroup &pt, SimpleMessage* msg);
 
-    virtual bool create_message_ex(int seq, const industrial_msgs::DynamicJointTrajectory &pt, SimpleMessage* msg);
+    virtual bool create_message_ex(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage* msg);
 
   /**
    * \brief Reduce the ROS velocity commands (per-joint velocities) to a single scalar for communication to the robot.
@@ -246,7 +247,7 @@ protected:
      *
      * \return true on success, false otherwise
      */
-    virtual bool calc_velocity(const industrial_msgs::DynamicJointPoint& pt, double* rbt_velocity);
+    virtual bool calc_velocity(const industrial_msgs::DynamicJointsGroup& pt, double* rbt_velocity);
 
   /**
    * \brief Compute the expected move duration for communication to the robot.
@@ -268,7 +269,7 @@ protected:
      *
      * \return true on success, false otherwise
      */
-    virtual bool calc_duration(const industrial_msgs::DynamicJointPoint& pt, double* rbt_duration);
+    virtual bool calc_duration(const industrial_msgs::DynamicJointsGroup& pt, double* rbt_duration);
 
   /**
    * \brief Send trajectory to robot, using this node's robot-connection.

@@ -43,7 +43,7 @@
 #include "simple_message/messages/joint_message.h"
 #include "trajectory_msgs/JointTrajectoryPoint.h"
 #include "motoman_driver/industrial_robot_client/robot_group.h"
-#include "industrial_msgs/DynamicJointPoint.h"
+#include "industrial_msgs/DynamicJointsGroup.h"
 
 namespace industrial_robot_client
 {
@@ -53,7 +53,7 @@ namespace joint_relay_handler
 using industrial::joint_message::JointMessage;
 using industrial::simple_message::SimpleMessage;
 using trajectory_msgs::JointTrajectoryPoint;
-using industrial_msgs::DynamicJointPoint;
+using industrial_msgs::DynamicJointsGroup;
 /**
  * \brief Message handler that relays joint positions (converts simple message
  * types to ROS message types and publishes them)
@@ -173,7 +173,7 @@ protected:
    * \param[in] msg_in Message from robot connection
    * \param[out] joint_state JointTrajectoryPt message for intermediate processing
    */
-  virtual bool convert_message(SimpleMessage& msg_in, DynamicJointPoint* joint_state, int robot_id);
+  virtual bool convert_message(SimpleMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id);
 
   /**
    * \brief Convert joint message into intermediate message-type
@@ -207,7 +207,7 @@ protected:
    *
    * \return true on success, false otherwise
    */
-  virtual bool transform(const DynamicJointPoint& state_in, DynamicJointPoint* state_out)
+  virtual bool transform(const DynamicJointsGroup& state_in, DynamicJointsGroup* state_out)
   {
     *state_out = state_in;  // by default, no transform is applied
     return true;
@@ -227,8 +227,8 @@ protected:
   virtual bool select(const JointTrajectoryPoint& all_joint_state, const std::vector<std::string>& all_joint_names,
                       JointTrajectoryPoint* pub_joint_state, std::vector<std::string>* pub_joint_names);
 
-  virtual bool select(const DynamicJointPoint& all_joint_state, const std::vector<std::string>& all_joint_names,
-                      DynamicJointPoint* pub_joint_state, std::vector<std::string>* pub_joint_names);
+  virtual bool select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
+                      DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names);
 
   /**
    * \brief Callback executed upon receiving a joint message
@@ -254,7 +254,7 @@ private:
    * \param[in] msg_in JointMessage from robot connection
    * \param[out] joint_state JointTrajectoryPt message for intermediate processing
    */
-  bool convert_message(JointMessage& msg_in, DynamicJointPoint* joint_state, int robot_id);
+  bool convert_message(JointMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id);
 
 };//class JointRelayHandler
 

@@ -91,7 +91,7 @@ bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
 }
 
 
-bool JointFeedbackRelayHandler::convert_message(SimpleMessage& msg_in, DynamicJointPoint* joint_state, int robot_id)
+bool JointFeedbackRelayHandler::convert_message(SimpleMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id)
 {
   JointFeedbackMessage joint_feedback_msg;
 
@@ -135,7 +135,7 @@ bool JointFeedbackRelayHandler::JointDataToVector(const JointData &joints,
   return true;
 }
 
-bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointPoint* joint_state, int robot_id)
+bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id)
 {
   JointData values;
 

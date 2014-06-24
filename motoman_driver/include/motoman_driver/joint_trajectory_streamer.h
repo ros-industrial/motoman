@@ -119,9 +119,9 @@ public:
    */
   virtual bool create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage* msg);
 
-  virtual bool create_message(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage* msg);
+  virtual bool create_message(int seq, const industrial_msgs::DynamicJointsGroup &pt, SimpleMessage* msg);
 
-  virtual bool create_message_ex(int seq, const industrial_msgs::DynamicJointTrajectory &traj, SimpleMessage* msg);
+  virtual bool create_message_ex(int seq, const industrial_msgs::DynamicJointPoint &point, SimpleMessage* msg);
 
   virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
@@ -133,6 +133,8 @@ protected:
 
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
+
+  std::map<int, MotomanMotionCtrl> motion_ctrl_map_;
 
   void trajectoryStop();
   bool is_valid(const trajectory_msgs::JointTrajectory &traj);

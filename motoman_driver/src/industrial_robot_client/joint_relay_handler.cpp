@@ -170,14 +170,14 @@ bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
                                         control_msgs::FollowJointTrajectoryFeedback* control_state,
                                         sensor_msgs::JointState* sensor_state, int robot_id)
 {
-  DynamicJointPoint all_joint_state;
+  DynamicJointsGroup all_joint_state;
   if (!convert_message(msg_in, &all_joint_state, robot_id))
   {
     LOG_ERROR("Failed to convert SimpleMessage");
     return false;
   }
   // apply transform, if required
-  DynamicJointPoint xform_joint_state;
+  DynamicJointsGroup xform_joint_state;
   if (!transform(all_joint_state, &xform_joint_state))
   {
     LOG_ERROR("Failed to transform joint state");
@@ -186,7 +186,7 @@ bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
 
   //TODO: get the joint_names from the robotgroup instead of from the all_joint_names
   // select specific joints for publishing
-  DynamicJointPoint pub_joint_state;
+  DynamicJointsGroup pub_joint_state;
   std::vector<std::string> pub_joint_names;
   if (!select(xform_joint_state, robot_groups_[robot_id].get_joint_names(), &pub_joint_state, &pub_joint_names))
   {
@@ -228,7 +228,7 @@ bool JointRelayHandler::convert_message(SimpleMessage& msg_in, JointTrajectoryPo
   return convert_message(joint_msg, joint_state);
 }
 
-bool JointRelayHandler::convert_message(SimpleMessage& msg_in, DynamicJointPoint* joint_state, int robot_id)
+bool JointRelayHandler::convert_message(SimpleMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id)
 {
   JointMessage joint_msg;
 
@@ -266,7 +266,7 @@ bool JointRelayHandler::convert_message(JointMessage& msg_in, JointTrajectoryPoi
   return true;
 }
 
-bool JointRelayHandler::convert_message(JointMessage& msg_in, DynamicJointPoint* joint_state, int robot_id)
+bool JointRelayHandler::convert_message(JointMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id)
 {
   // copy position data
   int num_jnts = robot_groups_[robot_id].get_joint_names().size();
@@ -318,13 +318,13 @@ bool JointRelayHandler::select(const JointTrajectoryPoint& all_joint_state, cons
   return true;
 }
 
-bool JointRelayHandler::select(const DynamicJointPoint& all_joint_state, const std::vector<std::string>& all_joint_names,
-                               DynamicJointPoint* pub_joint_state, std::vector<std::string>* pub_joint_names)
+bool JointRelayHandler::select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
+                               DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names)
 {
 
   ROS_ASSERT(all_joint_state.positions.size() == all_joint_names.size());
 
-  *pub_joint_state = DynamicJointPoint();  // start with a "clean" message
+  *pub_joint_state = DynamicJointsGroup();  // start with a "clean" message
   pub_joint_names->clear();
 
   // skip over "blank" joint names

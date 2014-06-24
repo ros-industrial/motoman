@@ -35,7 +35,7 @@
 
 #include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
 #include "simple_message/messages/joint_feedback_message.h"
-#include "industrial_msgs/DynamicJointPoint.h"
+#include "industrial_msgs/DynamicJointsGroup.h"
 
 namespace industrial_robot_client
 {
@@ -47,7 +47,7 @@ using industrial::simple_message::SimpleMessage;
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using industrial_robot_client::joint_relay_handler::JointRelayHandler;
 using trajectory_msgs::JointTrajectoryPoint;
-using industrial_msgs::DynamicJointPoint;
+using industrial_msgs::DynamicJointsGroup;
 
 /**
  * \brief Message handler that relays joint positions (converts simple message
@@ -102,7 +102,7 @@ protected:
   * \param[in] msg_in Message from robot connection
   * \param[out] joint_state JointTrajectoryPt message for intermediate processing
   */
- virtual bool convert_message(SimpleMessage& msg_in, DynamicJointPoint* joint_state, int robot_id);
+ virtual bool convert_message(SimpleMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id);
 
   // override JointRelayHandler::create_messages, to check robot_id w/o error msg
   bool create_messages(SimpleMessage& msg_in,
@@ -127,7 +127,7 @@ private:
    * \param[in] msg_in JointFeedbackMessage from robot connection
    * \param[out] joint_state JointTrajectoryPt message for intermediate processing
    */
-  bool convert_message(JointFeedbackMessage& msg_in, DynamicJointPoint* joint_state, int robot_id);
+  bool convert_message(JointFeedbackMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id);
 
 };//class JointFeedbackRelayHandler
 

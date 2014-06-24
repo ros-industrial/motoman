@@ -98,7 +98,7 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
                                         control_msgs::FollowJointTrajectoryFeedback* control_state,
                                         sensor_msgs::JointState* sensor_state, int robot_id)
 {
-  DynamicJointPoint all_joint_state;
+  DynamicJointsGroup all_joint_state;
   if (!JointFeedbackExRelayHandler::convert_message(msg_in, &all_joint_state, robot_id))
   {
     LOG_ERROR("Failed to convert SimpleMessage");
@@ -106,7 +106,7 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
   }
 
   // apply transform, if required
-  DynamicJointPoint xform_joint_state;
+  DynamicJointsGroup xform_joint_state;
   if (!transform(all_joint_state, &xform_joint_state))
   {
     LOG_ERROR("Failed to transform joint state");
@@ -115,7 +115,7 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
 
   //TODO: get the joint_names from the robotgroup instead of from the all_joint_names
   // select specific joints for publishing
-  DynamicJointPoint pub_joint_state;
+  DynamicJointsGroup pub_joint_state;
   std::vector<std::string> pub_joint_names;
   if (!select(xform_joint_state, robot_groups_[robot_id].get_joint_names(), &pub_joint_state, &pub_joint_names))
   {
@@ -150,7 +150,7 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
 }
 
 
-bool JointFeedbackExRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointPoint* joint_state, int robot_id)
+bool JointFeedbackExRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id)
 {
   JointData values;
 

@@ -39,7 +39,7 @@ using industrial::simple_message::SimpleMessage;
 namespace SpecialSeqValues = industrial::joint_traj_pt::SpecialSeqValues;
 typedef industrial::joint_traj_pt::JointTrajPt rbt_JointTrajPt;
 typedef trajectory_msgs::JointTrajectoryPoint  ros_JointTrajPt;
-typedef industrial_msgs::DynamicJointPoint ros_dynamicPoint;
+typedef industrial_msgs::DynamicJointsGroup ros_dynamicPoint;
 
 namespace industrial_robot_client
 {
@@ -275,7 +275,6 @@ bool JointTrajectoryInterface::jointTrajectoryCB(industrial_msgs::CmdJointTrajec
 void JointTrajectoryInterface::jointTrajectoryExCB(const industrial_msgs::DynamicJointTrajectoryConstPtr &msg)
 {
   ROS_ERROR("Receiving joint trajectory message Dynamic");
-  ROS_ERROR("%d", msg->num_groups);
 
   // check for STOP command
   if (msg->points.empty())
@@ -322,9 +321,9 @@ bool JointTrajectoryInterface::trajectory_to_msgs(const industrial_msgs::Dynamic
 
    std::vector<double>::iterator it;
 
-  if(traj->num_groups == 1)
+  if(traj->points[0].num_groups == 1)
   {
-      ROS_ERROR("traj to msgs");
+      ROS_ERROR("traj to msgs ONE ELEMENT");
       // check for valid trajectory
       if (!is_valid(*traj))
       { ROS_ERROR("validou");
@@ -334,38 +333,39 @@ bool JointTrajectoryInterface::trajectory_to_msgs(const industrial_msgs::Dynamic
 
       for (size_t i=0; i<traj->points.size(); ++i)
       {
+
         SimpleMessage msg;
         ros_dynamicPoint rbt_pt, xform_pt;
 
-         if (!select(traj->joint_names, traj->points[i], robot_groups_[traj->points[i].group_number].get_joint_names(), &rbt_pt))
-          return false;
 
-        // transform point data (e.g. for joint-coupling)
-        if (!transform(rbt_pt, &xform_pt))
-          return false;
+        if (!select(traj->joint_names, traj->points[i].groups[0], robot_groups_[traj->points[i].groups[0].group_number].get_joint_names(), &rbt_pt))
+            return false;
 
-        // convert trajectory point to ROS message
-        if (!create_message(i, xform_pt, &msg))
-          return false;
+          // transform point data (e.g. for joint-coupling)
+          if (!transform(rbt_pt, &xform_pt))
+            return false;
 
-        msgs->push_back(msg);
-        ROS_ERROR("Data lenght %d %d %d", msg.getDataLength(), msg.getMsgLength(), msg.getMessageType());
+          // convert trajectory point to ROS message
+          if (!create_message(i, xform_pt, &msg))
+            return false;
+
+          msgs->push_back(msg);
       }
 
   }
   //TODO : get MAX_NUM_GROUPS for the FS100 controller
-  else if(traj->num_groups <= 4 )
+  else if(traj->points[0].num_groups <= 4 )
   {
-        int sequence = traj->header.seq;
+
+      for (size_t i=0; i<traj->points.size(); ++i)
+      {
 
         SimpleMessage msg;
-        create_message_ex(sequence, *traj, &msg );
-        ROS_ERROR("Data lenght %d %d %d", msg.getDataLength(), msg.getMsgLength(), msg.getMessageType());
-        ROS_ERROR("more groups");
-
-
+        create_message_ex(i, traj->points[i], &msg );
 
         msgs->push_back(msg);
+
+      }
 
   }
 
@@ -542,7 +542,7 @@ bool JointTrajectoryInterface::calc_velocity(const trajectory_msgs::JointTraject
   return true;
 }
 
-bool JointTrajectoryInterface::calc_velocity(const industrial_msgs::DynamicJointPoint& pt, double* rbt_velocity)
+bool JointTrajectoryInterface::calc_velocity(const industrial_msgs::DynamicJointsGroup& pt, double* rbt_velocity)
 {
   std::vector<double> vel_ratios;
 
@@ -607,7 +607,7 @@ bool JointTrajectoryInterface::calc_duration(const trajectory_msgs::JointTraject
   return true;
 }
 
-bool JointTrajectoryInterface::calc_duration(const industrial_msgs::DynamicJointPoint& pt, double* rbt_duration)
+bool JointTrajectoryInterface::calc_duration(const industrial_msgs::DynamicJointsGroup& pt, double* rbt_duration)
 {
   std::vector<double> durations;
   double this_time = pt.time_from_start.toSec();
@@ -623,7 +623,7 @@ bool JointTrajectoryInterface::calc_duration(const industrial_msgs::DynamicJoint
   return true;
 }
 
-bool JointTrajectoryInterface::create_message(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage *msg)
+bool JointTrajectoryInterface::create_message(int seq, const industrial_msgs::DynamicJointsGroup &pt, SimpleMessage *msg)
 {
 
   industrial::joint_data::JointData pos;
@@ -648,7 +648,7 @@ bool JointTrajectoryInterface::create_message(int seq, const industrial_msgs::Dy
   return jtp_msg.toTopic(*msg);  // assume "topic" COMM_TYPE for now
 }
 
-bool JointTrajectoryInterface::create_message_ex(int seq, const industrial_msgs::DynamicJointTrajectory &pt, SimpleMessage *msg)
+bool JointTrajectoryInterface::create_message_ex(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage *msg)
 {
 
   return true;
@@ -732,26 +732,29 @@ bool JointTrajectoryInterface::is_valid(const industrial_msgs::DynamicJointTraje
 
     for (int i=0; i<traj.points.size(); ++i)
     {
-      const industrial_msgs::DynamicJointPoint &pt = traj.points[i];
-
-      // check for non-empty positions
-      if (pt.positions.empty())
-        ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
-      // check for joint velocity limits
-      for (int j=0; j<pt.velocities.size(); ++j)
+      for(int gr=0;gr<traj.points[i].num_groups;gr++)
       {
-          //TODO: change this to check if the joint_names are present on the message
+          const industrial_msgs::DynamicJointsGroup &pt = traj.points[i].groups[gr];
 
-        std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
-        if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
+          // check for non-empty positions
+          if (pt.positions.empty())
+            ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
+          // check for joint velocity limits
+          for (int j=0; j<pt.velocities.size(); ++j)
+          {
+              //TODO: change this to check if the joint_names are present on the message
 
-        if (std::abs(pt.velocities[j]) > max_vel->second)
-          ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
+            std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
+            if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
+
+            if (std::abs(pt.velocities[j]) > max_vel->second)
+              ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
+          }
+
+          // check for valid timestamp
+          if ((i > 0) && (pt.time_from_start.toSec() == 0))
+            ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
       }
-
-      // check for valid timestamp
-      if ((i > 0) && (pt.time_from_start.toSec() == 0))
-        ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
     }
 
   return true;
