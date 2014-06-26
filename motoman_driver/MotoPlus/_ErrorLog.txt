@@ -1,2 +1,0 @@
-C:\Users\millete\AppData\Local\mpAscii 0\mpMain.c:52:3: warning: #warning Debug messages in MotoPlus *will* affect application performance
-

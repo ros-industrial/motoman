@@ -1,7 +1,7 @@
-﻿Build started 6/16/2014 10:14:18 AM.
-     1>Project "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\MpRosAllControllers.vcxproj" on node 2 (Build target(s)).
-     1>Build:
-         mpbuilder.exe -c DX100 -p "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\\" -n "MotoRosDX100" -o build
+﻿Build started 6/26/2014 2:57:46 PM.
+     1>Project "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\MpRosAllControllers.vcxproj" on node 2 (Rebuild target(s)).
+     1>Rebuild:
+         mpbuilder.exe -c DX100 -p "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\\" -n "MotoRosDX100" -o rebuild
          ------ Now building project: MotoRosDX100------
          Compiling Controller.c
          Compiling CtrlGroup.c
@@ -15,7 +15,6 @@
      1>MotionServer.c : warning : In function `Ros_MotionServer_WriteIO'
      1>MotionServer.c(426): warning : unused parameter `controller'
          Compiling mpMain.c
-     1>mpMain.c(52,74): warning : #warning Debug messages in MotoPlus *will* affect application performance
          Compiling SimpleMessage.c
          Compiling StateServer.c
      1>StateServer.c : warning : In function `Ros_StateServer_SendState'
@@ -23,8 +22,8 @@
          Building MotoRosDX100.out
          Build Successful!  Check 'DX100\MotoRosDX100' folder for MotoRosDX100.out
          ------
-     1>Done Building Project "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\MpRosAllControllers.vcxproj" (Build target(s)).
+     1>Done Building Project "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\MpRosAllControllers.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.00
+Time Elapsed 00:00:03.27
