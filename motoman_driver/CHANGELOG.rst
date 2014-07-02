@@ -2,6 +2,12 @@
 Changelog for package motoman_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.3 (2014-07-02)
+------------------
+* Corrected ROS_MSG_JOINT_FEEDBACK_EX message.
+ - This message will only be sent if the controller has more than one control-group.
+ - Single arm systems will not send this message.
+
 1.2.2 (2014-06-26)
 ------------------
 * Corrected the ROS_MSG_MOTO_MOTION_REPLY when replying to
