@@ -1,6 +1,7 @@
 <!-- 
   Wrapper launch file for the Fanuc specific motion streaming interface node.
 -->
+
 <launch>
 	<!-- IP of robot (or PC running simulation) -->
 	<arg name="robot_ip" />
