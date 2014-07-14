@@ -141,15 +141,11 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
         group_number = groups_list[i]["group"][0]["group_number"];
         int group_number_int = static_cast<int>(group_number);
 
-        ROS_ERROR("group_number: %d", group_number_int);
-
         XmlRpc::XmlRpcValue name;
         std::string name_string;
 
         name = groups_list[i]["group"][0]["name"];
         name_string = static_cast<std::string>(name);
-
-        ROS_ERROR("name: %s", name_string.c_str());
 
         XmlRpc::XmlRpcValue ns;
         std::string ns_string;
@@ -157,8 +153,6 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
         ns = groups_list[i]["group"][0]["ns"];
 
         ns_string = static_cast<std::string>(ns);
-
-        ROS_ERROR("ns: %s", ns_string.c_str());
 
         rg.set_group_id(group_number_int);
         rg.set_joint_names(rg_joint_names);

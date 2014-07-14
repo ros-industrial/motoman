@@ -139,15 +139,12 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
            group_number = groups_list[i]["group"][0]["group_number"];
            int group_number_int = static_cast<int>(group_number);
 
-           ROS_ERROR("group_number: %d", static_cast<int>(group_number));
-
            XmlRpc::XmlRpcValue name;
            std::string name_string;
 
            name = groups_list[i]["group"][0]["name"];
            name_string = static_cast<std::string>(name);
 
-           ROS_ERROR("name: %s", static_cast<std::string>(name).c_str());
 
            XmlRpc::XmlRpcValue ns;
            std::string ns_string;
@@ -155,8 +152,6 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
            ns = groups_list[i]["group"][0]["ns"];
 
            ns_string = static_cast<std::string>(ns);
-
-           ROS_ERROR("ns: %s", static_cast<std::string>(ns).c_str());
 
            rg.set_group_id(group_number_int);
            rg.set_joint_names(rg_joint_names);
@@ -323,13 +318,11 @@ bool JointTrajectoryInterface::trajectory_to_msgs(const industrial_msgs::Dynamic
 
   if(traj->points[0].num_groups == 1)
   {
-      ROS_ERROR("traj to msgs ONE ELEMENT");
       // check for valid trajectory
       if (!is_valid(*traj))
-      { ROS_ERROR("validou");
+      {
         return false;
       }
-      ROS_ERROR("traj to msgs");
 
       for (size_t i=0; i<traj->points.size(); ++i)
       {
@@ -415,8 +408,6 @@ bool JointTrajectoryInterface::select(const std::vector<std::string>& ros_joint_
 
   for (size_t rbt_idx=0; rbt_idx < rbt_joint_names.size(); ++rbt_idx)
   {
-    ROS_ERROR("joint names %s", rbt_joint_names[rbt_idx].c_str());
-    ROS_ERROR("joint names %s", ros_joint_names[rbt_idx].c_str());
 
     bool is_empty = rbt_joint_names[rbt_idx].empty();
 
@@ -453,7 +444,6 @@ bool JointTrajectoryInterface::select(const std::vector<std::string>& ros_joint_
                       const std::vector<std::string>& rbt_joint_names, ros_JointTrajPt* rbt_pt)
 {
   ROS_ASSERT(ros_joint_names.size() == ros_pt.positions.size());
-ROS_ERROR("sles");
   // initialize rbt_pt
   *rbt_pt = ros_pt;
   rbt_pt->positions.clear(); rbt_pt->velocities.clear(); rbt_pt->accelerations.clear();

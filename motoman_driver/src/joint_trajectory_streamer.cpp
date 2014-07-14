@@ -184,8 +184,6 @@ bool MotomanJointTrajectoryStreamer::create_message_ex(int seq, const industrial
       {
           int size_to_complete = 10 - pt.positions.size();
 
-          ROS_ERROR("SIze to complete %d", size_to_complete);
-
           std::vector<double> positions(size_to_complete,0.0);
           std::vector<double> velocities(size_to_complete,0.0);
           std::vector<double> accelerations(size_to_complete,0.0);
@@ -251,7 +249,6 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const industrial_ms
 {
   JointTrajPtFull msg_data;
   JointData values;
-    ROS_ERROR("creating message");
   // copy position data
   if (!pt.positions.empty())
   {
@@ -286,9 +283,8 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const industrial_ms
     msg_data.clearAccelerations();
 
   // copy scalar data
-  ROS_ERROR("Valid Fields:%d",msg_data.getValidFields());
   msg_data.setRobotID(pt.group_number);
-  ROS_ERROR("GID%d", pt.group_number);
+
   msg_data.setSequence(seq);
   msg_data.setTime(pt.time_from_start.toSec());
 
@@ -296,7 +292,6 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const industrial_ms
   JointTrajPtFullMessage jtpf_msg;
   jtpf_msg.init(msg_data);
 
-  ROS_ERROR("torequest");
   return jtpf_msg.toRequest(*msg);  // assume "request" COMM_TYPE for now
 }
 
@@ -331,7 +326,6 @@ void MotomanJointTrajectoryStreamer::streamingThread()
   int connectRetryCount = 1;
 
   ROS_INFO("Starting Motoman joint trajectory streamer thread");
-  ROS_ERROR("Starting Motoman joint trajectory streamer thread");
   while (ros::ok())
   {
     ros::Duration(0.005).sleep();
@@ -379,11 +373,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         }
 
         tmpMsg = this->current_traj_[this->current_point_];
-        ROS_ERROR("%d", tmpMsg.getMessageType());
         msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
                  ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
 
-        ROS_ERROR("Sending joint trajectory point");
         if (!this->connection_->sendAndReceiveMsg(msg, reply, false))
           ROS_WARN("Failed sent joint point, will try again");
         else
@@ -399,7 +391,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 
           if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
           {
-            ROS_ERROR("Point[%d of %d] sent to controller",
+            ROS_INFO("Point[%d of %d] sent to controller",
                      this->current_point_, (int)this->current_traj_.size());
             this->current_point_++;
           }
@@ -490,7 +482,6 @@ bool MotomanJointTrajectoryStreamer::is_valid(const industrial_msgs::DynamicJoin
                                       traj.joint_names, traj.points[0].groups[gr].positions,
                                       start_pos_tol_))
         {
-            ROS_ERROR("teste");
           ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
         }
     }
