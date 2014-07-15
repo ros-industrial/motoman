@@ -87,9 +87,6 @@ bool JointRelayHandler::init(SmplMsgConnection* connection, int msg_type, std::v
 
 bool JointRelayHandler::internalCB(SimpleMessage& msg_in)
 {
-  //TODO: check the contents of the msg_in
-
-
   control_msgs::FollowJointTrajectoryFeedback control_state;
   sensor_msgs::JointState sensor_state;
   bool rtn = true;

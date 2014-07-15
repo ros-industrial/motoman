@@ -2,16 +2,16 @@ topic_list
     - name: sda10f_r1_controller
       ns: sda10f
       group: 1
-      joints: ['joint_r1_s', 'joint_r1_l', 'joint_r1_e', 'joint_r1_u', 'joint_r1_r', 'joint_r1_b', 'joint_r1_t']
+      joints: ['sda10f_joint_r1_1_s', 'sda10f_joint_r1_2_l', 'sda10f_joint_r1_3_e', 'sda10f_joint_r1_4_u', 'sda10f_joint_r1_5_r', 'sda10f_joint_r1_6_b', 'sda10f_joint_r1_7_t']
     - name: sda10f_r2_controller
       ns: sda10f
       group: 2
-      joints: ['joint_r2_s', 'joint_r2_l', 'joint_r2_e', 'joint_r2_u', 'joint_r2_r', 'joint_r2_b', 'joint_r2_t']
+      joints: ['sda10f_joint_r2_1_s', 'sda10f_joint_r2_2_l', 'sda10f_joint_r2_3_e', 'sda10f_joint_r2_4_u', 'sda10f_joint_r2_5_r', 'sda10f_joint_r2_6_b', 'sda10f_joint_r2_7_t']
     - name: sda10f_b1_controller
       ns: sda10f
       group: 3
-      joints: ['joint_b1']
+      joints: ['sda10f_joint_x_b1']
     - name: sda10f_b2_controller
       ns: sda10f
       group: 4
-      joints: ['joint_b2']
+      joints: ['sda10f_joint_x_b2']
