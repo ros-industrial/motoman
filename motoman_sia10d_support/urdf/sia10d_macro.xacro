@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<robot name ="sia10d" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:macro name="motoman_sia10d" params="prefix">
 		<!-- link list -->
 		<link name="world">
