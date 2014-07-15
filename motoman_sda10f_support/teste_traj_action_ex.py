@@ -33,20 +33,20 @@ class teste_traj():
 
         self.alternate_value = random.uniform(-1.2, 1.2)
         
-        msg_r1 = rospy.wait_for_message("/sda10f/sda10f_r1_controller/joint_states", JointState, 5.0)
-        msg_r2 = rospy.wait_for_message("/sda10f/sda10f_r2_controller/joint_states", JointState, 5.0)
-        msg_b1 = rospy.wait_for_message("/sda10f/sda10f_b1_controller/joint_states", JointState, 5.0)
-        msg_b2 = rospy.wait_for_message("/sda10f/sda10f_b2_controller/joint_states", JointState, 5.0)
+        msg_r1 = rospy.wait_for_message("/sda10f/arm_controller/sda10f/sda10f_r1_controller/joint_states", JointState, 5.0)
+        msg_r2 = rospy.wait_for_message("/sda10f/arm_controller/sda10f/sda10f_r2_controller/joint_states", JointState, 5.0)
+        msg_b1 = rospy.wait_for_message("/sda10f/arm_controller/sda10f/sda10f_b1_controller/joint_states", JointState, 5.0)
+        msg_b2 = rospy.wait_for_message("/sda10f/arm_controller/sda10f/sda10f_b2_controller/joint_states", JointState, 5.0)
         #### combined r1 and r2 , b1 and b2
         
-        sda10f_client = actionlib.SimpleActionClient('/joint_trajectory_action', FollowJointTrajectoryAction)
+        sda10f_client = actionlib.SimpleActionClient('/sda10f/arm_controller/joint_trajectory_action', FollowJointTrajectoryAction)
         sda10f_client.wait_for_server()
 
         # Creates the goal object to pass to the server
         goal = control_msgs.msg.FollowJointTrajectoryGoal()
 
         # Populates trajectory with joint names.
-        goal.trajectory.joint_names = ['joint_r1_s', 'joint_r1_l', 'joint_r1_e', 'joint_r1_u', 'joint_r1_r', 'joint_r1_b', 'joint_r1_t','joint_r2_s', 'joint_r2_l', 'joint_r2_e', 'joint_r2_u', 'joint_r2_r', 'joint_r2_b', 'joint_r2_t', 'joint_b1', 'joint_b2']
+        goal.trajectory.joint_names = ['sda10f_joint_r1_1_s', 'sda10f_joint_r1_2_l', 'sda10f_joint_r1_3_e', 'sda10f_joint_r1_4_u', 'sda10f_joint_r1_5_r', 'sda10f_joint_r1_6_b', 'sda10f_joint_r1_7_t','sda10f_joint_r2_1_s', 'sda10f_joint_r2_2_l', 'sda10f_joint_r2_3_e', 'sda10f_joint_r2_4_u', 'sda10f_joint_r2_5_r', 'sda10f_joint_r2_6_b', 'sda10f_joint_r2_7_t', 'sda10f_joint_x_b1', 'sda10f_joint_x_b2']
 
         # First trajectory point
         # Positions
@@ -81,12 +81,12 @@ class teste_traj():
         
         #### end of combined r1 and r2
         
-        rospy.sleep(2.0)
+        rospy.sleep(4.0)
 
 
 if __name__=='__main__':
     rep = teste_traj()
-    r = rospy.Rate(2)
+    r = rospy.Rate(10)
     while not rospy.is_shutdown():
         rep.teste_traj_action()
         r.sleep()
