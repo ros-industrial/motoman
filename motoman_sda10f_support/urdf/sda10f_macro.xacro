@@ -20,7 +20,25 @@
 				</material>
 			</collision>
 		</link>
-		<link name="${prefix}link_b1">
+		<link name="${prefix}link_x_b1">
+			<visual>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_b1.stl"/>
+				</geometry>
+				<material name="silver">
+					<color rgba="0.8 0.8 0.8 1"/>
+				</material>
+			</visual>
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_b1.stl" />
+				</geometry>
+				<material name="yellow"/>
+			</collision>
+		</link>
+		<link name="${prefix}link_x_b2">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -268,16 +286,23 @@
     <link name="${prefix}r2_tool0" />
 		<!-- end of link list -->
 		<!-- joint list -->
-		<joint name="${prefix}joint_b1" type="revolute">
+		<joint name="${prefix}joint_x_b1" type="revolute">
 			<parent link="${prefix}base_link"/>
-			<child link="${prefix}link_b1"/>
+			<child link="${prefix}link_x_b1"/>
+			<origin xyz="0.09257 0 0.8935" rpy="0 0 0"/>
+			<axis xyz="0 0 1" />
+			<limit lower="-2.9670" upper="2.9670" effort="100" velocity="2.26" />
+		</joint>
+		<joint name="${prefix}joint_x_b2" type="revolute">
+			<parent link="${prefix}base_link"/>
+			<child link="${prefix}link_x_b2"/>
 			<origin xyz="0.09257 0 0.8935" rpy="0 0 0"/>
 			<axis xyz="0 0 1" />
 			<limit lower="-2.9670" upper="2.9670" effort="100" velocity="2.26" />
 		</joint>
 		<!-- R1 -->
 		<joint name="${prefix}joint_r1_1_s" type="revolute">
-			<parent link="${prefix}link_b1"/>
+			<parent link="${prefix}link_x_b1"/>
 			<child link="${prefix}link_r1_1_s"/>
 			<origin xyz="0.09996 0.0275 0.32214" rpy="1.57 0 0"/>
 			<axis xyz="0 0 -1" />
@@ -333,7 +358,7 @@
 		<!-- end of joint list -->
 		<!-- R2 -->	
 		<joint name="${prefix}joint_r2_1_s" type="revolute">
-			<parent link="${prefix}link_b1"/>
+			<parent link="${prefix}link_x_b2"/>
 			<child link="${prefix}link_r2_1_s"/>
 			<origin xyz="0.09996 -0.0275 0.32214" rpy="1.57 0 0"/>
 			<axis xyz="0 0 -1" />
