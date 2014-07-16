@@ -33,13 +33,13 @@ class teste_traj():
 
         self.alternate_value = random.uniform(-1.2, 1.2)
         
-        msg_r1 = rospy.wait_for_message("/sda10f/arm_controller/sda10f/sda10f_r1_controller/joint_states", JointState, 5.0)
-        msg_r2 = rospy.wait_for_message("/sda10f/arm_controller/sda10f/sda10f_r2_controller/joint_states", JointState, 5.0)
-        msg_b1 = rospy.wait_for_message("/sda10f/arm_controller/sda10f/sda10f_b1_controller/joint_states", JointState, 5.0)
-        msg_b2 = rospy.wait_for_message("/sda10f/arm_controller/sda10f/sda10f_b2_controller/joint_states", JointState, 5.0)
+        msg_r1 = rospy.wait_for_message("/arm_controller/sda10f/sda10f_r1_controller/joint_states", JointState, 5.0)
+        msg_r2 = rospy.wait_for_message("/arm_controller/sda10f/sda10f_r2_controller/joint_states", JointState, 5.0)
+        msg_b1 = rospy.wait_for_message("/arm_controller/sda10f/sda10f_b1_controller/joint_states", JointState, 5.0)
+        msg_b2 = rospy.wait_for_message("/arm_controller/sda10f/sda10f_b2_controller/joint_states", JointState, 5.0)
         #### combined r1 and r2 , b1 and b2
         
-        sda10f_client = actionlib.SimpleActionClient('/sda10f/arm_controller/joint_trajectory_action', FollowJointTrajectoryAction)
+        sda10f_client = actionlib.SimpleActionClient('/arm_controller/joint_trajectory_action', FollowJointTrajectoryAction)
         sda10f_client.wait_for_server()
 
         # Creates the goal object to pass to the server
@@ -67,8 +67,8 @@ class teste_traj():
         # Second trajectory point
         # Positions
         ind += 1
-        point2.positions = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-        #point2.positions = [self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value]
+        #point2.positions = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+        point2.positions =[self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value,self.alternate_value]
         point2.velocities = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
         point2.accelerations = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
         point2.effort = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]

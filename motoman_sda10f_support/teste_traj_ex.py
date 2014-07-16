@@ -62,17 +62,17 @@ class teste_traj_ex:
         dj_b2.accelerations = [0] 
         dj_b2.time_from_start = rospy.Duration(0.0)
         
-        dj_p = DynamicJointPoint()
-        dj_p.groups = [dj_r1, dj_r2, dj_b1, dj_b2]
-        dj_p.num_groups = 4
+        dj_p1 = DynamicJointPoint()
+        dj_p1.groups = [dj_r1, dj_r2, dj_b1, dj_b2]
+        dj_p1.num_groups = 4
         
         
         self._controller_state = DynamicJointTrajectory()
         self._controller_state.header.stamp = rospy.Time.now()
-        self._controller_state.joint_names = ['joint_r1_s', 'joint_r1_l', 'joint_r1_e', 'joint_r1_u', 'joint_r1_r', 'joint_r1_b', 'joint_r1_t','joint_r2_s', 'joint_r2_l', 'joint_r2_e', 'joint_r2_u', 'joint_r2_r', 'joint_r2_b', 'joint_r2_t', 'joint_b1', 'joint_b2']
-        self._controller_state.points = [dj_p]
+        self._controller_state.joint_names = ['sda10f_joint_r1_1_s', 'sda10f_joint_r1_2_l', 'sda10f_joint_r1_3_e', 'sda10f_joint_r1_4_u', 'sda10f_joint_r1_5_r', 'sda10f_joint_r1_6_b', 'sda10f_joint_r1_7_t','sda10f_joint_r2_1_s', 'sda10f_joint_r2_2_l', 'sda10f_joint_r2_3_e', 'sda10f_joint_r2_4_u', 'sda10f_joint_r2_5_r', 'sda10f_joint_r2_6_b', 'sda10f_joint_r2_7_t', 'sda10f_joint_x_b1', 'sda10f_joint_x_b2']
+        #self._controller_state.points = [dj_p]
         
-        self._pub_controller_state.publish(self._controller_state)
+        #self._pub_controller_state.publish(self._controller_state)
         
         rospy.sleep(2.0)
         
@@ -94,7 +94,7 @@ class teste_traj_ex:
         dj_r2.velocities = [0,0,0,0,0,0,0] 
         dj_r2.accelerations = [0,0,0,0,0,0,0] 
         dj_r2.effort = [0,0,0,0,0,0,0] 
-        dj_r2.time_from_start = rospy.Duration(4.0)
+        dj_r2.time_from_start = rospy.Duration(2.0)
         
         dj_b1 = DynamicJointsGroup()
         dj_b1.group_number = 2
@@ -103,7 +103,7 @@ class teste_traj_ex:
         dj_b1.velocities = [0]
         dj_b1.accelerations = [0]
         dj_b1.effort = [0]
-        dj_b1.time_from_start = rospy.Duration(6.0)
+        dj_b1.time_from_start = rospy.Duration(2.0)
         
         dj_b2 = DynamicJointsGroup()
         dj_b2.group_number = 3
@@ -111,20 +111,20 @@ class teste_traj_ex:
         dj_b2.positions = [self.alternate_value]
         dj_b2.velocities = [0] 
         dj_b2.accelerations = [0] 
-        dj_b2.time_from_start = rospy.Duration(8.0)
+        dj_b2.time_from_start = rospy.Duration(2.0)
         
-        dj_p = DynamicJointPoint()
-        dj_p.groups = [dj_r1, dj_r2, dj_b1, dj_b2]
-        dj_p.num_groups = 4
+        dj_p2 = DynamicJointPoint()
+        dj_p2.groups = [dj_r1, dj_r2, dj_b1, dj_b2]
+        dj_p2.num_groups = 4
         
         self._controller_state = DynamicJointTrajectory()
         self._controller_state.header.stamp = rospy.Time.now()
-        self._controller_state.joint_names = ['joint_r1_s', 'joint_r1_l', 'joint_r1_e', 'joint_r1_u', 'joint_r1_r', 'joint_r1_b', 'joint_r1_t','joint_r2_s', 'joint_r2_l', 'joint_r2_e', 'joint_r2_u', 'joint_r2_r', 'joint_r2_b', 'joint_r2_t', 'joint_b1', 'joint_b2']
-        self._controller_state.points = [dj_p]
+        self._controller_state.joint_names = ['sda10f_joint_r1_1_s', 'sda10f_joint_r1_2_l', 'sda10f_joint_r1_3_e', 'sda10f_joint_r1_4_u', 'sda10f_joint_r1_5_r', 'sda10f_joint_r1_6_b', 'sda10f_joint_r1_7_t','sda10f_joint_r2_1_s', 'sda10f_joint_r2_2_l', 'sda10f_joint_r2_3_e', 'sda10f_joint_r2_4_u', 'sda10f_joint_r2_5_r', 'sda10f_joint_r2_6_b', 'sda10f_joint_r2_7_t', 'sda10f_joint_x_b1', 'sda10f_joint_x_b2']
+        self._controller_state.points = [dj_p1, dj_p2]
         
         self._pub_controller_state.publish(self._controller_state)
         
-        rospy.sleep(10.0)
+        rospy.sleep(4.0)
 
 if __name__ == '__main__':
     rospy.init_node('teste_traj_ex')
