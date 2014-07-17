@@ -289,14 +289,14 @@
 		<joint name="${prefix}joint_x_b1" type="revolute">
 			<parent link="${prefix}base_link"/>
 			<child link="${prefix}link_x_b1"/>
-			<origin xyz="0.09257 0 0.8935" rpy="0 0 0"/>
+			<origin xyz="0.09257 0 0.8835" rpy="0 0 0"/>
 			<axis xyz="0 0 1" />
 			<limit lower="-2.9670" upper="2.9670" effort="100" velocity="2.26" />
 		</joint>
 		<joint name="${prefix}joint_x_b2" type="revolute">
 			<parent link="${prefix}base_link"/>
 			<child link="${prefix}link_x_b2"/>
-			<origin xyz="0.09257 0 0.8935" rpy="0 0 0"/>
+			<origin xyz="0.09257 0 0.8835" rpy="0 0 0"/>
 			<axis xyz="0 0 1" />
 			<limit lower="-2.9670" upper="2.9670" effort="100" velocity="2.26" />
 		</joint>
