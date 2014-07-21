@@ -391,7 +391,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 
           if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
           {
-            ROS_INFO("Point[%d of %d] sent to controller",
+            ROS_DEBUG("Point[%d of %d] sent to controller",
                      this->current_point_, (int)this->current_traj_.size());
             this->current_point_++;
           }
