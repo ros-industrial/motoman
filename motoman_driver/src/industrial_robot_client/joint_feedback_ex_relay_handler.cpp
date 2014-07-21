@@ -51,7 +51,6 @@ bool JointFeedbackExRelayHandler::create_messages(SimpleMessage& msg_in,
                                                 control_msgs::FollowJointTrajectoryFeedback* control_state,
                                                 sensor_msgs::JointState* sensor_state)
 {
-  //ROS_ERROR("Data lenght %d %d %d", msg_in.getDataLength(), msg_in.getMsgLength(), msg_in.getMessageType());
   // inspect groups_number field first, to avoid "Failed to Convert" message
   JointFeedbackExMessage tmp_msg;
 

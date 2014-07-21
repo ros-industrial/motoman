@@ -242,7 +242,6 @@ JointTrajectoryInterface::~JointTrajectoryInterface()
 bool JointTrajectoryInterface::jointTrajectoryExCB(industrial_msgs::CmdJointTrajectoryEx::Request &req,
                                                  industrial_msgs::CmdJointTrajectoryEx::Response &res)
 {
-    ROS_ERROR("Getting in to the JointTrajectory Interface");
   industrial_msgs::DynamicJointTrajectoryPtr traj_ptr(new industrial_msgs::DynamicJointTrajectory);
   *traj_ptr = req.trajectory;  // copy message data
   this->jointTrajectoryExCB(traj_ptr);
@@ -269,7 +268,7 @@ bool JointTrajectoryInterface::jointTrajectoryCB(industrial_msgs::CmdJointTrajec
 
 void JointTrajectoryInterface::jointTrajectoryExCB(const industrial_msgs::DynamicJointTrajectoryConstPtr &msg)
 {
-  ROS_ERROR("Receiving joint trajectory message Dynamic");
+  ROS_INFO("Receiving joint trajectory message Dynamic");
 
   // check for STOP command
   if (msg->points.empty())
