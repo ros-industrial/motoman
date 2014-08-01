@@ -4,6 +4,7 @@
 		<!-- link list -->
 		<link name="${prefix}base_link">
 			<visual>
+			        <origin rpy="0 0 3.14159"/>
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/visual/MH5_BASE_AXIS.stl" />
 				</geometry>
@@ -12,6 +13,7 @@
 				</material>
 			</visual>
 			<collision>
+			        <origin rpy="0 0 3.14159"/>
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/collision/MH5_BASE_AXIS.stl" />
 				</geometry>
