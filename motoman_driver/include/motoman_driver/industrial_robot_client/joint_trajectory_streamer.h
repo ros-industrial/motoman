@@ -34,6 +34,7 @@
 
 #include <boost/thread/thread.hpp>
 #include "motoman_driver/industrial_robot_client/joint_trajectory_interface.h"
+#include <queue>
 
 namespace industrial_robot_client
 {
@@ -48,7 +49,7 @@ namespace TransferStates
 {
 enum TransferState
 {
-  IDLE = 0, STREAMING =1 //,STARTING, //, STOPPING
+  IDLE = 0, STREAMING =1, POINT_STREAMING = 2 //,STARTING, //, STOPPING
 };
 }
 typedef TransferStates::TransferState TransferState;
@@ -96,6 +97,8 @@ public:
   ~JointTrajectoryStreamer();
 
   virtual void jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
+  
+  virtual void jointCommandCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
 
   virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
 
@@ -109,11 +112,13 @@ protected:
 
   boost::thread* streaming_thread_;
   boost::mutex mutex_;
-  int current_point_;
+  int current_point_, streaming_sequence;
   std::vector<SimpleMessage> current_traj_;
   TransferState state_;
   ros::Time streaming_start_;
   int min_buffer_size_;
+  
+  std::queue<SimpleMessage> streaming_queue_;
 };
 
 } //joint_trajectory_streamer

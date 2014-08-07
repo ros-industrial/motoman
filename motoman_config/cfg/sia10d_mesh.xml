@@ -182,4 +182,3 @@
     <limit effort="100" lower="-3.1416" upper="3.1416" velocity="6.97"/>
   </joint>
 </robot>
-
