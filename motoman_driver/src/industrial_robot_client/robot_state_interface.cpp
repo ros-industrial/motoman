@@ -97,8 +97,6 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
     std::string value;
     ros::param::search("topics_list", value);
 
-    ROS_INFO("%s", value.c_str());
-
     XmlRpc::XmlRpcValue topics_list_rpc;
     ros::param::get(value,topics_list_rpc);
 

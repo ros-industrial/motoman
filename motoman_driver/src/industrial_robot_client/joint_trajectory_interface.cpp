@@ -96,12 +96,11 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
        std::string value;
        ros::param::search("topics_list", value);
 
-       ROS_INFO("%s", value.c_str());
-
        XmlRpc::XmlRpcValue topics_list_rpc;
        ros::param::get(value,topics_list_rpc);
 
-
+       // Evaluating the topics_list parameter that contains the node configuration in
+       // respect to the characteristics for each group
        std::vector<XmlRpc::XmlRpcValue> topics_list;
 
        for (int i=0; i < topics_list_rpc.size();i++)
