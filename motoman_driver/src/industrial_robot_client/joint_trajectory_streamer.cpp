@@ -29,6 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "industrial_msgs/RobotStatus.h"
 #include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
 
 using namespace industrial::simple_message;
@@ -46,6 +47,8 @@ bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vec
   ROS_INFO("JointTrajectoryStreamer: init");
 
   rtn &= JointTrajectoryInterface::init(connection, joint_names, velocity_limits);
+
+  this->error_status_pub_ = node_.advertise<industrial_msgs::RobotStatus>("robot_status", 10);
 
   this->mutex_.lock();
   this->current_point_ = 0;
@@ -93,10 +96,31 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   // calc new trajectory
   std::vector<SimpleMessage> new_traj_msgs;
   if (!trajectory_to_msgs(msg, &new_traj_msgs))
+  {
+    publishInvalidStart();
     return;
+  }
 
   // send command messages to robot
   send_to_robot(new_traj_msgs);
+}
+
+void JointTrajectoryStreamer::publishInvalidStart()
+{
+  ROS_WARN("JointTrajectoryStreamer::publishInvalidStart()");
+  industrial_msgs::RobotStatus status;
+  status.header.stamp = ros::Time::now();
+  status.mode.val = industrial_msgs::RobotMode::UNKNOWN;
+  status.e_stopped.val = industrial_msgs::TriState::UNKNOWN;
+  status.drives_powered.val = industrial_msgs::TriState::UNKNOWN;
+  status.motion_possible.val = industrial_msgs::TriState::UNKNOWN;
+  status.in_motion.val = industrial_msgs::TriState::UNKNOWN;
+  status.in_error.val = industrial_msgs::TriState::UNKNOWN;
+  status.error_code = 3011; // from MotoPlus/SimpleMessage.h: ROS_RESULT_INVALID_DATA_START_POS
+
+  error_status_pub_mutex_.lock();
+  error_status_pub_.publish(status);
+  error_status_pub_mutex_.unlock();
 }
 
 bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
