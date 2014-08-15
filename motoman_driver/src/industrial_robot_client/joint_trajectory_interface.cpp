@@ -335,6 +335,8 @@ bool JointTrajectoryInterface::stopMotionCB(industrial_msgs::StopMotion::Request
 
 bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &traj)
 {
+  double epsilon = 1e-6; // Amount speed can exceed limits.
+
   for (int i=0; i<traj.points.size(); ++i)
   {
     const trajectory_msgs::JointTrajectoryPoint &pt = traj.points[i];
@@ -349,8 +351,15 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
       std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
       if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
 
-      if (std::abs(pt.velocities[j]) > max_vel->second)
-        ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
+      if (std::abs(pt.velocities[j]) > max_vel->second + epsilon)
+      {
+        ROS_ERROR_RETURN(false,
+                         "Validation failed: Max velocity %lf exceeded for trajectory pt %d, joint '%s', vel %lf",
+                         max_vel->second,
+                         i,
+                         traj.joint_names[j].c_str(),
+                         pt.velocities[j]);
+      }
     }
 
     // check for valid timestamp
