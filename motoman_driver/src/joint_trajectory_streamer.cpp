@@ -29,11 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "industrial_robot_client/utils.h"
+#include "industrial_utils/param_utils.h"
+#include "industrial_utils/utils.h"
 #include "motoman_driver/joint_trajectory_streamer.h"
 #include "motoman_driver/simple_message/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
-#include "industrial_robot_client/utils.h"
-#include "industrial_utils/param_utils.h"
 
 using namespace industrial::simple_message;
 using industrial::joint_data::JointData;
@@ -131,7 +132,7 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
 {
   if ( vec.size() > joints.getMaxNumJoints() )
     ROS_ERROR_RETURN(false, "Failed to copy to JointData.  Len (%d) out of range (0 to %d)",
-                     vec.size(), joints.getMaxNumJoints());
+                     int(vec.size()), int(joints.getMaxNumJoints()));
 
   joints.init();
   for (int i=0; i<vec.size(); ++i)
@@ -232,6 +233,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                              << " (#" << this->current_point_ << "): "
                              << MotomanMotionCtrl::getErrorString(reply_status.reply_));
             this->state_ = TransferStates::IDLE;
+            publishInvalidStart();
             break;
           }
         }
@@ -280,7 +282,29 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
                                 traj.joint_names, traj.points[0].positions,
                                 start_pos_tol_))
   {
-    ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+    ROS_ERROR("Validation failed: Trajectory doesn't start at current position.");
+
+    std::map<std::string, double> cur_map;
+    std::map<std::string, double> traj_map;
+    if (industrial_utils::isSimilar(cur_joint_pos_.name, traj.joint_names))
+    {
+      if (industrial_robot_client::utils::toMap(cur_joint_pos_.name, cur_joint_pos_.position, cur_map) &&
+          industrial_robot_client::utils::toMap(traj.joint_names, traj.points[0].positions, traj_map))
+      {
+        fprintf(stderr, "joint  current  first-traj-point  diff  tol = %lf\n", start_pos_tol_);
+        std::map<std::string, double>::const_iterator it;
+        for(it = cur_map.begin(); it != cur_map.end(); it++)
+        {
+          std::string name = it->first;
+          double cur_val = it->second;
+          double traj_val = traj_map[name];
+          double diff = traj_val - cur_val;
+          fprintf(stderr, "%10s %8.5lf %8.5lf  %8.5lf\n", name.c_str(), cur_val, traj_val, diff);
+        }
+      }
+    }
+
+    return false;
   }
 
   return true;

@@ -105,6 +105,7 @@ public:
 
 protected:
 
+  void publishInvalidStart();
   void trajectoryStop();
 
   boost::thread* streaming_thread_;
@@ -114,6 +115,8 @@ protected:
   TransferState state_;
   ros::Time streaming_start_;
   int min_buffer_size_;
+  ros::Publisher error_status_pub_;
+  boost::mutex error_status_pub_mutex_;
 };
 
 } //joint_trajectory_streamer
