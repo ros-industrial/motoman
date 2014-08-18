@@ -1,0 +1,25 @@
+topics_list:
+ - state:
+    - group:
+       - group_number: 0
+         name: sda10f_r1_controller
+         ns: sda10f
+         joints: ['sda10f_joint_r1_1_s', 'sda10f_joint_r1_2_l', 'sda10f_joint_r1_3_e', 'sda10f_joint_r1_4_u', 'sda10f_joint_r1_5_r', 'sda10f_joint_r1_6_b', 'sda10f_joint_r1_7_t']
+    - group:
+       - group_number: 1
+         name: sda10f_r2_controller
+         ns: sda10f
+         joints: ['sda10f_joint_r2_1_s', 'sda10f_joint_r2_2_l', 'sda10f_joint_r2_3_e', 'sda10f_joint_r2_4_u', 'sda10f_joint_r2_5_r', 'sda10f_joint_r2_6_b', 'sda10f_joint_r2_7_t']
+    - group:
+       - group_number: 2
+         name: sda10f_b1_controller
+         ns: sda10f
+         joints: ['sda10f_joint_x_b1']
+    - group:
+       - group_number: 3
+         name: sda10f_b2_controller
+         ns: sda10f
+         joints: ['sda10f_joint_x_b2']
+ - status:
+    - name: sda10f_r1_status
+   

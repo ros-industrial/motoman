@@ -20,7 +20,25 @@
 				</material>
 			</collision>
 		</link>
-		<link name="${prefix}link_b1">
+		<link name="${prefix}link_x_b1">
+			<visual>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_b1.stl"/>
+				</geometry>
+				<material name="silver">
+					<color rgba="0.8 0.8 0.8 1"/>
+				</material>
+			</visual>
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_b1.stl" />
+				</geometry>
+				<material name="yellow"/>
+			</collision>
+		</link>
+		<link name="${prefix}link_x_b2">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -39,7 +57,7 @@
 			</collision>
 		</link>
 		<!-- R1 Group -->
-		<link name="${prefix}link_r1_s">
+		<link name="${prefix}link_r1_1_s">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -57,7 +75,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r1_l">
+		<link name="${prefix}link_r1_2_l">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -73,7 +91,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r1_e">
+		<link name="${prefix}link_r1_3_e">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -89,7 +107,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r1_u">
+		<link name="${prefix}link_r1_4_u">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -105,7 +123,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r1_r">
+		<link name="${prefix}link_r1_5_r">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -121,7 +139,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r1_b">
+		<link name="${prefix}link_r1_6_b">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -137,7 +155,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r1_t">
+		<link name="${prefix}link_r1_7_t">
 			<visual>
 				<geometry>
 					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r1_t.stl" />
@@ -151,8 +169,9 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
+	    <link name="${prefix}r1_tool0" />
 		<!-- R2 Group -->
-		<link name="${prefix}link_r2_s">
+		<link name="${prefix}link_r2_1_s">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -170,7 +189,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r2_l">
+		<link name="${prefix}link_r2_2_l">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -186,7 +205,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r2_e">
+		<link name="${prefix}link_r2_3_e">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -202,7 +221,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r2_u">
+		<link name="${prefix}link_r2_4_u">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -218,7 +237,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r2_r">
+		<link name="${prefix}link_r2_5_r">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -234,7 +253,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r2_b">
+		<link name="${prefix}link_r2_6_b">
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
@@ -250,7 +269,7 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-		<link name="${prefix}link_r2_t">
+		<link name="${prefix}link_r2_7_t">
 			<visual>
 				<geometry>
 					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r2_t.stl" />
@@ -264,126 +283,134 @@
 				<material name="yellow"/>
 			</collision>
 		</link>
-    <link name="${prefix}tool0" />
+    <link name="${prefix}r2_tool0" />
 		<!-- end of link list -->
 		<!-- joint list -->
-		<joint name="${prefix}joint_b1" type="revolute">
+		<joint name="${prefix}joint_x_b1" type="revolute">
 			<parent link="${prefix}base_link"/>
-			<child link="${prefix}link_b1"/>
-			<origin xyz="0.09257 0 0.8935" rpy="0 0 0"/>
+			<child link="${prefix}link_x_b1"/>
+			<origin xyz="0.09257 0 0.8835" rpy="0 0 0"/>
 			<axis xyz="0 0 1" />
-			<limit lower="-2.9670" upper="2.9670" effort="100" velocity="2.26" />
+			<limit lower="-2.9570" upper="2.9570" effort="100" velocity="2.26" />
+		</joint>
+		<joint name="${prefix}joint_x_b2" type="revolute">
+			<parent link="${prefix}base_link"/>
+			<child link="${prefix}link_x_b2"/>
+			<origin xyz="0.09257 0 0.8835" rpy="0 0 0"/>
+			<axis xyz="0 0 1" />
+			<limit lower="-2.9570" upper="2.9570" effort="100" velocity="2.26" />
+			<mimic joint="${prefix}joint_x_b1" multiplier="1" offset="0"/>
 		</joint>
 		<!-- R1 -->
-		<joint name="${prefix}joint_r1_s" type="revolute">
-			<parent link="${prefix}link_b1"/>
-			<child link="${prefix}link_r1_s"/>
+		<joint name="${prefix}joint_r1_1_s" type="revolute">
+			<parent link="${prefix}link_x_b1"/>
+			<child link="${prefix}link_r1_1_s"/>
 			<origin xyz="0.09996 0.0275 0.32214" rpy="1.57 0 0"/>
-			<axis xyz="0 0 1" />
-			<limit lower="-3.1416" upper="3.1416" effort="100" velocity="2.96" />
+			<axis xyz="0 0 -1" />
+			<limit lower="-3.13" upper="3.13" effort="100" velocity="2.95" />
 		</joint>
-		<joint name="${prefix}joint_r1_l" type="revolute">
-			<parent link="${prefix}link_r1_s"/>
-			<child link="${prefix}link_r1_l"/>
+		<joint name="${prefix}joint_r1_2_l" type="revolute">
+			<parent link="${prefix}link_r1_1_s"/>
+			<child link="${prefix}link_r1_2_l"/>
 			<origin xyz="0 0.0577 -0.2255" rpy="-1.57 0 0"/>
-			<axis xyz="0 0 1" />
-			<limit lower="-1.91" upper="1.91" effort="100" velocity="2.96" />
+			<axis xyz="0 0 -1" />
+			<limit lower="-1.90" upper="1.90" effort="100" velocity="2.95" />
 		</joint>
-		<joint name="${prefix}joint_r1_e" type="revolute">
-			<parent link="${prefix}link_r1_l"/>
-			<child link="${prefix}link_r1_e"/>
+		<joint name="${prefix}joint_r1_3_e" type="revolute">
+			<parent link="${prefix}link_r1_2_l"/>
+			<child link="${prefix}link_r1_3_e"/>
 			<origin xyz="0 0.1690 -0.0454" rpy="1.57 0 0"/>
-			<axis xyz="0 0 1" />
-			<limit lower="-2.96" upper="2.96" effort="100" velocity="2.96" />
+			<axis xyz="0 0 -1" />
+			<limit lower="-2.95" upper="2.95" effort="100" velocity="2.95" />
 		</joint>
-		<joint name="${prefix}joint_r1_u" type="revolute">
-			<parent link="${prefix}link_r1_e"/>
-			<child link="${prefix}link_r1_u"/>
+		<joint name="${prefix}joint_r1_4_u" type="revolute">
+			<parent link="${prefix}link_r1_3_e"/>
+			<child link="${prefix}link_r1_4_u"/>
 			<origin xyz="0 -0.0085 -0.181" rpy="-1.57 0 0"/>
 			<axis xyz="0 0 1" />
-			<limit lower="-2.36" upper="2.36" effort="100" velocity="2.96" />
+			<limit lower="-2.36" upper="2.36" effort="100" velocity="2.95" />
 		</joint>
-		<joint name="${prefix}joint_r1_r" type="revolute">
-			<parent link="${prefix}link_r1_u"/>
-			<child link="${prefix}link_r1_r"/>
+		<joint name="${prefix}joint_r1_5_r" type="revolute">
+			<parent link="${prefix}link_r1_4_u"/>
+			<child link="${prefix}link_r1_5_r"/>
 			<origin xyz="0 0.1936 0.0155" rpy="1.57 0 0"/>
 			<axis xyz="0 0 1" />
-			<limit lower="-3.1416" upper="3.1416" effort="100" velocity="3.48" />
+			<limit lower="-3.13" upper="3.13" effort="100" velocity="3.48" />
 		</joint>
-		<joint name="${prefix}joint_r1_b" type="revolute">
-			<parent link="${prefix}link_r1_r"/>
-			<child link="${prefix}link_r1_b"/>
+		<joint name="${prefix}joint_r1_6_b" type="revolute">
+			<parent link="${prefix}link_r1_5_r"/>
+			<child link="${prefix}link_r1_6_b"/>
 			<origin xyz="0 0.0080 -0.155" rpy="-1.57 0 0"/>
 			<axis xyz="0 0 1" />
-			<limit lower="-1.91" upper="1.91" effort="100" velocity="3.48" />
+			<limit lower="-1.90" upper="1.90" effort="100" velocity="3.48" />
 		</joint>
-		<joint name="${prefix}joint_r1_t" type="revolute">
-			<parent link="${prefix}link_r1_b"/>
-			<child link="${prefix}link_r1_t"/>
+		<joint name="${prefix}joint_r1_7_t" type="revolute">
+			<parent link="${prefix}link_r1_6_b"/>
+			<child link="${prefix}link_r1_7_t"/>
 			<origin xyz="0 0.168 -0.015" rpy="1.57 0 0"/>
 			<axis xyz="0 0 1" />
-			<limit lower="-3.1416" upper="3.1416" effort="100" velocity="6.97" />
+			<limit lower="-3.13" upper="3.13" effort="100" velocity="6.97" />
 		</joint>
-    <joint name="${prefix}link_r1_t-tool0" type="fixed" >
-      <origin xyz="0 0 0.0" rpy="0 0 -3.1416"/>
-      <parent link="${prefix}link_r1_t" />
-      <child link="${prefix}tool0" />
+    <joint name="${prefix}link_r1_7_t-tool0" type="fixed" >
+      <origin xyz="0 0 0.0" rpy="0 0 -3.13"/>
+      <parent link="${prefix}link_r1_7_t" />
+      <child link="${prefix}r1_tool0" />
     </joint>
 		<!-- end of joint list -->
 		<!-- R2 -->	
-		<joint name="${prefix}joint_r2_s" type="revolute">
-			<parent link="${prefix}link_b1"/>
-			<child link="${prefix}link_r2_s"/>
+		<joint name="${prefix}joint_r2_1_s" type="revolute">
+			<parent link="${prefix}link_x_b1"/>
+			<child link="${prefix}link_r2_1_s"/>
 			<origin xyz="0.09996 -0.0275 0.32214" rpy="1.57 0 0"/>
-			<axis xyz="0 0 1" />
-			<limit lower="-3.1416" upper="3.1416" effort="100" velocity="2.96" />
+			<axis xyz="0 0 -1" />
+			<limit lower="-3.13" upper="3.13" effort="100" velocity="2.95" />
 		</joint>
-		<joint name="${prefix}joint_r2_l" type="revolute">
-			<parent link="${prefix}link_r2_s"/>
-			<child link="${prefix}link_r2_l"/>
+		<joint name="${prefix}joint_r2_2_l" type="revolute">
+			<parent link="${prefix}link_r2_1_s"/>
+			<child link="${prefix}link_r2_2_l"/>
 			<origin xyz="0 0.0577 0.2255" rpy="-1.57 0 0"/>
 			<axis xyz="0 0 1" />
-			<limit lower="-1.91" upper="1.91" effort="100" velocity="2.96" />
+			<limit lower="-1.90" upper="1.90" effort="100" velocity="2.95" />
 		</joint>
-		<joint name="${prefix}joint_r2_e" type="revolute">
-			<parent link="${prefix}link_r2_l"/>
-			<child link="${prefix}link_r2_e"/>
+		<joint name="${prefix}joint_r2_3_e" type="revolute">
+			<parent link="${prefix}link_r2_2_l"/>
+			<child link="${prefix}link_r2_3_e"/>
 			<origin xyz="0 -0.1690 -0.0454" rpy="1.57 0 0"/>
-			<axis xyz="0 0 1" />
-			<limit lower="-2.96" upper="2.96" effort="100" velocity="2.96" />
+			<axis xyz="0 0 -1" />
+			<limit lower="-2.95" upper="2.95" effort="100" velocity="2.95" />
 		</joint>
-		<joint name="${prefix}joint_r2_u" type="revolute">
-			<parent link="${prefix}link_r2_e"/>
-			<child link="${prefix}link_r2_u"/>
+		<joint name="${prefix}joint_r2_4_u" type="revolute">
+			<parent link="${prefix}link_r2_3_e"/>
+			<child link="${prefix}link_r2_4_u"/>
 			<origin xyz="0 -0.0085 0.181" rpy="-1.57 0 0"/>
-			<axis xyz="0 0 1" />
-			<limit lower="-2.36" upper="2.36" effort="100" velocity="2.96" />
+			<axis xyz="0 0 -1" />
+			<limit lower="-2.36" upper="2.36" effort="100" velocity="2.95" />
 		</joint>
-		<joint name="${prefix}joint_r2_r" type="revolute">
-			<parent link="${prefix}link_r2_u"/>
-			<child link="${prefix}link_r2_r"/>
+		<joint name="${prefix}joint_r2_5_r" type="revolute">
+			<parent link="${prefix}link_r2_4_u"/>
+			<child link="${prefix}link_r2_5_r"/>
 			<origin xyz="0 -0.1936 0.0155" rpy="1.57 0 0"/>
 			<axis xyz="0 0 1" />
-			<limit lower="-3.1416" upper="3.1416" effort="100" velocity="3.48" />
+			<limit lower="-3.13" upper="3.13" effort="100" velocity="3.48" />
 		</joint>
-		<joint name="${prefix}joint_r2_b" type="revolute">
-			<parent link="${prefix}link_r2_r"/>
-			<child link="${prefix}link_r2_b"/>
+		<joint name="${prefix}joint_r2_6_b" type="revolute">
+			<parent link="${prefix}link_r2_5_r"/>
+			<child link="${prefix}link_r2_6_b"/>
 			<origin xyz="0 0.0080 0.155" rpy="-1.57 0 0"/>
-			<axis xyz="0 0 1" />
-			<limit lower="-1.91" upper="1.91" effort="100" velocity="3.48" />
+			<axis xyz="0 0 -1" />
+			<limit lower="-1.90" upper="1.90" effort="100" velocity="3.48" />
 		</joint>
-		<joint name="${prefix}joint_r2_t" type="revolute">
-			<parent link="${prefix}link_r2_b"/>
-			<child link="${prefix}link_r2_t"/>
+		<joint name="${prefix}joint_r2_7_t" type="revolute">
+			<parent link="${prefix}link_r2_6_b"/>
+			<child link="${prefix}link_r2_7_t"/>
 			<origin xyz="0 -0.168 -0.015" rpy="1.57 0 0"/>
 			<axis xyz="0 0 1" />
-			<limit lower="-3.1416" upper="3.1416" effort="100" velocity="6.97" />
+			<limit lower="-3.13" upper="3.13" effort="100" velocity="6.97" />
 		</joint>
-    <joint name="${prefix}link_r2_t-tool0" type="fixed" >
-      <origin xyz="0 0 0.0" rpy="0 0 -3.1416"/>
-      <parent link="${prefix}link_r2_t" />
-      <child link="${prefix}tool0" />
+    <joint name="${prefix}link_r2_7_t-tool0" type="fixed" >
+      <origin xyz="0 0 0.0" rpy="0 0 -3.1316"/>
+      <parent link="${prefix}link_r2_7_t" />
+      <child link="${prefix}r2_tool0" />
     </joint>
 		<!-- end of joint list -->
 	</xacro:macro>

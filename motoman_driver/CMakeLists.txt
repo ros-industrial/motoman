@@ -33,6 +33,7 @@ set(MSG_SRC_FILES
 set(CLIENT_SRC_FILES
   src/industrial_robot_client/joint_relay_handler.cpp
   src/industrial_robot_client/joint_feedback_relay_handler.cpp
+  src/industrial_robot_client/joint_feedback_ex_relay_handler.cpp
   src/industrial_robot_client/robot_state_interface.cpp
   src/industrial_robot_client/joint_trajectory_interface.cpp
   src/industrial_robot_client/joint_trajectory_streamer.cpp)
