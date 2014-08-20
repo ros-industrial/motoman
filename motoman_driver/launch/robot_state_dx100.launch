@@ -8,11 +8,13 @@
 <launch>
 	<arg name="robot_ip" />
 	<arg name="use_bswap" value="false" />
+	<arg name="legacy_mode" value="false" />
 
 	<!--rosparam command="load" file="$(find motoman_config)/?" /-->
 
 	<include file="$(find motoman_driver)/launch/robot_state.launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
+		<arg name="legacy_mode"  value="$(arg legacy_mode)" />
 	</include>
 </launch>
