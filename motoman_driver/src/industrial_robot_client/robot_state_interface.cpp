@@ -117,7 +117,6 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
         XmlRpc::XmlRpcValue group_value;
         group_value = topics_list[0]["state"][i];
         groups_list.push_back(group_value);
-        std::cout << i << std::endl;
     }
 
 
