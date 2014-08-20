@@ -7,9 +7,13 @@
 
 	<!-- Load the byte-swapping version of robot_state if required -->
 	<arg name="use_bswap" />
+	
+	<!-- Load the legacy mode if required -->
+	<arg name="legacy_mode" />
 
 	<!-- put them on the parameter server -->
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
+	<param name="legacy_mode" type="bool" value="$(arg legacy_mode)" />
 
 	<!-- load the correct version of the robot state node -->
 	<node if="$(arg use_bswap)" name="joint_state" 
