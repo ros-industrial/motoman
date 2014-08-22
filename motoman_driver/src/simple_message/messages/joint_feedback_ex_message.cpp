@@ -58,7 +58,7 @@ void JointFeedbackExMessage::init(industrial::joint_feedback_ex::JointFeedbackEx
 
 void JointFeedbackExMessage::init()
 {
-  this->setMessageType(MotomanMsgTypes::JOINT_FEEDBACK_EX);
+  this->setMessageType(MotomanMsgTypes::ROS_MSG_MOTO_JOINT_FEEDBACK_EX);
   this->data_.init();
 }
 

@@ -57,7 +57,7 @@ void JointTrajPtFullExMessage::init(industrial::joint_traj_pt_full_ex::JointTraj
 
 void JointTrajPtFullExMessage::init()
 {
-  this->setMessageType(MotomanMsgTypes::JOINT_TRAJ_PT_FULL_EX);
+  this->setMessageType(MotomanMsgTypes::ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX);
   this->point_.init();
 }
 

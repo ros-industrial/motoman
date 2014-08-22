@@ -1,1 +1,4 @@
-controller_joint_names: ['sda10f_joint_r1_1_s', 'sda10f_joint_r1_2_l', 'sda10f_joint_r1_3_e', 'sda10f_joint_r1_4_u', 'sda10f_joint_r1_5_r', 'sda10f_joint_r1_6_b', 'sda10f_joint_r1_7_t']
+controller_joint_names: ['arm_left_joint_1','arm_left_joint_2','arm_left_joint_3'
+,'arm_left_joint_4','arm_left_joint_5','arm_left_joint_6','arm_left_joint_7',
+'arm_right_joint_1','arm_right_joint_2','arm_right_joint_3','arm_right_joint_4',
+'arm_right_joint_5','arm_right_joint_6','arm_right_joint_7','torso_joint_b1','torso_joint_b2']
