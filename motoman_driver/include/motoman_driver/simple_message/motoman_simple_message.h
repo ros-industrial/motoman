@@ -58,6 +58,8 @@ namespace MotomanMsgTypes
     MOTOMAN_MSG_BEGIN = 2000,
     MOTOMAN_MOTION_CTRL = 2001,
     MOTOMAN_MOTION_REPLY = 2002,
+    ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016, // This is similar to the "Dynamic Joint Point" in REP I0001
+    ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017, //Similar to Dynamic Joint State on the REP I0001
   };
 }
 typedef MotomanMsgTypes::MotomanMsgType MotomanMsgType;

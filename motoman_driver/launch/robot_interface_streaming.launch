@@ -54,5 +54,5 @@
 	<node if="$(arg legacy_mode)" name="joint_trajectory_action"
 		pkg="industrial_robot_client" type="joint_trajectory_action" />
 	<node unless="$(arg legacy_mode)" name="joint_trajectory_action"
-		pkg="industrial_robot_client" type="joint_trajectory_action2" />
+		pkg="motoman_driver" type="joint_trajectory_action2" />
 </launch>

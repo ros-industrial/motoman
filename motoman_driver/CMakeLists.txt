@@ -29,14 +29,21 @@ set(MSG_SRC_FILES
   src/simple_message/motoman_motion_ctrl_message.cpp
   src/simple_message/motoman_motion_reply.cpp
   src/simple_message/motoman_motion_reply_message.cpp)
-  
+
+
 set(CLIENT_SRC_FILES
   src/industrial_robot_client/joint_relay_handler.cpp
   src/industrial_robot_client/joint_feedback_relay_handler.cpp
   src/industrial_robot_client/joint_feedback_ex_relay_handler.cpp
   src/industrial_robot_client/robot_state_interface.cpp
   src/industrial_robot_client/joint_trajectory_interface.cpp
-  src/industrial_robot_client/joint_trajectory_streamer.cpp)
+  src/industrial_robot_client/joint_trajectory_streamer.cpp
+  src/industrial_robot_client/joint_trajectory_action2.cpp
+  src/industrial_robot_client/generic_joint_trajectory_action2_node.cpp
+  src/simple_message/joint_feedback_ex.cpp
+  src/simple_message/joint_traj_pt_full_ex.cpp
+  src/simple_message/messages/joint_feedback_ex_message.cpp
+  src/simple_message/messages/joint_traj_pt_full_ex_message.cpp)
 	
 ###########
 ## Build ##
@@ -121,7 +128,12 @@ set_target_properties(motoman_motion_streaming_interface_bswap
   PROPERTIES OUTPUT_NAME motion_streaming_interface_bswap
   PREFIX "")
 
-
+add_executable(joint_trajectory_action2
+  src/industrial_robot_client/generic_joint_trajectory_action2_node.cpp
+  src/industrial_robot_client/joint_trajectory_action2.cpp)
+target_link_libraries(joint_trajectory_action2 
+  industrial_robot_client ${catkin_LIBRARIES})
+add_dependencies(joint_trajectory_action2 industrial_robot_client_gencpp)
 #############
 ## Install ##
 #############
@@ -132,6 +144,7 @@ install(TARGETS
     motoman_motion_streaming_interface
     motoman_robot_state_bswap
     motoman_motion_streaming_interface_bswap
+    joint_trajectory_action2
 
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

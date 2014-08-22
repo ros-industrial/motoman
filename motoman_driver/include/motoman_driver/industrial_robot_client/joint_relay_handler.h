@@ -43,7 +43,7 @@
 #include "simple_message/messages/joint_message.h"
 #include "trajectory_msgs/JointTrajectoryPoint.h"
 #include "motoman_driver/industrial_robot_client/robot_group.h"
-#include "industrial_msgs/DynamicJointsGroup.h"
+#include "motoman_msgs/DynamicJointsGroup.h"
 
 namespace industrial_robot_client
 {
@@ -53,7 +53,7 @@ namespace joint_relay_handler
 using industrial::joint_message::JointMessage;
 using industrial::simple_message::SimpleMessage;
 using trajectory_msgs::JointTrajectoryPoint;
-using industrial_msgs::DynamicJointsGroup;
+using motoman_msgs::DynamicJointsGroup;
 /**
  * \brief Message handler that relays joint positions (converts simple message
  * types to ROS message types and publishes them)
