@@ -132,7 +132,7 @@ void Ros_StateServer_SendState(Controller* controller)
 			}
 		}
 
-		if (controller->numGroup < 2) //only send the ROS_MSG_JOINT_FEEDBACK_EX message if we have multiple control groups
+		if (controller->numGroup < 2) //only send the ROS_MSG_MOTO_JOINT_FEEDBACK_EX message if we have multiple control groups
 			bOkToSendExFeedback = FALSE;
 
 		if (bHasConnections && bOkToSendExFeedback) //send extended-feedback message

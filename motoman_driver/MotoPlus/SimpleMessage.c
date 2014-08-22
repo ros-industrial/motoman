@@ -89,7 +89,7 @@ int Ros_SimpleMsg_JointFeedback(CtrlGroup* ctrlGroup, SimpleMsg* sendMsg)
 	return(sendMsg->prefix.length + sizeof(SmPrefix));
 }
 
-// Initialize header for a simple message of type: ROS_MSG_JOINT_FEEDBACK_EX = 17
+// Initialize header for a simple message of type: ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 17
 void Ros_SimpleMsg_JointFeedbackEx_Init(int numberOfGroups, SimpleMsg* sendMsg)
 {	
 	//initialize memory
@@ -99,7 +99,7 @@ void Ros_SimpleMsg_JointFeedbackEx_Init(int numberOfGroups, SimpleMsg* sendMsg)
 	sendMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyJointFeedbackEx);
 	
 	// set header information
-	sendMsg->header.msgType = ROS_MSG_JOINT_FEEDBACK_EX;
+	sendMsg->header.msgType = ROS_MSG_MOTO_JOINT_FEEDBACK_EX;
 	sendMsg->header.commType = ROS_COMM_TOPIC;
 	sendMsg->header.replyType = ROS_REPLY_INVALID;
 	
@@ -148,11 +148,11 @@ int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, Si
 		replyMsg->body.motionReply.sequence = receiveMsg->body.jointTrajData.sequence;
 		replyMsg->body.motionReply.command = ROS_MSG_JOINT_TRAJ_PT_FULL;
 	}
-	else if (receiveMsg->header.msgType == ROS_MSG_JOINT_TRAJ_PT_FULL_EX)
+	else if (receiveMsg->header.msgType == ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX)
 	{
 		replyMsg->body.motionReply.groupNo = ctrlGrp;
 		replyMsg->body.motionReply.sequence = receiveMsg->body.jointTrajDataEx.sequence;
-		replyMsg->body.motionReply.command = ROS_MSG_JOINT_TRAJ_PT_FULL_EX;
+		replyMsg->body.motionReply.command = ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX;
 	}
 	else
 	{

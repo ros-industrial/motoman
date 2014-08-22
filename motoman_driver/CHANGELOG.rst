@@ -2,6 +2,12 @@
 Changelog for package motoman_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.4 (2014-08-22)
+------------------
+* Changed message ID for following two message types:
+ - ROS_MSG_JOINT_TRAJ_PT_FULL_EX=16 -> ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX=2016
+ - ROS_MSG_JOINT_FEEDBACK_EX=17 -> ROS_MSG_MOTO_JOINT_FEEDBACK_EX=2017
+
 1.2.3 (2014-07-02)
 ------------------
 * Corrected ROS_MSG_JOINT_FEEDBACK_EX message.

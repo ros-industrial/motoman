@@ -267,10 +267,10 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 	    		case ROS_MSG_MOTO_MOTION_REPLY:
         			expectedSize = minSize + sizeof(SmBodyMotoMotionReply);
 	    			break;
-				case ROS_MSG_JOINT_TRAJ_PT_FULL_EX:
+				case ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX:
 					expectedSize = minSize + sizeof(SmBodyJointTrajPtFullEx);
 					break;
-				case ROS_MSG_JOINT_FEEDBACK_EX:
+				case ROS_MSG_MOTO_JOINT_FEEDBACK_EX:
 					expectedSize = minSize + sizeof(SmBodyJointFeedbackEx);
 					break;
 					
@@ -349,7 +349,7 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 		else
 			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
 		break;
-	case ROS_MSG_JOINT_TRAJ_PT_FULL_EX:
+	case ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX:
 		// Check that the appropriate message size was received
 		expectedBytes += sizeof(SmBodyJointTrajPtFullEx);
 		if(expectedBytes == byteSize)
@@ -455,7 +455,7 @@ int Ros_MotionServer_WriteIO(Controller* controller, SimpleMsg* receiveMsg, Simp
 
 
 //-----------------------------------------------------------------------
-// Processes message of type: ROS_MSG_JOINT_TRAJ_PT_FULL_EX
+// Processes message of type: ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX
 // Return -1=Failure; 0=Success; 1=CloseConnection; 
 //-----------------------------------------------------------------------
 int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg* receiveMsg, 
@@ -471,7 +471,7 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 	if(!Ros_Controller_IsMotionReady(controller))
 	{
 		int subcode = Ros_Controller_GetNotReadySubcode(controller);
-		printf("ERROR: Controller is not ready (code: %d).  Can't process ROS_MSG_JOINT_TRAJ_PT_FULL_EX.\r\n", subcode);
+		printf("ERROR: Controller is not ready (code: %d).  Can't process ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX.\r\n", subcode);
 		for (i = 0; i < msgBody->numberOfValidGroups; i += 1)
 		{
 			Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_NOT_READY, subcode, replyMsg, msgBody->jointTrajPtData[i].groupNo);
