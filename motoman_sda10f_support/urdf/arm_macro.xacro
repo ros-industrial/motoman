@@ -121,7 +121,7 @@
 			<parent link="torso_link_b1"/>
 			<child link="${prefix}link_1"/>
 			<origin xyz="0.09996 ${reflect*0.0275} 0.32214" rpy="1.57 0 ${(reflect-1)*1.57}"/>
-			<axis xyz="0 0 -1" />
+			<axis xyz="0 0 ${-reflect}" />
 			<limit lower="-3.13" upper="3.13" effort="100" velocity="2.95" />
 		</joint>
 		<joint name="${prefix}joint_2" type="revolute">
@@ -135,7 +135,7 @@
 			<parent link="${prefix}link_2"/>
 			<child link="${prefix}link_3"/>
 			<origin xyz="0 0.1690 -0.0454" rpy="1.57 0 0"/>
-			<axis xyz="0 0 1" />
+			<axis xyz="0 0 ${-reflect}" />
 			<limit lower="-2.95" upper="2.95" effort="100" velocity="2.95" />
 		</joint>
 		<joint name="${prefix}joint_4" type="revolute">
@@ -149,7 +149,7 @@
 			<parent link="${prefix}link_4"/>
 			<child link="${prefix}link_5"/>
 			<origin xyz="0 0.1936 0.0155" rpy="1.57 0 0"/>
-			<axis xyz="0 0 1" />
+			<axis xyz="0 0 ${reflect}" />
 			<limit lower="-3.13" upper="3.13" effort="100" velocity="3.48" />
 		</joint>
 		<joint name="${prefix}joint_6" type="revolute">
@@ -163,7 +163,7 @@
 			<parent link="${prefix}link_6"/>
 			<child link="${prefix}link_7"/>
 			<origin xyz="0 0.168 -0.015" rpy="1.57 0 0"/>
-			<axis xyz="0 0 1" />
+			<axis xyz="0 0 ${-reflect}" />
 			<limit lower="-3.13" upper="3.13" effort="100" velocity="6.97" />
 		</joint>
     <joint name="${prefix}joint_tool0" type="fixed" >
