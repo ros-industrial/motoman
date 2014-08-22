@@ -33,10 +33,12 @@
 
 #include "motoman_driver/industrial_robot_client/joint_feedback_ex_relay_handler.h"
 #include "simple_message/log_wrapper.h"
+#include "motoman_driver/simple_message/motoman_simple_message.h"
 
 using industrial::joint_data::JointData;
 using industrial::shared_types::shared_real;
 using namespace industrial::simple_message;
+using namespace motoman::simple_message;
 
 namespace industrial_robot_client
 {
@@ -52,13 +54,13 @@ bool JointFeedbackExRelayHandler::init(SmplMsgConnection* connection,
 
     //TODO:change this to publish on the DynamicJointState
     this->dynamic_pub_joint_control_state_ =
-            this->node_.advertise<industrial_msgs::DynamicJointTrajectoryFeedback>("dynamic_feedback_states", 1);
+            this->node_.advertise<motoman_msgs::DynamicJointTrajectoryFeedback>("dynamic_feedback_states", 1);
 
     this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>("joint_states",1);
 
     this->robot_groups_ = robot_groups;
     this->legacy_mode_ = false;
-  bool rtn = JointRelayHandler::init(connection, (int)StandardMsgTypes::JOINT_FEEDBACK_EX, robot_groups);
+  bool rtn = JointRelayHandler::init(connection, (int)MotomanMsgTypes::JOINT_FEEDBACK_EX, robot_groups);
   // try to read groups_number parameter, if none specified
   if ( (groups_number_ < 0) )
     node_.param("groups_number", groups_number_, 0);
@@ -70,7 +72,7 @@ bool JointFeedbackExRelayHandler::init(SmplMsgConnection* connection,
                                      std::vector<std::string> &joint_names)
 {
   this->legacy_mode_ = true;
-  bool rtn = JointRelayHandler::init(connection, (int)StandardMsgTypes::JOINT_FEEDBACK_EX, joint_names);
+  bool rtn = JointRelayHandler::init(connection, (int)MotomanMsgTypes::JOINT_FEEDBACK_EX, joint_names);
 
   // try to read groups_number parameter, if none specified
   if ( (groups_number_ < 0) )
@@ -90,14 +92,14 @@ bool JointFeedbackExRelayHandler::create_messages(SimpleMessage& msg_in,
   tmp_msg.init(msg_in);
 
 
-  industrial_msgs::DynamicJointTrajectoryFeedback dynamic_control_state;
+  motoman_msgs::DynamicJointTrajectoryFeedback dynamic_control_state;
 
   for(int i=0; i< tmp_msg.getJointMessages().size();i++)
   {
       int group_number = tmp_msg.getJointMessages()[i].getRobotID();
 
       create_messages(tmp_msg.getJointMessages()[i], control_state, sensor_state, group_number);
-      industrial_msgs::DynamicJointState dyn_joint_state;
+      motoman_msgs::DynamicJointState dyn_joint_state;
       dyn_joint_state.num_joints = control_state->joint_names.size();
       dyn_joint_state.group_number = group_number;
       dyn_joint_state.valid_fields = 1;

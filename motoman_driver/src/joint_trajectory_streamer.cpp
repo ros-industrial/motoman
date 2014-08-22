@@ -32,7 +32,7 @@
 #include "motoman_driver/joint_trajectory_streamer.h"
 #include "motoman_driver/simple_message/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
-#include "simple_message/messages/joint_traj_pt_full_ex_message.h"
+#include "motoman_driver/simple_message/messages/joint_traj_pt_full_ex_message.h"
 #include "industrial_robot_client/utils.h"
 #include "industrial_utils/param_utils.h"
 
@@ -160,7 +160,7 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const trajectory_ms
   return jtpf_msg.toRequest(*msg);  // assume "request" COMM_TYPE for now
 }
 
-bool MotomanJointTrajectoryStreamer::create_message_ex(int seq, const industrial_msgs::DynamicJointPoint &point, SimpleMessage *msg)
+bool MotomanJointTrajectoryStreamer::create_message_ex(int seq, const motoman_msgs::DynamicJointPoint &point, SimpleMessage *msg)
 {
   JointTrajPtFullEx msg_data_ex;
   JointTrajPtFullExMessage jtpf_msg_ex;
@@ -174,9 +174,9 @@ bool MotomanJointTrajectoryStreamer::create_message_ex(int seq, const industrial
   {
       JointTrajPtFull msg_data;
 
-      industrial_msgs::DynamicJointsGroup pt;
+      motoman_msgs::DynamicJointsGroup pt;
 
-      industrial_msgs::DynamicJointPoint dpoint;
+      motoman_msgs::DynamicJointPoint dpoint;
 
       pt = point.groups[i];
 
@@ -245,7 +245,7 @@ bool MotomanJointTrajectoryStreamer::create_message_ex(int seq, const industrial
   return jtpf_msg_ex.toRequest(*msg);  // assume "request" COMM_TYPE for now
 }
 
-bool MotomanJointTrajectoryStreamer::create_message(int seq, const industrial_msgs::DynamicJointsGroup &pt, SimpleMessage *msg)
+bool MotomanJointTrajectoryStreamer::create_message(int seq, const motoman_msgs::DynamicJointsGroup &pt, SimpleMessage *msg)
 {
   JointTrajPtFull msg_data;
   JointData values;
@@ -457,7 +457,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
   return true;
 }
 
-bool MotomanJointTrajectoryStreamer::is_valid(const industrial_msgs::DynamicJointTrajectory &traj)
+bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTrajectory &traj)
 {
   if (!JointTrajectoryInterface::is_valid(traj))
     return false;
@@ -467,7 +467,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const industrial_msgs::DynamicJoin
   {
     for(int gr=0;gr<traj.points[i].num_groups;gr++)
     {
-        const industrial_msgs::DynamicJointsGroup &pt = traj.points[i].groups[gr];
+        const motoman_msgs::DynamicJointsGroup &pt = traj.points[i].groups[gr];
         time_stamp = cur_joint_pos_map_[pt.group_number].header.stamp;
         //TODO: adjust for more joints
         group_number = pt.group_number;

@@ -39,7 +39,7 @@ using industrial::simple_message::SimpleMessage;
 namespace SpecialSeqValues = industrial::joint_traj_pt::SpecialSeqValues;
 typedef industrial::joint_traj_pt::JointTrajPt rbt_JointTrajPt;
 typedef trajectory_msgs::JointTrajectoryPoint  ros_JointTrajPt;
-typedef industrial_msgs::DynamicJointsGroup ros_dynamicPoint;
+typedef motoman_msgs::DynamicJointsGroup ros_dynamicPoint;
 
 namespace industrial_robot_client
 {
@@ -237,10 +237,10 @@ JointTrajectoryInterface::~JointTrajectoryInterface()
   this->sub_joint_trajectory_.shutdown();
 }
 
-bool JointTrajectoryInterface::jointTrajectoryExCB(industrial_msgs::CmdJointTrajectoryEx::Request &req,
-                                                 industrial_msgs::CmdJointTrajectoryEx::Response &res)
+bool JointTrajectoryInterface::jointTrajectoryExCB(motoman_msgs::CmdJointTrajectoryEx::Request &req,
+                                                 motoman_msgs::CmdJointTrajectoryEx::Response &res)
 {
-  industrial_msgs::DynamicJointTrajectoryPtr traj_ptr(new industrial_msgs::DynamicJointTrajectory);
+  motoman_msgs::DynamicJointTrajectoryPtr traj_ptr(new motoman_msgs::DynamicJointTrajectory);
   *traj_ptr = req.trajectory;  // copy message data
   this->jointTrajectoryExCB(traj_ptr);
 
@@ -264,7 +264,7 @@ bool JointTrajectoryInterface::jointTrajectoryCB(industrial_msgs::CmdJointTrajec
   return true;  // always return true.  To distinguish between call-failed and service-unavailable.
 }
 
-void JointTrajectoryInterface::jointTrajectoryExCB(const industrial_msgs::DynamicJointTrajectoryConstPtr &msg)
+void JointTrajectoryInterface::jointTrajectoryExCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg)
 {
   ROS_INFO("Receiving joint trajectory message Dynamic");
 
@@ -307,7 +307,7 @@ void JointTrajectoryInterface::jointTrajectoryCB(const trajectory_msgs::JointTra
   send_to_robot(robot_msgs);
 }
 
-bool JointTrajectoryInterface::trajectory_to_msgs(const industrial_msgs::DynamicJointTrajectoryConstPtr& traj, std::vector<SimpleMessage>* msgs)
+bool JointTrajectoryInterface::trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr& traj, std::vector<SimpleMessage>* msgs)
 {
   msgs->clear();
 
@@ -529,7 +529,7 @@ bool JointTrajectoryInterface::calc_velocity(const trajectory_msgs::JointTraject
   return true;
 }
 
-bool JointTrajectoryInterface::calc_velocity(const industrial_msgs::DynamicJointsGroup& pt, double* rbt_velocity)
+bool JointTrajectoryInterface::calc_velocity(const motoman_msgs::DynamicJointsGroup& pt, double* rbt_velocity)
 {
   std::vector<double> vel_ratios;
 
@@ -594,7 +594,7 @@ bool JointTrajectoryInterface::calc_duration(const trajectory_msgs::JointTraject
   return true;
 }
 
-bool JointTrajectoryInterface::calc_duration(const industrial_msgs::DynamicJointsGroup& pt, double* rbt_duration)
+bool JointTrajectoryInterface::calc_duration(const motoman_msgs::DynamicJointsGroup& pt, double* rbt_duration)
 {
   std::vector<double> durations;
   double this_time = pt.time_from_start.toSec();
@@ -610,7 +610,7 @@ bool JointTrajectoryInterface::calc_duration(const industrial_msgs::DynamicJoint
   return true;
 }
 
-bool JointTrajectoryInterface::create_message(int seq, const industrial_msgs::DynamicJointsGroup &pt, SimpleMessage *msg)
+bool JointTrajectoryInterface::create_message(int seq, const motoman_msgs::DynamicJointsGroup &pt, SimpleMessage *msg)
 {
 
   industrial::joint_data::JointData pos;
@@ -635,7 +635,7 @@ bool JointTrajectoryInterface::create_message(int seq, const industrial_msgs::Dy
   return jtp_msg.toTopic(*msg);  // assume "topic" COMM_TYPE for now
 }
 
-bool JointTrajectoryInterface::create_message_ex(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage *msg)
+bool JointTrajectoryInterface::create_message_ex(int seq, const motoman_msgs::DynamicJointPoint &pt, SimpleMessage *msg)
 {
 
   return true;
@@ -714,14 +714,14 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
   return true;
 }
 
-bool JointTrajectoryInterface::is_valid(const industrial_msgs::DynamicJointTrajectory &traj)
+bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajectory &traj)
 {
 
     for (int i=0; i<traj.points.size(); ++i)
     {
       for(int gr=0;gr<traj.points[i].num_groups;gr++)
       {
-          const industrial_msgs::DynamicJointsGroup &pt = traj.points[i].groups[gr];
+          const motoman_msgs::DynamicJointsGroup &pt = traj.points[i].groups[gr];
 
           // check for non-empty positions
           if (pt.positions.empty())

@@ -119,9 +119,9 @@ public:
    */
   virtual bool create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage* msg);
 
-  virtual bool create_message(int seq, const industrial_msgs::DynamicJointsGroup &pt, SimpleMessage* msg);
+  virtual bool create_message(int seq, const motoman_msgs::DynamicJointsGroup &pt, SimpleMessage* msg);
 
-  virtual bool create_message_ex(int seq, const industrial_msgs::DynamicJointPoint &point, SimpleMessage* msg);
+  virtual bool create_message_ex(int seq, const motoman_msgs::DynamicJointPoint &point, SimpleMessage* msg);
 
   virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
@@ -138,7 +138,7 @@ protected:
 
   void trajectoryStop();
   bool is_valid(const trajectory_msgs::JointTrajectory &traj);
-  bool is_valid(const industrial_msgs::DynamicJointTrajectory &traj);
+  bool is_valid(const motoman_msgs::DynamicJointTrajectory &traj);
 
   static bool VectorToJointData(const std::vector<double> &vec,
                                 industrial::joint_data::JointData &joints);

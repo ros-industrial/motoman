@@ -38,7 +38,7 @@
 
 #include "ros/ros.h"
 #include "industrial_msgs/CmdJointTrajectory.h"
-#include "industrial_msgs/CmdJointTrajectoryEx.h"
+#include "motoman_msgs/CmdJointTrajectoryEx.h"
 #include "industrial_msgs/StopMotion.h"
 #include "sensor_msgs/JointState.h"
 #include "simple_message/simple_message.h"
@@ -150,7 +150,7 @@ protected:
      *
      * \return true on success, false otherwise
      */
-    virtual bool trajectory_to_msgs(const industrial_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
+    virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
 
   /**
    * \brief Convert ROS trajectory message into stream of SimpleMessages for sending to robot.
@@ -178,7 +178,7 @@ protected:
     return true;
   }
 
-    virtual bool transform(const industrial_msgs::DynamicJointsGroup& pt_in, industrial_msgs::DynamicJointsGroup* pt_out)
+    virtual bool transform(const motoman_msgs::DynamicJointsGroup& pt_in, motoman_msgs::DynamicJointsGroup* pt_out)
     {
       *pt_out = pt_in;  // by default, no transform is applied
       return true;
@@ -194,8 +194,8 @@ protected:
      *
      * \return true on success, false otherwise
      */
-    virtual bool select(const std::vector<std::string>& ros_joint_names, const industrial_msgs::DynamicJointsGroup& ros_pt,
-                        const std::vector<std::string>& rbt_joint_names, industrial_msgs::DynamicJointsGroup* rbt_pt);
+    virtual bool select(const std::vector<std::string>& ros_joint_names, const motoman_msgs::DynamicJointsGroup& ros_pt,
+                        const std::vector<std::string>& rbt_joint_names, motoman_msgs::DynamicJointsGroup* rbt_pt);
 
 
   /**
@@ -223,9 +223,9 @@ protected:
    */
   virtual bool create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage* msg);
 
-     virtual bool create_message(int seq, const industrial_msgs::DynamicJointsGroup &pt, SimpleMessage* msg);
+     virtual bool create_message(int seq, const motoman_msgs::DynamicJointsGroup &pt, SimpleMessage* msg);
 
-    virtual bool create_message_ex(int seq, const industrial_msgs::DynamicJointPoint &pt, SimpleMessage* msg);
+    virtual bool create_message_ex(int seq, const motoman_msgs::DynamicJointPoint &pt, SimpleMessage* msg);
 
   /**
    * \brief Reduce the ROS velocity commands (per-joint velocities) to a single scalar for communication to the robot.
@@ -247,7 +247,7 @@ protected:
      *
      * \return true on success, false otherwise
      */
-    virtual bool calc_velocity(const industrial_msgs::DynamicJointsGroup& pt, double* rbt_velocity);
+    virtual bool calc_velocity(const motoman_msgs::DynamicJointsGroup& pt, double* rbt_velocity);
 
   /**
    * \brief Compute the expected move duration for communication to the robot.
@@ -269,7 +269,7 @@ protected:
      *
      * \return true on success, false otherwise
      */
-    virtual bool calc_duration(const industrial_msgs::DynamicJointsGroup& pt, double* rbt_duration);
+    virtual bool calc_duration(const motoman_msgs::DynamicJointsGroup& pt, double* rbt_duration);
 
   /**
    * \brief Send trajectory to robot, using this node's robot-connection.
@@ -287,7 +287,7 @@ protected:
      *
      * \param msg DynamicJointTrajectory message from ROS trajectory-planner
      */
-    virtual void jointTrajectoryExCB(const industrial_msgs::DynamicJointTrajectoryConstPtr &msg);
+    virtual void jointTrajectoryExCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg);
 
   /**
    * \brief Callback function registered to ROS topic-subscribe.
@@ -314,7 +314,7 @@ protected:
      * \param traj incoming trajectory
      * \return true if trajectory is valid, false otherwise
      */
-    virtual bool is_valid(const industrial_msgs::DynamicJointTrajectory &traj);
+    virtual bool is_valid(const motoman_msgs::DynamicJointTrajectory &traj);
 
   /**
    * \brief Validate that trajectory command meets minimum requirements
@@ -373,8 +373,8 @@ private:
                          industrial_msgs::CmdJointTrajectory::Response &res);
 
 
-  bool jointTrajectoryExCB(industrial_msgs::CmdJointTrajectoryEx::Request &req,
-                         industrial_msgs::CmdJointTrajectoryEx::Response &res);
+  bool jointTrajectoryExCB(motoman_msgs::CmdJointTrajectoryEx::Request &req,
+                         motoman_msgs::CmdJointTrajectoryEx::Response &res);
 };
 
 } //joint_trajectory_interface
