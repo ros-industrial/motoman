@@ -1,4 +1,3 @@
-# Specified on the REPI0001
 #length: true message/data length
 #header: standard msg_type, comms_type, reply_code fields
 #sequence:

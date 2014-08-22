@@ -1,4 +1,4 @@
-# DynamicJointsGroup specified on REPI0001
+# DynamicJointsGroup
 #group: # length of this array must match num_groups
 #    id:   control-group ID for use on-controller
 #    num_joints: # of joints in this motion group
