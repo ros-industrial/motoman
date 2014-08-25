@@ -9,14 +9,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Fraunhofer IPA, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Fraunhofer IPA, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,8 +31,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef JOINT_TRAJ_PT_FULL_EX_MESSAGE_H
-#define JOINT_TRAJ_PT_FULL_EX_MESSAGE_H
+#ifndef MOTOMAN_DRIVER_SIMPLE_MESSAGE_MESSAGES_JOINT_TRAJ_PT_FULL_EX_MESSAGE_H
+#define MOTOMAN_DRIVER_SIMPLE_MESSAGE_MESSAGES_JOINT_TRAJ_PT_FULL_EX_MESSAGE_H
 
 #ifndef FLATHEADERS
 #include "simple_message/typed_message.h"
@@ -50,8 +50,6 @@ namespace industrial
 {
 namespace joint_traj_pt_full_ex_message
 {
-
-
 /**
  * \brief Class encapsulated joint trajectory point message generation methods
  * (either to or from a industrial::simple_message::SimpleMessage type.
@@ -63,9 +61,7 @@ namespace joint_traj_pt_full_ex_message
  * THIS CLASS IS NOT THREAD-SAFE
  *
  */
-
 class JointTrajPtFullExMessage : public industrial::typed_message::TypedMessage
-
 {
 public:
   /**
@@ -117,16 +113,16 @@ public:
    *
    * \param message sequence number
    */
-  void setSequence(industrial::shared_types::shared_int sequence) { point_.setSequence(sequence); }
+  void setSequence(industrial::shared_types::shared_int sequence)
+  {
+    point_.setSequence(sequence);
+  }
 
   industrial::joint_traj_pt_full_ex::JointTrajPtFullEx point_;
 
 private:
-
-
 };
+}  // namespace joint_traj_pt_full_ex_message
+}  // namespace industrial
 
-}
-}
-
-#endif /* JOINT_TRAJ_PR_FULL_EX_MESSAGE_H */
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MESSAGES_JOINT_TRAJ_PT_FULL_EX_MESSAGE_H

@@ -9,14 +9,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Fraunhofer IPA, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Fraunhofer IPA, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,8 +31,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef JOINT_FEEDBACK_EX_H
-#define JOINT_FEEDBACK_EX_H
+#ifndef MOTOMAN_DRIVER_SIMPLE_MESSAGE_JOINT_FEEDBACK_EX_H
+#define MOTOMAN_DRIVER_SIMPLE_MESSAGE_JOINT_FEEDBACK_EX_H
 
 #ifndef FLATHEADERS
 #include "simple_message/joint_data.h"
@@ -60,7 +60,6 @@ namespace joint_feedback_ex
 class JointFeedbackEx : public industrial::simple_serialize::SimpleSerialize
 {
 public:
-
   /**
    * \brief Default constructor
    *
@@ -85,7 +84,7 @@ public:
    *
    */
   void init(industrial::shared_types::shared_int groups_number,
-            std::vector<industrial::joint_feedback_message::JointFeedbackMessage> joints_feedback_points );
+            std::vector<industrial::joint_feedback_message::JointFeedbackMessage> joints_feedback_points);
 
   /**
    * \brief Sets robot_id.
@@ -105,7 +104,7 @@ public:
 
   std::vector<industrial::joint_feedback_message::JointFeedbackMessage> getJointMessages()
   {
-      return joint_feedback_messages_;
+    return joint_feedback_messages_;
   }
 
   /**
@@ -144,12 +143,11 @@ public:
   bool unload(industrial::byte_array::ByteArray *buffer);
   unsigned int byteLength()
   {
-    return sizeof(industrial::shared_types::shared_int) + MAX_NUM_GROUPS*(2*sizeof(industrial::shared_types::shared_int) + sizeof(industrial::shared_types::shared_real)
-        + 3*(this->positions_.byteLength()));
+    return sizeof(industrial::shared_types::shared_int) + MAX_NUM_GROUPS * (2 * sizeof(industrial::shared_types::shared_int) + sizeof(industrial::shared_types::shared_real)
+           + 3 * (this->positions_.byteLength()));
   }
 
 private:
-
   /**
    * \brief robot group # (0-based) for controllers that support multiple axis-groups
    */
@@ -160,11 +158,9 @@ private:
   industrial::joint_data::JointData positions_;
 
   static const industrial::shared_types::shared_int MAX_NUM_GROUPS = 4;
-
 };
+}  // namespace joint_feedback_ex
+}  // namespace industrial
 
-}
-}
 
-
-#endif // JOINT_FEEDBACK_EX_H
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_JOINT_FEEDBACK_EX_H

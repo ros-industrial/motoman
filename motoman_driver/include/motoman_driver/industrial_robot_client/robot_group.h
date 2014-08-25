@@ -9,14 +9,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Fraunhofer IPA, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Fraunhofer IPA, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,65 +31,63 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ROBOT_GROUP_H
-#define ROBOT_GROUP_H
+#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_GROUP_H
+#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_GROUP_H
 
 #include <vector>
 #include <string>
 
-class RobotGroup{
-
+class RobotGroup
+{
 public:
-    RobotGroup() {};
+  RobotGroup() {};
 
-    std::vector<std::string> get_joint_names()
-    {
-      return this->joint_names_;
-    }
+  std::vector<std::string> get_joint_names()
+  {
+    return this->joint_names_;
+  }
 
-    std::string get_name()
-    {
-        return this->name_;
-    }
+  std::string get_name()
+  {
+    return this->name_;
+  }
 
-    std::string get_ns()
-    {
-        return this->ns_;
-    }
+  std::string get_ns()
+  {
+    return this->ns_;
+  }
 
-    int get_group_id()
-    {
-      return this->GroupID_;
-    }
+  int get_group_id()
+  {
+    return this->group_id_;
+  }
 
-    void set_name(std::string name)
-    {
-        this->name_ = name;
-    }
+  void set_name(std::string name)
+  {
+    this->name_ = name;
+  }
 
-   void set_ns(std::string ns)
-    {
-        this->ns_ = ns;
-    }
+  void set_ns(std::string ns)
+  {
+    this->ns_ = ns;
+  }
 
-    void set_group_id(int gid)
-    {
-        this->GroupID_ = gid;
-    }
+  void set_group_id(int gid)
+  {
+    this->group_id_ = gid;
+  }
 
 
-    void set_joint_names(std::vector<std::string> jnames)
-    {
-        this->joint_names_ = jnames;
-    }
+  void set_joint_names(std::vector<std::string> jnames)
+  {
+    this->joint_names_ = jnames;
+  }
 
 protected:
-
-    std::vector<std::string> joint_names_;
-    int GroupID_;
-    std::string name_;
-    std::string ns_;
-
+  std::vector<std::string> joint_names_;
+  int group_id_;
+  std::string name_;
+  std::string ns_;
 };
 
-#endif // ROBOT_GROUP_H
+#endif //  MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_GROUP_H

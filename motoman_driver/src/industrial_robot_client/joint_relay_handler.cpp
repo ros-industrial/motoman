@@ -1,5 +1,5 @@
 /*
-* Software License Agreement (BSD License) 
+* Software License Agreement (BSD License)
 *
 * Copyright (c) 2011, Southwest Research Institute
 * All rights reserved.
@@ -7,14 +7,14 @@
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are met:
 *
-* 	* Redistributions of source code must retain the above copyright
-* 	notice, this list of conditions and the following disclaimer.
-* 	* Redistributions in binary form must reproduce the above copyright
-* 	notice, this list of conditions and the following disclaimer in the
-* 	documentation and/or other materials provided with the distribution.
-* 	* Neither the name of the Southwest Research Institute, nor the names 
-*	of its contributors may be used to endorse or promote products derived
-*	from this software without specific prior written permission.
+*   * Redistributions of source code must retain the above copyright
+*   notice, this list of conditions and the following disclaimer.
+*   * Redistributions in binary form must reproduce the above copyright
+*   notice, this list of conditions and the following disclaimer in the
+*   documentation and/or other materials provided with the distribution.
+*   * Neither the name of the Southwest Research Institute, nor the names
+* of its contributors may be used to endorse or promote products derived
+* from this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,9 +27,12 @@
 * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
-*/ 
+*/
 
 #include <algorithm>
+#include <map>
+#include <vector>
+#include <string>
 
 #include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
 #include "simple_message/log_wrapper.h"
@@ -37,7 +40,8 @@
 using industrial::message_handler::MessageHandler;
 using industrial::shared_types::shared_real;
 using industrial::smpl_msg_connection::SmplMsgConnection;
-using namespace industrial::simple_message;
+namespace CommTypes = industrial::simple_message::CommTypes;
+namespace ReplyTypes = industrial::simple_message::ReplyTypes;
 
 namespace industrial_robot_client
 {
@@ -48,21 +52,21 @@ bool JointRelayHandler::init(SmplMsgConnection* connection, int msg_type, std::m
 {
   this->robot_groups_ = robot_groups;
 
-   for(it_type iterator = robot_groups.begin(); iterator != robot_groups.end(); iterator++)
-   {
-       std::string name_str, ns_str;
-       int robot_id = iterator->first;
-       name_str = iterator->second.get_name();
-       ns_str = iterator->second.get_ns();
+  for (it_type iterator = robot_groups.begin(); iterator != robot_groups.end(); iterator++)
+  {
+    std::string name_str, ns_str;
+    int robot_id = iterator->first;
+    name_str = iterator->second.get_name();
+    ns_str = iterator->second.get_ns();
 
-        this->pub_joint_control_state_ =
-                this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>(ns_str+"/"+name_str+"/feedback_states", 1);
+    this->pub_joint_control_state_ =
+      this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>(ns_str + "/" + name_str + "/feedback_states", 1);
 
-       this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>(ns_str+"/"+name_str+"/joint_states",1);
+    this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>(ns_str + "/" + name_str + "/joint_states", 1);
 
-       this->pub_controls_[robot_id] = this->pub_joint_control_state_;
-       this->pub_states_[robot_id] = this->pub_joint_sensor_state_;
-   }
+    this->pub_controls_[robot_id] = this->pub_joint_control_state_;
+    this->pub_states_[robot_id] = this->pub_joint_sensor_state_;
+  }
 
 
 
@@ -73,9 +77,9 @@ bool JointRelayHandler::init(SmplMsgConnection* connection, int msg_type, std::m
 bool JointRelayHandler::init(SmplMsgConnection* connection, int msg_type, std::vector<std::string>& joint_names)
 {
   this->pub_joint_control_state_ =
-          this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>("feedback_states", 1);
+    this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>("feedback_states", 1);
 
-  this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>("joint_states",1);
+  this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>("joint_states", 1);
 
   // save "complete" joint-name list, preserving any blank entries for later use
   this->all_joint_names_ = joint_names;
@@ -93,7 +97,7 @@ bool JointRelayHandler::internalCB(SimpleMessage& msg_in)
 
   if (create_messages(msg_in, &control_state, &sensor_state))
   {
-    rtn=true;
+    rtn = true;
   }
   else
     rtn = false;
@@ -131,7 +135,6 @@ bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
     return false;
   }
 
-  //TODO: get the joint_names from the robotgroup instead of from the all_joint_names
   // select specific joints for publishing
   JointTrajectoryPoint pub_joint_state;
   std::vector<std::string> pub_joint_names;
@@ -181,7 +184,6 @@ bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
     return false;
   }
 
-  //TODO: get the joint_names from the robotgroup instead of from the all_joint_names
   // select specific joints for publishing
   DynamicJointsGroup pub_joint_state;
   std::vector<std::string> pub_joint_names;
@@ -240,11 +242,10 @@ bool JointRelayHandler::convert_message(SimpleMessage& msg_in, DynamicJointsGrou
 
 bool JointRelayHandler::convert_message(JointMessage& msg_in, JointTrajectoryPoint* joint_state)
 {
-
   // copy position data
   int num_jnts = all_joint_names_.size();
   joint_state->positions.resize(num_jnts);
-  for (int i=0; i<num_jnts; ++i)
+  for (int i = 0; i < num_jnts; ++i)
   {
     shared_real value;
     if (msg_in.getJoints().getJoint(i, value))
@@ -268,7 +269,7 @@ bool JointRelayHandler::convert_message(JointMessage& msg_in, DynamicJointsGroup
   // copy position data
   int num_jnts = robot_groups_[robot_id].get_joint_names().size();
   joint_state->positions.resize(num_jnts);
-  for (int i=0; i<num_jnts; ++i)
+  for (int i = 0; i < num_jnts; ++i)
   {
     shared_real value;
     if (msg_in.getJoints().getJoint(i, value))
@@ -276,7 +277,7 @@ bool JointRelayHandler::convert_message(JointMessage& msg_in, DynamicJointsGroup
       joint_state->positions[i] = value;
     }
     else
-    LOG_ERROR("Failed to convert message");
+      LOG_ERROR("Failed to convert message");
   }
 
   // these fields are not provided by JointMessage
@@ -290,14 +291,13 @@ bool JointRelayHandler::convert_message(JointMessage& msg_in, DynamicJointsGroup
 bool JointRelayHandler::select(const JointTrajectoryPoint& all_joint_state, const std::vector<std::string>& all_joint_names,
                                JointTrajectoryPoint* pub_joint_state, std::vector<std::string>* pub_joint_names)
 {
-
   ROS_ASSERT(all_joint_state.positions.size() == all_joint_names.size());
 
   *pub_joint_state = JointTrajectoryPoint();  // start with a "clean" message
   pub_joint_names->clear();
 
   // skip over "blank" joint names
-  for (int i=0; i<all_joint_names.size(); ++i)
+  for (int i = 0; i < all_joint_names.size(); ++i)
   {
     if (all_joint_names[i].empty())
       continue;
@@ -318,14 +318,13 @@ bool JointRelayHandler::select(const JointTrajectoryPoint& all_joint_state, cons
 bool JointRelayHandler::select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
                                DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names)
 {
-
   ROS_ASSERT(all_joint_state.positions.size() == all_joint_names.size());
 
   *pub_joint_state = DynamicJointsGroup();  // start with a "clean" message
   pub_joint_names->clear();
 
   // skip over "blank" joint names
-  for (int i=0; i<all_joint_names.size(); ++i)
+  for (int i = 0; i < all_joint_names.size(); ++i)
   {
     if (all_joint_names[i].empty())
       continue;
@@ -342,8 +341,8 @@ bool JointRelayHandler::select(const DynamicJointsGroup& all_joint_state, const 
   return true;
 }
 
-}//namespace joint_relay_handler
-}//namespace industrial_robot_client
+}  // namespace joint_relay_handler
+}  // namespace industrial_robot_client
 
 
 

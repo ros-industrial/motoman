@@ -9,14 +9,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Fraunhofer IPA, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Fraunhofer IPA, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,6 +31,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <vector>
+
 #ifndef FLATHEADERS
 #include "motoman_driver/simple_message/joint_traj_pt_full_ex.h"
 #include "simple_message/joint_traj_pt_full.h"
@@ -43,9 +45,7 @@
 #include "log_wrapper.h"
 #endif
 
-using namespace industrial::joint_data;
-using namespace industrial::shared_types;
-using namespace industrial::joint_traj_pt_full;
+using industrial::joint_traj_pt_full::JointTrajPtFull;
 
 namespace industrial
 {
@@ -58,7 +58,6 @@ JointTrajPtFullEx::JointTrajPtFullEx(void)
 }
 JointTrajPtFullEx::~JointTrajPtFullEx(void)
 {
-
 }
 
 void JointTrajPtFullEx::init()
@@ -66,20 +65,19 @@ void JointTrajPtFullEx::init()
   this->num_groups_ = MAX_NUM_GROUPS;
   this->sequence_ = 0;
 
-    for (int i=0;i<MAX_NUM_GROUPS;i++)
-    {
-        JointTrajPtFull joint_traj_pt_full;
+  for (int i = 0; i < MAX_NUM_GROUPS; i++)
+  {
+    JointTrajPtFull joint_traj_pt_full;
 
-        joint_traj_pt_full.init();
+    joint_traj_pt_full.init();
 
-        this->joint_trajectory_points_.push_back(joint_traj_pt_full);
-    }
-
+    this->joint_trajectory_points_.push_back(joint_traj_pt_full);
+  }
 }
 
 void JointTrajPtFullEx::init(industrial::shared_types::shared_int num_groups,
-          industrial::shared_types::shared_int sequence,
-           std::vector<industrial::joint_traj_pt_full::JointTrajPtFull> joint_trajectory_points)
+                             industrial::shared_types::shared_int sequence,
+                             std::vector<industrial::joint_traj_pt_full::JointTrajPtFull> joint_trajectory_points)
 {
   this->setNumGroups(num_groups);
   this->setSequence(sequence);
@@ -95,13 +93,12 @@ void JointTrajPtFullEx::copyFrom(JointTrajPtFullEx &src)
 
 bool JointTrajPtFullEx::operator==(JointTrajPtFullEx &rhs)
 {
- //TODO: expand the capabilities of this check
+  // TODO(thiagodefreitas): expand the capabilities of this check
   return this->num_groups_ == rhs.num_groups_;
 }
 
 bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
 {
-
   LOG_ERROR("Loading message");
 
   LOG_COMM("Executing joint trajectory point load");
@@ -118,90 +115,83 @@ bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
     return false;
   }
 
-  for(int i=0; i<joint_trajectory_points_.size(); i++)
+  for (int i = 0; i < joint_trajectory_points_.size(); i++)
   {
-      JointTrajPtFull traj_full = joint_trajectory_points_[i];
+    JointTrajPtFull traj_full = joint_trajectory_points_[i];
 
-      if (!buffer->load(traj_full.getRobotID()))
-      {
-        LOG_ERROR("Failed to load joint traj pt. robot_id");
-        return false;
-      }
-
-     if (!buffer->load(15))//(traj_full.getValidFields()))
-      {
-
-        LOG_ERROR("Failed to load joint traj. pt. valid fields");
-        return false;
-      }
-
-      industrial::shared_types::shared_real this_time;
-      traj_full.getTime(this_time);
-      if (!buffer->load(this_time))
-      {
-        LOG_ERROR("Failed to load joint traj. pt. time");
-        return false;
-      }
-
-      industrial::joint_data::JointData positions;
-      traj_full.getPositions(positions);
-
-      industrial::shared_types::shared_real pos;
-
-      for (int j=0;j < positions.getMaxNumJoints();j++)
-      {
-          pos = positions.getJoint(j);
-          if (!buffer->load(pos))
-          {
-            LOG_ERROR("Failed to load joint traj. pt. positions");
-            return false;
-          }
-
-      }
-
-
-      industrial::joint_data::JointData velocities;
-      traj_full.getVelocities(velocities);
-      industrial::shared_types::shared_real vel;
-
-      for (int j=0;j < velocities.getMaxNumJoints();j++)
-      {
-          vel = velocities.getJoint(j);
-          if (!buffer->load(vel))
-          {
-            LOG_ERROR("Failed to load joint traj. pt. positions");
-            return false;
-          }
-
-      }
-
-      industrial::joint_data::JointData accelerations;
-      traj_full.getAccelerations(accelerations);
-      industrial::shared_types::shared_real acc;
-
-    for (int j=0;j < accelerations.getMaxNumJoints();j++)
+    if (!buffer->load(traj_full.getRobotID()))
     {
-        acc = accelerations.getJoint(j);
-        if (!buffer->load(acc))
-        {
-          LOG_ERROR("Failed to load joint traj. pt. positions");
-          return false;
-        }
-
+      LOG_ERROR("Failed to load joint traj pt. robot_id");
+      return false;
     }
 
-      LOG_COMM("Trajectory point successfully loaded");
+    // TODO(thiagodefreitas) : Reimplement the getValidFields to the industrial_core (traj_full.getValidFields()))
+    if (!buffer->load(15))
+    {
+      LOG_ERROR("Failed to load joint traj. pt. valid fields");
+      return false;
+    }
 
+    industrial::shared_types::shared_real this_time;
+    traj_full.getTime(this_time);
+    if (!buffer->load(this_time))
+    {
+      LOG_ERROR("Failed to load joint traj. pt. time");
+      return false;
+    }
+
+    industrial::joint_data::JointData positions;
+    traj_full.getPositions(positions);
+
+    industrial::shared_types::shared_real pos;
+
+    for (int j = 0; j < positions.getMaxNumJoints(); j++)
+    {
+      pos = positions.getJoint(j);
+      if (!buffer->load(pos))
+      {
+        LOG_ERROR("Failed to load joint traj. pt. positions");
+        return false;
+      }
+    }
+
+
+    industrial::joint_data::JointData velocities;
+    traj_full.getVelocities(velocities);
+    industrial::shared_types::shared_real vel;
+
+    for (int j = 0; j < velocities.getMaxNumJoints(); j++)
+    {
+      vel = velocities.getJoint(j);
+      if (!buffer->load(vel))
+      {
+        LOG_ERROR("Failed to load joint traj. pt. positions");
+        return false;
+      }
+    }
+
+    industrial::joint_data::JointData accelerations;
+    traj_full.getAccelerations(accelerations);
+    industrial::shared_types::shared_real acc;
+
+    for (int j = 0; j < accelerations.getMaxNumJoints(); j++)
+    {
+      acc = accelerations.getJoint(j);
+      if (!buffer->load(acc))
+      {
+        LOG_ERROR("Failed to load joint traj. pt. positions");
+        return false;
+      }
+    }
+
+    LOG_COMM("Trajectory point successfully loaded");
   }
-
-
   LOG_COMM("Trajectory point successfully loaded");
   return true;
 }
 
 bool JointTrajPtFullEx::unload(industrial::byte_array::ByteArray *buffer)
 {
-
   LOG_COMM("Executing joint traj. pt. unload");
 
   if (!buffer->unload(this->sequence_))
@@ -215,13 +205,11 @@ bool JointTrajPtFullEx::unload(industrial::byte_array::ByteArray *buffer)
     LOG_ERROR("Faild to unload joint traj. pt. num_groups");
     return false;
   }
-
-
   LOG_COMM("Joint traj. pt successfully unloaded");
   return true;
 }
 
-}
-}
+}  // namespace joint_traj_pt_full_ex
+}  // namespace industrial
 
 

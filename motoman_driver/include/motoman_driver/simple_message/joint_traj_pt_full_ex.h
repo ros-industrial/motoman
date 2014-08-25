@@ -9,14 +9,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Fraunhofer IPA, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Fraunhofer IPA, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,8 +31,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef JOINT_TRAJ_PT_FULL_EX_H
-#define JOINT_TRAJ_PT_FULL_EX_H
+#ifndef MOTOMAN_DRIVER_SIMPLE_MESSAGE_JOINT_TRAJ_PT_FULL_EX_H
+#define MOTOMAN_DRIVER_SIMPLE_MESSAGE_JOINT_TRAJ_PT_FULL_EX_H
 
 #ifndef FLATHEADERS
 #include "simple_message/joint_data.h"
@@ -86,7 +86,6 @@ typedef SpecialSeqValues::SpecialSeqValue SpecialSeqValue;
 class JointTrajPtFullEx : public industrial::simple_serialize::SimpleSerialize
 {
 public:
-
   /**
    * \brief Default constructor
    *
@@ -136,9 +135,9 @@ public:
     return this->num_groups_;
   }
 
-  void setMultiJointTrajPtData( std::vector<industrial::joint_traj_pt_full::JointTrajPtFull> joint_trajectory_points)
+  void setMultiJointTrajPtData(std::vector<industrial::joint_traj_pt_full::JointTrajPtFull> joint_trajectory_points)
   {
-        this->joint_trajectory_points_ = joint_trajectory_points;
+    this->joint_trajectory_points_ = joint_trajectory_points;
   }
 
   /**
@@ -159,7 +158,7 @@ public:
 
   industrial::shared_types::shared_int get_max_groups()
   {
-      return MAX_NUM_GROUPS;
+    return MAX_NUM_GROUPS;
   }
 
   industrial::shared_types::shared_int getSequence()
@@ -188,14 +187,13 @@ public:
   bool unload(industrial::byte_array::ByteArray *buffer);
   unsigned int byteLength()
   {
-    return sizeof(industrial::shared_types::shared_int) + sizeof(industrial::shared_types::shared_int) + MAX_NUM_GROUPS*(this->joint_traj_full_sample_.byteLength()-sizeof(industrial::shared_types::shared_int));
+    return sizeof(industrial::shared_types::shared_int) + sizeof(industrial::shared_types::shared_int) + MAX_NUM_GROUPS * (this->joint_traj_full_sample_.byteLength() - sizeof(industrial::shared_types::shared_int));
   }
 
 private:
+  std::vector<industrial::joint_traj_pt_full::JointTrajPtFull> joint_trajectory_points_;
 
-   std::vector<industrial::joint_traj_pt_full::JointTrajPtFull> joint_trajectory_points_;
-
-   industrial::joint_traj_pt_full::JointTrajPtFull joint_traj_full_sample_;
+  industrial::joint_traj_pt_full::JointTrajPtFull joint_traj_full_sample_;
   /**
    * \brief robot group # (0-based) for controllers that support multiple axis-groups
    */
@@ -210,10 +208,8 @@ private:
    */
 
   static const industrial::shared_types::shared_int MAX_NUM_GROUPS = 4;
-
 };
+}  // namespace joint_traj_pt_full_ex
+}  // namespace industrial
 
-}
-}
-
-#endif // JOINT_TRAJ_PT_FULL_EX_H
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_JOINT_TRAJ_PT_FULL_EX_H

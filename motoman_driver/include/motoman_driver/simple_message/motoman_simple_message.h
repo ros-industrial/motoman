@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MOTOMAN_SIMPLE_MSG_H
-#define MOTOMAN_SIMPLE_MSG_H
+#ifndef MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_SIMPLE_MESSAGE_H
+#define MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_SIMPLE_MESSAGE_H
 
 #ifdef ROS
 #include "simple_message/simple_message.h"
@@ -43,29 +43,25 @@
 
 namespace motoman
 {
-
 namespace simple_message
 {
-
 /**
  * \brief Enumeration of motoman-specific message types.
  *        See simple_message.h for a listing of "standard" message types
  */
 namespace MotomanMsgTypes
 {
-  enum MotomanMsgType
-  {
-    MOTOMAN_MSG_BEGIN = 2000,
-    MOTOMAN_MOTION_CTRL = 2001,
-    MOTOMAN_MOTION_REPLY = 2002,
-    ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016, // This is similar to the "Dynamic Joint Point" in REP I0001
-    ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017, //Similar to Dynamic Joint State on the REP I0001
-  };
+enum MotomanMsgType
+{
+  MOTOMAN_MSG_BEGIN = 2000,
+  MOTOMAN_MOTION_CTRL = 2001,
+  MOTOMAN_MOTION_REPLY = 2002,
+  ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016, // This is similar to the "Dynamic Joint Point" in REP I0001
+  ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017, //Similar to Dynamic Joint State on the REP I0001
+};
 }
 typedef MotomanMsgTypes::MotomanMsgType MotomanMsgType;
+}  // namespace simple_message
+}  // namespace industrial
 
-
-}//namespace simple_message
-}//namespace industrial
-
-#endif //MOTOMAN_SIMPLE_MSG_H
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_SIMPLE_MESSAGE_H

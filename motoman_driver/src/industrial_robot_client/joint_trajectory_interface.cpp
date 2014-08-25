@@ -7,14 +7,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Southwest Research Institute, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Southwest Research Institute, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -33,8 +33,11 @@
 #include "motoman_driver/industrial_robot_client/joint_trajectory_interface.h"
 #include "simple_message/joint_traj_pt.h"
 #include "industrial_utils/param_utils.h"
+#include <vector>
+#include <map>
+#include <string>
 
-using namespace industrial_utils::param;
+using industrial_utils::param::getJointNames;
 using industrial::simple_message::SimpleMessage;
 namespace SpecialSeqValues = industrial::joint_traj_pt::SpecialSeqValues;
 typedef industrial::joint_traj_pt::JointTrajPt rbt_JointTrajPt;
@@ -70,7 +73,7 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bo
     return false;
   }
 
-  char* ip_addr = strdup(ip.c_str()); // connection.init() requires "char*", not "const char*"
+  char* ip_addr = strdup(ip.c_str());  // connection.init() requires "char*", not "const char*"
   ROS_INFO("Joint Trajectory Interface connecting to IP address: '%s:%d'", ip_addr, port);
   default_tcp_connection_.init(ip_addr, port);
   free(ip_addr);
@@ -80,87 +83,87 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bo
 
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
 {
-    if(this->legacy_mode_)
+  if (this->legacy_mode_)
+  {
+    std::vector<std::string> joint_names;
+    if (!getJointNames("controller_joint_names", "robot_description", joint_names))
+      ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
+
+    return init(connection, joint_names);
+  }
+
+  else
+  {
+    std::map<int, RobotGroup> robot_groups;
+
+    std::string value;
+    ros::param::search("topics_list", value);
+
+    XmlRpc::XmlRpcValue topics_list_rpc;
+    ros::param::get(value, topics_list_rpc);
+
+    // Evaluating the topics_list parameter that contains the node configuration in
+    // respect to the characteristics for each group
+    std::vector<XmlRpc::XmlRpcValue> topics_list;
+
+    for (int i = 0; i < topics_list_rpc.size(); i++)
     {
-     std::vector<std::string> joint_names;
-     if (!getJointNames("controller_joint_names", "robot_description", joint_names))
-       ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
-
-     return init(connection, joint_names);
+      XmlRpc::XmlRpcValue state_value;
+      state_value = topics_list_rpc[i];
+      topics_list.push_back(state_value);
     }
 
-    else{
+    std::vector<XmlRpc::XmlRpcValue> groups_list;
 
-       std::map<int,RobotGroup> robot_groups;
-
-       std::string value;
-       ros::param::search("topics_list", value);
-
-       XmlRpc::XmlRpcValue topics_list_rpc;
-       ros::param::get(value,topics_list_rpc);
-
-       // Evaluating the topics_list parameter that contains the node configuration in
-       // respect to the characteristics for each group
-       std::vector<XmlRpc::XmlRpcValue> topics_list;
-
-       for (int i=0; i < topics_list_rpc.size();i++)
-       {
-           XmlRpc::XmlRpcValue state_value;
-           state_value = topics_list_rpc[i];
-           topics_list.push_back(state_value);
-       }
-
-       std::vector<XmlRpc::XmlRpcValue> groups_list;
-       //TODO: check the consistency of the group numbers
-       for (int i=0; i< topics_list[0]["state"].size();i++)
-       {
-           XmlRpc::XmlRpcValue group_value;
-           group_value = topics_list[0]["state"][i];
-           groups_list.push_back(group_value);
-       }
-
-
-       for (int i=0; i < groups_list.size();i++)
-       {
-           RobotGroup rg;
-           std::vector<std::string> rg_joint_names;
-
-           XmlRpc::XmlRpcValue joints;
-
-           joints = groups_list[i]["group"][0]["joints"];
-           for (int jt=0; jt<joints.size(); jt++)
-                      rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
-
-           XmlRpc::XmlRpcValue group_number;
-
-
-           group_number = groups_list[i]["group"][0]["group_number"];
-           int group_number_int = static_cast<int>(group_number);
-
-           XmlRpc::XmlRpcValue name;
-           std::string name_string;
-
-           name = groups_list[i]["group"][0]["name"];
-           name_string = static_cast<std::string>(name);
-
-
-           XmlRpc::XmlRpcValue ns;
-           std::string ns_string;
-
-           ns = groups_list[i]["group"][0]["ns"];
-
-           ns_string = static_cast<std::string>(ns);
-
-           rg.set_group_id(group_number_int);
-           rg.set_joint_names(rg_joint_names);
-           rg.set_name(name_string);
-           rg.set_ns(ns_string);
-
-           robot_groups[group_number_int] = rg;
-
-       }
-       return init(connection, robot_groups);
+    // TODO(thiagodefreitas): check the consistency of the group numbers
+    for (int i = 0; i < topics_list[0]["state"].size(); i++)
+    {
+      XmlRpc::XmlRpcValue group_value;
+      group_value = topics_list[0]["state"][i];
+      groups_list.push_back(group_value);
     }
+
+
+    for (int i = 0; i < groups_list.size(); i++)
+    {
+      RobotGroup rg;
+      std::vector<std::string> rg_joint_names;
+
+      XmlRpc::XmlRpcValue joints;
+
+      joints = groups_list[i]["group"][0]["joints"];
+      for (int jt = 0; jt < joints.size(); jt++)
+        rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
+
+      XmlRpc::XmlRpcValue group_number;
+
+
+      group_number = groups_list[i]["group"][0]["group_number"];
+      int group_number_int = static_cast<int>(group_number);
+
+      XmlRpc::XmlRpcValue name;
+      std::string name_string;
+
+      name = groups_list[i]["group"][0]["name"];
+      name_string = static_cast<std::string>(name);
+
+
+      XmlRpc::XmlRpcValue ns;
+      std::string ns_string;
+
+      ns = groups_list[i]["group"][0]["ns"];
+
+      ns_string = static_cast<std::string>(ns);
+
+      rg.set_group_id(group_number_int);
+      rg.set_joint_names(rg_joint_names);
+      rg.set_name(name_string);
+      rg.set_ns(ns_string);
+
+      robot_groups[group_number_int] = rg;
+    }
+    return init(connection, robot_groups);
+  }
 }
 
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
@@ -184,7 +187,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ve
   return true;
 }
 
-bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::map<int,RobotGroup> &robot_groups,
+bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::map<int, RobotGroup> &robot_groups,
                                     const std::map<std::string, double> &velocity_limits)
 {
   this->connection_ = connection;
@@ -196,35 +199,35 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ma
   if (joint_vel_limits_.empty() && !industrial_utils::param::getJointVelocityLimits("robot_description", joint_vel_limits_))
     ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
 
-  //General server and subscriber for compounded trajectories
+  // General server and subscriber for compounded trajectories
 
   this->srv_joint_trajectory_ = this->node_.advertiseService("joint_path_command", &JointTrajectoryInterface::jointTrajectoryExCB, this);
   this->sub_joint_trajectory_ = this->node_.subscribe("joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryExCB, this);
   this->srv_stop_motion_ = this->node_.advertiseService("stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
 
-  for(it_type iterator = this->robot_groups_.begin(); iterator != this->robot_groups_.end(); iterator++)
+  for (it_type iterator = this->robot_groups_.begin(); iterator != this->robot_groups_.end(); iterator++)
   {
-      std::string name_str, ns_str;
-      int robot_id = iterator->first;
-      name_str = iterator->second.get_name();
-      ns_str = iterator->second.get_ns();
+    std::string name_str, ns_str;
+    int robot_id = iterator->first;
+    name_str = iterator->second.get_name();
+    ns_str = iterator->second.get_ns();
 
 
-      ros::ServiceServer srv_joint_trajectory;
-      ros::ServiceServer srv_stop_motion;
-      ros::Subscriber sub_joint_trajectory;
+    ros::ServiceServer srv_joint_trajectory;
+    ros::ServiceServer srv_stop_motion;
+    ros::Subscriber sub_joint_trajectory;
 
-      srv_stop_motion = this->node_.advertiseService(ns_str+"/"+name_str+"/stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
-      srv_joint_trajectory = this->node_.advertiseService(ns_str+"/"+name_str+"/joint_path_command", &JointTrajectoryInterface::jointTrajectoryExCB, this);
-      sub_joint_trajectory = this->node_.subscribe(ns_str+"/"+name_str+"/joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryExCB, this);
+    srv_stop_motion = this->node_.advertiseService(ns_str + "/" + name_str + "/stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
+    srv_joint_trajectory = this->node_.advertiseService(ns_str + "/" + name_str + "/joint_path_command", &JointTrajectoryInterface::jointTrajectoryExCB, this);
+    sub_joint_trajectory = this->node_.subscribe(ns_str + "/" + name_str + "/joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryExCB, this);
 
-      this->srv_stops_[robot_id] = srv_stop_motion;
-      this->srv_joints_[robot_id] = srv_joint_trajectory;
-      this->sub_joint_trajectories_[robot_id] = sub_joint_trajectory;
+    this->srv_stops_[robot_id] = srv_stop_motion;
+    this->srv_joints_[robot_id] = srv_joint_trajectory;
+    this->sub_joint_trajectories_[robot_id] = sub_joint_trajectory;
 
-      this->sub_cur_pos_ = this->node_.subscribe<sensor_msgs::JointState>(ns_str+"/"+name_str+"/joint_states", 1, boost::bind(&JointTrajectoryInterface::jointStateCB,this, _1, robot_id));
+    this->sub_cur_pos_ = this->node_.subscribe<sensor_msgs::JointState>(ns_str + "/" + name_str + "/joint_states", 1, boost::bind(&JointTrajectoryInterface::jointStateCB, this, _1, robot_id));
 
-      this->sub_cur_positions_[robot_id] = this->sub_cur_pos_;
+    this->sub_cur_positions_[robot_id] = this->sub_cur_pos_;
   }
 
 
@@ -232,13 +235,13 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ma
 }
 
 JointTrajectoryInterface::~JointTrajectoryInterface()
-{  
+{
   trajectoryStop();
   this->sub_joint_trajectory_.shutdown();
 }
 
 bool JointTrajectoryInterface::jointTrajectoryExCB(motoman_msgs::CmdJointTrajectoryEx::Request &req,
-                                                 motoman_msgs::CmdJointTrajectoryEx::Response &res)
+    motoman_msgs::CmdJointTrajectoryEx::Response &res)
 {
   motoman_msgs::DynamicJointTrajectoryPtr traj_ptr(new motoman_msgs::DynamicJointTrajectory);
   *traj_ptr = req.trajectory;  // copy message data
@@ -252,9 +255,8 @@ bool JointTrajectoryInterface::jointTrajectoryExCB(motoman_msgs::CmdJointTraject
 
 
 bool JointTrajectoryInterface::jointTrajectoryCB(industrial_msgs::CmdJointTrajectory::Request &req,
-                                                 industrial_msgs::CmdJointTrajectory::Response &res)
+    industrial_msgs::CmdJointTrajectory::Response &res)
 {
-
   trajectory_msgs::JointTrajectoryPtr traj_ptr(new trajectory_msgs::JointTrajectory);
   *traj_ptr = req.trajectory;  // copy message data
   this->jointTrajectoryCB(traj_ptr);
@@ -276,7 +278,7 @@ void JointTrajectoryInterface::jointTrajectoryExCB(const motoman_msgs::DynamicJo
     return;
   }
 
- // convert trajectory into robot-format
+  // convert trajectory into robot-format
   std::vector<SimpleMessage> robot_msgs;
   if (!trajectory_to_msgs(msg, &robot_msgs))
     return;
@@ -311,54 +313,46 @@ bool JointTrajectoryInterface::trajectory_to_msgs(const motoman_msgs::DynamicJoi
 {
   msgs->clear();
 
-   std::vector<double>::iterator it;
+  std::vector<double>::iterator it;
 
-  if(traj->points[0].num_groups == 1)
+  if (traj->points[0].num_groups == 1)
   {
-      // check for valid trajectory
-      if (!is_valid(*traj))
-      {
+    // check for valid trajectory
+    if (!is_valid(*traj))
+    {
+      return false;
+    }
+
+    for (size_t i = 0; i < traj->points.size(); ++i)
+    {
+      SimpleMessage msg;
+      ros_dynamicPoint rbt_pt, xform_pt;
+
+
+      if (!select(traj->joint_names, traj->points[i].groups[0], robot_groups_[traj->points[i].groups[0].group_number].get_joint_names(), &rbt_pt))
         return false;
-      }
 
-      for (size_t i=0; i<traj->points.size(); ++i)
-      {
+      // transform point data (e.g. for joint-coupling)
+      if (!transform(rbt_pt, &xform_pt))
+        return false;
 
-        SimpleMessage msg;
-        ros_dynamicPoint rbt_pt, xform_pt;
+      // convert trajectory point to ROS message
+      if (!create_message(i, xform_pt, &msg))
+        return false;
 
-
-        if (!select(traj->joint_names, traj->points[i].groups[0], robot_groups_[traj->points[i].groups[0].group_number].get_joint_names(), &rbt_pt))
-            return false;
-
-          // transform point data (e.g. for joint-coupling)
-          if (!transform(rbt_pt, &xform_pt))
-            return false;
-
-          // convert trajectory point to ROS message
-          if (!create_message(i, xform_pt, &msg))
-            return false;
-
-          msgs->push_back(msg);
-      }
-
+      msgs->push_back(msg);
+    }
   }
-  //TODO : get MAX_NUM_GROUPS for the FS100 controller
-  else if(traj->points[0].num_groups <= 4 )
+  // TODO(thiagodefreitas) : get MAX_NUM_GROUPS for the FS100 controller
+  else if (traj->points[0].num_groups <= 4)
   {
-
-      for (size_t i=0; i<traj->points.size(); ++i)
-      {
-
-        SimpleMessage msg;
-        create_message_ex(i, traj->points[i], &msg );
-
-        msgs->push_back(msg);
-
-      }
-
+    for (size_t i = 0; i < traj->points.size(); ++i)
+    {
+      SimpleMessage msg;
+      create_message_ex(i, traj->points[i], &msg);
+      msgs->push_back(msg);
+    }
   }
-
   return true;
 }
 
@@ -370,7 +364,7 @@ bool JointTrajectoryInterface::trajectory_to_msgs(const trajectory_msgs::JointTr
   if (!is_valid(*traj))
     return false;
 
-  for (size_t i=0; i<traj->points.size(); ++i)
+  for (size_t i = 0; i < traj->points.size(); ++i)
   {
     SimpleMessage msg;
     ros_JointTrajPt rbt_pt, xform_pt;
@@ -394,18 +388,17 @@ bool JointTrajectoryInterface::trajectory_to_msgs(const trajectory_msgs::JointTr
 }
 
 bool JointTrajectoryInterface::select(const std::vector<std::string>& ros_joint_names, const ros_dynamicPoint& ros_pt,
-                      const std::vector<std::string>& rbt_joint_names, ros_dynamicPoint* rbt_pt)
+                                      const std::vector<std::string>& rbt_joint_names, ros_dynamicPoint* rbt_pt)
 {
-
   ROS_ASSERT(ros_joint_names.size() == ros_pt.positions.size());
-
   // initialize rbt_pt
   *rbt_pt = ros_pt;
-  rbt_pt->positions.clear(); rbt_pt->velocities.clear(); rbt_pt->accelerations.clear();
+  rbt_pt->positions.clear();
+  rbt_pt->velocities.clear();
+  rbt_pt->accelerations.clear();
 
-  for (size_t rbt_idx=0; rbt_idx < rbt_joint_names.size(); ++rbt_idx)
+  for (size_t rbt_idx = 0; rbt_idx < rbt_joint_names.size(); ++rbt_idx)
   {
-
     bool is_empty = rbt_joint_names[rbt_idx].empty();
 
     // find matching ROS element
@@ -438,14 +431,16 @@ bool JointTrajectoryInterface::select(const std::vector<std::string>& ros_joint_
 
 
 bool JointTrajectoryInterface::select(const std::vector<std::string>& ros_joint_names, const ros_JointTrajPt& ros_pt,
-                      const std::vector<std::string>& rbt_joint_names, ros_JointTrajPt* rbt_pt)
+                                      const std::vector<std::string>& rbt_joint_names, ros_JointTrajPt* rbt_pt)
 {
   ROS_ASSERT(ros_joint_names.size() == ros_pt.positions.size());
   // initialize rbt_pt
   *rbt_pt = ros_pt;
-  rbt_pt->positions.clear(); rbt_pt->velocities.clear(); rbt_pt->accelerations.clear();
+  rbt_pt->positions.clear();
+  rbt_pt->velocities.clear();
+  rbt_pt->accelerations.clear();
 
-  for (size_t rbt_idx=0; rbt_idx < rbt_joint_names.size(); ++rbt_idx)
+  for (size_t rbt_idx = 0; rbt_idx < rbt_joint_names.size(); ++rbt_idx)
   {
     bool is_empty = rbt_joint_names[rbt_idx].empty();
 
@@ -496,7 +491,7 @@ bool JointTrajectoryInterface::calc_velocity(const trajectory_msgs::JointTraject
     return true;
   }
 
-  for (size_t i=0; i<all_joint_names_.size(); ++i)
+  for (size_t i = 0; i < all_joint_names_.size(); ++i)
   {
     const std::string &jnt_name = all_joint_names_[i];
 
@@ -506,12 +501,12 @@ bool JointTrajectoryInterface::calc_velocity(const trajectory_msgs::JointTraject
     else if (joint_vel_limits_.count(jnt_name) == 0)  // no velocity limit specified for this joint
       vel_ratios.push_back(-1);
     else
-      vel_ratios.push_back( fabs(pt.velocities[i] / joint_vel_limits_[jnt_name]) );  // calculate expected duration for this joint
+      vel_ratios.push_back(fabs(pt.velocities[i] / joint_vel_limits_[jnt_name]));    // calculate expected duration for this joint
   }
 
   // find largest velocity-ratio (closest to max joint-speed)
   int max_idx = std::max_element(vel_ratios.begin(), vel_ratios.end()) - vel_ratios.begin();
-  
+
   if (vel_ratios[max_idx] > 0)
     *rbt_velocity = vel_ratios[max_idx];
   else
@@ -520,21 +515,18 @@ bool JointTrajectoryInterface::calc_velocity(const trajectory_msgs::JointTraject
     *rbt_velocity = default_vel_ratio_;
   }
 
-  if ( (*rbt_velocity < 0) || (*rbt_velocity > 1) )
+  if ((*rbt_velocity < 0) || (*rbt_velocity > 1))
   {
     ROS_WARN("computed velocity (%.1f %%) is out-of-range.  Clipping to [0-100%%]", *rbt_velocity * 100);
     *rbt_velocity = std::min(1.0, std::max(0.0, *rbt_velocity));  // clip to [0,1]
   }
-  
+
   return true;
 }
 
 bool JointTrajectoryInterface::calc_velocity(const motoman_msgs::DynamicJointsGroup& pt, double* rbt_velocity)
 {
   std::vector<double> vel_ratios;
-
-  //TODO: back this assert
-  //ROS_ASSERT(all_joint_names_.size() == pt.positions.size());
 
   // check for empty velocities in ROS topic
   if (pt.velocities.empty())
@@ -545,7 +537,7 @@ bool JointTrajectoryInterface::calc_velocity(const motoman_msgs::DynamicJointsGr
   }
 
   robot_groups_[pt.group_number].get_joint_names();
-  for (size_t i=0; i<robot_groups_[pt.group_number].get_joint_names().size(); ++i)
+  for (size_t i = 0; i < robot_groups_[pt.group_number].get_joint_names().size(); ++i)
   {
     const std::string &jnt_name = robot_groups_[pt.group_number].get_joint_names()[i];
 
@@ -555,7 +547,7 @@ bool JointTrajectoryInterface::calc_velocity(const motoman_msgs::DynamicJointsGr
     else if (joint_vel_limits_.count(jnt_name) == 0)  // no velocity limit specified for this joint
       vel_ratios.push_back(-1);
     else
-      vel_ratios.push_back( fabs(pt.velocities[i] / joint_vel_limits_[jnt_name]) );  // calculate expected duration for this joint
+      vel_ratios.push_back(fabs(pt.velocities[i] / joint_vel_limits_[jnt_name]));    // calculate expected duration for this joint
   }
 
   // find largest velocity-ratio (closest to max joint-speed)
@@ -569,7 +561,7 @@ bool JointTrajectoryInterface::calc_velocity(const motoman_msgs::DynamicJointsGr
     *rbt_velocity = default_vel_ratio_;
   }
 
-  if ( (*rbt_velocity < 0) || (*rbt_velocity > 1) )
+  if ((*rbt_velocity < 0) || (*rbt_velocity > 1))
   {
     ROS_WARN("computed velocity (%.1f %%) is out-of-range.  Clipping to [0-100%%]", *rbt_velocity * 100);
     *rbt_velocity = std::min(1.0, std::max(0.0, *rbt_velocity));  // clip to [0,1]
@@ -612,11 +604,9 @@ bool JointTrajectoryInterface::calc_duration(const motoman_msgs::DynamicJointsGr
 
 bool JointTrajectoryInterface::create_message(int seq, const motoman_msgs::DynamicJointsGroup &pt, SimpleMessage *msg)
 {
-
   industrial::joint_data::JointData pos;
-  //ROS_ASSERT(pt.positions.size() <= (unsigned int)pos.getMaxNumJoints());
 
-  for (size_t i=0; i<pt.positions.size(); ++i)
+  for (size_t i = 0; i < pt.positions.size(); ++i)
   {
     pos.setJoint(i, pt.positions[i]);
   }
@@ -637,7 +627,6 @@ bool JointTrajectoryInterface::create_message(int seq, const motoman_msgs::Dynam
 
 bool JointTrajectoryInterface::create_message_ex(int seq, const motoman_msgs::DynamicJointPoint &pt, SimpleMessage *msg)
 {
-
   return true;
 }
 
@@ -646,7 +635,7 @@ bool JointTrajectoryInterface::create_message(int seq, const trajectory_msgs::Jo
   industrial::joint_data::JointData pos;
   ROS_ASSERT(pt.positions.size() <= (unsigned int)pos.getMaxNumJoints());
 
-  for (size_t i=0; i<pt.positions.size(); ++i)
+  for (size_t i = 0; i < pt.positions.size(); ++i)
     pos.setJoint(i, pt.positions[i]);
 
   // calculate velocity & duration
@@ -676,7 +665,7 @@ void JointTrajectoryInterface::trajectoryStop()
 }
 
 bool JointTrajectoryInterface::stopMotionCB(industrial_msgs::StopMotion::Request &req,
-                                            industrial_msgs::StopMotion::Response &res)
+    industrial_msgs::StopMotion::Response &res)
 {
   trajectoryStop();
 
@@ -688,7 +677,7 @@ bool JointTrajectoryInterface::stopMotionCB(industrial_msgs::StopMotion::Request
 
 bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &traj)
 {
-  for (int i=0; i<traj.points.size(); ++i)
+  for (int i = 0; i < traj.points.size(); ++i)
   {
     const trajectory_msgs::JointTrajectoryPoint &pt = traj.points[i];
 
@@ -697,7 +686,7 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
       ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
 
     // check for joint velocity limits
-    for (int j=0; j<pt.velocities.size(); ++j)
+    for (int j = 0; j < pt.velocities.size(); ++j)
     {
       std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
       if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
@@ -716,34 +705,30 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
 
 bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajectory &traj)
 {
-
-    for (int i=0; i<traj.points.size(); ++i)
+  for (int i = 0; i < traj.points.size(); ++i)
+  {
+    for (int gr = 0; gr < traj.points[i].num_groups; gr++)
     {
-      for(int gr=0;gr<traj.points[i].num_groups;gr++)
+      const motoman_msgs::DynamicJointsGroup &pt = traj.points[i].groups[gr];
+
+      // check for non-empty positions
+      if (pt.positions.empty())
+        ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
+      // check for joint velocity limits
+      for (int j = 0; j < pt.velocities.size(); ++j)
       {
-          const motoman_msgs::DynamicJointsGroup &pt = traj.points[i].groups[gr];
+        std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
+        if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
 
-          // check for non-empty positions
-          if (pt.positions.empty())
-            ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
-          // check for joint velocity limits
-          for (int j=0; j<pt.velocities.size(); ++j)
-          {
-              //TODO: change this to check if the joint_names are present on the message
-
-            std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
-            if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
-
-            if (std::abs(pt.velocities[j]) > max_vel->second)
-              ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
-          }
-
-          // check for valid timestamp
-          if ((i > 0) && (pt.time_from_start.toSec() == 0))
-            ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
+        if (std::abs(pt.velocities[j]) > max_vel->second)
+          ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
       }
-    }
 
+      // check for valid timestamp
+      if ((i > 0) && (pt.time_from_start.toSec() == 0))
+        ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
+    }
+  }
   return true;
 }
 
@@ -755,10 +740,9 @@ void JointTrajectoryInterface::jointStateCB(const sensor_msgs::JointStateConstPt
 
 void JointTrajectoryInterface::jointStateCB(const sensor_msgs::JointStateConstPtr &msg, int robot_id)
 {
-
   this->cur_joint_pos_map_[robot_id] = *msg;
 }
 
-} //joint_trajectory_interface
-} //industrial_robot_client
+}  // namespace joint_trajectory_interface
+}   // namespace industrial_robot_client
 

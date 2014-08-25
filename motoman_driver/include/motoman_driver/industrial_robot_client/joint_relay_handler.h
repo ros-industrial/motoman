@@ -30,12 +30,13 @@
  */
 
 
-#ifndef JOINT_RELAY_HANDLER_H
-#define JOINT_RELAY_HANDLER_H
+#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_RELAY_HANDLER_H
+#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_RELAY_HANDLER_H
 
 #include <string>
 #include <vector>
-
+#include <map>
+#include <algorithm>
 #include "ros/ros.h"
 #include "control_msgs/FollowJointTrajectoryFeedback.h"
 #include "sensor_msgs/JointState.h"
@@ -63,12 +64,11 @@ using motoman_msgs::DynamicJointsGroup;
  */
 class JointRelayHandler : public industrial::message_handler::MessageHandler
 {
-
 public:
 
   /**
-* \brief Constructor
-*/
+  * \brief Constructor
+  */
   JointRelayHandler() {};
 
   typedef std::map<int, RobotGroup>::iterator it_type;
@@ -82,28 +82,27 @@ public:
    *
    * \return true on success, false otherwise (an invalid message type)
    */
-  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::map<int,RobotGroup> &robot_groups)
+  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::map<int, RobotGroup> &robot_groups)
   {
-    return init(connection, (int)industrial::simple_message::StandardMsgTypes::JOINT, robot_groups);
+    return init(connection, static_cast<int>(industrial::simple_message::StandardMsgTypes::JOINT), robot_groups);
   }
 
- /**
-  * \brief Class initializer
-  *
-  * \param connection simple message connection that will be used to send replies.
-  * \param joint_names list of joint-names for msg-publishing.
-  *   - Count and order should match data from robot connection.
-  *   - Use blank-name to exclude a joint from publishing.
-  *
-  * \return true on success, false otherwise (an invalid message type)
-  */
- virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::vector<std::string> &joint_names)
- {
-   return init(connection, (int)industrial::simple_message::StandardMsgTypes::JOINT, joint_names);
- }
+  /**
+   * \brief Class initializer
+   *
+   * \param connection simple message connection that will be used to send replies.
+   * \param joint_names list of joint-names for msg-publishing.
+   *   - Count and order should match data from robot connection.
+   *   - Use blank-name to exclude a joint from publishing.
+   *
+   * \return true on success, false otherwise (an invalid message type)
+   */
+  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::vector<std::string> &joint_names)
+  {
+    return init(connection, static_cast<int>(industrial::simple_message::StandardMsgTypes::JOINT), joint_names);
+  }
 
 protected:
-
   std::vector<std::string> all_joint_names_;
   std::map<int, RobotGroup> robot_groups_;
 
@@ -256,10 +255,10 @@ private:
    */
   bool convert_message(JointMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id);
 
-};//class JointRelayHandler
+};  // class JointRelayHandler
 
-}//joint_relay_handler
-}//industrial_robot_cliet
+}  // namespace joint_relay_handler
+}  // namespace industrial_robot_cliet
 
 
-#endif /* JOINT_RELAY_HANDLER_H */
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_RELAY_HANDLER_H

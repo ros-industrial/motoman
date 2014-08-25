@@ -1,5 +1,5 @@
 /*
-* Software License Agreement (BSD License) 
+* Software License Agreement (BSD License)
 *
 * Copyright (c) 2013, Southwest Research Institute
 * All rights reserved.
@@ -7,14 +7,14 @@
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are met:
 *
-* 	* Redistributions of source code must retain the above copyright
-* 	notice, this list of conditions and the following disclaimer.
-* 	* Redistributions in binary form must reproduce the above copyright
-* 	notice, this list of conditions and the following disclaimer in the
-* 	documentation and/or other materials provided with the distribution.
-* 	* Neither the name of the Southwest Research Institute, nor the names 
-*	of its contributors may be used to endorse or promote products derived
-*	from this software without specific prior written permission.
+*   * Redistributions of source code must retain the above copyright
+*   notice, this list of conditions and the following disclaimer.
+*   * Redistributions in binary form must reproduce the above copyright
+*   notice, this list of conditions and the following disclaimer in the
+*   documentation and/or other materials provided with the distribution.
+*   * Neither the name of the Southwest Research Institute, nor the names
+* of its contributors may be used to endorse or promote products derived
+* from this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,14 +27,17 @@
 * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
-*/ 
+*/
 
 #include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "simple_message/log_wrapper.h"
+#include <map>
+#include <string>
+#include <vector>
 
 using industrial::joint_data::JointData;
 using industrial::shared_types::shared_real;
-using namespace industrial::simple_message;
+namespace StandardMsgTypes = industrial::simple_message::StandardMsgTypes;
 
 namespace industrial_robot_client
 {
@@ -44,10 +47,10 @@ namespace joint_feedback_relay_handler
 bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
                                      std::map<int, RobotGroup> &robot_groups)
 {
-    this->legacy_mode_ = false;
-  bool rtn = JointRelayHandler::init(connection, (int)StandardMsgTypes::JOINT_FEEDBACK, robot_groups);
+  this->legacy_mode_ = false;
+  bool rtn = JointRelayHandler::init(connection, static_cast<int>(StandardMsgTypes::JOINT_FEEDBACK), robot_groups);
   // try to read robot_id parameter, if none specified
-  if ( (robot_id_ < 0) )
+  if ((robot_id_ < 0))
     node_.param("robot_id", robot_id_, 0);
 
   return rtn;
@@ -57,10 +60,10 @@ bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
                                      std::vector<std::string> &joint_names)
 {
   this->legacy_mode_ = true;
-  bool rtn = JointRelayHandler::init(connection, (int)StandardMsgTypes::JOINT_FEEDBACK, joint_names);
+  bool rtn = JointRelayHandler::init(connection, static_cast<int>(StandardMsgTypes::JOINT_FEEDBACK), joint_names);
 
   // try to read robot_id parameter, if none specified
-  if ( (robot_id_ < 0) )
+  if ((robot_id_ < 0))
     node_.param("robot_id", robot_id_, 0);
 
   return rtn;
@@ -68,8 +71,8 @@ bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
 
 
 bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
-                                                control_msgs::FollowJointTrajectoryFeedback* control_state,
-                                                sensor_msgs::JointState* sensor_state)
+    control_msgs::FollowJointTrajectoryFeedback* control_state,
+    sensor_msgs::JointState* sensor_state)
 {
   // inspect robot_id field first, to avoid "Failed to Convert" message
   JointFeedbackMessage tmp_msg;
@@ -84,9 +87,9 @@ bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
 //    return false;
 //  }
 
- if(this->legacy_mode_)
+  if (this->legacy_mode_)
     return JointRelayHandler::create_messages(msg_in, control_state, sensor_state);
- else
+  else
     return JointRelayHandler::create_messages(msg_in, control_state, sensor_state, tmp_msg.getRobotID());
 }
 
@@ -118,10 +121,10 @@ bool JointFeedbackRelayHandler::convert_message(SimpleMessage& msg_in, JointTraj
 }
 
 bool JointFeedbackRelayHandler::JointDataToVector(const JointData &joints,
-                                                  std::vector<double> &vec,
-                                                  int len)
+    std::vector<double> &vec,
+    int len)
 {
-  if ( (len<0) || (len>joints.getMaxNumJoints()) )
+  if ((len < 0) || (len > joints.getMaxNumJoints()))
   {
     LOG_ERROR("Failed to copy JointData.  Len (%d) out of range (0 to %d)",
               len, joints.getMaxNumJoints());
@@ -129,7 +132,7 @@ bool JointFeedbackRelayHandler::JointDataToVector(const JointData &joints,
   }
 
   vec.resize(len);
-  for (int i=0; i<len; ++i)
+  for (int i = 0; i < len; ++i)
     vec[i] = joints.getJoint(i);
 
   return true;
@@ -149,7 +152,8 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Dy
       LOG_ERROR("Failed to parse position data from JointFeedbackMessage");
       return false;
     }
-  } else
+  }
+  else
     joint_state->positions.clear();
 
   // copy velocity data
@@ -160,7 +164,8 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Dy
       LOG_ERROR("Failed to parse velocity data from JointFeedbackMessage");
       return false;
     }
-  } else
+  }
+  else
     joint_state->velocities.clear();
 
   // copy acceleration data
@@ -171,7 +176,8 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Dy
       LOG_ERROR("Failed to parse acceleration data from JointFeedbackMessage");
       return false;
     }
-  } else
+  }
+  else
     joint_state->accelerations.clear();
 
   // copy timestamp data
@@ -197,7 +203,8 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Jo
       LOG_ERROR("Failed to parse position data from JointFeedbackMessage");
       return false;
     }
-  } else
+  }
+  else
     joint_state->positions.clear();
 
   // copy velocity data
@@ -208,7 +215,8 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Jo
       LOG_ERROR("Failed to parse velocity data from JointFeedbackMessage");
       return false;
     }
-  } else
+  }
+  else
     joint_state->velocities.clear();
 
   // copy acceleration data
@@ -219,7 +227,8 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Jo
       LOG_ERROR("Failed to parse acceleration data from JointFeedbackMessage");
       return false;
     }
-  } else
+  }
+  else
     joint_state->accelerations.clear();
 
   // copy timestamp data
@@ -232,8 +241,8 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Jo
   return true;
 }
 
-}//namespace joint_feedback_relay_handler
-}//namespace industrial_robot_client
+}  // namespace joint_feedback_relay_handler
+}  // namespace industrial_robot_client
 
 
 

@@ -4,9 +4,10 @@ project(motoman_driver)
 # Load catkin and all dependencies required for this package
 find_package(catkin REQUIRED COMPONENTS std_msgs roscpp actionlib
     trajectory_msgs actionlib_msgs control_msgs sensor_msgs urdf
-    industrial_msgs industrial_robot_client industrial_utils simple_message)
+    industrial_msgs industrial_robot_client industrial_utils simple_message motoman_msgs roslint)
 find_package(Boost REQUIRED COMPONENTS system thread)
 
+roslint_cpp()
 #######################################
 ## Adding directories and definitions #
 #######################################
@@ -18,7 +19,7 @@ catkin_package(
     DEPENDS
     CATKIN_DEPENDS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs
             control_msgs sensor_msgs simple_message urdf industrial_msgs
-            industrial_robot_client
+            industrial_robot_client motoman_msgs
     INCLUDE_DIRS include
     LIBRARIES 
 )

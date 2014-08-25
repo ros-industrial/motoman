@@ -50,9 +50,7 @@ typedef motoman::simple_message::motion_ctrl::MotionControlCmd MotionControlCmd;
 
 class MotomanMotionCtrl
 {
-
 public:
-
   /**
    * \brief Default constructor
    */
@@ -72,10 +70,9 @@ protected:
   int robot_id_;
 
   bool sendAndReceive(MotionControlCmd command, MotionReply &reply);
-
 };
 
-} //motion_ctrl
-} //motoman
+}  // namespace motion_ctrl
+}  // namespace motoman
 
-#endif /* MOTOMAN_DRIVER_MOTION_CTRL_H */
+#endif  // MOTOMAN_DRIVER_MOTION_CTRL_H
