@@ -74,23 +74,23 @@ public:
   ~JointFeedbackEx(void);
 
   /**
-   * \brief Initializes a empty joint feedback
+   * \brief Initializes a empty joint feedback ex
    *
    */
   void init();
 
   /**
-   * \brief Initializes a complete joint feedback
+   * \brief Initializes a complete joint feedback ex
    *
    */
   void init(industrial::shared_types::shared_int groups_number,
             std::vector<industrial::joint_feedback_message::JointFeedbackMessage> joints_feedback_points);
 
   /**
-   * \brief Sets robot_id.
-   *        Robot group # (0-based), for controllers with multiple axis-groups.
+   * \brief Sets groups_number_
+   *        Numbers of group, this sets the amount of control groups connected to the controller
    *
-   * \param robot_id new robot_id value
+   * \param groups_number new groups_number value
    */
   void setGroupsNumber(industrial::shared_types::shared_int groups_number)
   {
@@ -149,7 +149,7 @@ public:
 
 private:
   /**
-   * \brief robot group # (0-based) for controllers that support multiple axis-groups
+   * \brief Number of groups attached to the controller
    */
   industrial::shared_types::shared_int groups_number_;
 

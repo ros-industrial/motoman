@@ -51,11 +51,11 @@ namespace industrial
 namespace joint_traj_pt_full_ex_message
 {
 /**
- * \brief Class encapsulated joint trajectory point message generation methods
+ * \brief Class encapsulated joint trajectory extended point message generation methods
  * (either to or from a industrial::simple_message::SimpleMessage type.
  *
- * This message simply wraps the industrial::joint_traj_pt_full_ex::JointTrajPtFull data type.
- * The data portion of this typed message matches JointTrajPtFull.
+ * This message simply wraps the industrial::joint_traj_pt_full_ex::JointTrajPtFullEx data type.
+ * The data portion of this typed message matches JointTrajPtFullEx.
  *
  *
  * THIS CLASS IS NOT THREAD-SAFE

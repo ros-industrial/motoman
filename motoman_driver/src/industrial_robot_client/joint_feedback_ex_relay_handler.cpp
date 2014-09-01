@@ -42,6 +42,7 @@
 using industrial::joint_data::JointData;
 using industrial::shared_types::shared_real;
 namespace MotomanMsgTypes = motoman::simple_message::MotomanMsgTypes;
+namespace ValidFieldTypes = industrial::joint_feedback::ValidFieldTypes;
 
 namespace industrial_robot_client
 {
@@ -95,7 +96,7 @@ bool JointFeedbackExRelayHandler::create_messages(SimpleMessage& msg_in,
     motoman_msgs::DynamicJointState dyn_joint_state;
     dyn_joint_state.num_joints = control_state->joint_names.size();
     dyn_joint_state.group_number = group_number;
-    dyn_joint_state.valid_fields = 1;
+    dyn_joint_state.valid_fields = this->valid_fields_from_message_;
     dyn_joint_state.positions = control_state->actual.positions;
     dyn_joint_state.velocities = control_state->actual.velocities;
     dyn_joint_state.accelerations = control_state->actual.accelerations;
@@ -164,8 +165,10 @@ bool JointFeedbackExRelayHandler::convert_message(JointFeedbackMessage& msg_in, 
   int num_jnts = robot_groups_[robot_id].get_joint_names().size();
 
   // copy position data
-  if (msg_in.getPositions(values))
+  bool position_field = msg_in.getPositions(values);
+  if (position_field)
   {
+    this->valid_fields_from_message_ |= ValidFieldTypes::POSITION;
     if (!JointDataToVector(values, joint_state->positions, num_jnts))
     {
       LOG_ERROR("Failed to parse position data from JointFeedbackMessage");
@@ -173,11 +176,16 @@ bool JointFeedbackExRelayHandler::convert_message(JointFeedbackMessage& msg_in, 
     }
   }
   else
+  {
     joint_state->positions.clear();
+    this->valid_fields_from_message_ &= ~ValidFieldTypes::POSITION;
+  }
 
   // copy velocity data
-  if (msg_in.getVelocities(values))
+  bool velocity_field = msg_in.getVelocities(values);
+  if (velocity_field)
   {
+    this->valid_fields_from_message_ |= ValidFieldTypes::VELOCITY;
     if (!JointDataToVector(values, joint_state->velocities, num_jnts))
     {
       LOG_ERROR("Failed to parse velocity data from JointFeedbackMessage");
@@ -185,11 +193,16 @@ bool JointFeedbackExRelayHandler::convert_message(JointFeedbackMessage& msg_in, 
     }
   }
   else
+  {
     joint_state->velocities.clear();
+    this->valid_fields_from_message_ &= ~ValidFieldTypes::VELOCITY;
+  }
 
   // copy acceleration data
-  if (msg_in.getAccelerations(values))
+  bool acceleration_field = msg_in.getAccelerations(values);
+  if (acceleration_field)
   {
+    this->valid_fields_from_message_ |= ValidFieldTypes::ACCELERATION;
     if (!JointDataToVector(values, joint_state->accelerations, num_jnts))
     {
       LOG_ERROR("Failed to parse acceleration data from JointFeedbackMessage");
@@ -197,14 +210,24 @@ bool JointFeedbackExRelayHandler::convert_message(JointFeedbackMessage& msg_in, 
     }
   }
   else
+  {
     joint_state->accelerations.clear();
+    this->valid_fields_from_message_ &= ~ValidFieldTypes::ACCELERATION;
+  }
 
   // copy timestamp data
   shared_real value;
-  if (msg_in.getTime(value))
+  bool time_field = msg_in.getTime(value);
+  if (time_field)
+  {
+    this->valid_fields_from_message_ |= ValidFieldTypes::TIME;
     joint_state->time_from_start = ros::Duration(value);
+  }
   else
+  {
     joint_state->time_from_start = ros::Duration(0);
+    this->valid_fields_from_message_ &= ~ValidFieldTypes::TIME;
+  }
 
   return true;
 }

@@ -53,11 +53,11 @@ namespace industrial
 namespace joint_feedback_ex_message
 {
 /**
- * \brief Class encapsulated joint feedback message generation methods
+ * \brief Class encapsulated joint feedback ex message generation methods
  * (either to or from a industrial::simple_message::SimpleMessage type.
  *
- * This message simply wraps the industrial::joint_feedback::JointFeedback data type.
- * The data portion of this typed message matches JointFeedback.
+ * This message simply wraps the industrial::joint_feedback_ex::JointFeedbackEx data type.
+ * The data portion of this typed message matches JointFeedbackEx.
  *
  *
  * THIS CLASS IS NOT THREAD-SAFE

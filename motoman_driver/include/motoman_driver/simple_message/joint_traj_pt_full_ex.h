@@ -114,10 +114,10 @@ public:
             std::vector<industrial::joint_traj_pt_full::JointTrajPtFull> joint_trajectory_points);
 
   /**
-   * \brief Sets robot_id.
-   *        Robot group # (0-based), for controllers with multiple axis-groups.
+   * \brief Sets num_groups
+   *        Number of groups attached to the controller
    *
-   * \param robot_id new robot_id value
+   * \param num_groups new num_groups value
    */
   void setNumGroups(industrial::shared_types::shared_int num_groups)
   {
@@ -125,11 +125,12 @@ public:
   }
 
   /**
-   * \brief Gets robot_id.
-   *        Robot group # (0-based), for controllers with multiple axis-groups.
+   * \brief Sets groups_number_
+   *        Numbers of group, this sets the amount of control groups connected to the controller
    *
-   * @return robot_id value
+   * \param groups_number new groups_number value
    */
+
   industrial::shared_types::shared_int getNumGroups()
   {
     return this->num_groups_;
@@ -151,21 +152,26 @@ public:
   }
 
   /**
+   * \brief Returns joint trajectory point maximum number of groups
+   *
+   * \return joint trajectory maximum number of groups
+   */
+
+  industrial::shared_types::shared_int getMaxGroups()
+  {
+    return MAX_NUM_GROUPS;
+  }
+
+  /**
    * \brief Returns joint trajectory point sequence number
    *
    * \return joint trajectory sequence number
    */
 
-  industrial::shared_types::shared_int get_max_groups()
-  {
-    return MAX_NUM_GROUPS;
-  }
-
   industrial::shared_types::shared_int getSequence()
   {
     return this->sequence_;
   }
-
 
   /**
    * \brief Copies the passed in value
@@ -195,17 +201,13 @@ private:
 
   industrial::joint_traj_pt_full::JointTrajPtFull joint_traj_full_sample_;
   /**
-   * \brief robot group # (0-based) for controllers that support multiple axis-groups
+   * \brief number of groups for controllers that support multiple axis-groups
    */
   industrial::shared_types::shared_int num_groups_;
   /**
    * \brief trajectory sequence number
    */
   industrial::shared_types::shared_int sequence_;
-  /**
-   * \brief bit-mask of (optional) fields that have been initialized with valid data
-   * \see enum ValidFieldTypes
-   */
 
   static const industrial::shared_types::shared_int MAX_NUM_GROUPS = 4;
 };
