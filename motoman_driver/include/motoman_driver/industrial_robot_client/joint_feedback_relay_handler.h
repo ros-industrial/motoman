@@ -86,7 +86,7 @@ public:
 
 protected:
   int robot_id_;
-  bool legacy_mode_;
+  bool version_0_;
 
 
   /**

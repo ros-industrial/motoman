@@ -47,7 +47,7 @@ namespace joint_feedback_relay_handler
 bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
                                      std::map<int, RobotGroup> &robot_groups)
 {
-  this->legacy_mode_ = false;
+  this->version_0_ = false;
   bool rtn = JointRelayHandler::init(connection, static_cast<int>(StandardMsgTypes::JOINT_FEEDBACK), robot_groups);
   // try to read robot_id parameter, if none specified
   if ((robot_id_ < 0))
@@ -59,7 +59,7 @@ bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
 bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
                                      std::vector<std::string> &joint_names)
 {
-  this->legacy_mode_ = true;
+  this->version_0_ = true;
   bool rtn = JointRelayHandler::init(connection, static_cast<int>(StandardMsgTypes::JOINT_FEEDBACK), joint_names);
 
   // try to read robot_id parameter, if none specified
@@ -87,7 +87,7 @@ bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
 //    return false;
 //  }
 
-  if (this->legacy_mode_)
+  if (this->version_0_)
     return JointRelayHandler::create_messages(msg_in, control_state, sensor_state);
   else
     return JointRelayHandler::create_messages(msg_in, control_state, sensor_state, tmp_msg.getRobotID());

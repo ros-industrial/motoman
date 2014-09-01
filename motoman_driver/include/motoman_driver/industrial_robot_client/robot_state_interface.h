@@ -181,7 +181,7 @@ protected:
 
   std::map<int, RobotGroup> robot_groups_;
 
-  bool legacy_mode_;
+  bool version_0_;
 };  // class RobotStateInterface
 
 }  // namespace robot_state_interface

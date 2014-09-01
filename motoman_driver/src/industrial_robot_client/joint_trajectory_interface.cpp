@@ -51,9 +51,9 @@ namespace joint_trajectory_interface
 
 #define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
 
-bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bool legacy_mode)
+bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bool version_0)
 {
-  this->legacy_mode_ = legacy_mode;
+  this->version_0_ = version_0;
   std::string ip;
   int port;
 
@@ -83,7 +83,7 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bo
 
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
 {
-  if (this->legacy_mode_)
+  if (this->version_0_)
   {
     std::vector<std::string> joint_names;
     if (!getJointNames("controller_joint_names", "robot_description", joint_names))

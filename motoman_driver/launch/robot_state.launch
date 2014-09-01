@@ -6,14 +6,14 @@
 	<arg name="robot_ip" />
 
 	<!-- Load the byte-swapping version of robot_state if required -->
-	<arg name="use_bswap" />
+    <arg name="use_bswap" />
 	
-	<!-- Load the legacy mode if required -->
-	<arg name="legacy_mode" />
+	<!-- Version of the driver, concerning multi-groups support -->
+	<arg name="version_0.x" />
 
 	<!-- put them on the parameter server -->
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
-	<param name="legacy_mode" type="bool" value="$(arg legacy_mode)" />
+	<param name="version_0.x" type="bool" value="$(arg version_0.x)" />
 
 	<!-- load the correct version of the robot state node -->
 	<node if="$(arg use_bswap)" name="joint_state" 
