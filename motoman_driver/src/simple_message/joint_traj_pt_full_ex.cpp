@@ -46,6 +46,7 @@
 #endif
 
 using industrial::joint_traj_pt_full::JointTrajPtFull;
+namespace ValidFieldTypes = industrial::joint_traj_pt_full::ValidFieldTypes;
 
 namespace industrial
 {
@@ -125,23 +126,41 @@ bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
       return false;
     }
 
-    // TODO(thiagodefreitas) : Reimplement the getValidFields to the industrial_core (traj_full.getValidFields()))
-    if (!buffer->load(15))
+    industrial::joint_data::JointData positions;
+    if(traj_full.getPositions(positions))
+      this->valid_fields_from_message_ |= ValidFieldTypes::POSITION;
+    else
+      this->valid_fields_from_message_ &= ~ValidFieldTypes::POSITION;
+
+    industrial::joint_data::JointData velocities;
+    if(traj_full.getVelocities(velocities))
+      this->valid_fields_from_message_ |= ValidFieldTypes::VELOCITY;
+    else
+      this->valid_fields_from_message_ &= ~ValidFieldTypes::VELOCITY;
+
+    industrial::joint_data::JointData accelerations;
+    if(traj_full.getAccelerations(accelerations))
+      this->valid_fields_from_message_ |= ValidFieldTypes::ACCELERATION;
+    else
+      this->valid_fields_from_message_ &= ~ValidFieldTypes::ACCELERATION;
+
+    industrial::shared_types::shared_real this_time;
+    if(traj_full.getTime(this_time))
+      this->valid_fields_from_message_ |= ValidFieldTypes::TIME;
+    else
+      this->valid_fields_from_message_ &= ~ValidFieldTypes::TIME;
+
+    if (!buffer->load(valid_fields_from_message_))
     {
       LOG_ERROR("Failed to load joint traj. pt. valid fields");
       return false;
     }
 
-    industrial::shared_types::shared_real this_time;
-    traj_full.getTime(this_time);
     if (!buffer->load(this_time))
     {
       LOG_ERROR("Failed to load joint traj. pt. time");
       return false;
     }
-
-    industrial::joint_data::JointData positions;
-    traj_full.getPositions(positions);
 
     industrial::shared_types::shared_real pos;
 
@@ -155,9 +174,6 @@ bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
       }
     }
 
-
-    industrial::joint_data::JointData velocities;
-    traj_full.getVelocities(velocities);
     industrial::shared_types::shared_real vel;
 
     for (int j = 0; j < velocities.getMaxNumJoints(); j++)
@@ -170,8 +186,6 @@ bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
       }
     }
 
-    industrial::joint_data::JointData accelerations;
-    traj_full.getAccelerations(accelerations);
     industrial::shared_types::shared_real acc;
 
     for (int j = 0; j < accelerations.getMaxNumJoints(); j++)

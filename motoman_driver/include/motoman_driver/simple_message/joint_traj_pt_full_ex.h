@@ -209,6 +209,8 @@ private:
    */
   industrial::shared_types::shared_int sequence_;
 
+  industrial::shared_types::shared_int valid_fields_from_message_;
+
   static const industrial::shared_types::shared_int MAX_NUM_GROUPS = 4;
 };
 }  // namespace joint_traj_pt_full_ex
