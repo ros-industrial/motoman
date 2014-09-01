@@ -29,8 +29,8 @@
       robot model and configuration you intend to use them with.
     </p>
  </description>
- <author>Thiago de Freitas</author>
- <maintainer email="tdf@ipa.fhg.de"/>
+ <author email="tdf@ipa.fhg.de">Thiago de Freitas</author>
+ <maintainer email="tdf@ipa.fhg.de">Thiago de Freitas</maintainer>
  <license>BSD</license>
  <url type="website">http://ros.org/wiki/motoman_sda10f_support</url>
  <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>

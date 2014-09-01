@@ -1,5 +1,5 @@
 #length: true message/data length
-#header: standard msg_type, comms_type, reply_code fields
+#header: 
 #sequence:
 #num_groups: # of motion groups included in this message
 #group[]: DynamicJointPoint from DynamicJointPoint.msg
