@@ -9,14 +9,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Southwest Research Institute, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Southwest Research Institute, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,106 +31,85 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <string>
 #include "motoman_driver/industrial_robot_client/joint_feedback_ex_relay_handler.h"
 #include "simple_message/log_wrapper.h"
 #include "motoman_driver/simple_message/motoman_simple_message.h"
 
 using industrial::joint_data::JointData;
 using industrial::shared_types::shared_real;
-using namespace industrial::simple_message;
-using namespace motoman::simple_message;
+namespace MotomanMsgTypes = motoman::simple_message::MotomanMsgTypes;
+namespace ValidFieldTypes = industrial::joint_feedback::ValidFieldTypes;
 
 namespace industrial_robot_client
 {
 namespace joint_feedback_ex_relay_handler
 {
-
 bool JointFeedbackExRelayHandler::init(SmplMsgConnection* connection,
-                                     std::map<int, RobotGroup> &robot_groups)
+                                       std::map<int, RobotGroup> &robot_groups)
 {
-    this->pub_joint_control_state_ =
-            this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>("feedback_states", 1);
+  this->pub_joint_control_state_ =
+    this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>("feedback_states", 1);
+  this->dynamic_pub_joint_control_state_ =
+    this->node_.advertise<motoman_msgs::DynamicJointTrajectoryFeedback>("dynamic_feedback_states", 1);
 
+  this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>("joint_states", 1);
 
-    //TODO:change this to publish on the DynamicJointState
-    this->dynamic_pub_joint_control_state_ =
-            this->node_.advertise<motoman_msgs::DynamicJointTrajectoryFeedback>("dynamic_feedback_states", 1);
-
-    this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>("joint_states",1);
-
-    this->robot_groups_ = robot_groups;
-    this->legacy_mode_ = false;
-  bool rtn = JointRelayHandler::init(connection, (int)MotomanMsgTypes::ROS_MSG_MOTO_JOINT_FEEDBACK_EX, robot_groups);
+  this->robot_groups_ = robot_groups;
+  this->legacy_mode_ = false;
+  bool rtn = JointRelayHandler::init(connection, static_cast<int>(MotomanMsgTypes::ROS_MSG_MOTO_JOINT_FEEDBACK_EX), robot_groups);
   // try to read groups_number parameter, if none specified
-  if ( (groups_number_ < 0) )
+  if ((groups_number_ < 0))
     node_.param("groups_number", groups_number_, 0);
-
   return rtn;
 }
 
 bool JointFeedbackExRelayHandler::init(SmplMsgConnection* connection,
-                                     std::vector<std::string> &joint_names)
+                                       std::vector<std::string> &joint_names)
 {
   this->legacy_mode_ = true;
-  bool rtn = JointRelayHandler::init(connection, (int)MotomanMsgTypes::ROS_MSG_MOTO_JOINT_FEEDBACK_EX, joint_names);
-
+  bool rtn = JointRelayHandler::init(connection, static_cast<int>(MotomanMsgTypes::ROS_MSG_MOTO_JOINT_FEEDBACK_EX), joint_names);
   // try to read groups_number parameter, if none specified
-  if ( (groups_number_ < 0) )
+  if ((groups_number_ < 0))
     node_.param("groups_number", groups_number_, 0);
-
   return rtn;
 }
 
 
 bool JointFeedbackExRelayHandler::create_messages(SimpleMessage& msg_in,
-                                                control_msgs::FollowJointTrajectoryFeedback* control_state,
-                                                sensor_msgs::JointState* sensor_state)
+    control_msgs::FollowJointTrajectoryFeedback* control_state,
+    sensor_msgs::JointState* sensor_state)
 {
   // inspect groups_number field first, to avoid "Failed to Convert" message
   JointFeedbackExMessage tmp_msg;
-
   tmp_msg.init(msg_in);
-
-
   motoman_msgs::DynamicJointTrajectoryFeedback dynamic_control_state;
 
-  for(int i=0; i< tmp_msg.getJointMessages().size();i++)
+  for (int i = 0; i < tmp_msg.getJointMessages().size(); i++)
   {
-      int group_number = tmp_msg.getJointMessages()[i].getRobotID();
+    int group_number = tmp_msg.getJointMessages()[i].getRobotID();
 
-      create_messages(tmp_msg.getJointMessages()[i], control_state, sensor_state, group_number);
-      motoman_msgs::DynamicJointState dyn_joint_state;
-      dyn_joint_state.num_joints = control_state->joint_names.size();
-      dyn_joint_state.group_number = group_number;
-      dyn_joint_state.valid_fields = 1;
-      dyn_joint_state.positions = control_state->actual.positions;
-      dyn_joint_state.velocities = control_state->actual.velocities;
-      dyn_joint_state.accelerations = control_state->actual.accelerations;
-
-      dynamic_control_state.joint_feedbacks.push_back(dyn_joint_state);
+    create_messages(tmp_msg.getJointMessages()[i], control_state, sensor_state, group_number);
+    motoman_msgs::DynamicJointState dyn_joint_state;
+    dyn_joint_state.num_joints = control_state->joint_names.size();
+    dyn_joint_state.group_number = group_number;
+    dyn_joint_state.valid_fields = this->valid_fields_from_message_;
+    dyn_joint_state.positions = control_state->actual.positions;
+    dyn_joint_state.velocities = control_state->actual.velocities;
+    dyn_joint_state.accelerations = control_state->actual.accelerations;
+    dynamic_control_state.joint_feedbacks.push_back(dyn_joint_state);
   }
-
   dynamic_control_state.header.stamp = ros::Time::now();
   dynamic_control_state.num_groups = tmp_msg.getGroupsNumber();
-
   this->dynamic_pub_joint_control_state_.publish(dynamic_control_state);
-
-//  if (tmp_msg.getGroupsNumber() != groups_number_)
-//  {
-//    LOG_COMM("Ignoring Message: robotID (%d) doesn't match expected (%d)",
-//             tmp_msg.getGroupsNumber(), groups_number_);
-//    return false;
-//  }
-
-// if(this->legacy_mode_)
-//    return JointRelayHandler::create_messages(msg_in, control_state, sensor_state);
-// else
-//    return JointRelayHandler::create_messages(msg_in, control_state, sensor_state, tmp_msg.getGroupsNumber());
 }
 
 bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
-                                        control_msgs::FollowJointTrajectoryFeedback* control_state,
-                                        sensor_msgs::JointState* sensor_state, int robot_id)
+    control_msgs::FollowJointTrajectoryFeedback* control_state,
+    sensor_msgs::JointState* sensor_state, int robot_id)
 {
   DynamicJointsGroup all_joint_state;
   if (!JointFeedbackExRelayHandler::convert_message(msg_in, &all_joint_state, robot_id))
@@ -138,7 +117,6 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
     LOG_ERROR("Failed to convert SimpleMessage");
     return false;
   }
-
   // apply transform, if required
   DynamicJointsGroup xform_joint_state;
   if (!transform(all_joint_state, &xform_joint_state))
@@ -147,7 +125,6 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
     return false;
   }
 
-  //TODO: get the joint_names from the robotgroup instead of from the all_joint_names
   // select specific joints for publishing
   DynamicJointsGroup pub_joint_state;
   std::vector<std::string> pub_joint_names;
@@ -158,7 +135,6 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
   }
 
 
-  //TODO: change this to publish on the dynamic joint state topic
   // assign values to messages
   *control_state = control_msgs::FollowJointTrajectoryFeedback();  // always start with a "clean" message
   control_state->header.stamp = ros::Time::now();
@@ -168,7 +144,6 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
   control_state->actual.accelerations = pub_joint_state.accelerations;
   control_state->actual.time_from_start = pub_joint_state.time_from_start;
 
-
   this->pub_joint_control_state_.publish(*control_state);
 
   *sensor_state = sensor_msgs::JointState();  // always start with a "clean" message
@@ -176,7 +151,6 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
   sensor_state->name = pub_joint_names;
   sensor_state->position = pub_joint_state.positions;
   sensor_state->velocity = pub_joint_state.velocities;
-
 
   this->pub_joint_sensor_state_.publish(*sensor_state);
 
@@ -191,53 +165,78 @@ bool JointFeedbackExRelayHandler::convert_message(JointFeedbackMessage& msg_in, 
   int num_jnts = robot_groups_[robot_id].get_joint_names().size();
 
   // copy position data
-  if (msg_in.getPositions(values))
+  bool position_field = msg_in.getPositions(values);
+  if (position_field)
   {
+    this->valid_fields_from_message_ |= ValidFieldTypes::POSITION;
     if (!JointDataToVector(values, joint_state->positions, num_jnts))
     {
       LOG_ERROR("Failed to parse position data from JointFeedbackMessage");
       return false;
     }
-  } else
+  }
+  else
+  {
     joint_state->positions.clear();
+    this->valid_fields_from_message_ &= ~ValidFieldTypes::POSITION;
+  }
 
   // copy velocity data
-  if (msg_in.getVelocities(values))
+  bool velocity_field = msg_in.getVelocities(values);
+  if (velocity_field)
   {
+    this->valid_fields_from_message_ |= ValidFieldTypes::VELOCITY;
     if (!JointDataToVector(values, joint_state->velocities, num_jnts))
     {
       LOG_ERROR("Failed to parse velocity data from JointFeedbackMessage");
       return false;
     }
-  } else
+  }
+  else
+  {
     joint_state->velocities.clear();
+    this->valid_fields_from_message_ &= ~ValidFieldTypes::VELOCITY;
+  }
 
   // copy acceleration data
-  if (msg_in.getAccelerations(values))
+  bool acceleration_field = msg_in.getAccelerations(values);
+  if (acceleration_field)
   {
+    this->valid_fields_from_message_ |= ValidFieldTypes::ACCELERATION;
     if (!JointDataToVector(values, joint_state->accelerations, num_jnts))
     {
       LOG_ERROR("Failed to parse acceleration data from JointFeedbackMessage");
       return false;
     }
-  } else
+  }
+  else
+  {
     joint_state->accelerations.clear();
+    this->valid_fields_from_message_ &= ~ValidFieldTypes::ACCELERATION;
+  }
 
   // copy timestamp data
   shared_real value;
-  if (msg_in.getTime(value))
+  bool time_field = msg_in.getTime(value);
+  if (time_field)
+  {
+    this->valid_fields_from_message_ |= ValidFieldTypes::TIME;
     joint_state->time_from_start = ros::Duration(value);
+  }
   else
+  {
     joint_state->time_from_start = ros::Duration(0);
+    this->valid_fields_from_message_ &= ~ValidFieldTypes::TIME;
+  }
 
   return true;
 }
 
 bool JointFeedbackExRelayHandler::JointDataToVector(const JointData &joints,
-                                                  std::vector<double> &vec,
-                                                  int len)
+    std::vector<double> &vec,
+    int len)
 {
-  if ( (len<0) || (len>joints.getMaxNumJoints()) )
+  if ((len < 0) || (len > joints.getMaxNumJoints()))
   {
     LOG_ERROR("Failed to copy JointData.  Len (%d) out of range (0 to %d)",
               len, joints.getMaxNumJoints());
@@ -245,16 +244,12 @@ bool JointFeedbackExRelayHandler::JointDataToVector(const JointData &joints,
   }
 
   vec.resize(len);
-  for (int i=0; i<len; ++i)
+  for (int i = 0; i < len; ++i)
     vec[i] = joints.getJoint(i);
 
   return true;
 }
 
 
-}//namespace joint_feedback_ex_relay_handler
-}//namespace industrial_robot_client
-
-
-
-
+}  // namespace joint_feedback_ex_relay_handler
+}  // namespace industrial_robot_client

@@ -7,14 +7,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Southwest Research Institute, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Southwest Research Institute, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,6 +31,9 @@
 
 #include "motoman_driver/industrial_robot_client/robot_state_interface.h"
 #include "industrial_utils/param_utils.h"
+#include <map>
+#include <string>
+#include <vector>
 
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using industrial_utils::param::getJointNames;
@@ -81,86 +84,87 @@ bool RobotStateInterface::init(std::string default_ip, int default_port, bool le
 
 bool RobotStateInterface::init(SmplMsgConnection* connection)
 {
- if(this->legacy_mode_)
- {
-  std::vector<std::string> joint_names;
-  if (!getJointNames("controller_joint_names", "robot_description", joint_names))
-    ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
+  if (this->legacy_mode_)
+  {
+    std::vector<std::string> joint_names;
+    if (!getJointNames("controller_joint_names", "robot_description", joint_names))
+      ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
 
-  return init(connection, joint_names);
- }
+    return init(connection, joint_names);
+  }
 
- else{
-
-    std::map<int,RobotGroup> robot_groups;
+  else
+  {
+    std::map<int, RobotGroup> robot_groups;
 
     std::string value;
     ros::param::search("topics_list", value);
 
     XmlRpc::XmlRpcValue topics_list_rpc;
-    ros::param::get(value,topics_list_rpc);
+    ros::param::get(value, topics_list_rpc);
 
 
     std::vector<XmlRpc::XmlRpcValue> topics_list;
 
-    for (int i=0; i < topics_list_rpc.size();i++)
+    for (int i = 0; i < topics_list_rpc.size(); i++)
     {
-        XmlRpc::XmlRpcValue state_value;
-        state_value = topics_list_rpc[i];
-        topics_list.push_back(state_value);
+      XmlRpc::XmlRpcValue state_value;
+      state_value = topics_list_rpc[i];
+      topics_list.push_back(state_value);
     }
 
     std::vector<XmlRpc::XmlRpcValue> groups_list;
-    //TODO: check the consistency of the group numbers
-    for (int i=0; i< topics_list[0]["state"].size();i++)
+    // TODO(thiagodefreitas): check the consistency of the group numbers
+    for (int i = 0; i < topics_list[0]["state"].size(); i++)
     {
-        XmlRpc::XmlRpcValue group_value;
-        group_value = topics_list[0]["state"][i];
-        groups_list.push_back(group_value);
+      XmlRpc::XmlRpcValue group_value;
+      group_value = topics_list[0]["state"][i];
+      groups_list.push_back(group_value);
     }
 
 
-    for (int i=0; i < groups_list.size();i++)
+    for (int i = 0; i < groups_list.size(); i++)
     {
-        RobotGroup rg;
-        std::vector<std::string> rg_joint_names;
+      RobotGroup rg;
+      std::vector<std::string> rg_joint_names;
 
-        XmlRpc::XmlRpcValue joints;
+      XmlRpc::XmlRpcValue joints;
 
-        joints = groups_list[i]["group"][0]["joints"];
-        for (int jt=0; jt<joints.size(); jt++){
-                   rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
-        }
+      joints = groups_list[i]["group"][0]["joints"];
+      for (int jt = 0; jt < joints.size(); jt++)
+      {
+        rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
+      }
 
-        XmlRpc::XmlRpcValue group_number;
+      XmlRpc::XmlRpcValue group_number;
 
 
-        group_number = groups_list[i]["group"][0]["group_number"];
-        int group_number_int = static_cast<int>(group_number);
+      group_number = groups_list[i]["group"][0]["group_number"];
+      int group_number_int = static_cast<int>(group_number);
 
-        XmlRpc::XmlRpcValue name;
-        std::string name_string;
+      XmlRpc::XmlRpcValue name;
+      std::string name_string;
 
-        name = groups_list[i]["group"][0]["name"];
-        name_string = static_cast<std::string>(name);
+      name = groups_list[i]["group"][0]["name"];
+      name_string = static_cast<std::string>(name);
 
-        XmlRpc::XmlRpcValue ns;
-        std::string ns_string;
+      XmlRpc::XmlRpcValue ns;
+      std::string ns_string;
 
-        ns = groups_list[i]["group"][0]["ns"];
+      ns = groups_list[i]["group"][0]["ns"];
 
-        ns_string = static_cast<std::string>(ns);
+      ns_string = static_cast<std::string>(ns);
 
-        rg.set_group_id(group_number_int);
-        rg.set_joint_names(rg_joint_names);
-        rg.set_name(name_string);
-        rg.set_ns(ns_string);
+      rg.set_group_id(group_number_int);
+      rg.set_joint_names(rg_joint_names);
+      rg.set_name(name_string);
+      rg.set_ns(ns_string);
 
-        robot_groups[group_number] = rg;
+      robot_groups[group_number] = rg;
     }
 
     return init(connection, robot_groups);
- }
+  }
 }
 
 bool RobotStateInterface::init(SmplMsgConnection* connection, std::map<int, RobotGroup> robot_groups)
@@ -187,7 +191,7 @@ bool RobotStateInterface::init(SmplMsgConnection* connection, std::map<int, Robo
   this->add_handler(&default_joint_feedback_ex_handler_);
 
   if (!default_robot_status_handler_.init(connection_))
-      return false;
+    return false;
   this->add_handler(&default_robot_status_handler_);
 
   return true;
@@ -213,7 +217,7 @@ bool RobotStateInterface::init(SmplMsgConnection* connection, std::vector<std::s
   this->add_handler(&default_joint_feedback_handler_);
 
   if (!default_robot_status_handler_.init(connection_))
-      return false;
+    return false;
   this->add_handler(&default_robot_status_handler_);
 
   return true;
@@ -224,5 +228,5 @@ void RobotStateInterface::run()
   manager_.spin();
 }
 
-} // robot_state_interface
-} // industrial_robot_client
+}  // namespace robot_state_interface
+}  // namespace industrial_robot_client

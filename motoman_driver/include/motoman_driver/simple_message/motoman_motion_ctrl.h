@@ -7,14 +7,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Southwest Research Institute, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Southwest Research Institute, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MOTOMAN_MOTION_CTRL_H
-#define MOTOMAN_MOTION_CTRL_H
+#ifndef MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_H
+#define MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_H
 
 #ifdef ROS
 #include "simple_message/simple_serialize.h"
@@ -50,22 +50,21 @@ namespace simple_message
 {
 namespace motion_ctrl
 {
-
 /**
  * \brief Enumeration of motion control command codes.
  */
 namespace MotionControlCmds
 {
-  enum MotionControlCmd
-  {
-    UNDEFINED          = 0,
-    CHECK_MOTION_READY = 200101,  // check if controller is ready to receive ROS motion cmds
-    CHECK_QUEUE_CNT    = 200102,  // get number of motion increments in queue
-    STOP_MOTION        = 200111,  // stop robot motion immediately
-    START_TRAJ_MODE    = 200121,  // prepare controller to receive ROS motion cmds
-    STOP_TRAJ_MODE     = 200122,  // return motion control to INFORM
-  };
-}
+enum MotionControlCmd
+{
+  UNDEFINED          = 0,
+  CHECK_MOTION_READY = 200101,  // check if controller is ready to receive ROS motion cmds
+  CHECK_QUEUE_CNT    = 200102,  // get number of motion increments in queue
+  STOP_MOTION        = 200111,  // stop robot motion immediately
+  START_TRAJ_MODE    = 200121,  // prepare controller to receive ROS motion cmds
+  STOP_TRAJ_MODE     = 200122,  // return motion control to INFORM
+};
+}  // namespace MotionControlCmds
 typedef MotionControlCmds::MotionControlCmd MotionControlCmd;
 
 /**
@@ -185,7 +184,7 @@ public:
    */
   void clearData()
   {
-    for (size_t i=0; i<MAX_DATA_CNT; ++i)
+    for (size_t i = 0; i < MAX_DATA_CNT; ++i)
       this->data_[i] = 0.0;
   }
 
@@ -197,11 +196,11 @@ public:
    */
   void setData(size_t idx, industrial::shared_types::shared_real val)
   {
-    if (idx<MAX_DATA_CNT)
+    if (idx < MAX_DATA_CNT)
       this->data_[idx] = val;
     else
       LOG_ERROR("MotionCtrl data index out-of-range (%d >= %d)",
-                (int)idx, (int)MAX_DATA_CNT);
+                static_cast<int>(idx), static_cast<int>(MAX_DATA_CNT));
   }
 
   /**
@@ -212,14 +211,14 @@ public:
    */
   industrial::shared_types::shared_real getData(size_t idx)
   {
-    if (idx<MAX_DATA_CNT)
+    if (idx < MAX_DATA_CNT)
     {
       return this->data_[idx];
     }
     else
     {
       LOG_ERROR("MotionCtrl data index out-of-range (%d >= %d)",
-                (int)idx, (int)MAX_DATA_CNT);
+                static_cast<int>(idx), static_cast<int>(MAX_DATA_CNT));
 
       return 0;
     }
@@ -244,12 +243,11 @@ public:
   bool unload(industrial::byte_array::ByteArray *buffer);
   unsigned int byteLength()
   {
-    return 3*sizeof(industrial::shared_types::shared_int) +
-           MAX_DATA_CNT*sizeof(industrial::shared_types::shared_real);
+    return 3 * sizeof(industrial::shared_types::shared_int) +
+           MAX_DATA_CNT * sizeof(industrial::shared_types::shared_real);
   }
 
 private:
-
   /**
    * \brief Robot/group ID.
    *          0 = 1st robot
@@ -276,11 +274,9 @@ private:
    *        Contents of data-buffer are specific to each command.
    */
   industrial::shared_types::shared_real data_[MAX_DATA_CNT];
-
 };
+}  // namespace motion_ctrl
+}  // namespace simple_message
+}  // namespace motoman
 
-}
-}
-}
-
-#endif /* MOTOMAN_MOTION_CTRL_H */
+#endif /* MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_H */

@@ -6,7 +6,7 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r1_s.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_s.stl"/>
 				</geometry>
 				<material name="blue">
 					<color rgba="0.8 0.8 0.8 1"/>
@@ -15,7 +15,7 @@
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_r1_s.stl" />
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_s.stl" />
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -24,14 +24,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r1_l.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_l.stl"/>
 				</geometry>
 				<material name="silver"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_r1_l.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_l.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -40,14 +40,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r1_e.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_e.stl"/>
 				</geometry>
 				<material name="blue"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_r1_e.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_e.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -56,14 +56,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r1_u.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_u.stl"/>
 				</geometry>
 				<material name="silver"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_r1_u.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_u.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -72,14 +72,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r1_r.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r.stl"/>
 				</geometry>
 				<material name="blue"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_r1_r.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_r.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -88,14 +88,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r1_b.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_b.stl"/>
 				</geometry>
 				<material name="silver"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_r1_b.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_b.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -103,13 +103,13 @@
 		<link name="${prefix}link_7">
 			<visual>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r1_t.stl" />
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_t.stl" />
 				</geometry>
 				<material name="blue"/>
 			</visual>
 			<collision>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_r1_t.stl" />
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_t.stl" />
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -122,49 +122,49 @@
 			<child link="${prefix}link_1"/>
 			<origin xyz="0.09996 ${reflect*0.0275} 0.32214" rpy="1.57 0 ${(reflect-1)*1.57}"/>
 			<axis xyz="0 0 ${-reflect}" />
-			<limit lower="-3.13" upper="3.13" effort="100" velocity="2.95" />
+			<limit lower="-3.13" upper="3.13" effort="0" velocity="2.95" />
 		</joint>
 		<joint name="${prefix}joint_2" type="revolute">
 			<parent link="${prefix}link_1"/>
 			<child link="${prefix}link_2"/>
 			<origin xyz="0 0.0577 -0.2255" rpy="-1.57 0 0"/>
 			<axis xyz="0 0 ${-reflect}" />
-			<limit lower="-1.90" upper="1.90" effort="100" velocity="2.95" />
+			<limit lower="-1.90" upper="1.90" effort="0" velocity="2.95" />
 		</joint>
 		<joint name="${prefix}joint_3" type="revolute">
 			<parent link="${prefix}link_2"/>
 			<child link="${prefix}link_3"/>
 			<origin xyz="0 0.1690 -0.0454" rpy="1.57 0 0"/>
 			<axis xyz="0 0 ${-reflect}" />
-			<limit lower="-2.95" upper="2.95" effort="100" velocity="2.95" />
+			<limit lower="-2.95" upper="2.95" effort="0" velocity="2.95" />
 		</joint>
 		<joint name="${prefix}joint_4" type="revolute">
 			<parent link="${prefix}link_3"/>
 			<child link="${prefix}link_4"/>
 			<origin xyz="0 -0.0085 -0.181" rpy="-1.57 0 0"/>
 			<axis xyz="0 0 ${reflect}" />
-			<limit lower="-2.36" upper="2.36" effort="100" velocity="2.95" />
+			<limit lower="-2.36" upper="2.36" effort="0" velocity="2.95" />
 		</joint>
 		<joint name="${prefix}joint_5" type="revolute">
 			<parent link="${prefix}link_4"/>
 			<child link="${prefix}link_5"/>
 			<origin xyz="0 0.1936 0.0155" rpy="1.57 0 0"/>
 			<axis xyz="0 0 ${reflect}" />
-			<limit lower="-3.13" upper="3.13" effort="100" velocity="3.48" />
+			<limit lower="-3.13" upper="3.13" effort="0" velocity="3.48" />
 		</joint>
 		<joint name="${prefix}joint_6" type="revolute">
 			<parent link="${prefix}link_5"/>
 			<child link="${prefix}link_6"/>
 			<origin xyz="0 0.0080 -0.155" rpy="-1.57 0 0"/>
 			<axis xyz="0 0 ${reflect}" />
-			<limit lower="-1.90" upper="1.90" effort="100" velocity="3.48" />
+			<limit lower="-1.90" upper="1.90" effort="0" velocity="3.48" />
 		</joint>
 		<joint name="${prefix}joint_7" type="revolute">
 			<parent link="${prefix}link_6"/>
 			<child link="${prefix}link_7"/>
 			<origin xyz="0 0.168 -0.015" rpy="1.57 0 0"/>
 			<axis xyz="0 0 ${-reflect}" />
-			<limit lower="-3.13" upper="3.13" effort="100" velocity="6.97" />
+			<limit lower="-3.13" upper="3.13" effort="0" velocity="6.97" />
 		</joint>
     <joint name="${prefix}joint_tool0" type="fixed" >
       <origin xyz="0 0 0.0" rpy="0 0 -3.13"/>

@@ -9,14 +9,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Fraunhofer IPA, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Fraunhofer IPA, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,6 +31,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <vector>
+
 #ifndef FLATHEADERS
 #include "motoman_driver/simple_message/joint_feedback_ex.h"
 #include "simple_message/shared_types.h"
@@ -41,10 +43,8 @@
 #include "log_wrapper.h"
 #endif
 
-using namespace industrial::joint_data;
-using namespace industrial::shared_types;
-using namespace industrial::joint_feedback_message;
-using namespace industrial::joint_feedback;
+using industrial::joint_feedback_message::JointFeedbackMessage;
+using industrial::joint_feedback::JointFeedback;
 
 namespace industrial
 {
@@ -57,17 +57,15 @@ JointFeedbackEx::JointFeedbackEx(void)
 }
 JointFeedbackEx::~JointFeedbackEx(void)
 {
-
 }
 
 void JointFeedbackEx::init()
 {
   this->groups_number_ = 0;
-
 }
 
 void JointFeedbackEx::init(industrial::shared_types::shared_int groups_number,
-          std::vector<joint_feedback_message::JointFeedbackMessage> joints_feedback_points)
+                           std::vector<joint_feedback_message::JointFeedbackMessage> joints_feedback_points)
 {
   this->setGroupsNumber(groups_number);
   this->joint_feedback_messages_ = joints_feedback_points;
@@ -109,29 +107,29 @@ bool JointFeedbackEx::unload(industrial::byte_array::ByteArray *buffer)
     return false;
   }
 
-  for(int i=0;i<this->groups_number_;i++)
+  for (int i = 0; i < this->groups_number_; i++)
   {
-      JointFeedbackMessage tmp_msg;
-      JointFeedback j_feedback;
+    JointFeedbackMessage tmp_msg;
+    JointFeedback j_feedback;
 
 
 
-      if (!buffer->unload(j_feedback))
-      {
-        LOG_ERROR("Failed to unload joint feedback groups_number");
-        return false;
-      }
-      tmp_msg.init(j_feedback);
+    if (!buffer->unload(j_feedback))
+    {
+      LOG_ERROR("Failed to unload joint feedback groups_number");
+      return false;
+    }
+    tmp_msg.init(j_feedback);
 
-      this->joint_feedback_messages_.push_back(tmp_msg);
-}
+    this->joint_feedback_messages_.push_back(tmp_msg);
+  }
 
 
   LOG_COMM("Joint feedback successfully unloaded");
   return true;
 }
 
-}
-}
+}  // namespace joint_feedback_ex
+}  // namespace industrial
 
 

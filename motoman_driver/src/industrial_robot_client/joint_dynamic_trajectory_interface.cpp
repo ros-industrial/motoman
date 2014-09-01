@@ -58,7 +58,7 @@ bool JointDynamicTrajectoryInterface::init(SmplMsgConnection* connection)
 }
 
 bool JointDynamicTrajectoryInterface::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
-                                    const std::map<std::string, double> &velocity_limits)
+    const std::map<std::string, double> &velocity_limits)
 {
   this->connection_ = connection;
   this->all_joint_names_ = joint_names;
@@ -84,7 +84,7 @@ JointDynamicTrajectoryInterface::~JointDynamicTrajectoryInterface()
 }
 
 bool JointDynamicTrajectoryInterface::jointTrajectoryCB(industrial_msgs::CmdJointTrajectory::Request &req,
-                                                 industrial_msgs::CmdJointTrajectory::Response &res)
+    industrial_msgs::CmdJointTrajectory::Response &res)
 {
   trajectory_msgs::JointTrajectoryPtr traj_ptr(new trajectory_msgs::JointTrajectory);
   *traj_ptr = req.trajectory;  // copy message data
@@ -125,7 +125,7 @@ bool JointDynamicTrajectoryInterface::trajectory_to_msgs(const trajectory_msgs::
   if (!is_valid(*traj))
     return false;
 
-  for (size_t i=0; i<traj->points.size(); ++i)
+  for (size_t i = 0; i < traj->points.size(); ++i)
   {
     SimpleMessage msg;
     ros_JointTrajPt rbt_pt, xform_pt;
@@ -149,15 +149,17 @@ bool JointDynamicTrajectoryInterface::trajectory_to_msgs(const trajectory_msgs::
 }
 
 bool JointDynamicTrajectoryInterface::select(const std::vector<std::string>& ros_joint_names, const ros_JointTrajPt& ros_pt,
-                      const std::vector<std::string>& rbt_joint_names, ros_JointTrajPt* rbt_pt)
+    const std::vector<std::string>& rbt_joint_names, ros_JointTrajPt* rbt_pt)
 {
   ROS_ASSERT(ros_joint_names.size() == ros_pt.positions.size());
 
   // initialize rbt_pt
   *rbt_pt = ros_pt;
-  rbt_pt->positions.clear(); rbt_pt->velocities.clear(); rbt_pt->accelerations.clear();
+  rbt_pt->positions.clear();
+  rbt_pt->velocities.clear();
+  rbt_pt->accelerations.clear();
 
-  for (size_t rbt_idx=0; rbt_idx < rbt_joint_names.size(); ++rbt_idx)
+  for (size_t rbt_idx = 0; rbt_idx < rbt_joint_names.size(); ++rbt_idx)
   {
     bool is_empty = rbt_joint_names[rbt_idx].empty();
 
@@ -208,7 +210,7 @@ bool JointDynamicTrajectoryInterface::calc_velocity(const trajectory_msgs::Joint
     return true;
   }
 
-  for (size_t i=0; i<all_joint_names_.size(); ++i)
+  for (size_t i = 0; i < all_joint_names_.size(); ++i)
   {
     const std::string &jnt_name = all_joint_names_[i];
 
@@ -218,7 +220,7 @@ bool JointDynamicTrajectoryInterface::calc_velocity(const trajectory_msgs::Joint
     else if (joint_vel_limits_.count(jnt_name) == 0)  // no velocity limit specified for this joint
       vel_ratios.push_back(-1);
     else
-      vel_ratios.push_back( fabs(pt.velocities[i] / joint_vel_limits_[jnt_name]) );  // calculate expected duration for this joint
+      vel_ratios.push_back(fabs(pt.velocities[i] / joint_vel_limits_[jnt_name]));    // calculate expected duration for this joint
   }
 
   // find largest velocity-ratio (closest to max joint-speed)
@@ -232,7 +234,7 @@ bool JointDynamicTrajectoryInterface::calc_velocity(const trajectory_msgs::Joint
     *rbt_velocity = default_vel_ratio_;
   }
 
-  if ( (*rbt_velocity < 0) || (*rbt_velocity > 1) )
+  if ((*rbt_velocity < 0) || (*rbt_velocity > 1))
   {
     ROS_WARN("computed velocity (%.1f %%) is out-of-range.  Clipping to [0-100%%]", *rbt_velocity * 100);
     *rbt_velocity = std::min(1.0, std::max(0.0, *rbt_velocity));  // clip to [0,1]
@@ -262,7 +264,7 @@ bool JointDynamicTrajectoryInterface::create_message(int seq, const trajectory_m
   industrial::joint_data::JointData pos;
   ROS_ASSERT(pt.positions.size() <= (unsigned int)pos.getMaxNumJoints());
 
-  for (size_t i=0; i<pt.positions.size(); ++i)
+  for (size_t i = 0; i < pt.positions.size(); ++i)
     pos.setJoint(i, pt.positions[i]);
 
   // calculate velocity & duration
@@ -292,7 +294,7 @@ void JointDynamicTrajectoryInterface::trajectoryStop()
 }
 
 bool JointDynamicTrajectoryInterface::stopMotionCB(industrial_msgs::StopMotion::Request &req,
-                                            industrial_msgs::StopMotion::Response &res)
+    industrial_msgs::StopMotion::Response &res)
 {
   trajectoryStop();
 
@@ -304,7 +306,7 @@ bool JointDynamicTrajectoryInterface::stopMotionCB(industrial_msgs::StopMotion::
 
 bool JointDynamicTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &traj)
 {
-  for (int i=0; i<traj.points.size(); ++i)
+  for (int i = 0; i < traj.points.size(); ++i)
   {
     const trajectory_msgs::JointTrajectoryPoint &pt = traj.points[i];
 
@@ -313,7 +315,7 @@ bool JointDynamicTrajectoryInterface::is_valid(const trajectory_msgs::JointTraje
       ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
 
     // check for joint velocity limits
-    for (int j=0; j<pt.velocities.size(); ++j)
+    for (int j = 0; j < pt.velocities.size(); ++j)
     {
       std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
       if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined

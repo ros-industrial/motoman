@@ -30,11 +30,12 @@
  */
 
 
-#ifndef ROBOT_STATE_INTERFACE_H
-#define ROBOT_STATE_INTERFACE_H
+#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATE_INTERFACE_H
+#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATE_INTERFACE_H
 
 #include <vector>
 #include <string>
+#include <map>
 #include "simple_message/smpl_msg_connection.h"
 #include "simple_message/message_manager.h"
 #include "simple_message/message_handler.h"
@@ -67,19 +68,15 @@ namespace StandardSocketPorts = industrial::simple_socket::StandardSocketPorts;
  * Users should replace the default class members
  * to implement robot-specific behavior.
  */
-//* RobotStateInterface
+// * RobotStateInterface
 
 class RobotStateInterface
 {
-
 public:
-
   /**
    * \brief Default constructor.
    */
   RobotStateInterface();
-
-
   /**
    * \brief Initialize robot connection using default method.
    *
@@ -90,7 +87,7 @@ public:
    *
    * \return true on success, false otherwise
    */
-  bool init(std::string default_ip = "", int default_port = StandardSocketPorts::STATE, bool legacy_mode=false);
+  bool init(std::string default_ip = "", int default_port = StandardSocketPorts::STATE, bool legacy_mode = false);
 
   /**
    * \brief Initialize robot connection using specified method.
@@ -157,7 +154,7 @@ public:
 
   std::map<int, RobotGroup> get_robot_groups()
   {
-      return this->robot_groups_;
+    return this->robot_groups_;
   }
 
   /**
@@ -182,14 +179,13 @@ protected:
   MessageManager manager_;
   std::vector<std::string> joint_names_;
 
-  std::map<int,RobotGroup> robot_groups_;
+  std::map<int, RobotGroup> robot_groups_;
 
   bool legacy_mode_;
+};  // class RobotStateInterface
 
-};//class RobotStateInterface
-
-}//robot_state_interface
-}//industrial_robot_cliet
+}  // namespace robot_state_interface
+}  // namespace industrial_robot_cliet
 
 
-#endif /* ROBOT_STATE_INTERFACE_H */
+#endif // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATE_INTERFACE_H
