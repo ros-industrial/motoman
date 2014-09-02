@@ -108,10 +108,10 @@ public:
   }
 
   /**
-   * \brief Gets robot_id.
-   *        Robot group # (0-based), for controllers with multiple axis-groups.
+   * \brief Gets groups_number
+   *        Gets the number of groups currently running on the controller
    *
-   * @return robot_id value
+   * @return groups_number value
    */
   industrial::shared_types::shared_int getGroupsNumber()
   {

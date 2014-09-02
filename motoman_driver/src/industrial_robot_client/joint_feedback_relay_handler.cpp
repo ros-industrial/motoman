@@ -79,14 +79,6 @@ bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
 
   tmp_msg.init(msg_in);
 
-
-//  if (tmp_msg.getRobotID() != robot_id_)
-//  {
-//    LOG_COMM("Ignoring Message: robotID (%d) doesn't match expected (%d)",
-//             tmp_msg.getRobotID(), robot_id_);
-//    return false;
-//  }
-
   if (this->version_0_)
     return JointRelayHandler::create_messages(msg_in, control_state, sensor_state);
   else
