@@ -86,7 +86,7 @@ public:
    *
    * \return true on success, false otherwise
    */
-  virtual bool init(std::string default_ip = "", int default_port = StandardSocketPorts::MOTION, bool legacy_mode = false);
+  virtual bool init(std::string default_ip = "", int default_port = StandardSocketPorts::MOTION, bool version_0 = false);
 
   /**
    * \brief Initialize robot connection using specified method.
@@ -354,7 +354,7 @@ protected:
 
   std::vector<std::string> all_joint_names_;
   std::map<int, RobotGroup> robot_groups_;
-  bool legacy_mode_;
+  bool version_0_;
   double default_joint_pos_;  // default position to use for "dummy joints", if none specified
   double default_vel_ratio_;  // default velocity ratio to use for joint commands, if no velocity or max_vel specified
   double default_duration_;   // default duration to use for joint commands, if no

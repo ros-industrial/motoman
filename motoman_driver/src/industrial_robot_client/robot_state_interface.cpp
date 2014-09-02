@@ -52,12 +52,12 @@ RobotStateInterface::RobotStateInterface()
   this->add_handler(&default_robot_status_handler_);
 }
 
-bool RobotStateInterface::init(std::string default_ip, int default_port, bool legacy_mode)
+bool RobotStateInterface::init(std::string default_ip, int default_port, bool version_0)
 {
   std::string ip;
   int port;
 
-  this->legacy_mode_ = legacy_mode;
+  this->version_0_ = version_0;
   // override IP/port with ROS params, if available
   ros::param::param<std::string>("robot_ip_address", ip, default_ip);
   ros::param::param<int>("~port", port, default_port);
@@ -84,7 +84,7 @@ bool RobotStateInterface::init(std::string default_ip, int default_port, bool le
 
 bool RobotStateInterface::init(SmplMsgConnection* connection)
 {
-  if (this->legacy_mode_)
+  if (this->version_0_)
   {
     std::vector<std::string> joint_names;
     if (!getJointNames("controller_joint_names", "robot_description", joint_names))

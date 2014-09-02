@@ -59,7 +59,7 @@ bool JointFeedbackExRelayHandler::init(SmplMsgConnection* connection,
   this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>("joint_states", 1);
 
   this->robot_groups_ = robot_groups;
-  this->legacy_mode_ = false;
+  this->version_0_ = false;
   bool rtn = JointRelayHandler::init(connection, static_cast<int>(MotomanMsgTypes::ROS_MSG_MOTO_JOINT_FEEDBACK_EX), robot_groups);
   // try to read groups_number parameter, if none specified
   if ((groups_number_ < 0))
@@ -70,7 +70,7 @@ bool JointFeedbackExRelayHandler::init(SmplMsgConnection* connection,
 bool JointFeedbackExRelayHandler::init(SmplMsgConnection* connection,
                                        std::vector<std::string> &joint_names)
 {
-  this->legacy_mode_ = true;
+  this->version_0_ = true;
   bool rtn = JointRelayHandler::init(connection, static_cast<int>(MotomanMsgTypes::ROS_MSG_MOTO_JOINT_FEEDBACK_EX), joint_names);
   // try to read groups_number parameter, if none specified
   if ((groups_number_ < 0))

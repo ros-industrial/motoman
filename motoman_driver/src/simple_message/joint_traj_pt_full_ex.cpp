@@ -127,25 +127,25 @@ bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
     }
 
     industrial::joint_data::JointData positions;
-    if(traj_full.getPositions(positions))
+    if (traj_full.getPositions(positions))
       this->valid_fields_from_message_ |= ValidFieldTypes::POSITION;
     else
       this->valid_fields_from_message_ &= ~ValidFieldTypes::POSITION;
 
     industrial::joint_data::JointData velocities;
-    if(traj_full.getVelocities(velocities))
+    if (traj_full.getVelocities(velocities))
       this->valid_fields_from_message_ |= ValidFieldTypes::VELOCITY;
     else
       this->valid_fields_from_message_ &= ~ValidFieldTypes::VELOCITY;
 
     industrial::joint_data::JointData accelerations;
-    if(traj_full.getAccelerations(accelerations))
+    if (traj_full.getAccelerations(accelerations))
       this->valid_fields_from_message_ |= ValidFieldTypes::ACCELERATION;
     else
       this->valid_fields_from_message_ &= ~ValidFieldTypes::ACCELERATION;
 
     industrial::shared_types::shared_real this_time;
-    if(traj_full.getTime(this_time))
+    if (traj_full.getTime(this_time))
       this->valid_fields_from_message_ |= ValidFieldTypes::TIME;
     else
       this->valid_fields_from_message_ &= ~ValidFieldTypes::TIME;

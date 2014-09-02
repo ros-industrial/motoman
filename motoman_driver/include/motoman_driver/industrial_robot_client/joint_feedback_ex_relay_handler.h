@@ -92,7 +92,7 @@ public:
 
 protected:
   int groups_number_;
-  bool legacy_mode_;
+  bool version_0_;
 
   ros::Publisher pub_joint_control_state_;
   ros::Publisher dynamic_pub_joint_control_state_;
