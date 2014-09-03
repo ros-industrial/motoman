@@ -111,8 +111,8 @@ protected:
                        sensor_msgs::JointState* sensor_state);
 
   bool create_messages(SimpleMessage& msg_in,
-                               control_msgs::FollowJointTrajectoryFeedback* control_state,
-                               sensor_msgs::JointState* sensor_state, int robot_id);
+                       control_msgs::FollowJointTrajectoryFeedback* control_state,
+                       sensor_msgs::JointState* sensor_state, int robot_id);
 
   // Overriding some functions to get it to work now inside of the Motoman package
   virtual bool transform(const DynamicJointsGroup& state_in, DynamicJointsGroup* state_out)

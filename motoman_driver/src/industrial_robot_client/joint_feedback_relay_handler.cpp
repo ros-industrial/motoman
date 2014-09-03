@@ -85,8 +85,8 @@ bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
 }
 
 bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
-                                        control_msgs::FollowJointTrajectoryFeedback* control_state,
-                                        sensor_msgs::JointState* sensor_state, int robot_id)
+    control_msgs::FollowJointTrajectoryFeedback* control_state,
+    sensor_msgs::JointState* sensor_state, int robot_id)
 {
   DynamicJointsGroup all_joint_state;
   if (!convert_message(msg_in, &all_joint_state, robot_id))
@@ -275,7 +275,7 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Jo
 }
 
 bool JointFeedbackRelayHandler::select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
-                               DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names)
+                                       DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names)
 {
 
   ROS_ASSERT(all_joint_state.positions.size() == all_joint_names.size());
