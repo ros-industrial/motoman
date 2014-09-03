@@ -164,7 +164,7 @@
 			<axis xyz="0 0 ${-reflect}" />
 			<limit lower="-3.13" upper="3.13" effort="0" velocity="6.97" />
 		</joint>
-    <joint name="${prefix}joint_7_tool0" type="fixed" >
+    <joint name="${prefix}joint_tool0" type="fixed" >
       <origin xyz="0 0 0.0" rpy="0 0 -3.13"/>
       <parent link="${prefix}link_7_t" />
       <child link="${prefix}link_tool0" />

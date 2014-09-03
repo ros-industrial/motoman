@@ -325,7 +325,6 @@ bool JointRelayHandler::select(const DynamicJointsGroup& all_joint_state, const 
   // skip over "blank" joint names
   for (int i = 0; i < all_joint_names.size(); ++i)
   {
-    ROS_ERROR("joint%s",all_joint_names[i].c_str());
     if (all_joint_names[i].empty())
       continue;
     pub_joint_names->push_back(all_joint_names[i]);

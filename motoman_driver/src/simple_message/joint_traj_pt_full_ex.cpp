@@ -100,8 +100,6 @@ bool JointTrajPtFullEx::operator==(JointTrajPtFullEx &rhs)
 
 bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
 {
-  LOG_ERROR("Loading message");
-
   LOG_COMM("Executing joint trajectory point load");
 
   if (!buffer->load(this->num_groups_))

@@ -4,7 +4,7 @@
         <xacro:include filename="$(find motoman_sda10f_support)/urdf/common_torso_macro.xacro" />
         <xacro:include filename="$(find motoman_sda10f_support)/urdf/arm_macro.xacro" />
         
-        <xacro:torso name="torso" prefix=""/>
+        <xacro:torso name="torso" prefix="torso_"/>
 
         
         <xacro:motoman_arm name="arm_left" prefix="arm_left_" parent="torso_link_b1" reflect="1">
