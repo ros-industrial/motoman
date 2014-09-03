@@ -100,8 +100,6 @@ bool JointTrajPtFullEx::operator==(JointTrajPtFullEx &rhs)
 
 bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
 {
-  LOG_ERROR("Loading message");
-
   LOG_COMM("Executing joint trajectory point load");
 
   if (!buffer->load(this->num_groups_))
@@ -208,6 +206,14 @@ bool JointTrajPtFullEx::unload(industrial::byte_array::ByteArray *buffer)
 {
   LOG_COMM("Executing joint traj. pt. unload");
 
+  for (int i = 0; i < joint_trajectory_points_.size(); i++)
+  {
+    if (!buffer->unload(joint_trajectory_points_[i]))
+    {
+      LOG_ERROR("Failed to unload joint traj. pt.");
+      return false;
+    }
+  }
   if (!buffer->unload(this->sequence_))
   {
     LOG_ERROR("Failed to unload joint traj. pt. sequence number");

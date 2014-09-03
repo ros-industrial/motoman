@@ -8,7 +8,7 @@
 <launch>
 	<arg name="robot_ip" />
 	<arg name="use_bswap" value="false" />
-	<arg name="version_0.x" value="false" />
+	<arg name="version_0.x" value="true" />
 
 	<!--rosparam command="load" file="$(find motoman_config)/?" /-->
 

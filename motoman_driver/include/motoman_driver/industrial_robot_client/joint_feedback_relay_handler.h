@@ -109,6 +109,21 @@ protected:
   bool create_messages(SimpleMessage& msg_in,
                        control_msgs::FollowJointTrajectoryFeedback* control_state,
                        sensor_msgs::JointState* sensor_state);
+
+  bool create_messages(SimpleMessage& msg_in,
+                       control_msgs::FollowJointTrajectoryFeedback* control_state,
+                       sensor_msgs::JointState* sensor_state, int robot_id);
+
+  // Overriding some functions to get it to work now inside of the Motoman package
+  virtual bool transform(const DynamicJointsGroup& state_in, DynamicJointsGroup* state_out)
+  {
+    *state_out = state_in;  // by default, no transform is applied
+    return true;
+  }
+
+  virtual bool select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
+                      DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names);
+
 private:
   static bool JointDataToVector(const industrial::joint_data::JointData &joints,
                                 std::vector<double> &vec, int len);

@@ -51,7 +51,6 @@ namespace joint_relay_handler
 bool JointRelayHandler::init(SmplMsgConnection* connection, int msg_type, std::map<int, RobotGroup> &robot_groups)
 {
   this->robot_groups_ = robot_groups;
-
   for (it_type iterator = robot_groups.begin(); iterator != robot_groups.end(); iterator++)
   {
     std::string name_str, ns_str;
@@ -192,7 +191,6 @@ bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
     LOG_ERROR("Failed to select joints for publishing");
     return false;
   }
-
   // assign values to messages
   *control_state = control_msgs::FollowJointTrajectoryFeedback();  // always start with a "clean" message
   control_state->header.stamp = ros::Time::now();
@@ -318,6 +316,7 @@ bool JointRelayHandler::select(const JointTrajectoryPoint& all_joint_state, cons
 bool JointRelayHandler::select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
                                DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names)
 {
+
   ROS_ASSERT(all_joint_state.positions.size() == all_joint_names.size());
 
   *pub_joint_state = DynamicJointsGroup();  // start with a "clean" message
