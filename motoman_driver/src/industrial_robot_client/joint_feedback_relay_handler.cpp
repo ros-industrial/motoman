@@ -52,7 +52,6 @@ bool JointFeedbackRelayHandler::init(SmplMsgConnection* connection,
   // try to read robot_id parameter, if none specified
   if ((robot_id_ < 0))
     node_.param("robot_id", robot_id_, 0);
-
   return rtn;
 }
 
@@ -89,7 +88,6 @@ bool JointFeedbackRelayHandler::create_messages(SimpleMessage& msg_in,
 bool JointFeedbackRelayHandler::convert_message(SimpleMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id)
 {
   JointFeedbackMessage joint_feedback_msg;
-
   if (!joint_feedback_msg.init(msg_in))
   {
     LOG_ERROR("Failed to initialize joint feedback message");
@@ -102,7 +100,6 @@ bool JointFeedbackRelayHandler::convert_message(SimpleMessage& msg_in, DynamicJo
 bool JointFeedbackRelayHandler::convert_message(SimpleMessage& msg_in, JointTrajectoryPoint* joint_state)
 {
   JointFeedbackMessage joint_feedback_msg;
-
   if (!joint_feedback_msg.init(msg_in))
   {
     LOG_ERROR("Failed to initialize joint feedback message");
@@ -133,7 +130,6 @@ bool JointFeedbackRelayHandler::JointDataToVector(const JointData &joints,
 bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id)
 {
   JointData values;
-
   int num_jnts = robot_groups_[robot_id].get_joint_names().size();
 
   // copy position data

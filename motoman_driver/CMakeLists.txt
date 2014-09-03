@@ -21,11 +21,11 @@ catkin_package(
             control_msgs sensor_msgs simple_message urdf industrial_msgs
             industrial_robot_client motoman_msgs
     INCLUDE_DIRS include
-    LIBRARIES 
+    LIBRARIES
 )
 
 
-set(MSG_SRC_FILES 
+set(MSG_SRC_FILES
   src/simple_message/motoman_motion_ctrl.cpp
   src/simple_message/motoman_motion_ctrl_message.cpp
   src/simple_message/motoman_motion_reply.cpp
@@ -39,13 +39,11 @@ set(CLIENT_SRC_FILES
   src/industrial_robot_client/robot_state_interface.cpp
   src/industrial_robot_client/joint_trajectory_interface.cpp
   src/industrial_robot_client/joint_trajectory_streamer.cpp
-  src/industrial_robot_client/joint_trajectory_action2.cpp
-  src/industrial_robot_client/generic_joint_trajectory_action2_node.cpp
   src/simple_message/joint_feedback_ex.cpp
   src/simple_message/joint_traj_pt_full_ex.cpp
   src/simple_message/messages/joint_feedback_ex_message.cpp
   src/simple_message/messages/joint_traj_pt_full_ex_message.cpp)
-	
+
 ###########
 ## Build ##
 ###########
@@ -56,37 +54,37 @@ set(CLIENT_SRC_FILES
 
 # Simple message library
 add_library(motoman_simple_message ${MSG_SRC_FILES})
-target_link_libraries(motoman_simple_message 
+target_link_libraries(motoman_simple_message
   simple_message)
 
 # Industrial client library
 add_library(motoman_industrial_robot_client ${CLIENT_SRC_FILES})
-target_link_libraries(motoman_industrial_robot_client 
+target_link_libraries(motoman_industrial_robot_client
   industrial_robot_client
   industrial_utils)
 
 # Robot state node
-add_executable(motoman_robot_state 
+add_executable(motoman_robot_state
   src/robot_state_node.cpp)
-target_link_libraries(motoman_robot_state	
+target_link_libraries(motoman_robot_state
   motoman_simple_message
-  motoman_industrial_robot_client 
+  motoman_industrial_robot_client
   ${catkin_LIBRARIES})
-set_target_properties(motoman_robot_state 
-  PROPERTIES OUTPUT_NAME robot_state 
+set_target_properties(motoman_robot_state
+  PROPERTIES OUTPUT_NAME robot_state
   PREFIX "")
-              
-# Motion streaming node                      
+
+# Motion streaming node
 add_executable(motoman_motion_streaming_interface
-	src/joint_streaming_node.cpp
-	src/joint_trajectory_streamer.cpp
-	src/motion_ctrl.cpp)
-target_link_libraries(motoman_motion_streaming_interface 
-  motoman_simple_message 
-  motoman_industrial_robot_client 
+  src/joint_streaming_node.cpp
+  src/joint_trajectory_streamer.cpp
+  src/motion_ctrl.cpp)
+target_link_libraries(motoman_motion_streaming_interface
+  motoman_simple_message
+  motoman_industrial_robot_client
   ${catkin_LIBRARIES})
-set_target_properties(motoman_motion_streaming_interface 
-  PROPERTIES OUTPUT_NAME motion_streaming_interface 
+set_target_properties(motoman_motion_streaming_interface
+  PROPERTIES OUTPUT_NAME motion_streaming_interface
   PREFIX "")
 
 
@@ -101,7 +99,7 @@ target_link_libraries(motoman_simple_message_bswap
 # Industrial client library
 add_library(motoman_industrial_robot_client_bswap ${CLIENT_SRC_FILES})
 set_target_properties(motoman_industrial_robot_client PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
-target_link_libraries(motoman_industrial_robot_client_bswap 
+target_link_libraries(motoman_industrial_robot_client_bswap
   industrial_robot_client_bswap
   industrial_utils)
 
@@ -115,12 +113,12 @@ target_link_libraries(motoman_robot_state_bswap
 set_target_properties(motoman_robot_state_bswap
   PROPERTIES OUTPUT_NAME robot_state_bswap
   PREFIX "")
-              
-# Motion streaming node                      
+
+# Motion streaming node
 add_executable(motoman_motion_streaming_interface_bswap
-	src/joint_streaming_node.cpp
-	src/joint_trajectory_streamer.cpp
-	src/motion_ctrl.cpp)
+  src/joint_streaming_node.cpp
+  src/joint_trajectory_streamer.cpp
+  src/motion_ctrl.cpp)
 target_link_libraries(motoman_motion_streaming_interface_bswap
   motoman_simple_message_bswap
   motoman_industrial_robot_client_bswap
@@ -132,7 +130,7 @@ set_target_properties(motoman_motion_streaming_interface_bswap
 add_executable(joint_trajectory_action2
   src/industrial_robot_client/generic_joint_trajectory_action2_node.cpp
   src/industrial_robot_client/joint_trajectory_action2.cpp)
-target_link_libraries(joint_trajectory_action2 
+target_link_libraries(joint_trajectory_action2
   industrial_robot_client ${catkin_LIBRARIES})
 add_dependencies(joint_trajectory_action2 industrial_robot_client_gencpp)
 #############

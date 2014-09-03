@@ -87,11 +87,21 @@ bool JointFeedbackEx::load(industrial::byte_array::ByteArray *buffer)
   LOG_COMM("Executing joint feedback load");
 
 
+  for (int i = 0; i < this->groups_number_; i++)
+  {
+    if (!buffer->load(this->joint_feedback_messages_[i]))
+    {
+      LOG_ERROR("Failed to load the Joint Feedback messages");
+      return false;
+    }
+  }
+
   if (!buffer->load(this->groups_number_))
   {
     LOG_ERROR("Failed to load joint feedback groups_number");
     return false;
   }
+
 
   LOG_COMM("Joint feedback successfully loaded");
   return true;

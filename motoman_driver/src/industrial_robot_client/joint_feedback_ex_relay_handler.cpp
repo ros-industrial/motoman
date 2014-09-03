@@ -114,7 +114,7 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
   DynamicJointsGroup all_joint_state;
   if (!JointFeedbackExRelayHandler::convert_message(msg_in, &all_joint_state, robot_id))
   {
-    LOG_ERROR("Failed to convert SimpleMessage");
+     LOG_ERROR("Failed to convert SimpleMessage");
     return false;
   }
   // apply transform, if required
