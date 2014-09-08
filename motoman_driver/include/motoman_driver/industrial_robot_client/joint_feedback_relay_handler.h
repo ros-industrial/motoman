@@ -38,7 +38,7 @@
 #include <vector>
 #include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
 #include "simple_message/messages/joint_feedback_message.h"
-#include "industrial_msgs/DynamicJointsGroup.h"
+#include "motoman_msgs/DynamicJointsGroup.h"
 
 namespace industrial_robot_client
 {
@@ -50,7 +50,7 @@ using industrial::simple_message::SimpleMessage;
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using industrial_robot_client::joint_relay_handler::JointRelayHandler;
 using trajectory_msgs::JointTrajectoryPoint;
-using industrial_msgs::DynamicJointsGroup;
+using motoman_msgs::DynamicJointsGroup;
 
 /**
  * \brief Message handler that relays joint positions (converts simple message
