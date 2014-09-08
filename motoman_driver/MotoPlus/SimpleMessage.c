@@ -3,6 +3,9 @@
 // History:
 // 06/12/2013: Fix reply to ROS_MSG_JOINT_TRAJ_PT_FULL message
 // 06/12/2013: Release v.1.0.1
+// June 2014:	Release v1.2.0
+//				Add support for multiple control groups.
+//				Add support for DX200 controller.
 /*
 * Software License Agreement (BSD License) 
 *
@@ -41,9 +44,6 @@
 //-----------------------
 // Function Declarations
 //-----------------------
-int Ros_SimpleMsg_JointFeedback(CtrlGroup* ctrlGroup, SimpleMsg* sendMsg);
-int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg);
-
 
 //-----------------------
 // Function implementation
@@ -89,11 +89,40 @@ int Ros_SimpleMsg_JointFeedback(CtrlGroup* ctrlGroup, SimpleMsg* sendMsg)
 	return(sendMsg->prefix.length + sizeof(SmPrefix));
 }
 
+// Initialize header for a simple message of type: ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 17
+void Ros_SimpleMsg_JointFeedbackEx_Init(int numberOfGroups, SimpleMsg* sendMsg)
+{	
+	//initialize memory
+	memset(sendMsg, 0x00, sizeof(SimpleMsg));
+	
+	// set prefix: length of message excluding the prefix
+	sendMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyJointFeedbackEx);
+	
+	// set header information
+	sendMsg->header.msgType = ROS_MSG_MOTO_JOINT_FEEDBACK_EX;
+	sendMsg->header.commType = ROS_COMM_TOPIC;
+	sendMsg->header.replyType = ROS_REPLY_INVALID;
+	
+	// set body
+	sendMsg->body.jointFeedbackEx.numberOfValidGroups = numberOfGroups;
+}
+
+// Copy data from a standard feedback message to the extended feedback message.  This
+// function should be called multiple times to build a message for all control groups.
+int Ros_SimpleMsg_JointFeedbackEx_Build(int groupIndex, SimpleMsg* src_msgFeedback, SimpleMsg* dst_msgExtendedFeedback)
+{
+	memcpy(&dst_msgExtendedFeedback->body.jointFeedbackEx.jointTrajPtData[groupIndex],
+		   &src_msgFeedback->body.jointFeedback,
+		   sizeof(SmBodyJointFeedback));
+	
+	return(dst_msgExtendedFeedback->prefix.length + sizeof(SmPrefix));
+}
+
 
 // Creates a simple message of type MOTO_MOTION_REPLY to reply to a received message 
 // result code and subcode indication result of the processing of the received message
 // 06/12/2013: Modified to fix reply to ROS_MSG_JOINT_TRAJ_PT_FULL message
-int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg)
+int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg, int ctrlGrp)
 {
 	//initialize memory
 	memset(replyMsg, 0x00, sizeof(SimpleMsg));
@@ -109,15 +138,21 @@ int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, Si
 	// set reply body
 	if(receiveMsg->header.msgType == ROS_MSG_MOTO_MOTION_CTRL)
 	{
-		replyMsg->body.motionReply.groupNo = receiveMsg->body.motionCtrl.groupNo;
+		replyMsg->body.motionReply.groupNo = ctrlGrp;
 		replyMsg->body.motionReply.sequence = receiveMsg->body.motionCtrl.sequence;
 		replyMsg->body.motionReply.command = receiveMsg->body.motionCtrl.command;
 	}
 	else if(receiveMsg->header.msgType == ROS_MSG_JOINT_TRAJ_PT_FULL)
 	{
-		replyMsg->body.motionReply.groupNo = receiveMsg->body.jointTrajData.groupNo;
+		replyMsg->body.motionReply.groupNo = ctrlGrp;
 		replyMsg->body.motionReply.sequence = receiveMsg->body.jointTrajData.sequence;
 		replyMsg->body.motionReply.command = ROS_MSG_JOINT_TRAJ_PT_FULL;
+	}
+	else if (receiveMsg->header.msgType == ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX)
+	{
+		replyMsg->body.motionReply.groupNo = ctrlGrp;
+		replyMsg->body.motionReply.sequence = receiveMsg->body.jointTrajDataEx.sequence;
+		replyMsg->body.motionReply.command = ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX;
 	}
 	else
 	{

@@ -25,7 +25,7 @@
     <DebugPass>99999999</DebugPass>
   </Debug>
   <Build>
-    <CompileCommand>mpbuilder\bin\ccpentium.exe -mcpu=pentiumiii -march=p3 -nostdlib -fno-builtin -fno-defer-pop -W -Werror-implicit-function-declaration -Wreturn-type -Wunused -Wuninitialized -Wunreachable-code -I"~ProjectDir~" -I"~IncludeDir~" -DCPU=PENTIUM4 -fvolatile -O -c "~FilePath~" -o "~OutputPath~"</CompileCommand>
+    <CompileCommand>mpbuilder\bin\ccpentium.exe -mcpu=pentiumiii -march=p3 -nostdlib -fno-builtin -fno-defer-pop -W -Werror-implicit-function-declaration -Wreturn-type -Wunused -Wuninitialized -Wunreachable-code -I"~ProjectDir~" -I"~IncludeDir~" -DCPU=PENTIUM4 -DDX100 -fvolatile -O -c "~FilePath~" -o "~OutputPath~"</CompileCommand>
     <BuildCommand>mpbuilder\bin\ccpentium -nostdlib -r -Wl,-X -Wl~FileList~ -o "~OutputPath~"</BuildCommand>
     <IncludeDir>C:\Program Files (x86)\Yaskawa\MotoPlusIDE_DX\mpbuilder\inc</IncludeDir>
   </Build>
