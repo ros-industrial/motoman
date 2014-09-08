@@ -127,12 +127,12 @@ set_target_properties(motoman_motion_streaming_interface_bswap
   PROPERTIES OUTPUT_NAME motion_streaming_interface_bswap
   PREFIX "")
 
-add_executable(joint_trajectory_action2
-  src/industrial_robot_client/generic_joint_trajectory_action2_node.cpp
-  src/industrial_robot_client/joint_trajectory_action2.cpp)
-target_link_libraries(joint_trajectory_action2
+add_executable(joint_trajectory_action
+  src/joint_trajectory_action_node.cpp
+  src/industrial_robot_client/joint_trajectory_action.cpp)
+target_link_libraries(joint_trajectory_action
   industrial_robot_client ${catkin_LIBRARIES})
-add_dependencies(joint_trajectory_action2 industrial_robot_client_gencpp)
+add_dependencies(joint_trajectory_action industrial_robot_client_gencpp)
 #############
 ## Install ##
 #############
@@ -143,7 +143,7 @@ install(TARGETS
     motoman_motion_streaming_interface
     motoman_robot_state_bswap
     motoman_motion_streaming_interface_bswap
-    joint_trajectory_action2
+    joint_trajectory_action
 
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
