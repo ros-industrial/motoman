@@ -9,11 +9,11 @@
     <arg name="use_bswap" />
 	
 	<!-- Version of the driver, concerning multi-groups support -->
-	<arg name="version_0.x" />
+	<arg name="version0" />
 
 	<!-- put them on the parameter server -->
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
-	<param name="version_0.x" type="bool" value="$(arg version_0.x)" />
+	<param name="version0" type="bool" value="$(arg version0)" />
 
 	<!-- load the correct version of the robot state node -->
 	<node if="$(arg use_bswap)" name="joint_state" 
