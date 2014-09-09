@@ -57,10 +57,10 @@ bool RobotStateInterface::init(std::string default_ip, int default_port, bool ve
   std::string ip;
   int port;
 
-  this->version_0_ = version_0;
   // override IP/port with ROS params, if available
   ros::param::param<std::string>("robot_ip_address", ip, default_ip);
   ros::param::param<int>("~port", port, default_port);
+  ros::param::param<bool>("version0", this->version_0_, version_0);
 
   // check for valid parameter values
   if (ip.empty())

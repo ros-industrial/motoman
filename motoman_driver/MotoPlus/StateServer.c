@@ -98,29 +98,45 @@ void Ros_StateServer_StartNewConnection(Controller* controller, int sd)
 //-----------------------------------------------------------------------
 void Ros_StateServer_SendState(Controller* controller)
 {
-	BOOL bHasConnections = TRUE;
+	BOOL bHasConnections;
 	int groupNo;
 	SimpleMsg sendMsg;
-	int msgSize;
+	SimpleMsg sendMsgFEx;
+	int msgSize, fexMsgSize;
+	BOOL bOkToSendExFeedback;
+
+	bHasConnections = TRUE;
 	
 	printf("Starting State Server Send State task\r\n");
 	printf("Controller number of group = %d\r\n", controller->numGroup);
 	
 	while(bHasConnections)
 	{
-		// Send position for each control group
+		Ros_SimpleMsg_JointFeedbackEx_Init(controller->numGroup, &sendMsgFEx);
+		bOkToSendExFeedback = TRUE;
+
+		// Send feedback position for each control group
 		for(groupNo=0; groupNo < controller->numGroup; groupNo++)
 		{
 			msgSize = Ros_SimpleMsg_JointFeedback(controller->ctrlGroups[groupNo], &sendMsg);
+			fexMsgSize = Ros_SimpleMsg_JointFeedbackEx_Build(groupNo, &sendMsg, &sendMsgFEx);
 			if(msgSize > 0)
 			{
-				bHasConnections = Ros_StateServer_SendMsgToAllClient(controller, &sendMsg, msgSize);
+				if (bHasConnections)
+					bHasConnections = Ros_StateServer_SendMsgToAllClient(controller, &sendMsg, msgSize);
 			}
 			else
 			{
 				printf("Ros_SimpleMsg_JointFeedback returned a message size of 0\r\n");
+				bOkToSendExFeedback = FALSE;
 			}
 		}
+
+		if (controller->numGroup < 2) //only send the ROS_MSG_MOTO_JOINT_FEEDBACK_EX message if we have multiple control groups
+			bOkToSendExFeedback = FALSE;
+
+		if (bHasConnections && bOkToSendExFeedback) //send extended-feedback message
+			bHasConnections = Ros_StateServer_SendMsgToAllClient(controller, &sendMsgFEx, fexMsgSize);
 
 		// Send controller/robot status
 		if(bHasConnections)

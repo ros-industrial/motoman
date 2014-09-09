@@ -27,12 +27,13 @@
 * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.
-*/ 
+*/
 
 #ifndef SIMPLE_MSG_H
 #define SIMPLE_MSG_H
 
 #define ROS_MAX_JOINT 10
+#define MOT_MAX_GR	4
 
 //----------------
 // Prefix Section
@@ -53,7 +54,13 @@ typedef enum
 	ROS_MSG_JOINT_TRAJ_PT_FULL = 14,
 	ROS_MSG_JOINT_FEEDBACK = 15,
 	ROS_MSG_MOTO_MOTION_CTRL = 2001,
-	ROS_MSG_MOTO_MOTION_REPLY = 2002	
+	ROS_MSG_MOTO_MOTION_REPLY = 2002,
+	ROS_MSG_MOTO_READ_SINGLE_IO = 2003,
+	ROS_MSG_MOTO_READ_SINGLE_IO_REPLY = 2004,
+	ROS_MSG_MOTO_WRITE_SINGLE_IO = 2005,
+	ROS_MSG_MOTO_WRITE_SINGLE_IO_REPLY = 2006,
+	ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016,
+	ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017
 } SmMsgType;
 
 
@@ -61,7 +68,7 @@ typedef enum
 {
     ROS_COMM_INVALID = 0,
 	ROS_COMM_TOPIC = 1,
-	ROS_COMM_SERVICE_RESQUEST = 2,
+	ROS_COMM_SERVICE_REQUEST = 2,
 	ROS_COMM_SERVICE_REPLY = 3
 } SmCommType;
 
@@ -74,18 +81,19 @@ typedef enum
 } SmReplyType;
 
 
-typedef struct
+struct _SmHeader
 {
 	SmMsgType msgType;
 	SmCommType commType;
 	SmReplyType replyType;
-} SmHeader;
+}  __attribute__((__packed__));
+typedef struct _SmHeader		SmHeader;
 
 //--------------
 // Body Section
 //--------------
 
-typedef struct					// ROS_MSG_ROBOT_STATUS = 13
+struct _SmBodyRobotStatus		// ROS_MSG_ROBOT_STATUS = 13
 {
 	int drives_powered;			// Servo Power: -1=Unknown, 1=ON, 0=OFF
 	int e_stopped;				// Controller E-Stop state: -1=Unknown, 1=True(ON), 0=False(OFF)
@@ -94,10 +102,10 @@ typedef struct					// ROS_MSG_ROBOT_STATUS = 13
 	int in_motion;				// Is currently executing a motion command:  -1=Unknown, 1=True, 0=False 
 	int mode;  					// Controller/Pendant mode: -1=Unknown, 1=Manual(TEACH), 2=Auto(PLAY)
 	int motion_possible;		// Is the controller ready to receive motion: -1=Unknown, 1=ENABLED, 0=DISABLED 
-} SmBodyRobotStatus;  	
+}  __attribute__((__packed__));  	
+typedef struct _SmBodyRobotStatus	SmBodyRobotStatus;
 
-
-typedef struct					// ROS_MSG_JOINT_TRAJ_PT_FULL = 14
+struct _SmBodyJointTrajPtFull	// ROS_MSG_JOINT_TRAJ_PT_FULL = 14
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
 	int sequence;				// Index of point in trajectory; 0 = Initial trajectory point, which should match the robot current position.
@@ -106,10 +114,10 @@ typedef struct					// ROS_MSG_JOINT_TRAJ_PT_FULL = 14
 	float pos[ROS_MAX_JOINT];	// Desired joint positions in radian.  Base to Tool joint order  
 	float vel[ROS_MAX_JOINT];	// Desired joint velocities in radian/sec.  
 	float acc[ROS_MAX_JOINT];	// Desired joint accelerations in radian/sec^2.
-} SmBodyJointTrajPtFull;  	
+} __attribute__((__packed__));  	
+typedef struct _SmBodyJointTrajPtFull	SmBodyJointTrajPtFull;
 
-
-typedef struct					// ROS_MSG_JOINT_FEEDBACK = 15
+struct _SmBodyJointFeedback		// ROS_MSG_JOINT_FEEDBACK = 15
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
 	int validFields;			// Bit-mask indicating which “optional” fields are filled with data. 1=time, 2=position, 4=velocity, 8=acceleration
@@ -117,8 +125,8 @@ typedef struct					// ROS_MSG_JOINT_FEEDBACK = 15
 	float pos[ROS_MAX_JOINT];	// Desired joint positions in radian.  Base to Tool joint order  
 	float vel[ROS_MAX_JOINT];	// Desired joint velocities in radian/sec.  
 	float acc[ROS_MAX_JOINT];	// Desired joint accelerations in radian/sec^2.
-} SmBodyJointFeedback; 
-
+} __attribute__((__packed__)); 
+typedef struct _SmBodyJointFeedback		SmBodyJointFeedback;
 
 typedef enum 
 {
@@ -131,14 +139,14 @@ typedef enum
 } SmCommandType;
 
 
-typedef struct					// ROS_MSG_MOTO_MOTION_CTRL = 2011
+struct _SmBodyMotoMotionCtrl	// ROS_MSG_MOTO_MOTION_CTRL = 2011
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
 	int sequence;				// Optional message tracking number that will be echoed back in the response.
 	SmCommandType command;		// Desired command
 	float data[ROS_MAX_JOINT];	// Command data - for future use  
-} SmBodyMotoMotionCtrl; 
-
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoMotionCtrl	SmBodyMotoMotionCtrl;
 
 typedef enum 
 {
@@ -187,7 +195,7 @@ typedef enum
 } SmNotReadySubcode;
 	
 
-typedef struct					// ROS_MSG_MOTO_MOTION_REPLY = 2012
+struct _SmBodyMotoMotionReply	// ROS_MSG_MOTO_MOTION_REPLY = 2012
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
 	int sequence;				// Optional message tracking number that will be echoed back in the response.
@@ -195,7 +203,62 @@ typedef struct					// ROS_MSG_MOTO_MOTION_REPLY = 2012
 	SmResultType result;		// High level result code
 	int subcode;				// More detailed result code (optional)
 	float data[ROS_MAX_JOINT];	// Reply data - for future use 
-} SmBodyMotoMotionReply; 
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoMotionReply	SmBodyMotoMotionReply;
+
+struct _SmBodyJointTrajPtExData
+{
+	int groupNo;  				// Robot/group ID;  0 = 1st robot 
+	int validFields;			// Bit-mask indicating which “optional” fields are filled with data. 1=time, 2=position, 4=velocity, 8=acceleration
+	float time;					// Timestamp associated with this trajectory point; Units: in seconds 
+	float pos[ROS_MAX_JOINT];	// Desired joint positions in radian.  Base to Tool joint order  
+	float vel[ROS_MAX_JOINT];	// Desired joint velocities in radian/sec.  
+	float acc[ROS_MAX_JOINT];	// Desired joint accelerations in radian/sec^2.
+} __attribute__((__packed__));  	
+typedef struct _SmBodyJointTrajPtExData	SmBodyJointTrajPtExData;
+
+struct _SmBodyJointTrajPtFullEx
+{
+	int numberOfValidGroups;
+	int sequence;
+	SmBodyJointTrajPtExData	jointTrajPtData[MOT_MAX_GR];
+} __attribute__((__packed__)); 
+typedef struct _SmBodyJointTrajPtFullEx	SmBodyJointTrajPtFullEx;
+
+
+struct _SmBodyJointFeedbackEx
+{
+	int numberOfValidGroups;
+	SmBodyJointFeedback	jointTrajPtData[MOT_MAX_GR];
+} __attribute__((__packed__)); 
+typedef struct _SmBodyJointFeedbackEx	SmBodyJointFeedbackEx;
+
+
+struct _SmBodyMotoReadSingleIO
+{
+	UINT32 ioAddress;
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoReadSingleIO	SmBodyMotoReadSingleIO;
+
+struct _SmBodyMotoReadSingleIOReply
+{
+	UINT32 value;
+	UINT32 resultCode;
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoReadSingleIOReply	SmBodyMotoReadSingleIOReply;
+
+struct _SmBodyMotoWriteSingleIO
+{
+	UINT32 ioAddress;
+	UINT32 ioValue;
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoWriteSingleIO	SmBodyMotoWriteSingleIO;
+
+struct _SmBodyMotoWriteSingleIOReply
+{
+	UINT32 resultCode;
+} __attribute__((__packed__)); 
+typedef struct _SmBodyMotoWriteSingleIOReply	SmBodyMotoWriteSingleIOReply;
 
 
 typedef union
@@ -205,6 +268,12 @@ typedef union
 	SmBodyJointFeedback	jointFeedback;
 	SmBodyMotoMotionCtrl motionCtrl;
 	SmBodyMotoMotionReply motionReply;
+	SmBodyJointTrajPtFullEx jointTrajDataEx;
+	SmBodyJointFeedbackEx jointFeedbackEx;
+	SmBodyMotoReadSingleIO readSingleIo;
+	SmBodyMotoReadSingleIOReply readSingleIoReply;
+	SmBodyMotoWriteSingleIO writeSingleIo;
+	SmBodyMotoWriteSingleIOReply writeSingleIoReply;
 } SmBody;
 
 
@@ -216,7 +285,7 @@ struct _SimpleMsg
 	SmPrefix prefix;
 	SmHeader header;
 	SmBody body;
-}  __attribute__((__packed__));
+} __attribute__((__packed__));
 typedef struct _SimpleMsg	SimpleMsg;
 
 
@@ -225,10 +294,13 @@ typedef struct _SimpleMsg	SimpleMsg;
 //-------------------
 
 extern int Ros_SimpleMsg_JointFeedback(CtrlGroup* ctrlGroup, SimpleMsg* sendMsg);
+extern void Ros_SimpleMsg_JointFeedbackEx_Init(int numberOfGroups, SimpleMsg* sendMsg);
+extern int Ros_SimpleMsg_JointFeedbackEx_Build(int groupIndex, SimpleMsg* src_msgFeedback, SimpleMsg* dst_msgExtendedFeedback);
 
-extern int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg);
+extern int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg, int ctrlGrp);
 
-//#define DEBUG
+//Uncomment the DEBUG definition to enable debug-messages at runtime
+// #define DEBUG  
 
 #ifdef DEBUG
 // function to dump data structure for debugging

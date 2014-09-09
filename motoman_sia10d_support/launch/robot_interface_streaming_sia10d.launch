@@ -13,12 +13,12 @@
 	
   <!-- controller: Controller name (fs100 or dx100) -->
   <arg name="controller"/>
-  <arg name="version_0.x"/>
+  <arg name="version0"/>
 
 	<rosparam command="load" file="$(find motoman_sia10d_support)/config/joint_names_sia10d.yaml" />
 
 	<include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
-		<arg name="version_0.x"   value="$(arg version_0.x)" />
+		<arg name="version0"   value="$(arg version0)" />
 	</include>
 </launch>

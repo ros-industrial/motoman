@@ -31,7 +31,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <motoman_driver/industrial_robot_client/joint_trajectory_action2.h>
+#include <motoman_driver/industrial_robot_client/joint_trajectory_action.h>
 #include <industrial_robot_client/utils.h>
 #include <industrial_utils/param_utils.h>
 #include <industrial_utils/utils.h>
@@ -41,16 +41,16 @@
 
 namespace industrial_robot_client
 {
-namespace joint_trajectory_action2
+namespace joint_trajectory_action
 {
 
-const double JointTrajectoryAction2::WATCHD0G_PERIOD_ = 1.0;
-const double JointTrajectoryAction2::DEFAULT_GOAL_THRESHOLD_ = 0.01;
+const double JointTrajectoryAction::WATCHD0G_PERIOD_ = 1.0;
+const double JointTrajectoryAction::DEFAULT_GOAL_THRESHOLD_ = 0.01;
 
-JointTrajectoryAction2::JointTrajectoryAction2() :
+JointTrajectoryAction::JointTrajectoryAction() :
   action_server_(node_, "joint_trajectory_action",
-                 boost::bind(&JointTrajectoryAction2::goalCB, this, _1),
-                 boost::bind(&JointTrajectoryAction2::cancelCB, this, _1), false)
+                 boost::bind(&JointTrajectoryAction::goalCB, this, _1),
+                 boost::bind(&JointTrajectoryAction::cancelCB, this, _1), false)
 {
   ros::NodeHandle pn("~");
 
@@ -131,20 +131,20 @@ JointTrajectoryAction2::JointTrajectoryAction2() :
     actionServer_ = new actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction>(
       node_, joint_path_action_name + "/joint_trajectory_action" , false);
     actionServer_->registerGoalCallback(
-      boost::bind(&JointTrajectoryAction2::goalCB,
+      boost::bind(&JointTrajectoryAction::goalCB,
                   this, _1, group_number_int));
     actionServer_->registerCancelCallback(
-      boost::bind(&JointTrajectoryAction2::cancelCB,
+      boost::bind(&JointTrajectoryAction::cancelCB,
                   this, _1, group_number_int));
 
     pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
                                 joint_path_action_name + "/joint_path_command", 1);
     sub_trajectory_state_  = this->node_.subscribe<control_msgs::FollowJointTrajectoryFeedback>(
                                joint_path_action_name + "/feedback_states", 1,
-                               boost::bind(&JointTrajectoryAction2::controllerStateCB,
+                               boost::bind(&JointTrajectoryAction::controllerStateCB,
                                            this, _1, group_number_int));
     sub_robot_status_ = node_.subscribe(
-                          "robot_status", 1, &JointTrajectoryAction2::robotStatusCB, this);
+                          "robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
 
     pub_trajectories_[group_number_int] = pub_trajectory_command_;
     sub_trajectories_[group_number_int] = (sub_trajectory_state_);
@@ -156,7 +156,7 @@ JointTrajectoryAction2::JointTrajectoryAction2() :
 
     this->watchdog_timer_map_[group_number_int] = node_.createTimer(
           ros::Duration(WATCHD0G_PERIOD_), boost::bind(
-            &JointTrajectoryAction2::watchdog, this, _1, group_number_int));
+            &JointTrajectoryAction::watchdog, this, _1, group_number_int));
   }
 
   pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
@@ -167,17 +167,17 @@ JointTrajectoryAction2::JointTrajectoryAction2() :
   action_server_.start();
 }
 
-JointTrajectoryAction2::~JointTrajectoryAction2()
+JointTrajectoryAction::~JointTrajectoryAction()
 {
 }
 
-void JointTrajectoryAction2::robotStatusCB(
+void JointTrajectoryAction::robotStatusCB(
   const industrial_msgs::RobotStatusConstPtr &msg)
 {
   last_robot_status_ = msg;  // caching robot status for later use.
 }
 
-void JointTrajectoryAction2::watchdog(const ros::TimerEvent &e)
+void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
 {
   // Some debug logging
   if (!last_trajectory_state_)
@@ -212,7 +212,7 @@ void JointTrajectoryAction2::watchdog(const ros::TimerEvent &e)
   trajectory_state_recvd_ = false;
 }
 
-void JointTrajectoryAction2::watchdog(const ros::TimerEvent &e, int group_number)
+void JointTrajectoryAction::watchdog(const ros::TimerEvent &e, int group_number)
 {
   // Some debug logging
   if (!last_trajectory_state_map_[group_number])
@@ -246,7 +246,7 @@ void JointTrajectoryAction2::watchdog(const ros::TimerEvent &e, int group_number
   trajectory_state_recvd_ = false;
 }
 
-void JointTrajectoryAction2::goalCB(JointTractoryActionServer::GoalHandle & gh)
+void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh)
 {
   gh.setAccepted();
 
@@ -361,15 +361,15 @@ void JointTrajectoryAction2::goalCB(JointTractoryActionServer::GoalHandle & gh)
   this->pub_trajectory_command_.publish(dyn_traj);
 }
 
-void JointTrajectoryAction2::cancelCB(JointTractoryActionServer::GoalHandle & gh)
+void JointTrajectoryAction::cancelCB(JointTractoryActionServer::GoalHandle & gh)
 {
   // The interface is provided, but it is recommended to use
-  //  void JointTrajectoryAction2::cancelCB(JointTractoryActionServer::GoalHandle & gh, int group_number)
+  //  void JointTrajectoryAction::cancelCB(JointTractoryActionServer::GoalHandle & gh, int group_number)
 
   ROS_DEBUG("Received action cancel request");
 }
 
-void JointTrajectoryAction2::goalCB(JointTractoryActionServer::GoalHandle & gh, int group_number)
+void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh, int group_number)
 {
   if (!gh.getGoal()->trajectory.points.empty())
   {
@@ -485,7 +485,7 @@ void JointTrajectoryAction2::goalCB(JointTractoryActionServer::GoalHandle & gh, 
   }
 }
 
-void JointTrajectoryAction2::cancelCB(
+void JointTrajectoryAction::cancelCB(
   JointTractoryActionServer::GoalHandle & gh, int group_number)
 {
   ROS_DEBUG("Received action cancel request");
@@ -506,7 +506,7 @@ void JointTrajectoryAction2::cancelCB(
   }
 }
 
-void JointTrajectoryAction2::controllerStateCB(
+void JointTrajectoryAction::controllerStateCB(
   const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg, int robot_id)
 {
   ROS_DEBUG("Checking controller state feedback");
@@ -571,7 +571,7 @@ void JointTrajectoryAction2::controllerStateCB(
   }
 }
 
-void JointTrajectoryAction2::controllerStateCB(
+void JointTrajectoryAction::controllerStateCB(
   const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg)
 {
   ROS_DEBUG("Checking controller state feedback");
@@ -635,7 +635,7 @@ void JointTrajectoryAction2::controllerStateCB(
   }
 }
 
-void JointTrajectoryAction2::abortGoal()
+void JointTrajectoryAction::abortGoal()
 {
   // Stops the controller.
   trajectory_msgs::JointTrajectory empty;
@@ -646,7 +646,7 @@ void JointTrajectoryAction2::abortGoal()
   has_active_goal_ = false;
 }
 
-void JointTrajectoryAction2::abortGoal(int robot_id)
+void JointTrajectoryAction::abortGoal(int robot_id)
 {
   // Stops the controller.
   motoman_msgs::DynamicJointTrajectory empty;
@@ -657,7 +657,7 @@ void JointTrajectoryAction2::abortGoal(int robot_id)
   has_active_goal_map_[robot_id] = false;
 }
 
-bool JointTrajectoryAction2::withinGoalConstraints(
+bool JointTrajectoryAction::withinGoalConstraints(
   const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
   const trajectory_msgs::JointTrajectory & traj)
 {
@@ -686,7 +686,7 @@ bool JointTrajectoryAction2::withinGoalConstraints(
   return rtn;
 }
 
-bool JointTrajectoryAction2::withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
+bool JointTrajectoryAction::withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
     const motoman_msgs::DynamicJointTrajectory & traj)
 {
   bool rtn = false;
@@ -718,7 +718,7 @@ bool JointTrajectoryAction2::withinGoalConstraints(const control_msgs::FollowJoi
   return rtn;
 }
 
-bool JointTrajectoryAction2::withinGoalConstraints(
+bool JointTrajectoryAction::withinGoalConstraints(
   const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
   const trajectory_msgs::JointTrajectory & traj, int robot_id)
 {
@@ -749,7 +749,7 @@ bool JointTrajectoryAction2::withinGoalConstraints(
   return rtn;
 }
 
-}  // namespace joint_trajectory_action2
+}  // namespace joint_trajectory_action
 }  // namespace industrial_robot_client
 
 

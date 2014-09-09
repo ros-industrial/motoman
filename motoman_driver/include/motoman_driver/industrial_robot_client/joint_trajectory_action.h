@@ -30,8 +30,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION2_H
-#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION2_H
+#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H
+#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H
 
 #include <map>
 #include <vector>
@@ -48,23 +48,23 @@
 #include <motoman_msgs/DynamicJointTrajectory.h>
 namespace industrial_robot_client
 {
-namespace joint_trajectory_action2
+namespace joint_trajectory_action
 {
 
-class JointTrajectoryAction2
+class JointTrajectoryAction
 {
 public:
   /**
    * \brief Constructor
    *
    */
-  JointTrajectoryAction2();
+  JointTrajectoryAction();
 
   /**
    * \brief Destructor
    *
    */
-  ~JointTrajectoryAction2();
+  ~JointTrajectoryAction();
 
   /**
      * \brief Begin processing messages and publishing topics.
@@ -288,8 +288,8 @@ private:
                              const motoman_msgs::DynamicJointTrajectory & traj);
 };
 
-}  // namespace joint_trajectory_action2
+}  // namespace joint_trajectory_action
 }  // namespace industrial_robot_client
 
-#endif /* MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION2_H */
+#endif /* MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H */
 
