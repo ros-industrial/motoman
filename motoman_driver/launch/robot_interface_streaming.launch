@@ -15,8 +15,8 @@
     robot_interface_streaming.launch robot_ip:=<value> use_bswap:=<true,false>
 -->
 
-	<!-- version_0.x: Older client without multi groups-support -->
-	<arg name="version_0.x" />
+	<!-- version0: Older client without multi groups-support -->
+	<arg name="version0" />
 	
 	<!-- robot_ip: IP-address of the robot's socket-messaging server -->
 	<arg name="robot_ip" />
@@ -27,7 +27,7 @@
 	<!-- copy the specified parameters to the Parameter Server, for 
 	     use by nodes below -->
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
-	<param name="version_0.x" type="bool" value="$(arg version_0.x)" />
+	<param name="version0" type="bool" value="$(arg version0)" />
 
 	<!-- robot_state: publishes joint positions and robot-state data
 	     (from socket connection to robot)
@@ -35,7 +35,7 @@
 	<include file="$(find motoman_driver)/launch/robot_state.launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
-		<arg name="version_0.x"  value="$(arg version_0.x)" />
+		<arg name="version0"  value="$(arg version0)" />
 	</include>
 
 	<!-- motion_streaming_interface: sends robot motion commands by 
@@ -44,15 +44,15 @@
 	<include file="$(find motoman_driver)/launch/motion_streaming_interface.launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
-		<arg name="version_0.x"  value="$(arg version_0.x)" />
+		<arg name="version0"  value="$(arg version0)" />
 	</include>
 
 	<!-- joint_trajectory_action: provides actionlib interface for 
 	     high-level robot control
 	-->
 	
-	<node if="$(arg version_0.x)" name="joint_trajectory_action"
+	<node if="$(arg version0)" name="joint_trajectory_action"
 		pkg="industrial_robot_client" type="joint_trajectory_action" />
-	<node unless="$(arg version_0.x)" name="joint_trajectory_action"
-		pkg="motoman_driver" type="joint_trajectory_action" />
+	<node unless="$(arg version0)" name="joint_trajectory_action"
+		pkg="motoman_driver" type="motoman_driver_joint_trajectory_action" />
 </launch>

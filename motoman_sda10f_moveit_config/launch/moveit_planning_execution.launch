@@ -9,7 +9,7 @@
   <arg name="sim" default="false" />
   <arg name="robot_ip" unless="$(arg sim)" />
   <arg name="controller" unless="$(arg sim)" />
-  <arg name="version_0.x" unless="$(arg sim)" />
+  <arg name="version0" unless="$(arg sim)" />
  
   <!-- load the robot_description parameter before launching ROS-I nodes -->
   <include file="$(find motoman_sda10f_moveit_config)/launch/planning_context.launch" >
@@ -28,7 +28,7 @@
     <include file="$(find motoman_sda10f_support)/launch/robot_interface_streaming_sda10f.launch" >
       <arg name="robot_ip" value="$(arg robot_ip)"/>
       <arg name="controller" value="$(arg controller)"/>
-      <arg name="version_0.x" value="$(arg version_0.x)" />
+      <arg name="version0" value="$(arg version0)" />
     </include>
   </group>
 
