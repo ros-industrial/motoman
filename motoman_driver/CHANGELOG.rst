@@ -2,6 +2,10 @@
 Changelog for package motoman_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.2.5 (2015-03-10)
+------------------
+* Fixed issue with re-connecting to the State Server after closing multiple concurrent connections.
+
 1.2.4 (2014-08-22)
 ------------------
 * Changed message ID for following two message types:
