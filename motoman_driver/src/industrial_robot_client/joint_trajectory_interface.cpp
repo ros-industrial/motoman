@@ -85,6 +85,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
 {
   if (this->version_0_)
   {
+    ROS_ERROR("motoman driver version 0");
     std::vector<std::string> joint_names;
     if (!getJointNames("controller_joint_names", "robot_description", joint_names))
       ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
@@ -94,6 +95,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
 
   else
   {
+    ROS_ERROR("motoman driver version not-0");
     std::map<int, RobotGroup> robot_groups;
 
     std::string value;
@@ -785,7 +787,10 @@ bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajecto
 void JointTrajectoryInterface::jointStateCB(
   const sensor_msgs::JointStateConstPtr &msg)
 {
-  this->cur_joint_pos_ = *msg;
+  if(msg->name.size() > 0 && msg->name[0] == all_joint_names_[0])
+  {
+    this->cur_joint_pos_ = *msg;
+  }
 }
 
 void JointTrajectoryInterface::jointStateCB(
