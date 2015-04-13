@@ -62,6 +62,7 @@ add_library(motoman_industrial_robot_client ${CLIENT_SRC_FILES})
 target_link_libraries(motoman_industrial_robot_client
   industrial_robot_client
   industrial_utils)
+add_dependencies(motoman_industrial_robot_client ${catkin_EXPORTED_TARGETS})
 
 # Robot state node
 add_executable(motoman_robot_state
@@ -102,6 +103,7 @@ set_target_properties(motoman_industrial_robot_client PROPERTIES COMPILE_DEFINIT
 target_link_libraries(motoman_industrial_robot_client_bswap
   industrial_robot_client_bswap
   industrial_utils)
+add_dependencies(motoman_industrial_robot_client_bswap ${catkin_EXPORTED_TARGETS})
 
 # Robot state node
 add_executable(motoman_robot_state_bswap
@@ -132,7 +134,7 @@ add_executable(${PROJECT_NAME}_joint_trajectory_action
   src/industrial_robot_client/joint_trajectory_action.cpp)
 target_link_libraries(${PROJECT_NAME}_joint_trajectory_action
   industrial_robot_client ${catkin_LIBRARIES})
-add_dependencies(${PROJECT_NAME}_joint_trajectory_action industrial_robot_client_gencpp)
+add_dependencies(${PROJECT_NAME}_joint_trajectory_action ${catkin_EXPORTED_TARGETS})
 #############
 ## Install ##
 #############
