@@ -281,7 +281,7 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh)
       {
         if (gh.getGoal()->trajectory.points[i].positions.empty())
         {
-          std::vector<double> positions(num_joints, 0.0);
+          std::vector<double> positions = last_trajectory_state_map_.at(rbt_idx)->actual.positions;
           dyn_group.positions = positions;
         }
         else
@@ -293,7 +293,7 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh)
 
         if (gh.getGoal()->trajectory.points[i].velocities.empty())
         {
-          std::vector<double> velocities(num_joints, 0.0);
+          std::vector<double> velocities = last_trajectory_state_map_.at(rbt_idx)->actual.velocities;
           dyn_group.velocities = velocities;
         }
         else
@@ -305,7 +305,7 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh)
 
         if (gh.getGoal()->trajectory.points[i].accelerations.empty())
         {
-          std::vector<double> accelerations(num_joints, 0.0);
+          std::vector<double> accelerations = last_trajectory_state_map_.at(rbt_idx)->actual.accelerations;
           dyn_group.accelerations = accelerations;
         }
         else
@@ -316,7 +316,7 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh)
             + ros_idx + robot_groups_[rbt_idx].get_joint_names().size());
         if (gh.getGoal()->trajectory.points[i].effort.empty())
         {
-          std::vector<double> effort(num_joints, 0.0);
+          std::vector<double> effort = last_trajectory_state_map_.at(rbt_idx)->actual.effort;
           dyn_group.effort = effort;
         }
         else
@@ -333,10 +333,10 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh)
       // Generating message for groups that were not present in the trajectory message
       else
       {
-        std::vector<double> positions(num_joints, 0.0);
-        std::vector<double> velocities(num_joints, 0.0);
-        std::vector<double> accelerations(num_joints, 0.0);
-        std::vector<double> effort(num_joints, 0.0);
+        std::vector<double> positions=last_trajectory_state_map_.at(rbt_idx)->actual.positions;
+        std::vector<double> velocities = last_trajectory_state_map_.at(rbt_idx)->actual.velocities;
+        std::vector<double> accelerations = last_trajectory_state_map_.at(rbt_idx)->actual.accelerations;
+        std::vector<double> effort = last_trajectory_state_map_.at(rbt_idx)->actual.effort;
 
         dyn_group.positions = positions;
         dyn_group.velocities = velocities;
@@ -357,6 +357,9 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh)
   dyn_traj.header.stamp = ros::Time::now();
   // Publishing the joint names for the 4 groups
   dyn_traj.joint_names = all_joint_names_;
+
+  active_goal_ = gh;
+  has_active_goal_ = true;
 
   this->pub_trajectory_command_.publish(dyn_traj);
 }
@@ -413,7 +416,7 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh, i
 
           if (gh.getGoal()->trajectory.points[i].positions.empty())
           {
-            std::vector<double> positions(num_joints, 0.0);
+            std::vector<double> positions = last_trajectory_state_map_[group_number]->actual.positions;
             dyn_group.positions = positions;
           }
           else
@@ -421,25 +424,25 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle & gh, i
 
           if (gh.getGoal()->trajectory.points[i].velocities.empty())
           {
-            std::vector<double> velocities(num_joints, 0.0);
+            std::vector<double> velocities = last_trajectory_state_map_[group_number]->actual.velocities;
             dyn_group.velocities = velocities;
           }
           else
             dyn_group.velocities = gh.getGoal()->trajectory.points[i].velocities;
           if (gh.getGoal()->trajectory.points[i].accelerations.empty())
           {
-            std::vector<double> accelerations(num_joints, 0.0);
+            std::vector<double> accelerations = last_trajectory_state_map_[group_number]->actual.accelerations;
             dyn_group.accelerations = accelerations;
           }
           else
             dyn_group.accelerations = gh.getGoal()->trajectory.points[i].accelerations;
           if (gh.getGoal()->trajectory.points[i].effort.empty())
           {
-            std::vector<double> effort(num_joints, 0.0);
+            std::vector<double> effort = last_trajectory_state_map_[group_number]->actual.effort;
             dyn_group.effort = effort;
           }
           else
-            dyn_group.effort = gh.getGoal()->trajectory.points[i].effort;
+          dyn_group.effort = gh.getGoal()->trajectory.points[i].effort;
           dyn_group.time_from_start = gh.getGoal()->trajectory.points[i].time_from_start;
           dyn_group.group_number = group_number;
           dyn_group.num_joints = robot_groups_[group_number].get_joint_names().size();
