@@ -785,7 +785,10 @@ bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajecto
 void JointTrajectoryInterface::jointStateCB(
   const sensor_msgs::JointStateConstPtr &msg)
 {
-  this->cur_joint_pos_ = *msg;
+  if(msg->name.size() > 0 && msg->name[0] == all_joint_names_[0])
+  {
+    this->cur_joint_pos_ = *msg;
+  }
 }
 
 void JointTrajectoryInterface::jointStateCB(
