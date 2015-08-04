@@ -50,7 +50,7 @@ set(CLIENT_SRC_FILES
 
 
 #-------------------------------------------------------------
-# fs100 uses same byte-ordering as most i386-based PCs
+# dx100 uses same byte-ordering as most i386-based PCs
 
 # Simple message library
 add_library(motoman_simple_message ${MSG_SRC_FILES})
