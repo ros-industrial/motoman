@@ -154,6 +154,8 @@ std::string MotionReply::getSubcodeString(shared_int code)
     return "MotoRos not started";
   case MotionReplySubcodes::NotReady::WAITING_ROS:
     return "Waiting on ROS";
+  case MotionReplySubcodes::NotReady::SKILLSEND:
+    return "Waiting on SkillSend";
 
   default:
     return "Unknown";
