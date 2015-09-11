@@ -137,7 +137,12 @@
 			<child link="${prefix}link_u"/>
 			<origin xyz="0 0 0.3100" rpy="0 0 0"/>
 			<axis xyz="0 -1 0" />
-			<limit lower="-2.3736" upper="4.4506" effort="100" velocity="2.96" />
+      <!-- Old limits: lower="-2.3736" upper="4.4506" The new limits
+           below were measured from an MH5F.  They ensure that link_r
+           won't hit link_l even when joint_r is at 45 degrees.  The
+           old limits were converted directly from the MH5 data sheet,
+           which was clearly way off. -->
+			<limit lower="-1.0122" upper="3.2218" effort="100" velocity="2.96" />
 		</joint>
 		<joint name="${prefix}joint_r" type="revolute">
 			<parent link="${prefix}link_u"/>
