@@ -110,7 +110,8 @@ enum NotReadyCode
   SERVO_OFF,
   HOLD,
   NOT_STARTED,
-  WAITING_ROS
+  WAITING_ROS,
+  SKILLSEND
 };
 }  // namespace NotReady
 }  // MotionReplySubcodes
