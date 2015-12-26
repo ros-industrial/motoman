@@ -1,0 +1,59 @@
+digraph G {
+node [shape=box];
+"base_link" [label="base_link"];
+"torso_link_b1" [label="torso_link_b1"];
+"arm_left_link_1_s" [label="arm_left_link_1_s"];
+"arm_left_link_2_l" [label="arm_left_link_2_l"];
+"arm_left_link_3_e" [label="arm_left_link_3_e"];
+"arm_left_link_4_u" [label="arm_left_link_4_u"];
+"arm_left_link_5_r" [label="arm_left_link_5_r"];
+"arm_left_link_6_b" [label="arm_left_link_6_b"];
+"arm_left_link_7_t" [label="arm_left_link_7_t"];
+"arm_left_link_tool0" [label="arm_left_link_tool0"];
+"arm_right_link_1_s" [label="arm_right_link_1_s"];
+"arm_right_link_2_l" [label="arm_right_link_2_l"];
+"arm_right_link_3_e" [label="arm_right_link_3_e"];
+"arm_right_link_4_u" [label="arm_right_link_4_u"];
+"arm_right_link_5_r" [label="arm_right_link_5_r"];
+"arm_right_link_6_b" [label="arm_right_link_6_b"];
+"arm_right_link_7_t" [label="arm_right_link_7_t"];
+"arm_right_link_tool0" [label="arm_right_link_tool0"];
+"torso_link_b2" [label="torso_link_b2"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"base_link" -> "torso_joint_b1" [label="xyz: 0.045 0 0.7296 \nrpy: 0 -0 0"]
+"torso_joint_b1" -> "torso_link_b1"
+"torso_link_b1" -> "arm_left_joint_1_s" [label="xyz: 0.15 0.101 0.1704 \nrpy: -1.5708 0 0"]
+"arm_left_joint_1_s" -> "arm_left_link_1_s"
+"arm_left_link_1_s" -> "arm_left_joint_2_l" [label="xyz: 0.0195 0 0.142 \nrpy: -1.5708 -1.11022e-16 -1.5708"]
+"arm_left_joint_2_l" -> "arm_left_link_2_l"
+"arm_left_link_2_l" -> "arm_left_joint_3_e" [label="xyz: 0 -0.165 -0.0195 \nrpy: -1.5708 -0 3.14"]
+"arm_left_joint_3_e" -> "arm_left_link_3_e"
+"arm_left_link_3_e" -> "arm_left_joint_4_u" [label="xyz: -0.085 0.017 0.105 \nrpy: -1.5708 0 0"]
+"arm_left_joint_4_u" -> "arm_left_link_4_u"
+"arm_left_link_4_u" -> "arm_left_joint_5_r" [label="xyz: -0.134 -0.06 -0.017 \nrpy: -1.5708 -1.11022e-16 -1.5708"]
+"arm_left_joint_5_r" -> "arm_left_link_5_r"
+"arm_left_link_5_r" -> "arm_left_joint_6_b" [label="xyz: 0 0.015 -0.136 \nrpy: -3.14157 1.5708 1.57082"]
+"arm_left_joint_6_b" -> "arm_left_link_6_b"
+"arm_left_link_6_b" -> "arm_left_joint_7_t" [label="xyz: 0.148 0 0.015 \nrpy: -1.5708 1.11022e-16 1.5708"]
+"arm_left_joint_7_t" -> "arm_left_link_7_t"
+"arm_left_link_7_t" -> "arm_left_joint_tool0" [label="xyz: 0 0 -0.05 \nrpy: 3.14159 0.00159265 3.14159"]
+"arm_left_joint_tool0" -> "arm_left_link_tool0"
+"torso_link_b1" -> "arm_right_joint_1_s" [label="xyz: 0.15 -0.101 0.1704 \nrpy: -1.5708 -2.06823e-13 3.14159"]
+"arm_right_joint_1_s" -> "arm_right_link_1_s"
+"arm_right_link_1_s" -> "arm_right_joint_2_l" [label="xyz: 0.0195 0 0.142 \nrpy: -1.5708 -1.11022e-16 -1.5708"]
+"arm_right_joint_2_l" -> "arm_right_link_2_l"
+"arm_right_link_2_l" -> "arm_right_joint_3_e" [label="xyz: 0 -0.165 -0.0195 \nrpy: -1.5708 -0 3.14"]
+"arm_right_joint_3_e" -> "arm_right_link_3_e"
+"arm_right_link_3_e" -> "arm_right_joint_4_u" [label="xyz: -0.085 0.017 0.105 \nrpy: -1.5708 0 0"]
+"arm_right_joint_4_u" -> "arm_right_link_4_u"
+"arm_right_link_4_u" -> "arm_right_joint_5_r" [label="xyz: -0.134 -0.06 -0.017 \nrpy: -1.5708 -1.11022e-16 -1.5708"]
+"arm_right_joint_5_r" -> "arm_right_link_5_r"
+"arm_right_link_5_r" -> "arm_right_joint_6_b" [label="xyz: 0 0.015 -0.136 \nrpy: -3.14157 1.5708 1.57082"]
+"arm_right_joint_6_b" -> "arm_right_link_6_b"
+"arm_right_link_6_b" -> "arm_right_joint_7_t" [label="xyz: 0.148 0 0.015 \nrpy: -1.5708 1.11022e-16 1.5708"]
+"arm_right_joint_7_t" -> "arm_right_link_7_t"
+"arm_right_link_7_t" -> "arm_right_joint_tool0" [label="xyz: 0 0 -0.05 \nrpy: 3.14159 0.00159265 3.14159"]
+"arm_right_joint_tool0" -> "arm_right_link_tool0"
+"base_link" -> "torso_joint_b2" [label="xyz: 0.045 0 0.7296 \nrpy: 0 -0 0"]
+"torso_joint_b2" -> "torso_link_b2"
+}
