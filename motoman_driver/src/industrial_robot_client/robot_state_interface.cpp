@@ -98,7 +98,17 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
     std::map<int, RobotGroup> robot_groups;
 
     std::string value;
-    ros::param::search("topics_list", value);
+    if(!ros::param::search("topics_list", value))
+    {
+      ROS_ERROR_STREAM("Failed to find topic_list parameter (new in Indigo)" << std::endl
+                       << "\tNew parameter documentaion can be found here:" << std::endl
+                       << "\thttp://wiki.ros.org/motoman_driver/Tutorials/Creating%20a%20Dual-Arm%20System" << std::endl
+                       << "If still using the Hydro server version on the controller, then set the 'version0' parameter to FALSE" << std::endl
+                       << "\tThe driver will assume a single arm with joint names in order of the URDF (bast to tip) OR" << std::endl
+                       << "\tit will read the joint order from the 'controller_joint_names' parameter described here:" << std::endl
+                       << "\t\thttp://wiki.ros.org/Industrial/Tutorials/Create_a_MoveIt_Pkg_for_an_Industrial_Robot#Update_Configuration_Files");
+      return false;
+    }
 
     XmlRpc::XmlRpcValue topics_list_rpc;
     ros::param::get(value, topics_list_rpc);
