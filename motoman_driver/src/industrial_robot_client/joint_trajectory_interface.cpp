@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include "motoman_driver/industrial_robot_client/joint_trajectory_interface.h"
+#include "motoman_driver/industrial_robot_client/motoman_utils.h"
 #include "simple_message/joint_traj_pt.h"
 #include "industrial_utils/param_utils.h"
 #include <vector>
@@ -99,13 +100,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
     std::string value;
     if(!ros::param::search("topics_list", value))
     {
-      ROS_ERROR_STREAM("Failed to find topic_list parameter (new in Indigo)" << std::endl
-                       << "\tNew parameter documentaion can be found here:" << std::endl
-                       << "\thttp://wiki.ros.org/motoman_driver/Tutorials/Creating%20a%20Dual-Arm%20System" << std::endl
-                       << "If still using the Hydro server version on the controller, then set the 'version0' parameter to FALSE" << std::endl
-                       << "\tThe driver will assume a single arm with joint names in order of the URDF (bast to tip) OR" << std::endl
-                       << "\tit will read the joint order from the 'controller_joint_names' parameter described here:" << std::endl
-                       << "\t\thttp://wiki.ros.org/Industrial/Tutorials/Create_a_MoveIt_Pkg_for_an_Industrial_Robot#Update_Configuration_Files");
+      ROS_ERROR_STREAM(industrial_robot_client::motoman_utils::TOPIC_LIST_ERROR_MSG);
       return false;
     }
 
