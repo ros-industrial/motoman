@@ -105,7 +105,6 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
     }
 
     XmlRpc::XmlRpcValue topics_list_rpc;
-
     ros::param::get(value, topics_list_rpc);
 
     // Evaluating the topics_list parameter that contains the node configuration in

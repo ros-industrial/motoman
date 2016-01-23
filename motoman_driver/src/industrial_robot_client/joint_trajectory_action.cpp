@@ -65,9 +65,8 @@ JointTrajectoryAction::JointTrajectoryAction() :
   std::string value;
   if(!ros::param::search("topics_list", value))
   {
-
     ROS_ERROR_STREAM(industrial_robot_client::motoman_utils::TOPIC_LIST_ERROR_MSG);
-    return;
+    throw;
   }
 
   XmlRpc::XmlRpcValue topics_list_rpc;
