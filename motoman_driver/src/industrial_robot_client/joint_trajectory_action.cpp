@@ -32,6 +32,7 @@
  */
 
 #include <motoman_driver/industrial_robot_client/joint_trajectory_action.h>
+#include "motoman_driver/industrial_robot_client/motoman_utils.h"
 #include <industrial_robot_client/utils.h>
 #include <industrial_utils/param_utils.h>
 #include <industrial_utils/utils.h>
@@ -62,7 +63,11 @@ JointTrajectoryAction::JointTrajectoryAction() :
   // A parameter named topics_list contains the respective information for each of the groups
 
   std::string value;
-  ros::param::search("topics_list", value);
+  if(!ros::param::search("topics_list", value))
+  {
+    ROS_ERROR_STREAM(industrial_robot_client::motoman_utils::TOPIC_LIST_ERROR_MSG);
+    throw;
+  }
 
   XmlRpc::XmlRpcValue topics_list_rpc;
   ros::param::get(value, topics_list_rpc);
