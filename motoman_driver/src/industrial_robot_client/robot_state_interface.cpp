@@ -30,7 +30,6 @@
  */
 
 #include "motoman_driver/industrial_robot_client/robot_state_interface.h"
-#include "motoman_driver/industrial_robot_client/motoman_utils.h"
 #include "industrial_utils/param_utils.h"
 #include <map>
 #include <string>
@@ -99,11 +98,7 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
     std::map<int, RobotGroup> robot_groups;
 
     std::string value;
-    if(!ros::param::search("topics_list", value))
-    {
-      ROS_ERROR_STREAM(industrial_robot_client::motoman_utils::TOPIC_LIST_ERROR_MSG);
-      return false;
-    }
+    ros::param::search("topics_list", value);
 
     XmlRpc::XmlRpcValue topics_list_rpc;
     ros::param::get(value, topics_list_rpc);

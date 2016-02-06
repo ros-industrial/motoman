@@ -39,6 +39,7 @@
 
 #include <ros/ros.h>
 #include <actionlib/server/action_server.h>
+ #include <actionlib/client/simple_action_client.h>
 
 #include <trajectory_msgs/JointTrajectory.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
@@ -77,6 +78,8 @@ public:
 
 private:
   typedef actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction> JointTractoryActionServer;
+  typedef actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> JointTractoryActionClient;
+
 
   /**
    * \brief Internal ROS node handle
@@ -115,6 +118,8 @@ private:
   std::map<int, ros::Subscriber> sub_status_;
 
   std::map<int, JointTractoryActionServer*> act_servers_;
+
+  std::map<int, JointTractoryActionClient*> act_clients_;
   /**
    * \brief Watchdog time used to fail the action request if the robot
    * driver is not responding.
@@ -191,6 +196,8 @@ private:
    * \brief The watchdog period (seconds)
    */
   static const double WATCHD0G_PERIOD_;// = 1.0;
+
+
 
   /**
    * \brief Watch dog callback, used to detect robot driver failures
