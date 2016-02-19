@@ -1,4 +1,4 @@
-topic_list
+topic_list:
     - name: sda10f_r1_controller
       ns: sda10f
       group: 1

@@ -13,11 +13,14 @@
 
   <!-- controller: Controller name (fs100 or dx100) -->
   <arg name="controller" />
+  <arg name="version0" />
 
-	<rosparam command="load" file="$(find motoman_sda10f_support)/config/joint_names_sda10f.yaml" />
+    <rosparam command="load" file="$(find motoman_sda10f_support)/config/joint_names_sda10f.yaml" />
+    <rosparam command="load" file="$(find motoman_sda10f_support)/config/sda10f_motion_interface.yaml" />
 
 	<include file="$(find motoman_driver)/launch/robot_state_$(arg controller).launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
+    <arg name="version0"   value="$(arg version0)" />
 	</include>
 
 	<node name="robot_state_publisher" pkg="robot_state_publisher" 

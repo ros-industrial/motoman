@@ -61,8 +61,6 @@ bool RobotStateInterface::init(std::string default_ip, int default_port, bool ve
   // override IP/port with ROS params, if available
   ros::param::param<std::string>("robot_ip_address", ip, default_ip);
   ros::param::param<int>("~port", port, default_port);
-  ros::param::param<bool>("version0", this->version_0_, version_0);
-
   // check for valid parameter values
   if (ip.empty())
   {
@@ -85,120 +83,144 @@ bool RobotStateInterface::init(std::string default_ip, int default_port, bool ve
 
 bool RobotStateInterface::init(SmplMsgConnection* connection)
 {
-  if (this->version_0_)
+  std::map<int, RobotGroup> robot_groups;
+
+  std::string value;
+  if(!ros::param::search("topic_list", value))
   {
+    ROS_WARN_STREAM(industrial_robot_client::motoman_utils::TOPIC_LIST_ERROR_MSG);
+    this->version_0_ = true;
     std::vector<std::string> joint_names;
     if (!getJointNames("controller_joint_names", "robot_description", joint_names))
       ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
 
     return init(connection, joint_names);
   }
+  this->version_0_ = false;
+  XmlRpc::XmlRpcValue topics_list_rpc;
+  ros::param::get(value, topics_list_rpc);
 
-  else
+
+  std::vector<XmlRpc::XmlRpcValue> topics_list;
+
+  ROS_INFO_STREAM("Loading topic lists");
+  ROS_INFO_STREAM("Found " << topics_list_rpc.size() << " topics");
+  for (int i = 0; i < topics_list_rpc.size(); i++)
   {
-    std::map<int, RobotGroup> robot_groups;
-
-    std::string value;
-    if(!ros::param::search("topics_list", value))
-    {
-      ROS_ERROR_STREAM(industrial_robot_client::motoman_utils::TOPIC_LIST_ERROR_MSG);
-      return false;
-    }
-
-    XmlRpc::XmlRpcValue topics_list_rpc;
-    ros::param::get(value, topics_list_rpc);
-
-
-    std::vector<XmlRpc::XmlRpcValue> topics_list;
-
-    for (int i = 0; i < topics_list_rpc.size(); i++)
-    {
-      XmlRpc::XmlRpcValue state_value;
-      state_value = topics_list_rpc[i];
-      topics_list.push_back(state_value);
-    }
-
-    std::vector<XmlRpc::XmlRpcValue> groups_list;
-    // TODO(thiagodefreitas): check the consistency of the group numbers
-    for (int i = 0; i < topics_list[0]["state"].size(); i++)
-    {
-      XmlRpc::XmlRpcValue group_value;
-      group_value = topics_list[0]["state"][i];
-      groups_list.push_back(group_value);
-    }
-
-
-    for (int i = 0; i < groups_list.size(); i++)
-    {
-      RobotGroup rg;
-      std::vector<std::string> rg_joint_names;
-
-      XmlRpc::XmlRpcValue joints;
-
-      joints = groups_list[i]["group"][0]["joints"];
-      for (int jt = 0; jt < joints.size(); jt++)
-      {
-        rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
-      }
-
-      XmlRpc::XmlRpcValue group_number;
-
-
-      group_number = groups_list[i]["group"][0]["group_number"];
-      int group_number_int = static_cast<int>(group_number);
-
-      XmlRpc::XmlRpcValue name;
-      std::string name_string;
-
-      name = groups_list[i]["group"][0]["name"];
-      name_string = static_cast<std::string>(name);
-
-      XmlRpc::XmlRpcValue ns;
-      std::string ns_string;
-
-      ns = groups_list[i]["group"][0]["ns"];
-
-      ns_string = static_cast<std::string>(ns);
-
-      rg.set_group_id(group_number_int);
-      rg.set_joint_names(rg_joint_names);
-      rg.set_name(name_string);
-      rg.set_ns(ns_string);
-
-      robot_groups[group_number] = rg;
-    }
-
-    return init(connection, robot_groups);
+    XmlRpc::XmlRpcValue state_value;
+    state_value = topics_list_rpc[i];
+    ROS_INFO_STREAM("Topic(state_value): " << state_value);
+    topics_list.push_back(state_value);
   }
+
+  /*
+  std::vector<XmlRpc::XmlRpcValue> groups_list;
+  // TODO(thiagodefreitas): check the consistency of the group numbers
+  for (int i = 0; i < topics_list[0]["state"].size(); i++)
+  {
+    XmlRpc::XmlRpcValue group_value;
+    group_value = topics_list[0]["state"][i];
+    groups_list.push_back(group_value);
+  }
+  */
+
+  for (int i = 0; i < topics_list.size(); i++)
+  {
+    ROS_INFO_STREAM("Loading group: " << topics_list[i]);
+    RobotGroup rg;
+    std::vector<std::string> rg_joint_names;
+
+    XmlRpc::XmlRpcValue joints;
+
+    joints = topics_list[i]["joints"];
+    for (int jt = 0; jt < joints.size(); jt++)
+    {
+      rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
+    }
+
+    XmlRpc::XmlRpcValue group_number;
+
+
+    group_number = topics_list[i]["group"];
+    int group_number_int = static_cast<int>(group_number);
+
+    XmlRpc::XmlRpcValue name;
+    std::string name_string;
+
+    name = topics_list[i]["name"];
+    name_string = static_cast<std::string>(name);
+
+    XmlRpc::XmlRpcValue ns;
+    std::string ns_string;
+
+    ns = topics_list[i]["ns"];
+
+    ns_string = static_cast<std::string>(ns);
+
+    ROS_INFO_STREAM("Setting group: " );
+    ROS_INFO_STREAM("  group number: " << group_number  );
+    ROS_INFO_STREAM("  group number(int): " << group_number_int  );
+    ROS_INFO_STREAM("  joints_names(size): " << rg_joint_names.size()  );
+    ROS_INFO_STREAM("  name: " << name_string  );
+    ROS_INFO_STREAM("  ns: " << ns_string );
+    rg.set_group_id(group_number_int);
+    rg.set_joint_names(rg_joint_names);
+    rg.set_name(name_string);
+    rg.set_ns(ns_string);
+
+    robot_groups[group_number] = rg;
+  }
+
+  ROS_INFO_STREAM("Loaded " << robot_groups.size() << " groups");
+
+  return init(connection, robot_groups);
 }
 
 bool RobotStateInterface::init(SmplMsgConnection* connection, std::map<int, RobotGroup> robot_groups)
 {
+  ROS_INFO_STREAM(" Initializing robot state " << robot_groups.size() << " groups");
   this->robot_groups_ = robot_groups;
   this->connection_ = connection;
-  connection_->makeConnect();
 
   // initialize message-manager
   if (!manager_.init(connection_))
+  {
+    ROS_ERROR("Failed to initialize message manager");
     return false;
+  }
 
   // initialize default handlers
   if (!default_joint_handler_.init(connection_, robot_groups_))
+  {
+    ROS_ERROR("Failed to initialialze joint handler");
     return false;
+  }
   this->add_handler(&default_joint_handler_);
 
   if (!default_joint_feedback_handler_.init(connection_, robot_groups_))
+  {
+    ROS_ERROR("Failed to initialize joint feedback handler");
     return false;
+  }
   this->add_handler(&default_joint_feedback_handler_);
 
   if (!default_joint_feedback_ex_handler_.init(connection_, robot_groups_))
+  {
+    ROS_ERROR("Failed to initialize joint(extended) feedback handler");
     return false;
+  }
   this->add_handler(&default_joint_feedback_ex_handler_);
 
   if (!default_robot_status_handler_.init(connection_))
+  {
+    ROS_ERROR("Failed to initialize robot status handler");
     return false;
+  }
   this->add_handler(&default_robot_status_handler_);
 
+  connection_->makeConnect();
+
+  ROS_INFO("Successfully initialized robot state interface");
   return true;
 }
 
