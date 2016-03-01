@@ -39,6 +39,7 @@ set(CLIENT_SRC_FILES
   src/industrial_robot_client/robot_state_interface.cpp
   src/industrial_robot_client/joint_trajectory_interface.cpp
   src/industrial_robot_client/joint_trajectory_streamer.cpp
+  src/industrial_robot_client/motoman_utils.cpp
   src/simple_message/joint_feedback_ex.cpp
   src/simple_message/joint_traj_pt_full_ex.cpp
   src/simple_message/messages/joint_feedback_ex_message.cpp

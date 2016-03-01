@@ -34,11 +34,17 @@
 
 #include <sstream>
 #include <iostream>
+#include <string>
+#include <map>
+
+#include "motoman_driver/industrial_robot_client/robot_group.h"
 
 namespace industrial_robot_client
 {
 namespace motoman_utils
 {
+
+bool getJointGroups(std::string topic_param, std::map<int, RobotGroup> robot_groups);
 
 /**
   @brief Common error message displayed when node fails to find 'topic_list' parameter
