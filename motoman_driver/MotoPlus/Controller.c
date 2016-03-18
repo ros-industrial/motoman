@@ -165,8 +165,8 @@ BOOL Ros_Controller_Init(Controller* controller)
 			controller->ctrlGroups[grpNo] = Ros_CtrlGroup_Create(grpNo, controller->interpolPeriod);
 			if(controller->ctrlGroups[grpNo] != NULL)
 			{
-				if(Ros_CtrlGroup_IsRobot(controller->ctrlGroups[grpNo]))
-					controller->numRobot++;
+//				if(Ros_CtrlGroup_IsRobot(controller->ctrlGroups[grpNo]))
+					controller->numRobot++;  //This counter is required for DX100 controllers with two control-groups (robot OR ext axis)
 			}
 			else
 				bInitOk = FALSE;

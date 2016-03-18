@@ -43,8 +43,8 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod);
 BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
 BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
 void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], 
-									float radPos[MAX_PULSE_AXES]);
-void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE_AXES], 
+									float rosPos[MAX_PULSE_AXES]);
+void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float rosPos[MAX_PULSE_AXES],
 									long pulsePos[MAX_PULSE_AXES]);
 UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup);
 BOOL Ros_CtrlGroup_IsRobot(CtrlGroup* ctrlGroup);
@@ -97,14 +97,22 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		// Allocate and initialize memory
 		ctrlGroup = mpMalloc(sizeof(CtrlGroup));
 		memset(ctrlGroup, 0x00, sizeof(CtrlGroup));
-
+		
 		// Populate values
 		ctrlGroup->groupNo = groupNo;
 		ctrlGroup->numAxes = numAxes;
 		ctrlGroup->groupId = Ros_CtrlGroup_FindGrpId(groupNo);
-		
+
+		status = GP_getAxisMotionType(groupNo, &ctrlGroup->axisType);
+		if (status != OK)
+			bInitOk = FALSE;
+
 		status = GP_getPulseToRad(groupNo, &ctrlGroup->pulseToRad);
-		if(status!=OK)
+		if (status != OK)
+			bInitOk = FALSE;
+
+		status = GP_getPulseToMeter(groupNo, &ctrlGroup->pulseToMeter);
+		if (status != OK)
 			bInitOk = FALSE;
 
 		status = GP_getFBPulseCorrection(groupNo, &ctrlGroup->correctionData);
@@ -133,16 +141,39 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		memset(maxSpeedPulse, 0x00, sizeof(maxSpeedPulse));
 		for(i=0; i<numAxes; i++)
 			maxSpeedPulse[i] = ctrlGroup->maxInc.maxIncrement[i] * 1000.0 / interpolPeriod; 
-		Ros_CtrlGroup_ConvertToRosPos(ctrlGroup, maxSpeedPulse, ctrlGroup->maxSpeedRad); 
+		Ros_CtrlGroup_ConvertToRosPos(ctrlGroup, maxSpeedPulse, ctrlGroup->maxSpeed); 
 
-		printf("maxInc: %d, %d, %d, %d, %d, %d, %d\r\n", 
+		printf("axisType[%d]: ", groupNo);
+		for (i = 0; i < numAxes; i++)
+		{
+			if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
+				printf("Lin\t");
+			else
+				printf("Rot\t");
+		}
+		printf(";\r\n");
+
+		printf("pulse->unit[%d]: ", groupNo);
+		for (i = 0; i < numAxes; i++)
+		{
+			if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
+				printf("%.4f\t", ctrlGroup->pulseToMeter.PtoM[i]);
+			else
+				printf("%.4f\t", ctrlGroup->pulseToRad.PtoR[i]);
+		}
+		printf(";\r\n");
+
+		printf("maxInc[%d]: %d, %d, %d, %d, %d, %d, %d\r\n", 
+			groupNo,
 			ctrlGroup->maxInc.maxIncrement[0],ctrlGroup->maxInc.maxIncrement[1],ctrlGroup->maxInc.maxIncrement[2],
 			ctrlGroup->maxInc.maxIncrement[3],ctrlGroup->maxInc.maxIncrement[4],ctrlGroup->maxInc.maxIncrement[5],
 			ctrlGroup->maxInc.maxIncrement[6]);
-		printf("maxSpeedRad: %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f\r\n", 
-			ctrlGroup->maxSpeedRad[0],ctrlGroup->maxSpeedRad[1],ctrlGroup->maxSpeedRad[2],
-			ctrlGroup->maxSpeedRad[3],ctrlGroup->maxSpeedRad[4],ctrlGroup->maxSpeedRad[5],
-			ctrlGroup->maxSpeedRad[6]);
+
+		printf("maxSpeed[%d]: %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f\r\n",
+			groupNo,
+			ctrlGroup->maxSpeed[0],ctrlGroup->maxSpeed[1],ctrlGroup->maxSpeed[2],
+			ctrlGroup->maxSpeed[3],ctrlGroup->maxSpeed[4],ctrlGroup->maxSpeed[5],
+			ctrlGroup->maxSpeed[6]);
 
 		ctrlGroup->tidAddToIncQueue = INVALID_TASK;
 		
@@ -262,14 +293,15 @@ BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_A
 }
 
 //-------------------------------------------------------------------
-// Convert Motoman position in pulse to Ros position in radian
+// Convert Motoman position in pulse to Ros position in radian/meters
 // In the case of a 7 axis robot, adjust the order to match 
 // the physical axis sequence
 //-------------------------------------------------------------------
 void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], 
-									float radPos[MAX_PULSE_AXES])
+									float rosPos[MAX_PULSE_AXES])
 {
 	int i;
+	float conversion = 0;
 		
 	// Adjust joint order for 7 axis robot
 	if((ctrlGroup->groupId >= MP_R1_GID) && (ctrlGroup->groupId <= MP_R4_GID) && (ctrlGroup->numAxes == 7))
@@ -277,17 +309,24 @@ void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE
 		for(i=0; i<ctrlGroup->numAxes; i++)
 		{
 			if(i<2)
-				radPos[i] = pulsePos[i] / ctrlGroup->pulseToRad.PtoR[i];
+				rosPos[i] = pulsePos[i] / ctrlGroup->pulseToRad.PtoR[i];
 			else if(i==2)
-				radPos[2] = pulsePos[6] / ctrlGroup->pulseToRad.PtoR[6];
+				rosPos[2] = pulsePos[6] / ctrlGroup->pulseToRad.PtoR[6];
 			else
-				radPos[i] = pulsePos[i-1] / ctrlGroup->pulseToRad.PtoR[i-1];		
+				rosPos[i] = pulsePos[i-1] / ctrlGroup->pulseToRad.PtoR[i-1];
 		}
 	}
 	else
 	{
-		for(i=0; i<ctrlGroup->numAxes; i++)
-			radPos[i] = pulsePos[i] / ctrlGroup->pulseToRad.PtoR[i];
+		for (i = 0; i < ctrlGroup->numAxes; i++)
+		{
+			if (ctrlGroup->axisType.type[i] == ROTATATION_AXIS)
+				conversion = ctrlGroup->pulseToRad.PtoR[i];
+			else if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
+				conversion = ctrlGroup->pulseToMeter.PtoM[i];
+
+			rosPos[i] = pulsePos[i] / conversion;
+		}
 	}
 }
 
@@ -300,6 +339,7 @@ void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE
 									long pulsePos[MAX_PULSE_AXES])
 {
 	int i;
+	float conversion = 0;
 	
 	// Initilize memory space
 	memset(pulsePos, 0x00, sizeof(long)*MAX_PULSE_AXES);
@@ -320,8 +360,15 @@ void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE
 	else
 	{
 		// Convert to pulse
-		for(i=0; i<ctrlGroup->numAxes; i++)
-			 pulsePos[i] = (int)(radPos[i] * ctrlGroup->pulseToRad.PtoR[i]);	
+		for (i = 0; i < ctrlGroup->numAxes; i++)
+		{
+			if (ctrlGroup->axisType.type[i] == ROTATATION_AXIS)
+				conversion = ctrlGroup->pulseToRad.PtoR[i];
+			else if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
+				conversion = ctrlGroup->pulseToMeter.PtoM[i];
+
+			pulsePos[i] = (int)(radPos[i] * conversion);
+		}
 	}
 }
 
