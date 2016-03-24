@@ -31,7 +31,6 @@
 
 #include <algorithm>
 #include "motoman_driver/industrial_robot_client/joint_trajectory_interface.h"
-#include "motoman_driver/industrial_robot_client/motoman_utils.h"
 #include "simple_message/joint_traj_pt.h"
 #include "industrial_utils/param_utils.h"
 #include <vector>
@@ -98,11 +97,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
     std::map<int, RobotGroup> robot_groups;
 
     std::string value;
-    if(!ros::param::search("topics_list", value))
-    {
-      ROS_ERROR_STREAM(industrial_robot_client::motoman_utils::TOPIC_LIST_ERROR_MSG);
-      return false;
-    }
+    ros::param::search("topics_list", value);
 
     XmlRpc::XmlRpcValue topics_list_rpc;
     ros::param::get(value, topics_list_rpc);
