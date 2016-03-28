@@ -165,8 +165,7 @@ BOOL Ros_Controller_Init(Controller* controller)
 			controller->ctrlGroups[grpNo] = Ros_CtrlGroup_Create(grpNo, controller->interpolPeriod);
 			if(controller->ctrlGroups[grpNo] != NULL)
 			{
-//				if(Ros_CtrlGroup_IsRobot(controller->ctrlGroups[grpNo]))
-					controller->numRobot++;  //This counter is required for DX100 controllers with two control-groups (robot OR ext axis)
+				controller->numRobot++;  //This counter is required for DX100 controllers with two control-groups (robot OR ext axis)
 			}
 			else
 				bInitOk = FALSE;
@@ -772,3 +771,71 @@ void Ros_Controller_ListenForSkill(Controller* controller, int sl)
 }
 #endif
 
+
+#if DX100
+// VxWorks 5.5 do not have vsnprintf, use vsprintf instead...
+int vsnprintf(char *s, size_t sz, const char *fmt, va_list args)
+{
+	char tmpBuf[1024]; // Hopefully enough...
+	size_t res;
+	res = vsprintf(tmpBuf, fmt, args);
+	tmpBuf[sizeof(tmpBuf) - 1] = 0;  // be sure ending \0 is there
+	if (res >= sz)
+	{
+		// Buffer overrun... The shit is close to the fan
+		printf("Logging.. Error vsnprintf:%d max:%d, anyway:\r\n", (int)res, (int)sz);
+		printf("%s", tmpBuf);
+		res = -res;
+	}
+	strncpy(s, tmpBuf, sz);
+	s[sz - 1] = 0;  // be sure ending \0 is there
+	return res;
+}
+
+// VxWorks 5.5 do not have snprintf
+int snprintf(char *s, size_t sz, const char *fmt, ...)
+{
+	size_t res;
+	char tmpBuf[1024]; // Hopefully enough...
+	va_list va;
+
+	va_start(va, fmt);
+	res = vsnprintf(tmpBuf, sz, fmt, va);
+	va_end(va);
+
+	strncpy(s, tmpBuf, sz);
+	s[sz - 1] = 0;  // be sure ending \0 is there
+	return res;
+}
+#endif
+
+void motoRosAssert(BOOL mustBeTrue, ROS_ASSERTION_CODE subCodeIfFalse, char* msgFmtIfFalse, ...)
+{
+	const int MAX_MSG_LEN = 32;
+	char msg[MAX_MSG_LEN];
+	char subMsg[MAX_MSG_LEN];
+	va_list va;
+
+	if (!mustBeTrue)
+	{
+		memset(msg, 0x00, MAX_MSG_LEN);
+		memset(subMsg, 0x00, MAX_MSG_LEN);
+
+		va_start(va, msgFmtIfFalse);
+		vsnprintf(subMsg, MAX_MSG_LEN, msgFmtIfFalse, va);
+		va_end(va);
+
+		snprintf(msg, MAX_MSG_LEN, "MotoROS:%s", subMsg); //add "MotoROS" to distinguish from other controller alarms
+
+		Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+		Ros_Controller_SetIOState(IO_FEEDBACK_INITIALIZATION_DONE, FALSE);
+
+		mpSetAlarm(8000, msg, subCodeIfFalse);
+
+		while (TRUE) //forever
+		{
+			puts(msg);
+			mpTaskDelay(5000);
+		}
+	}
+}

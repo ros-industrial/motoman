@@ -1,8 +1,7 @@
-﻿Build started 3/18/2016 4:23:19 PM.
+﻿Build started 3/28/2016 9:43:43 AM.
      1>Project "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\MpRosAllControllers.vcxproj" on node 2 (Build target(s)).
      1>Build:
          mpbuilder.exe -c DX200 -p "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\\" -n "MotoRosDX200" -o build
-     1>EXEC : warning : TED - Don't forget to remove the hardware-key short circuit...
          ------ Now building project: MotoRosDX200------
          Compiling Controller.c
          Compiling CtrlGroup.c

@@ -1,15 +1,14 @@
-﻿Build started 3/18/2016 4:23:23 PM.
+﻿Build started 3/28/2016 9:43:47 AM.
      1>Project "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\MpRosAllControllers.vcxproj" on node 2 (Build target(s)).
      1>Build:
          mpbuilder.exe -c DX100 -p "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\\" -n "MotoRosDX100" -o build
-     1>EXEC : warning : TED - Don't forget to remove the hardware-key short circuit...
          ------ Now building project: MotoRosDX100------
          Compiling Controller.c
          Compiling CtrlGroup.c
      1>CtrlGroup.c : warning : In function `Ros_CtrlGroup_ConvertToRosPos'
-     1>CtrlGroup.c(307): warning : comparison of unsigned expression >= 0 is always true
+     1>CtrlGroup.c(312): warning : comparison of unsigned expression >= 0 is always true
      1>CtrlGroup.c : warning : In function `Ros_CtrlGroup_ConvertToMotoPos'
-     1>CtrlGroup.c(348): warning : comparison of unsigned expression >= 0 is always true
+     1>CtrlGroup.c(355): warning : comparison of unsigned expression >= 0 is always true
          Compiling MotionServer.c
      1>MotionServer.c : warning : In function `Ros_MotionServer_WaitForSimpleMsg'
      1>MotionServer.c(275): warning : comparison between signed and unsigned
@@ -29,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.08
+Time Elapsed 00:00:04.37

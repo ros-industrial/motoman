@@ -148,8 +148,13 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		{
 			if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
 				printf("Lin\t");
-			else
+			else if (ctrlGroup->axisType.type[i] == ROTATATION_AXIS)
 				printf("Rot\t");
+			else
+			{
+				printf("ERROR\t");
+				motoRosAssert(FALSE, SUBCODE_INVALID_AXIS_TYPE, "Grp%d Axs%d type invalid", groupNo, i);
+			}
 		}
 		printf(";\r\n");
 
@@ -301,7 +306,7 @@ void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE
 									float rosPos[MAX_PULSE_AXES])
 {
 	int i;
-	float conversion = 0;
+	float conversion = 1;
 		
 	// Adjust joint order for 7 axis robot
 	if((ctrlGroup->groupId >= MP_R1_GID) && (ctrlGroup->groupId <= MP_R4_GID) && (ctrlGroup->numAxes == 7))
@@ -324,6 +329,8 @@ void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE
 				conversion = ctrlGroup->pulseToRad.PtoR[i];
 			else if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
 				conversion = ctrlGroup->pulseToMeter.PtoM[i];
+			else
+				conversion = 1.0;
 
 			rosPos[i] = pulsePos[i] / conversion;
 		}
@@ -339,7 +346,7 @@ void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE
 									long pulsePos[MAX_PULSE_AXES])
 {
 	int i;
-	float conversion = 0;
+	float conversion = 1;
 	
 	// Initilize memory space
 	memset(pulsePos, 0x00, sizeof(long)*MAX_PULSE_AXES);
