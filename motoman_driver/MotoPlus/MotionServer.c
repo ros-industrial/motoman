@@ -303,7 +303,7 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
         }
         
         // Check message size
-       	if(byteSize == expectedSize)
+       	if(byteSize >= expectedSize)
        	{
        		// Process the simple message
           	ret = Ros_MotionServer_SimpleMsgProcess(controller, &receiveMsg, byteSize, &replyMsg);
@@ -377,7 +377,7 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 		else
 			expectedBytes += sizeof(SmBodyJointTrajPtFullEx);
 
-		if(expectedBytes == byteSize)
+		if(expectedBytes <= byteSize)
 			ret = Ros_MotionServer_JointTrajPtFullExProcess(controller, receiveMsg, replyMsg);
 		else
 			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;

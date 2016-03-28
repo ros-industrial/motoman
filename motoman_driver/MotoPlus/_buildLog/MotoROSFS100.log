@@ -1,4 +1,4 @@
-﻿Build started 3/28/2016 9:43:39 AM.
+﻿Build started 3/28/2016 10:01:12 AM.
      1>Project "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\MpRosAllControllers.vcxproj" on node 2 (Build target(s)).
      1>Build:
          mpbuilder.exe -c FS100 -p "C:\Users\millete\Documents\GitHub\motoman\motoman_driver\MotoPlus\\" -n "MotoRosFS100" -o build
@@ -16,4 +16,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.79
+Time Elapsed 00:00:03.93
