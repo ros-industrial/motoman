@@ -162,8 +162,8 @@
 		<joint name="${prefix}joint_t" type="revolute">
 			<parent link="${prefix}link_b"/>
 			<child link="${prefix}link_t"/>
-			<origin xyz="0.095 0 0" />
-			<axis xyz="-1 0 0" />
+			<origin xyz="0 0 -0.095" />
+			<axis xyz="0 0 1" />
 			<limit lower="${-360 * pi / 180}" upper="${360 * pi / 180}" effort="100" velocity="${610 * pi / 180}" />
 		</joint>
 		<!-- end of joint list -->
