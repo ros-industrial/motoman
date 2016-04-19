@@ -32,7 +32,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#define APPLICATION_VERSION					"1.3.1"
+#define APPLICATION_VERSION					"1.3.3"
 
 #define TCP_PORT_MOTION						50240
 #define TCP_PORT_STATE						50241
