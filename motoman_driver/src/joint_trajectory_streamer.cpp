@@ -295,7 +295,7 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
     JointData &joints)
 {
   if (vec.size() > joints.getMaxNumJoints())
-    ROS_ERROR_RETURN(false, "Failed to copy to JointData.  Len (%d) out of range (0 to %d)",
+    ROS_ERROR_RETURN(false, "Failed to copy to JointData.  Len (%ld) out of range (0 to %d)",
                      vec.size(), joints.getMaxNumJoints());
 
   joints.init();
@@ -401,6 +401,74 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         }
       }
       break;
+
+    case TransferStates::POINT_STREAMING:
+      // if no points in queue, streaming complete, set to idle.
+      if (this->streaming_queue_.empty())
+      {
+        if (this->time_since_last < this->point_streaming_timeout)
+        {
+          time_since_last = ros::Time::now().toSec() - time_of_last;
+          ros::Duration(0.005).sleep();
+          //ROS_INFO("Time since last point: %f", time_since_last);
+          break;
+        }
+        else
+        {
+          ROS_INFO("Point streaming complete,  setting state to IDLE");
+          this->state_ = TransferStates::IDLE;
+          break;
+        }
+      }
+      // if not connected, reconnect.
+      if (!this->connection_->isConnected())
+      {
+        ROS_DEBUG("Robot disconnected.  Attempting reconnect...");
+        connectRetryCount = 5;
+        break;
+      }
+      // otherwise, send point to robot.
+      tmpMsg = this->streaming_queue_.front();
+      msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
+               ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
+
+      ROS_INFO("Sending joint trajectory point");
+      if (this->connection_->sendAndReceiveMsg(msg, reply, false))
+      {
+        MotionReplyMessage reply_status;
+        if (!reply_status.init(reply))
+        {
+          ROS_ERROR("Aborting point stream operation.");
+          this->state_ = TransferStates::IDLE;
+          break;
+        }
+        if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
+        {
+          ROS_INFO("Point[%d] sent to controller", this->current_point_);
+          this->current_point_++;
+          time_since_last = 0.0;
+          time_of_last = ros::Time::now().toSec();
+          this->streaming_queue_.pop();
+        }
+        else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
+        {
+          ROS_INFO("silently resending.");
+          break;  // silently retry sending this point
+        }
+        else
+        {
+          ROS_ERROR_STREAM("Aborting point stream operation.  Failed to send point"
+                           << " (#" << this->current_point_ << "): "
+                           << MotomanMotionCtrl::getErrorString(reply_status.reply_));
+          this->state_ = TransferStates::IDLE;
+          break;
+        }
+      }
+      else
+        ROS_WARN("Failed sent joint point, will try again");
+
+      break;
+
     default:
       ROS_ERROR("Joint trajectory streamer: unknown state");
       this->state_ = TransferStates::IDLE;

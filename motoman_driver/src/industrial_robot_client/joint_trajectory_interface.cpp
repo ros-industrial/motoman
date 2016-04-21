@@ -194,6 +194,8 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ve
   this->sub_cur_pos_ = this->node_.subscribe(
                          "joint_states", 1, &JointTrajectoryInterface::jointStateCB, this);
 
+  this->sub_joint_command_ = this->node_.subscribe("joint_command", 0, &JointTrajectoryInterface::jointCommandCB, this);
+
   return true;
 }
 
@@ -335,6 +337,12 @@ void JointTrajectoryInterface::jointTrajectoryCB(
 
   // send command messages to robot
   send_to_robot(robot_msgs);
+}
+
+void JointTrajectoryInterface::jointCommandCB(
+  const trajectory_msgs::JointTrajectoryConstPtr &msg)
+{
+  //ROS_INFO("Yessir?");
 }
 
 bool JointTrajectoryInterface::trajectory_to_msgs(
