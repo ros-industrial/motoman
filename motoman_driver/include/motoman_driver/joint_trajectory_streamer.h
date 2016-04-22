@@ -130,7 +130,7 @@ public:
 
 protected:
   static const double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
-  static const double start_pos_tol_  = 1e-4;  // max difference btwn start & current position, for validation (rad)
+  static const double start_pos_tol_  = 5e-4; // max difference btwn start & current position, for validation (rad)
 
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
@@ -143,6 +143,10 @@ protected:
 
   static bool VectorToJointData(const std::vector<double> &vec,
                                 industrial::joint_data::JointData &joints);
+                                
+  double time_of_last;
+  double time_since_last;
+  static const double point_streaming_timeout = 3.0;
 };
 
 }  // namespace joint_trajectory_streamer
