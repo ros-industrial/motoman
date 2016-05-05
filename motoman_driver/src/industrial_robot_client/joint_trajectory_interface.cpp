@@ -39,6 +39,7 @@
 #include <string>
 
 using industrial_utils::param::getJointNames;
+using industrial_robot_client::motoman_utils::getJointGroups;
 using industrial::simple_message::SimpleMessage;
 namespace SpecialSeqValues = industrial::joint_traj_pt::SpecialSeqValues;
 typedef industrial::joint_traj_pt::JointTrajPt rbt_JointTrajPt;
@@ -84,84 +85,22 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bo
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
 {
   std::map<int, RobotGroup> robot_groups;
-
-  std::string value;
-  if(!ros::param::search("topics_list", value))
+  if(getJointGroups("topic_list", robot_groups))
+  {
+    this->version_0_ = false;
+    return init(connection, robot_groups);
+  }
+  else
   {
     this->version_0_ = true;
     std::vector<std::string> joint_names;
     if (!getJointNames("controller_joint_names", "robot_description", joint_names))
+    {
       ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
-
-    ROS_WARN_STREAM(industrial_robot_client::motoman_utils::TOPIC_LIST_ERROR_MSG);
+    }
     return init(connection, joint_names);
   }
-
-  this->version_0_ = false;
-  XmlRpc::XmlRpcValue topics_list_rpc;
-  ros::param::get(value, topics_list_rpc);
-
-  // Evaluating the topics_list parameter that contains the node configuration in
-  // respect to the characteristics for each group
-  std::vector<XmlRpc::XmlRpcValue> topics_list;
-
-  for (int i = 0; i < topics_list_rpc.size(); i++)
-  {
-    XmlRpc::XmlRpcValue state_value;
-    state_value = topics_list_rpc[i];
-    topics_list.push_back(state_value);
-  }
-
-  std::vector<XmlRpc::XmlRpcValue> groups_list;
-
-  // TODO(thiagodefreitas): check the consistency of the group numbers
-  for (int i = 0; i < topics_list[0]["state"].size(); i++)
-  {
-    XmlRpc::XmlRpcValue group_value;
-    group_value = topics_list[0]["state"][i];
-    groups_list.push_back(group_value);
-  }
-
-
-  for (int i = 0; i < groups_list.size(); i++)
-  {
-    RobotGroup rg;
-    std::vector<std::string> rg_joint_names;
-
-    XmlRpc::XmlRpcValue joints;
-
-    joints = groups_list[i]["group"][0]["joints"];
-    for (int jt = 0; jt < joints.size(); jt++)
-      rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
-
-    XmlRpc::XmlRpcValue group_number;
-
-
-    group_number = groups_list[i]["group"][0]["group_number"];
-    int group_number_int = static_cast<int>(group_number);
-
-    XmlRpc::XmlRpcValue name;
-    std::string name_string;
-
-    name = groups_list[i]["group"][0]["name"];
-    name_string = static_cast<std::string>(name);
-
-
-    XmlRpc::XmlRpcValue ns;
-    std::string ns_string;
-
-    ns = groups_list[i]["group"][0]["ns"];
-
-    ns_string = static_cast<std::string>(ns);
-
-    rg.set_group_id(group_number_int);
-    rg.set_joint_names(rg_joint_names);
-    rg.set_name(name_string);
-    rg.set_ns(ns_string);
-
-    robot_groups[group_number_int] = rg;
-  }
-  return init(connection, robot_groups);
+  return false;
 }
 
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,

@@ -87,7 +87,6 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
   std::map<int, RobotGroup> robot_groups;
   if(getJointGroups("topic_list", robot_groups))
   {
-    ROS_INFO_STREAM("Successfully loaded multiple joint groups");
     this->version_0_ = false;
     return init(connection, robot_groups);
   }
@@ -95,11 +94,7 @@ bool RobotStateInterface::init(SmplMsgConnection* connection)
   {
     this->version_0_ = true;
     std::vector<std::string> joint_names;
-    if (getJointNames("controller_joint_names", "robot_description", joint_names))
-    {
-      ROS_INFO_STREAM("Succssfully loaded a single joint group from 'controller_joint_names' parame");
-    }
-    else
+    if (!getJointNames("controller_joint_names", "robot_description", joint_names))
     {
       ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
     }
