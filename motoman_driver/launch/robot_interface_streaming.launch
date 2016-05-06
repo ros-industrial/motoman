@@ -15,7 +15,7 @@
     robot_interface_streaming.launch robot_ip:=<value> use_bswap:=<true,false>
 -->
 
-	<!-- version0: Older client without multi groups-support -->
+  <!-- version0: Set to true for older/single arm joint trajectory action -->
 	<arg name="version0" />
 	
 	<!-- robot_ip: IP-address of the robot's socket-messaging server -->
