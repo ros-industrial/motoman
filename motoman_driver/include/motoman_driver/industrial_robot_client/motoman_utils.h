@@ -43,22 +43,16 @@ namespace industrial_robot_client
 {
 namespace motoman_utils
 {
-
+/**
+ * \brief Parses multi-group joints from topic_param
+ *
+ * \param topic_param base parameter name that holds the joint group listing
+ * \param robot_groups returns map of robot groups parsed from topic parameter
+ *
+ * \return true on success, false if parameter not found
+ */
 bool getJointGroups(std::string topic_param, std::map<int, RobotGroup> robot_groups);
 
-/**
-  @brief Common error message displayed when node fails to find 'topic_list' parameter
-  */
-
-const std::string TOPIC_LIST_ERROR_MSG(
-    "Failed to find 'topic_list' parameter (new in Indigo)\r\n"
-    "  \tNew parameter documentaion can be found here:\r\n"
-    "  \thttp://wiki.ros.org/motoman_driver/Tutorials/Creating%20a%20Dual-Arm%20System\r\n"
-    "If still using the Hydro server version on the controller, then set the 'version0' parameter to FALSE\r\n"
-    "  \tThe driver will assume a single arm with joint names in order of the URDF (base to tip) OR\r\n"
-    "  \tit will read the joint order from the 'controller_joint_names' parameter described here:\r\n"
-    "  \t\thttp://wiki.ros.org/Industrial/Tutorials/Create_a_MoveIt_Pkg_for_an_Industrial_Robot#Update_Configuration_Files"
-    );
 }//motoman_utils
 }//industrial_robot_client
 
