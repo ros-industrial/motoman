@@ -7,13 +7,9 @@
 
 	<!-- Load the byte-swapping version of robot_state if required -->
 	<arg name="use_bswap" />
-	
-	<!-- Version of the driver, concerning multi-groups support -->
-	<arg name="version0" />
 
 	<!-- put them on the parameter server -->
-	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
-	<param name="version0" type="bool" value="$(arg version0)" />
+    <param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
 
 	<!-- load the correct version of the motion streaming node -->
 	<node if="$(arg use_bswap)" name="motion_streaming_interface"
