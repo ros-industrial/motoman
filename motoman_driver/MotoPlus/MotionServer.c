@@ -504,12 +504,17 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 		return 0;
 	}
 
+	// Pre-check to ensure no groups are busy
 	for (i = 0; i < msgBody->numberOfValidGroups; i += 1)
-	{		
-		// Check group number valid
-		if(Ros_Controller_IsValidGroupNo(controller, msgBody->jointTrajPtData[i].groupNo))
+	{
+		if (Ros_Controller_IsValidGroupNo(controller, msgBody->jointTrajPtData[i].groupNo))
 		{
 			ctrlGroup = controller->ctrlGroups[msgBody->jointTrajPtData[i].groupNo];
+			if (ctrlGroup->hasDataToProcess)
+			{
+				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_BUSY, 0, replyMsg, msgBody->jointTrajPtData[i].groupNo);
+				return 0;
+			}
 		}
 		else
 		{
@@ -517,7 +522,7 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 			Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_GROUPNO, replyMsg, msgBody->jointTrajPtData[i].groupNo);
 			return 0;
 		}
-	
+			
 		// Check that minimum information (time, position, velocity) is valid
 		if( (msgBody->jointTrajPtData[i].validFields & 0x07) != 0x07 )
 		{
@@ -525,6 +530,11 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 			Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_DATA_INSUFFICIENT, replyMsg, msgBody->jointTrajPtData[i].groupNo);
 			return 0;
 		}
+	}
+
+	for (i = 0; i < msgBody->numberOfValidGroups; i += 1)
+	{
+		ctrlGroup = controller->ctrlGroups[msgBody->jointTrajPtData[i].groupNo];
 		
 		// Check the trajectory sequence code
 		if(msgBody->sequence == 0) // First trajectory point
@@ -539,6 +549,7 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 			{
 				printf("ERROR: Ros_MotionServer_InitTrajPointFullEx returned %d\n", ret);
 				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ret, replyMsg, msgBody->jointTrajPtData[i].groupNo);
+				return 0; //stop processing other groups in this loop
 			}
 		}
 		else if(msgBody->sequence > 0)// Subsequent trajectory points
@@ -553,16 +564,19 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 			{
 				printf("ERROR: Ros_MotionServer_AddTrajPointFullEx returned %d\n", ret);
 				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_BUSY, 0, replyMsg, msgBody->jointTrajPtData[i].groupNo);
+				return 0; //stop processing other groups in this loop
 			}
 			else
 			{
 				printf("ERROR: Ros_MotionServer_AddTrajPointFullEx returned %d\n", ret);
 				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ret, replyMsg, msgBody->jointTrajPtData[i].groupNo);
+				return 0; //stop processing other groups in this loop
 			}
 		}
 		else
 		{
 			Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_SEQUENCE, replyMsg, msgBody->jointTrajPtData[i].groupNo);
+			return 0; //stop processing other groups in this loop
 		}
 	}
 
