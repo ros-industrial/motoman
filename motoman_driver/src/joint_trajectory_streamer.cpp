@@ -46,10 +46,12 @@ using industrial::joint_traj_pt_full::JointTrajPtFull;
 using industrial::joint_traj_pt_full_message::JointTrajPtFullMessage;
 using industrial::joint_traj_pt_full_ex::JointTrajPtFullEx;
 using industrial::joint_traj_pt_full_ex_message::JointTrajPtFullExMessage;
+using industrial::shared_types::shared_int;
 
 using motoman::simple_message::motion_reply_message::MotionReplyMessage;
 namespace TransferStates = industrial_robot_client::joint_trajectory_streamer::TransferStates;
 namespace MotionReplyResults = motoman::simple_message::motion_reply::MotionReplyResults;
+using motoman::io_ctrl::MotomanIoCtrl;
 
 namespace motoman
 {
@@ -89,6 +91,14 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
   disabler_ = node_.advertiseService("robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
 
   enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
+
+  // hacking this in here at this place
+  io_ctrl_.init(connection);
+  this->srv_read_single_io = this->node_.advertiseService("read_single_io",
+      &MotomanJointTrajectoryStreamer::readSingleIoCB, this);
+  this->srv_write_single_io = this->node_.advertiseService("write_single_io",
+      &MotomanJointTrajectoryStreamer::writeSingleIoCB, this);
+
 
   return rtn;
 }
@@ -541,6 +551,56 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
 
   return true;
 }
+
+
+// Service to read a single IO
+bool MotomanJointTrajectoryStreamer::readSingleIoCB(
+  motoman_msgs::ReadSingleIO::Request &req,
+  motoman_msgs::ReadSingleIO::Response &res)
+{
+  shared_int io_val= -1;
+
+  // send message and release mutex as soon as possible
+  this->mutex_.lock();
+  bool result = io_ctrl_.readSingleIO(req.address, io_val);
+  this->mutex_.unlock();
+
+  if (!result)
+  {
+    ROS_ERROR("Reading IO element %d failed", req.address);
+    return false;
+  }
+  res.value = io_val;
+  ROS_INFO("Element %d value: %d", req.address, io_val);
+
+  return true;
+}
+
+
+// Service to write Single IO
+bool MotomanJointTrajectoryStreamer::writeSingleIoCB(
+  motoman_msgs::WriteSingleIO::Request &req,
+  motoman_msgs::WriteSingleIO::Response &res)
+{
+  shared_int io_val= -1;
+
+  // send message and release mutex as soon as possible
+  this->mutex_.lock();
+  bool result = io_ctrl_.writeSingleIO(req.address, req.value);
+  this->mutex_.unlock();
+
+  if (!result)
+  {
+    ROS_ERROR("Writing IO element %d failed", req.address);
+    return false;
+  }
+  ROS_INFO("Element %d set to: %d", req.address, req.value);
+
+  return true;
+}
+
+
+
 
 }  // namespace joint_trajectory_streamer
 }  // namespace motoman
