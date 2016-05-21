@@ -129,8 +129,6 @@ public:
   virtual void streamingThread();
 
 protected:
-  static const double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
-  static const double start_pos_tol_  = 1e-4;  // max difference btwn start & current position, for validation (rad)
 
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
