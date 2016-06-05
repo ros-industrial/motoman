@@ -51,7 +51,7 @@ namespace motoman_utils
  *
  * \return true on success, false if parameter not found
  */
-bool getJointGroups(std::string topic_param, std::map<int, RobotGroup> robot_groups);
+bool getJointGroups(const std::string topic_param, std::map<int, RobotGroup> & robot_groups);
 
 }//motoman_utils
 }//industrial_robot_client

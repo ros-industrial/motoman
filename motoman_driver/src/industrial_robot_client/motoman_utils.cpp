@@ -39,7 +39,7 @@ namespace industrial_robot_client
 namespace motoman_utils
 {
 
-bool getJointGroups(std::string topic_param, std::map<int, RobotGroup> robot_groups)
+bool getJointGroups(const std::string topic_param, std::map<int, RobotGroup> & robot_groups)
 {
   if(ros::param::has(topic_param))
   {
