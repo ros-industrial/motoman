@@ -9,16 +9,14 @@
     robot_interface_streaming_sia10f.launch robot_ip:=<value> controller:=<fs100|dx100>
 -->
 <launch>
-	<arg name="robot_ip" />
+  <arg name="robot_ip" />
 	
   <!-- controller: Controller name (fs100 or dx100) -->
   <arg name="controller"/>
-  <arg name="version0"/>
 
 	<rosparam command="load" file="$(find motoman_sia10f_support)/config/joint_names_sia10f.yaml" />
 
-	<include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
-		<arg name="robot_ip"   value="$(arg robot_ip)" />
-        <arg name="version0"   value="$(arg version0)" />
-	</include>
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip"   value="$(arg robot_ip)" />
+  </include>
 </launch>

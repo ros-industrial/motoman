@@ -40,6 +40,8 @@
 #include <string>
 #include <vector>
 
+using industrial_robot_client::motoman_utils::getJointGroups;
+
 namespace industrial_robot_client
 {
 namespace joint_trajectory_action
@@ -58,78 +60,14 @@ JointTrajectoryAction::JointTrajectoryAction() :
   pn.param("constraints/goal_threshold", goal_threshold_, DEFAULT_GOAL_THRESHOLD_);
 
   std::map<int, RobotGroup> robot_groups;
+  getJointGroups("topic_list", robot_groups);
 
-  // This loops through the yaml file to find the parameters for correctly configuring the node
-  // A parameter named topics_list contains the respective information for each of the groups
-
-  std::string value;
-  if(!ros::param::search("topics_list", value))
+  for (int i = 0; i < robot_groups.size(); i++)
   {
-    ROS_ERROR_STREAM(industrial_robot_client::motoman_utils::TOPIC_LIST_ERROR_MSG);
-    throw;
-  }
 
-  XmlRpc::XmlRpcValue topics_list_rpc;
-  ros::param::get(value, topics_list_rpc);
-
-
-  std::vector<XmlRpc::XmlRpcValue> topics_list;
-
-  for (int i = 0; i < topics_list_rpc.size(); i++)
-  {
-    XmlRpc::XmlRpcValue state_value;
-    state_value = topics_list_rpc[i];
-    topics_list.push_back(state_value);
-  }
-
-  std::vector<XmlRpc::XmlRpcValue> groups_list;
-  // TODO(thiagodefreitas): check the consistency of the group numbers
-  for (int i = 0; i < topics_list[0]["state"].size(); i++)
-  {
-    XmlRpc::XmlRpcValue group_value;
-    group_value = topics_list[0]["state"][i];
-    groups_list.push_back(group_value);
-  }
-
-
-  for (int i = 0; i < groups_list.size(); i++)
-  {
-    RobotGroup rg;
-    std::vector<std::string> rg_joint_names;
-
-    XmlRpc::XmlRpcValue joints;
-
-    joints = groups_list[i]["group"][0]["joints"];
-    for (int jt = 0; jt < joints.size(); jt++)
-      rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
-
-    XmlRpc::XmlRpcValue group_number;
-
-
-    group_number = groups_list[i]["group"][0]["group_number"];
-    int group_number_int = static_cast<int>(group_number);
-
-    XmlRpc::XmlRpcValue name;
-    std::string name_string;
-
-    name = groups_list[i]["group"][0]["name"];
-    name_string = static_cast<std::string>(name);
-
-
-    XmlRpc::XmlRpcValue ns;
-    std::string ns_string;
-
-    ns = groups_list[i]["group"][0]["ns"];
-
-    ns_string = static_cast<std::string>(ns);
-
-    rg.set_group_id(group_number_int);
-    rg.set_joint_names(rg_joint_names);
-    rg.set_name(name_string);
-    rg.set_ns(ns_string);
-
-    std::string joint_path_action_name = ns_string + "/" + name_string;
-    robot_groups[group_number_int] = rg;
+    std::string joint_path_action_name = robot_groups[i].get_ns() + "/" + robot_groups[i].get_name();
+    std::vector<std::string> rg_joint_names = robot_groups[i].get_joint_names();
+    int group_number_int = robot_groups[i].get_group_id();
 
     all_joint_names_.insert(all_joint_names_.end(), rg_joint_names.begin(), rg_joint_names.end());
 
