@@ -35,14 +35,27 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define MAX_PARAM_BUFF 4000 //4k
-#define TAG_BUFF_LEN 10
-
+	
 typedef struct
 {
 	float PtoR[MAX_PULSE_AXES]; //Array to store PULSE TO RADIAN conversion factors for each axes
-}GB_PULSE_TO_RAD;
+} PULSE_TO_RAD;
+
+typedef struct
+{
+	float PtoM[MAX_PULSE_AXES]; //Array to store PULSE TO METER conversion factors for each axes
+} PULSE_TO_METER;
+
+typedef enum
+{
+	ROTATATION_AXIS,
+	LINEAR_AXIS
+} AXIS_TYPE;
+
+typedef struct
+{
+	AXIS_TYPE	type[MAX_PULSE_AXES];	//Array to store whether axis is rotational or linear
+} AXIS_MOTION_TYPE;
 
 typedef struct
 {
@@ -80,6 +93,17 @@ typedef struct
 	int IpCycleInMilliseconds;	//Interpolation Cycle in milliseconds
 	MAX_INCREMENT_INFO info;	//Maximum increment per interpolation cycle
 } MAX_INC_PIPC;
+
+typedef struct
+{
+	INT32 maxLimit[MAX_PULSE_AXES];
+	INT32 minLimit[MAX_PULSE_AXES];
+} JOINT_PULSE_LIMITS;
+
+typedef struct
+{
+	INT32 maxLimit[MAX_PULSE_AXES];
+} JOINT_ANGULAR_VELOCITY_LIMITS;
 	
 /******************************************************************************/
 /* << 2 >>                                                              	  */
@@ -110,8 +134,8 @@ extern int  	GP_getNumberOfAxes(int ctrlGrp);
 /* Return value	 : Success = OK 											  */
 /*				 : Failure = NG												  */	
 /******************************************************************************/
-extern STATUS 	GP_getPulseToRad(int ctrlGrp, GB_PULSE_TO_RAD *PulseToRad);
-	
+extern STATUS 	GP_getPulseToRad(int ctrlGrp, PULSE_TO_RAD *PulseToRad);
+
 /******************************************************************************/
 /* << 11 >>                                                             	  */
 /* Function name : STATUS GetFBPulseCorrection()							  */
@@ -164,6 +188,50 @@ extern STATUS GP_getMaxIncPerIpCycle(int ctrlGrp, int interpolationPeriodInMilli
 /*				 : Failure = -1												  */	
 /******************************************************************************/
 extern float GP_getGovForIncMotion(int ctrlGrp);
+
+/******************************************************************************/
+/* << 16 >>                                                              	  */
+/* Function name : STATUS GP_getJointPulseLimits()							  */
+/* Functionality : Gets the Pulse to radians conversion factors				  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   GB_PULSE_TO_RAD *PulseToRad -array of conversion data [OUT]*/
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS GP_getJointPulseLimits(int ctrlGrp, JOINT_PULSE_LIMITS* jointPulseLimits);
+
+/******************************************************************************/
+/* << 17 >>                                                              	  */
+/* Function name : STATUS GP_getJointVelocityLimits()						  */
+/* Functionality : Gets the velocity limit for each joint					  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   JOINT_ANGULAR_VELOCITY_LIMITS *GP_getJointAngularVelocityLimits (deg/sec) [OUT]*/
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS GP_getJointAngularVelocityLimits(int ctrlGrp, JOINT_ANGULAR_VELOCITY_LIMITS* jointVelocityLimits);
+
+/******************************************************************************/
+/* << 18 >>                                                              	  */
+/* Function name : STATUS GP_getAxisMotionType()							  */
+/* Functionality : Gets the motion type of each axis in the group			  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   AXIS_MOTION_TYPE *axisType -array of data [OUT]			  */
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_getAxisMotionType(int ctrlGrp, AXIS_MOTION_TYPE* axisType);
+
+/******************************************************************************/
+/* << 19 >>                                                              	  */
+/* Function name : STATUS GP_getPulseToMeter()								  */
+/* Functionality : Gets the Pulse to meter conversion factors				  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   PULSE_TO_METER *PulseToMeter -array of conversion data [OUT]*/
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_getPulseToMeter(int ctrlGrp, PULSE_TO_METER* PulseToMeter);
 
 #ifdef __cplusplus
 }

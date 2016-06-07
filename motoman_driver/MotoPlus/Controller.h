@@ -32,7 +32,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#define APPLICATION_VERSION					"1.2.5"
+#define APPLICATION_VERSION					"1.3.4"
 
 #define TCP_PORT_MOTION						50240
 #define TCP_PORT_STATE						50241
@@ -150,5 +150,11 @@ extern void Ros_Controller_ErrNo_ToString(int errNo, char errMsg[ERROR_MSG_MAX_S
 #ifdef DX100
 extern void Ros_Controller_ListenForSkill(Controller* controller, int sl);
 #endif
+
+typedef enum
+{
+	SUBCODE_INVALID_AXIS_TYPE
+} ROS_ASSERTION_CODE;
+extern void motoRosAssert(BOOL mustBeTrue, ROS_ASSERTION_CODE subCodeIfFalse, char* msgFmtIfFalse, ...);
 
 #endif
