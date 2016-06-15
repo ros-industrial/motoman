@@ -10,13 +10,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/visual/base.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/visual/base.dae" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/collision/base.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/collision/base.dae" />
       </geometry>
     </collision>
   </link>
@@ -25,13 +25,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/visual/link_s.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/visual/link_s.dae" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/collision/link_s.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/collision/link_s.dae" />
       </geometry>
     </collision>
   </link>
@@ -48,13 +48,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/visual/link_l.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/visual/link_l.dae" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/collision/link_l.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/collision/link_l.dae" />
       </geometry>
     </collision>
   </link>
@@ -71,13 +71,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/visual/link_e.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/visual/link_e.dae" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/collision/link_e.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/collision/link_e.dae" />
       </geometry>
     </collision>
   </link>
@@ -94,13 +94,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/visual/link_u.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/visual/link_u.dae" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/collision/link_u.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/collision/link_u.dae" />
       </geometry>
     </collision>
   </link>
@@ -117,13 +117,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/visual/link_r.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/visual/link_r.dae" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/collision/link_r.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/collision/link_r.dae" />
       </geometry>
     </collision>
   </link>
@@ -140,13 +140,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/visual/link_b.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/visual/link_b.dae" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/collision/link_b.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/collision/link_b.dae" />
       </geometry>
     </collision>
   </link>
@@ -163,13 +163,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/visual/link_t.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/visual/link_t.dae" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://motoman_config/meshes/sia5/collision/link_t.dae" />
+        <mesh filename="package://motoman_sia5d_support/meshes/sia5d/collision/link_t.dae" />
       </geometry>
     </collision>
   </link>
