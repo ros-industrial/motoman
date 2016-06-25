@@ -9,7 +9,6 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   
-  <run_depend>motoman_config</run_depend>
   <run_depend>motoman_driver</run_depend>
   <run_depend>motoman_mh5_support</run_depend>
   <run_depend>motoman_sia10d_support</run_depend>
