@@ -2,6 +2,10 @@
 Changelog for package motoman_sia20d_moveit_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* No changes
+
 0.3.4 (2016-07-03)
 ------------------
 * Merge pull request `#36 <https://github.com/shaun-edwards/motoman/issues/36>`_ from ros-industrial/hydro

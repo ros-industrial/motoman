@@ -2,6 +2,10 @@
 Changelog for package motoman_mh5_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* No changes
+
 0.3.4 (2016-07-03)
 ------------------
 * Fixed roslaunch test issues

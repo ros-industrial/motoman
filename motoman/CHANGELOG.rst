@@ -2,6 +2,10 @@
 Changelog for package motoman
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* No changes
+
 0.3.4 (2016-07-03)
 ------------------
 * Remove deprecated motoman_config pkg. Fix `#76 <https://github.com/shaun-edwards/motoman/issues/76>`_.

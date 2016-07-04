@@ -2,6 +2,11 @@
 Changelog for package motoman_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Cleaned up issues with Changelogs
+* Contributors: Shaun Edwards
+
 0.3.4 (2016-07-03)
 ------------------
 * driver: remove deprecated 'robot_interface.launch' file.

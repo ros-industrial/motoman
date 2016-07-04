@@ -2,6 +2,10 @@
 Changelog for package motoman_sia5d_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* No changes
+
 0.3.4 (2016-07-03)
 ------------------
 * support: mark SIAx(d|f) pkgs as deprecated.
