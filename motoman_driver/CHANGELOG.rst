@@ -2,8 +2,8 @@
 Changelog for package motoman_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.5 (2016-07-03)
+------------------
 * Cleaned up issues with Changelogs
 * Contributors: Shaun Edwards
 
