@@ -2,6 +2,13 @@
 Changelog for package motoman_sia20d_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* support: mark SIAx(d|f) pkgs as deprecated.
+  And point users to the 'motoman_sia_support' package, which will be
+  introduced in Jade.
+* Contributors: Shaun Edwards, gavanderhoorn, thiagodefreitas
+
 0.3.3 (2014-02-07)
 ------------------
 * No changes

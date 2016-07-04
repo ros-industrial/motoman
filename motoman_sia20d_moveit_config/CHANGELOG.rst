@@ -2,6 +2,13 @@
 Changelog for package motoman_sia20d_moveit_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#36 <https://github.com/shaun-edwards/motoman/issues/36>`_ from ros-industrial/hydro
+  Pulling in changes from Hydro(release) branch.
+* sia20d moveit cfg: add missing run_depend on robot simulator. Fix `#32 <https://github.com/shaun-edwards/motoman/issues/32>`_.
+* Contributors: Shaun Edwards, gavanderhoorn
+
 0.3.3 (2014-02-07)
 ------------------
 * Path fix for industrial_core/`#22 <https://github.com/shaun-edwards/motoman/issues/22>`_ moveit patch
