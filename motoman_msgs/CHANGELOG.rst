@@ -2,8 +2,8 @@
 Changelog for package motoman_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.4 (2016-07-03)
+------------------
 * Support for multiple motion group control
 * Contributors: thiagodefreitas
 

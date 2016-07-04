@@ -2,8 +2,8 @@
 Changelog for package motoman_mh5_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.4 (2016-07-03)
+------------------
 * Fixed roslaunch test issues
 * mh5: remove 'solid' from binary visual meshes. Fix `#60 <https://github.com/shaun-edwards/motoman/issues/60>`_.
   Also removes executable bit (not needed).

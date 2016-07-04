@@ -48,8 +48,8 @@ represents.
 * Improve error handling
  - Add additional text and I/O feedback in error cases
 
-Forthcoming
------------
+0.3.4 (2016-07-03)
+------------------
 * driver: remove deprecated 'robot_interface.launch' file.
   Deprecated since at least Aug-2013 (9acb8550).
 * Support for multiple motion group control
