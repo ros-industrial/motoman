@@ -4,6 +4,7 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="motoman_sia10d" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- link list -->
   <link name="world">
     <origin rpy="0 0 0" xyz="0 0 0"/>
   </link>
@@ -215,6 +216,8 @@
     <selfCollide>true</selfCollide>
     <material>Gazebo/White</material>
   </gazebo>
+  <!-- end of link list -->
+  <!-- joint list -->
   <joint name="world-base" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="world"/>
@@ -225,7 +228,7 @@
     <child link="link_s"/>
     <origin rpy="0 0 0" xyz="0 0 0.36"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100" lower="-3.1416" upper="3.1416" velocity="2.96"/>
+    <limit effort="100" lower="-3.1415" upper="3.1415" velocity="2.96"/>
   </joint>
   <joint name="joint_l" type="revolute">
     <parent link="link_s"/>
@@ -253,7 +256,7 @@
     <child link="link_r"/>
     <origin rpy="0 0 0" xyz="0 0 0.360"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="100" lower="-3.1416" upper="3.1416" velocity="3.48"/>
+    <limit effort="100" lower="-3.1415" upper="3.1415" velocity="3.48"/>
   </joint>
   <joint name="joint_b" type="revolute">
     <parent link="link_r"/>
@@ -267,6 +270,8 @@
     <child link="link_t"/>
     <origin rpy="0 0 0" xyz="0 0 0.155"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="100" lower="-3.1416" upper="3.1416" velocity="6.97"/>
+    <limit effort="100" lower="-3.1415" upper="3.1415" velocity="6.97"/>
   </joint>
+  <!-- end of joint list -->
 </robot>
+
