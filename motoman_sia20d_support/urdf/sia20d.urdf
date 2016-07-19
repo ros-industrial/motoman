@@ -4,6 +4,7 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="motoman_sia20d" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- link list -->
   <link name="base_link">
     <visual>
       <geometry>
@@ -135,12 +136,14 @@
     </collision>
   </link>
   <link name="tool0"/>
+  <!-- end of link list -->
+  <!-- joint list -->
   <joint name="joint_s" type="revolute">
     <parent link="base_link"/>
     <child link="link_s"/>
     <origin rpy="0 0 0" xyz="0 0 0.41"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100" lower="-3.1416" upper="3.1416" velocity="2.26"/>
+    <limit effort="100" lower="-3.1415" upper="3.1415" velocity="2.26"/>
   </joint>
   <joint name="joint_l" type="revolute">
     <parent link="link_s"/>
@@ -168,7 +171,7 @@
     <child link="link_r"/>
     <origin rpy="0 0 0" xyz="0 0 0.420"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="100" lower="-3.1416" upper="3.1416" velocity="3.48"/>
+    <limit effort="100" lower="-3.1415" upper="3.1415" velocity="3.48"/>
   </joint>
   <joint name="joint_b" type="revolute">
     <parent link="link_r"/>
@@ -182,11 +185,13 @@
     <child link="link_t"/>
     <origin rpy="0 0 0" xyz="0 0 0.18"/>
     <axis xyz="0 0 -1"/>
-    <limit effort="100" lower="-3.1416" upper="3.1416" velocity="6.97"/>
+    <limit effort="100" lower="-3.1415" upper="3.1415" velocity="6.97"/>
   </joint>
   <joint name="link_t-tool0" type="fixed">
     <origin rpy="0 0 -3.1416" xyz="0 0 0.0"/>
     <parent link="link_t"/>
     <child link="tool0"/>
   </joint>
+  <!-- end of joint list -->
 </robot>
+
