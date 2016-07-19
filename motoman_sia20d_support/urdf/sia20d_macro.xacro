@@ -185,7 +185,7 @@
 			<limit lower="-3.1416" upper="3.1416" effort="100" velocity="6.97" />
 		</joint>
     <joint name="${prefix}link_t-tool0" type="fixed" >
-      <origin xyz="0 0 0.0" rpy="0 0 -3.1416"/>
+      <origin xyz="0 0 0.0" rpy="0 0 -3.1415926535"/>
       <parent link="${prefix}link_t" />
       <child link="${prefix}tool0" />
     </joint>
