@@ -153,6 +153,12 @@ BOOL Ros_Controller_Init(Controller* controller)
 #endif
 	if(controller->numGroup < 1)
 		bInitOk = FALSE;
+
+	if (controller->numGroup > MOT_MAX_GR)
+	{
+		printf("!!!---Detected %d control groups.  MotoROS will only control %d.---!!!\n", controller->numGroup, MOT_MAX_GR);
+		controller->numGroup = MOT_MAX_GR;
+	}
 	
 	controller->numRobot = 0;
 	
