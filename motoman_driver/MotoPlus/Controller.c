@@ -156,6 +156,7 @@ BOOL Ros_Controller_Init(Controller* controller)
 
 	if (controller->numGroup > MOT_MAX_GR)
 	{
+		mpSetAlarm(8001, "WARNING: Too many groups for ROS", 0); //force user to acknowledge ignored groups
 		printf("!!!---Detected %d control groups.  MotoROS will only control %d.---!!!\n", controller->numGroup, MOT_MAX_GR);
 		controller->numGroup = MOT_MAX_GR;
 	}
