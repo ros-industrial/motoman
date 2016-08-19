@@ -188,19 +188,19 @@ BOOL Ros_Controller_Init(Controller* controller)
 	// Initialize Thread ID and Socket to invalid value
 	controller->tidConnectionSrv = INVALID_TASK;
 
-    controller->tidStateSendState = INVALID_TASK;
-    for (i = 0; i < MAX_STATE_CONNECTIONS; i++)
-    {
-    	controller->sdStateConnections[i] = INVALID_SOCKET;
-    }
+	controller->tidStateSendState = INVALID_TASK;
+	for (i = 0; i < MAX_STATE_CONNECTIONS; i++)
+	{
+		controller->sdStateConnections[i] = INVALID_SOCKET;
+	}
 
 	for (i = 0; i < MAX_MOTION_CONNECTIONS; i++)
-    {
-    	controller->sdMotionConnections[i] = INVALID_SOCKET;
-    	controller->tidMotionConnections[i] = INVALID_TASK;
-    }
+	{
+		controller->sdMotionConnections[i] = INVALID_SOCKET;
+		controller->tidMotionConnections[i] = INVALID_TASK;
+	}
 	controller->tidIncMoveThread = INVALID_TASK;
-	
+
 #ifdef DX100
 	controller->bSkillMotionReady[0] = FALSE;
 	controller->bSkillMotionReady[1] = FALSE;
@@ -265,35 +265,35 @@ int Ros_Controller_OpenSocket(int tcpPort)
 	int ret;
 
 	// Open the socket
-   	sd = mpSocket(AF_INET, SOCK_STREAM, 0);
-   	if (sd < 0)
-       	return -1;
-    
-    // Set structure
-   	memset(&serverSockAddr, 0, sizeof(struct sockaddr_in));
-   	serverSockAddr.sin_family = AF_INET;
-   	serverSockAddr.sin_addr.s_addr = INADDR_ANY;
+	sd = mpSocket(AF_INET, SOCK_STREAM, 0);
+	if (sd < 0)
+		return -1;
+
+	// Set structure
+	memset(&serverSockAddr, 0, sizeof(struct sockaddr_in));
+	serverSockAddr.sin_family = AF_INET;
+	serverSockAddr.sin_addr.s_addr = INADDR_ANY;
 	serverSockAddr.sin_port = mpHtons(tcpPort);
 
 	//bind to network interface
-   	ret = mpBind(sd, (struct sockaddr *)&serverSockAddr, sizeof(struct sockaddr_in)); 
-   	if (ret < 0)
-       	goto closeSockHandle;
-       	
+	ret = mpBind(sd, (struct sockaddr *)&serverSockAddr, sizeof(struct sockaddr_in)); 
+	if (ret < 0)
+		goto closeSockHandle;
+
 	//prepare to accept connections
-   	ret = mpListen(sd, SOMAXCONN);
-   	if (ret < 0)
-       	goto closeSockHandle;
-       	
-    return  sd;
-     
-closeSockHandle:	
+	ret = mpListen(sd, SOMAXCONN);
+	if (ret < 0)
+		goto closeSockHandle;
+
+	return sd;
+
+closeSockHandle:
 	printf("Error in Ros_Controller_OpenSocket\r\n");
 
 	if(sd >= 0)
-    	mpClose(sd);
+		mpClose(sd);
 
-	return -2;       	
+	return -2;
 }
 
 
@@ -302,20 +302,20 @@ closeSockHandle:
 //-----------------------------------------------------------------------
 void Ros_Controller_ConnectionServer_Start(Controller* controller)
 {
-    int		sdMotionServer = INVALID_SOCKET;
-    int		sdStateServer = INVALID_SOCKET;
-    struct	fd_set  fds;
-    struct  timeval tv;
-    int     sdAccepted = INVALID_SOCKET;
-    struct  sockaddr_in     clientSockAddr;
-    int     sizeofSockAddr;
-	int 	useNoDelay = 1;
+	int     sdMotionServer = INVALID_SOCKET;
+	int     sdStateServer = INVALID_SOCKET;
+	struct  fd_set  fds;
+	struct  timeval tv;
+	int     sdAccepted = INVALID_SOCKET;
+	struct  sockaddr_in     clientSockAddr;
+	int     sizeofSockAddr;
+	int     useNoDelay = 1;
 	STATUS  s;
 
 	//Set feedback signal (Application is installed and running)
 	Ros_Controller_SetIOState(IO_FEEDBACK_CONNECTSERVERRUNNING, TRUE);
 
-    printf("Controller connection server running\r\n");
+	printf("Controller connection server running\r\n");
 
 	//New sockets for server listening to multiple port
 	sdMotionServer = Ros_Controller_OpenSocket(TCP_PORT_MOTION);
@@ -329,54 +329,54 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
 
-    FOREVER //Continue to accept multiple connections forever
-    {
+	FOREVER //Continue to accept multiple connections forever
+	{
 		FD_ZERO(&fds);
 		FD_SET(sdMotionServer, &fds); 
 		FD_SET(sdStateServer, &fds); 
 		
 		if(mpSelect(sdStateServer+1, &fds, NULL, NULL, NULL) > 0)
 		{
-	        memset(&clientSockAddr, 0, sizeof(clientSockAddr));
-	        sizeofSockAddr = sizeof(clientSockAddr);
+			memset(&clientSockAddr, 0, sizeof(clientSockAddr));
+			sizeofSockAddr = sizeof(clientSockAddr);
 			
 			//Accept the connection and get a new socket handle
 			if(FD_ISSET(sdMotionServer, &fds))
-	        	sdAccepted = mpAccept(sdMotionServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
+				sdAccepted = mpAccept(sdMotionServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
 			else if(FD_ISSET(sdStateServer, &fds))
 				sdAccepted = mpAccept(sdStateServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
 			else
 				continue;
 				
-	        if (sdAccepted < 0)
-	            break;
-	        
-	        printf("Accepted connection from client PC\r\n");
-	          
-    		s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
-    		if( OK != s )
-    		{
-      			printf("Failed to set TCP_NODELAY.\r\n");
-    		}
-	        
+			if (sdAccepted < 0)
+				break;
+			
+			printf("Accepted connection from client PC\r\n");
+			
+			s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
+			if( OK != s )
+			{
+				printf("Failed to set TCP_NODELAY.\r\n");
+			}
+			
 			if(FD_ISSET(sdMotionServer, &fds))
 				Ros_MotionServer_StartNewConnection(controller, sdAccepted);
 			else if(FD_ISSET(sdStateServer, &fds))
 				Ros_StateServer_StartNewConnection(controller, sdAccepted);
 			else
-				mpClose(sdAccepted); 			        
-        }
+				mpClose(sdAccepted);
+		}
 	}
 	
-closeSockHandle:	
+closeSockHandle:
 	printf("Error!?... Connection Server is aborting.  Reboot the controller.\r\n");
 
 	if(sdMotionServer >= 0)
-    	mpClose(sdMotionServer);
- 	if(sdStateServer >= 0)
-    	mpClose(sdStateServer);
-   
-    //disable feedback signal
+		mpClose(sdMotionServer);
+	if(sdStateServer >= 0)
+		mpClose(sdStateServer);
+
+	//disable feedback signal
 	Ros_Controller_SetIOState(IO_FEEDBACK_CONNECTSERVERRUNNING, FALSE);
 }
 
@@ -614,7 +614,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 								controller->bRobotJobReadyRaised = TRUE;
 								
 							if(controller->bRobotJobReadyRaised
-							 	&& (Ros_Controller_IsOperating(controller))
+								&& (Ros_Controller_IsOperating(controller))
 								&& (Ros_Controller_IsRemote(controller)) )
 							{
 								controller->bRobotJobReady = TRUE;
@@ -641,10 +641,10 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 //-------------------------------------------------------------------
 BOOL Ros_Controller_GetIOState(ULONG signal)
 {
-    MP_IO_INFO ioInfo;
-    USHORT ioState;
-    int ret;
-    
+	MP_IO_INFO ioInfo;
+	USHORT ioState;
+	int ret;
+	
 	//set feedback signal
 	ioInfo.ulAddr = signal;
 	ret = mpReadIO(&ioInfo, &ioState, 1);
@@ -660,9 +660,9 @@ BOOL Ros_Controller_GetIOState(ULONG signal)
 //-------------------------------------------------------------------
 void Ros_Controller_SetIOState(ULONG signal, BOOL status)
 {
-    MP_IO_DATA ioData;
-    int ret;
-    
+	MP_IO_DATA ioData;
+	int ret;
+	
 	//set feedback signal
 	ioData.ulAddr = signal;
 	ioData.ulValue = status;
@@ -719,22 +719,22 @@ void Ros_Controller_ErrNo_ToString(int errNo, char errMsg[ERROR_MSG_MAX_SIZE], i
 
 void Ros_Controller_ListenForSkill(Controller* controller, int sl)
 {
-	SYS2MP_SENS_MSG	skillMsg;
-	STATUS	apiRet;
+	SYS2MP_SENS_MSG skillMsg;
+	STATUS apiRet;
 	
 	controller->bSkillMotionReady[sl - MP_SL_ID1] = FALSE;
 	memset(&skillMsg, 0x00, sizeof(SYS2MP_SENS_MSG));
 	
 	FOREVER
-	{			
+	{
 		//SKILL complete
 		//This will cause the SKILLSND command to complete the cursor to move to the next line.
 		//Make sure all preparation is complete to move.
 		//mpEndSkillCommandProcess(sl, &skillMsg); 
 		mpEndSkillCommandProcess(sl, &skillMsg);
-	
+		
 		mpTaskDelay(4); //sleepy time
-				
+		
 		//Get SKILL command
 		//task will wait for a skillsnd command in INFORM
 		apiRet = mpReceiveSkillCommand(sl, &skillMsg);
@@ -748,7 +748,7 @@ void Ros_Controller_ListenForSkill(Controller* controller, int sl)
 		//Process SKILL command
 		switch(skillMsg.sub_comm)
 		{
-		case MP_SKILL_SEND:	
+		case MP_SKILL_SEND:
 			if(strcmp(skillMsg.cmd, "ROS-START") == 0)
 			{
 				controller->bSkillMotionReady[sl - MP_SL_ID1] = TRUE;
@@ -771,7 +771,7 @@ void Ros_Controller_ListenForSkill(Controller* controller, int sl)
 			
 		case MP_SKILL_END:
 			//ABORT!!!
-			controller->bSkillMotionReady[sl - MP_SL_ID1] = FALSE;		
+			controller->bSkillMotionReady[sl - MP_SL_ID1] = FALSE;
 			break;
 		}
 	}
