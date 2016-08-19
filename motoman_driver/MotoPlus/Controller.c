@@ -305,7 +305,6 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 	int     sdMotionServer = INVALID_SOCKET;
 	int     sdStateServer = INVALID_SOCKET;
 	struct  fd_set  fds;
-	struct  timeval tv;
 	int     sdAccepted = INVALID_SOCKET;
 	struct  sockaddr_in     clientSockAddr;
 	int     sizeofSockAddr;
@@ -325,9 +324,6 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 	sdStateServer = Ros_Controller_OpenSocket(TCP_PORT_STATE);
 	if(sdStateServer < 0)
 		goto closeSockHandle;
-	
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
 
 	FOREVER //Continue to accept multiple connections forever
 	{
