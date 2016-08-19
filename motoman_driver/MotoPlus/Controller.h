@@ -32,6 +32,10 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+#include "MotoPlus.h"
+#include "CtrlGroup.h"
+#include "SimpleMessage.h"
+
 #define APPLICATION_VERSION					"1.3.6"
 
 #define TCP_PORT_MOTION						50240
