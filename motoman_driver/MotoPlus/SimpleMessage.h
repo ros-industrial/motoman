@@ -32,6 +32,9 @@
 #ifndef SIMPLE_MSG_H
 #define SIMPLE_MSG_H
 
+#include "MotoPlus.h"
+#include "CtrlGroup.h"
+
 #define ROS_MAX_JOINT 10
 #define MOT_MAX_GR	4
 
