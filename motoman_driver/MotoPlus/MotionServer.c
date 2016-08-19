@@ -92,12 +92,12 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 	int groupNo;
 	int connectionIndex;
 	
-    // If not started, start the IncMoveTask (there should be only one instance of this thread)
-    if(controller->tidIncMoveThread == INVALID_TASK)
-    {
+	// If not started, start the IncMoveTask (there should be only one instance of this thread)
+	if(controller->tidIncMoveThread == INVALID_TASK)
+	{
 		controller->tidIncMoveThread = mpCreateTask(MP_PRI_IP_CLK_TAKE, MP_STACK_SIZE, 
 													(FUNCPTR)Ros_MotionServer_IncMoveLoopStart,
-				 									(int)controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+													(int)controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		if (controller->tidIncMoveThread == ERROR)
 		{
 			puts("Failed to create task for incremental-motion.  Check robot parameters.");
@@ -113,7 +113,7 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 	{
 		controller->ctrlGroups[groupNo]->tidAddToIncQueue = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
 																		(FUNCPTR)Ros_MotionServer_AddToIncQueueProcess,
-						 												(int)controller, groupNo, 0, 0, 0, 0, 0, 0, 0, 0); 
+																		(int)controller, groupNo, 0, 0, 0, 0, 0, 0, 0, 0); 
 		if (controller->ctrlGroups[groupNo]->tidAddToIncQueue == ERROR)
 		{
 			puts("Failed to create task for parsing motion increments.  Check robot parameters.");
@@ -124,20 +124,20 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 		}
 	}
 	
-    //look for next available connection slot
-    for (connectionIndex = 0; connectionIndex < MAX_MOTION_CONNECTIONS; connectionIndex++)
-    {
-       	if (controller->sdMotionConnections[connectionIndex] == INVALID_SOCKET)
-	    {
-	       	//Start the new connection in a different task.
-	       	//Each task's memory will be unique IFF the data is on the stack.
-	       	//Any global or heap stuff will not be unique.
-		    controller->sdMotionConnections[connectionIndex] = sd;
-		    
-    		//start new task for this specific connection
+	//look for next available connection slot
+	for (connectionIndex = 0; connectionIndex < MAX_MOTION_CONNECTIONS; connectionIndex++)
+	{
+		if (controller->sdMotionConnections[connectionIndex] == INVALID_SOCKET)
+		{
+			//Start the new connection in a different task.
+			//Each task's memory will be unique IFF the data is on the stack.
+			//Any global or heap stuff will not be unique.
+			controller->sdMotionConnections[connectionIndex] = sd;
+			
+			//start new task for this specific connection
 			controller->tidMotionConnections[connectionIndex] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
 																			(FUNCPTR)Ros_MotionServer_WaitForSimpleMsg,
-					 														(int)controller, connectionIndex, 0, 0, 0, 0, 0, 0, 0, 0);
+																			(int)controller, connectionIndex, 0, 0, 0, 0, 0, 0, 0, 0);
 	
 			if (controller->tidMotionConnections[connectionIndex] != ERROR)
 			{
@@ -155,13 +155,13 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 			
 			break;
 		}
-    }
-        
-    if (connectionIndex == MAX_MOTION_CONNECTIONS)
-    {
-       	puts("Motion server already connected... not accepting last attempt.");
-       	mpClose(sd);
-    }
+	}
+		
+	if (connectionIndex == MAX_MOTION_CONNECTIONS)
+	{
+		puts("Motion server already connected... not accepting last attempt.");
+		mpClose(sd);
+	}
 }
 
 
@@ -181,8 +181,8 @@ void Ros_MotionServer_StopConnection(Controller* controller, int connectionIndex
 	//mark connection as invalid
 	controller->sdMotionConnections[connectionIndex] = INVALID_SOCKET;
 
- 	// Check if there are still some valid connection
- 	bDeleteIncMovTask = TRUE;
+	// Check if there are still some valid connection
+	bDeleteIncMovTask = TRUE;
 	for(i=0; i<MAX_MOTION_CONNECTIONS; i++)
 	{
 		if(controller->sdMotionConnections[connectionIndex] != INVALID_SOCKET)
@@ -208,7 +208,7 @@ void Ros_MotionServer_StopConnection(Controller* controller, int connectionIndex
 		}
 		
 		// terminate the inc_move task
- 		tid = controller->tidIncMoveThread;
+		tid = controller->tidIncMoveThread;
 		controller->tidIncMoveThread = INVALID_TASK;
 		mpDeleteTask(tid);
 	}
@@ -218,7 +218,7 @@ void Ros_MotionServer_StopConnection(Controller* controller, int connectionIndex
 	controller->tidMotionConnections[connectionIndex] = INVALID_TASK;
 	printf("Motion Server Connection Closed\r\n");
 	
- 	mpDeleteTask(tid);
+	mpDeleteTask(tid);
 }
 
 
@@ -236,40 +236,40 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 	int ret = 0;
 	BOOL bDisconnect = FALSE;
 	BOOL bInvalidMsgType = FALSE;
-	
+
 	while(!bDisconnect) //keep accepting messages until connection closes
 	{
-        mpTaskDelay(0);	//give it some time to breathe, if needed
-        
+		mpTaskDelay(0);	//give it some time to breathe, if needed
+		
 		//Receive message from the PC
 		memset(&receiveMsg, 0x00, sizeof(receiveMsg));
-        byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)(&receiveMsg), sizeof(receiveMsg), 0);
-        if (byteSize <= 0)
-        	break; //end connection
-        
+		byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)(&receiveMsg), sizeof(receiveMsg), 0);
+		if (byteSize <= 0)
+			break; //end connection
+		
 		bInvalidMsgType = FALSE;
 
-        // Determine the expected size of the message
-       	expectedSize = -1;
-        if(byteSize >= minSize)
-        {
-        	switch(receiveMsg.header.msgType)
-        	{
-        		case ROS_MSG_ROBOT_STATUS: 
-        			expectedSize = minSize + sizeof(SmBodyRobotStatus);
-	    			break;
-        		case ROS_MSG_JOINT_TRAJ_PT_FULL: 
-        			expectedSize = minSize + sizeof(SmBodyJointTrajPtFull);
-	    			break;
-	    		case ROS_MSG_JOINT_FEEDBACK:
-        			expectedSize = minSize + sizeof(SmBodyJointFeedback);
-	    			break;
-	    		case ROS_MSG_MOTO_MOTION_CTRL:
-        			expectedSize = minSize + sizeof(SmBodyMotoMotionCtrl);
-	    			break;
-	    		case ROS_MSG_MOTO_MOTION_REPLY:
-        			expectedSize = minSize + sizeof(SmBodyMotoMotionReply);
-	    			break;
+		// Determine the expected size of the message
+		expectedSize = -1;
+		if(byteSize >= minSize)
+		{
+			switch(receiveMsg.header.msgType)
+			{
+				case ROS_MSG_ROBOT_STATUS: 
+					expectedSize = minSize + sizeof(SmBodyRobotStatus);
+					break;
+				case ROS_MSG_JOINT_TRAJ_PT_FULL: 
+					expectedSize = minSize + sizeof(SmBodyJointTrajPtFull);
+					break;
+				case ROS_MSG_JOINT_FEEDBACK:
+					expectedSize = minSize + sizeof(SmBodyJointFeedback);
+					break;
+				case ROS_MSG_MOTO_MOTION_CTRL:
+					expectedSize = minSize + sizeof(SmBodyMotoMotionCtrl);
+					break;
+				case ROS_MSG_MOTO_MOTION_REPLY:
+					expectedSize = minSize + sizeof(SmBodyMotoMotionReply);
+					break;
 				case ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX:
 					//Don't require the user to send data for non-existant control groups
 					if (byteSize >= (minSize + sizeof(int))) //make sure I can at least get to [numberOfGroups] field
@@ -299,34 +299,34 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 				default:
 					bInvalidMsgType = TRUE;
 					break;
-        	}
-        }
-        
-        // Check message size
-       	if(byteSize >= expectedSize)
-       	{
-       		// Process the simple message
-          	ret = Ros_MotionServer_SimpleMsgProcess(controller, &receiveMsg, byteSize, &replyMsg);
+			}
+		}
+		
+		// Check message size
+		if(byteSize >= expectedSize)
+		{
+			// Process the simple message
+			ret = Ros_MotionServer_SimpleMsgProcess(controller, &receiveMsg, byteSize, &replyMsg);
 			if(ret == 1)
 				bDisconnect = TRUE;
-       	}
+		}
 		else if (bInvalidMsgType)
 		{
 			printf("Unknown Message Received(%d)\r\n", receiveMsg.header.msgType);
 			Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGTYPE, &replyMsg, 0);			
 		}
-       	else
-       	{
-       		printf("MessageReceived(%d bytes): expectedSize=%d\r\n", byteSize,  expectedSize);
+		else
+		{
+			printf("MessageReceived(%d bytes): expectedSize=%d\r\n", byteSize,  expectedSize);
 			Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGSIZE, &replyMsg, 0);
-        	// Note: If messages are being combine together because of network transmission protocol
-        	// we may need to add code to store unused portion of the received buff that would be part of the next message
-        }
-        	
-        //Send reply message
-        byteSize = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);        
-        if (byteSize <= 0)
-        	break;	// Close the connection
+			// Note: If messages are being combine together because of network transmission protocol
+			// we may need to add code to store unused portion of the received buff that would be part of the next message
+		}
+			
+		//Send reply message
+		byteSize = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);        
+		if (byteSize <= 0)
+			break;	// Close the connection
 	}
 	
 	mpTaskDelay(50);	// Just in case other associated task need time to clean-up.  Don't if necessary... but it doesn't hurt
@@ -1157,10 +1157,10 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 		for (i = 0; i < ctrlGroup->numAxes; i++)
 		{	
 			//Calculate acceleration coefficient (convert interval to seconds
-	     	accCoef1[i] = ( 6 * (endTrajData->pos[i] - startTrajData->pos[i]) / (interval * interval) )
-	     				- ( 2 * (endTrajData->vel[i] + 2 * startTrajData->vel[i]) / interval);
-	     	accCoef2[i] = ( -12 * (endTrajData->pos[i] - startTrajData->pos[i]) / (interval * interval * interval))
-	     				+ ( 6 * (endTrajData->vel[i] + startTrajData->vel[i]) / (interval * interval) );
+			accCoef1[i] = ( 6 * (endTrajData->pos[i] - startTrajData->pos[i]) / (interval * interval) )
+						- ( 2 * (endTrajData->vel[i] + 2 * startTrajData->vel[i]) / interval);
+			accCoef2[i] = ( -12 * (endTrajData->pos[i] - startTrajData->pos[i]) / (interval * interval * interval))
+						+ ( 6 * (endTrajData->vel[i] + startTrajData->vel[i]) / (interval * interval) );
 		}
 	}
 	else
@@ -1197,7 +1197,7 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 					+ accCoef2[i] * interpolTime * interpolTime * interpolTime / 6;	// accCoef2 component
 	
 				// Add velocity change for new interpolation time
-		  		curTrajData->vel[i] = startTrajData->vel[i]   						// initial velocity component
+				curTrajData->vel[i] = startTrajData->vel[i]   						// initial velocity component
 					+ accCoef1[i] * interpolTime 									// accCoef1 component
 					+ accCoef2[i] * interpolTime * interpolTime / 2;				// accCoef2 component
 			}
@@ -1205,9 +1205,9 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 			// Reset the timeInc_ms for the next interpolation cycle
 			if(timeInc_ms < interpolPeriod)
 			{
-	  			timeInc_ms = interpolPeriod;
-	  			ctrlGroup->timeLeftover_ms = 0;
-	  		}
+				timeInc_ms = interpolPeriod;
+				ctrlGroup->timeLeftover_ms = 0;
+			}
 		}
 		else  // Make calculation for partial interpolation cycle
 		{
@@ -1217,7 +1217,7 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 			// Set the next interpolation increment to the the remainder to reach the next interpolation cycle  
 			if(calculationTime_ms > endTrajData->time)
 			{
-		 		ctrlGroup->timeLeftover_ms = calculationTime_ms - endTrajData->time;
+				ctrlGroup->timeLeftover_ms = calculationTime_ms - endTrajData->time;
 			} 
 		}
 		
