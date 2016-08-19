@@ -148,7 +148,7 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		{
 			if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
 				printf("Lin\t");
-			else if (ctrlGroup->axisType.type[i] == ROTATATION_AXIS)
+			else if (ctrlGroup->axisType.type[i] == ROTATION_AXIS)
 				printf("Rot\t");
 			else
 			{
@@ -325,7 +325,7 @@ void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE
 	{
 		for (i = 0; i < ctrlGroup->numAxes; i++)
 		{
-			if (ctrlGroup->axisType.type[i] == ROTATATION_AXIS)
+			if (ctrlGroup->axisType.type[i] == ROTATION_AXIS)
 				conversion = ctrlGroup->pulseToRad.PtoR[i];
 			else if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
 				conversion = ctrlGroup->pulseToMeter.PtoM[i];
@@ -369,7 +369,7 @@ void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE
 		// Convert to pulse
 		for (i = 0; i < ctrlGroup->numAxes; i++)
 		{
-			if (ctrlGroup->axisType.type[i] == ROTATATION_AXIS)
+			if (ctrlGroup->axisType.type[i] == ROTATION_AXIS)
 				conversion = ctrlGroup->pulseToRad.PtoR[i];
 			else if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
 				conversion = ctrlGroup->pulseToMeter.PtoM[i];
