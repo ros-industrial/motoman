@@ -60,7 +60,10 @@
 
 #define INVALID_SOCKET -1
 #define INVALID_TASK -1
+
+#ifndef IPPROTO_TCP
 #define IPPROTO_TCP  6
+#endif
 
 #define ERROR_MSG_MAX_SIZE 64
 
