@@ -202,10 +202,10 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 //-------------------------------------------------------------------
 BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES])
 {
-  	LONG status = 0;
+	LONG status = 0;
 	MP_CTRL_GRP_SEND_DATA sData;
 	MP_PULSE_POS_RSP_DATA pulse_data;
-  	int i;
+	int i;
 
 	memset(pulsePos, 0, MAX_PULSE_AXES*sizeof(long));  // clear result, in case of error
 
@@ -219,24 +219,24 @@ BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_
 		case MP_S1_GID: sData.sCtrlGrp = 16; break;
 		case MP_S2_GID: sData.sCtrlGrp = 17; break;
 		case MP_S3_GID: sData.sCtrlGrp = 18; break;
-		default: 
-			printf("Failed to get pulse feedback position\nInvalid groupId: %d", ctrlGroup->groupId);
+		default:
+			printf("Failed to get pulse feedback position\nInvalid groupId: %d\n", ctrlGroup->groupId);
 			return FALSE;
 	}
 	
-  	// get the command joint positions
-  	status = mpGetPulsePos (&sData,&pulse_data);
-  	if (0 != status)
-  	{
-    	printf("Failed to get pulse position (command): %u", status);
-    	return FALSE;
-  	}
-	  	
-  	// assign return value
-  	for (i=0; i<ctrlGroup->numAxes; ++i)
-    	pulsePos[i] = pulse_data.lPos[i];
-    
-  	return TRUE;  	
+	// get the command joint positions
+	status = mpGetPulsePos (&sData,&pulse_data);
+	if (0 != status)
+	{
+		printf("Failed to get pulse position (command): %u\n", status);
+		return FALSE;
+	}
+	
+	// assign return value
+	for (i=0; i<ctrlGroup->numAxes; ++i)
+		pulsePos[i] = pulse_data.lPos[i];
+
+	return TRUE;
 }
 
 
@@ -245,10 +245,10 @@ BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_
 //-------------------------------------------------------------------
 BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES])
 {
-  	LONG status = 0;
+	LONG status = 0;
 	MP_CTRL_GRP_SEND_DATA sData;
 	MP_FB_PULSE_POS_RSP_DATA pulse_data;
-  	int i;
+	int i;
 
 	memset(pulsePos, 0, MAX_PULSE_AXES*sizeof(long));  // clear result, in case of error
 
@@ -263,38 +263,38 @@ BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_A
 		case MP_S2_GID: sData.sCtrlGrp = 17; break;
 		case MP_S3_GID: sData.sCtrlGrp = 18; break;
 		default: 
-			printf("Failed to get pulse feedback position\nInvalid groupId: %d", ctrlGroup->groupId);
+			printf("Failed to get pulse feedback position\nInvalid groupId: %d\n", ctrlGroup->groupId);
 			return FALSE;
 	}
 	
-  	// get raw (uncorrected/unscaled) joint positions
-  	status = mpGetFBPulsePos (&sData,&pulse_data);
-  	if (0 != status)
-  	{
-    	printf("Failed to get pulse feedback position: %u", status);
-    	return FALSE;
-  	}
+	// get raw (uncorrected/unscaled) joint positions
+	status = mpGetFBPulsePos (&sData,&pulse_data);
+	if (0 != status)
+	{
+		printf("Failed to get pulse feedback position: %u\n", status);
+		return FALSE;
+	}
 	
-	 // apply correction to account for cross-axis coupling
-	 // Note: this is only required for feedback position
-	 // controller handles this correction internally when 
-	 // dealing with command positon.
-  	for (i=0; i<MAX_PULSE_AXES; ++i)
-  	{
-    	FB_AXIS_CORRECTION *corr = &ctrlGroup->correctionData.correction[i];
-    	if (corr->bValid)
-    	{
-		    int src_axis = corr->ulSourceAxis;
-		    int dest_axis = corr->ulCorrectionAxis;
-		    pulse_data.lPos[dest_axis] -= (int)(pulse_data.lPos[src_axis] * corr->fCorrectionRatio);
-    	}
-  	}
-  	
-  	// assign return value
-  	for (i=0; i<ctrlGroup->numAxes; ++i)
-    	pulsePos[i] = pulse_data.lPos[i];
-    
-  	return TRUE;  	
+	// apply correction to account for cross-axis coupling
+	// Note: this is only required for feedback position
+	// controller handles this correction internally when 
+	// dealing with command positon.
+	for (i=0; i<MAX_PULSE_AXES; ++i)
+	{
+		FB_AXIS_CORRECTION *corr = &ctrlGroup->correctionData.correction[i];
+		if (corr->bValid)
+		{
+			int src_axis = corr->ulSourceAxis;
+			int dest_axis = corr->ulCorrectionAxis;
+			pulse_data.lPos[dest_axis] -= (int)(pulse_data.lPos[src_axis] * corr->fCorrectionRatio);
+		}
+	}
+	
+	// assign return value
+	for (i=0; i<ctrlGroup->numAxes; ++i)
+		pulsePos[i] = pulse_data.lPos[i];
+	
+	return TRUE;
 }
 
 //-------------------------------------------------------------------
@@ -307,7 +307,7 @@ void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE
 {
 	int i;
 	float conversion = 1;
-		
+	
 	// Adjust joint order for 7 axis robot
 	if((ctrlGroup->groupId >= MP_R1_GID) && (ctrlGroup->groupId <= MP_R4_GID) && (ctrlGroup->numAxes == 7))
 	{
