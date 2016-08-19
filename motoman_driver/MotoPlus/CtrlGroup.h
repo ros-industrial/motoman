@@ -32,6 +32,10 @@
 #ifndef CTRLGROUP_H
 #define CTRLGROUP_H
 
+
+#include "ParameterTypes.h"
+
+
 #define Q_SIZE 200
 #define Q_LOCK_TIMEOUT 1000
 #define	Q_OFFSET_IDX( a, b, c )	(((a)+(b)) >= (c) ) ? ((a)+(b)-(c)) \
