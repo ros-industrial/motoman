@@ -982,11 +982,11 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 			if(abs(pulsePos[i] - curPos[i]) > START_MAX_PULSE_DEVIATION)
 			{
 				printf("ERROR: Trajectory start position doesn't match current position.\r\n");
-				printf("    %d, %d, %d, %d, %d, %d, %d, %d\r\n",
+				printf("    %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
 					pulsePos[0], pulsePos[1], pulsePos[2],
 					pulsePos[3], pulsePos[4], pulsePos[5],
 					pulsePos[6], pulsePos[7]);
-				printf("    %d, %d, %d, %d, %d, %d, %d, %d\r\n",
+				printf("    %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
 					curPos[0], curPos[1], curPos[2],
 					curPos[3], curPos[4], curPos[5],
 					curPos[6], curPos[7]);
