@@ -32,6 +32,9 @@
 #ifndef MOTIONSERVER_H
 #define MOTIONSERVER_H
 
+#include "MotoPlus.h"
+#include "Controller.h"
+
 #define MOTION_STOP_TIMEOUT 20
 #define MOTION_START_TIMEOUT 5000  // in milliseconds
 #define MOTION_START_CHECK_PERIOD 50  // in millisecond
