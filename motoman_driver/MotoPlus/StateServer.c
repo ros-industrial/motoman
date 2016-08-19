@@ -48,9 +48,8 @@ BOOL Ros_StateServer_SendMsgToAllClient(Controller* controller, SimpleMsg* sendM
 //-----------------------
 
 //-----------------------------------------------------------------------
-// Start the tasks for a new state server connection:
-// - WaitForSimpleMsg: Task that waits to receive new SimpleMessage
-// - AddToIncQueueProcess: Task that take data from a message and generate Incmove  
+// Start the task for a new state server connection:
+// - Ros_StateServer_SendState: Task that broadcasts controller & robot state to the connected client
 //-----------------------------------------------------------------------
 void Ros_StateServer_StartNewConnection(Controller* controller, int sd)
 {
@@ -58,43 +57,44 @@ void Ros_StateServer_StartNewConnection(Controller* controller, int sd)
 
 	printf("Starting new connection to the State Server\r\n");
 	
-    //look for next available connection slot
-    for (connectionIndex = 0; connectionIndex < MAX_STATE_CONNECTIONS; connectionIndex++)
-    {
-      	if (controller->sdStateConnections[connectionIndex] == INVALID_SOCKET)
-      	{
-      		//Start the new connection in a different task.
-       		//Each task's memory will be unique IFF the data is on the stack.
-       		//Any global or heap stuff will not be unique.
-	    	controller->sdStateConnections[connectionIndex] = sd;
-		    	
-	    	// If not started
+	//look for next available connection slot
+	for (connectionIndex = 0; connectionIndex < MAX_STATE_CONNECTIONS; connectionIndex++)
+	{
+		if (controller->sdStateConnections[connectionIndex] == INVALID_SOCKET)
+		{
+			//Start the new connection in a different task.
+			//Each task's memory will be unique IFF the data is on the stack.
+			//Any global or heap stuff will not be unique.
+			controller->sdStateConnections[connectionIndex] = sd;
+			
+			// If not started
 			if(controller->tidStateSendState == INVALID_TASK)
 			{
-	   			//start task that will send the controller state
+				//start task that will send the controller state
 				controller->tidStateSendState = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
 											(FUNCPTR)Ros_StateServer_SendState,
-			 								(int)controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	
+											(int)controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+				
 				//set feedback signal
 				if(controller->tidStateSendState != INVALID_TASK)
 					Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, TRUE);
 			}
-	        
-	        break;
-	    }
-    }
-        
-    if (connectionIndex == MAX_STATE_CONNECTIONS)
-    {
-       	printf("Too many State server connections... not accepting last attempt.\r\n");
-       	mpClose(sd);
-    }
+			
+			break;
+		}
+	}
+	
+	if (connectionIndex == MAX_STATE_CONNECTIONS)
+	{
+		printf("Too many State server connections... not accepting last attempt.\r\n");
+		mpClose(sd);
+	}
 }
 
 
 //-----------------------------------------------------------------------
-// Send state (robot position) as long as there is an active connection
+// Send state (robot position and controller status) as long as there is
+// an active connection
 //-----------------------------------------------------------------------
 void Ros_StateServer_SendState(Controller* controller)
 {
