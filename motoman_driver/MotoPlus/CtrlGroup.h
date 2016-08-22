@@ -86,13 +86,13 @@ typedef struct
 	float maxSpeed[MP_GRP_AXES_NUM];			// maximum joint speed in radian/sec (rotational) or meter/sec (linear)
 	
 	Incremental_q inc_q;						// incremental queue
-	long q_time;								// time to which the queue as been processed
+	long q_time;								// time to which the queue has been processed
 	
 	JointMotionData jointMotionData;			// joint motion command data in radian
 	JointMotionData jointMotionDataToProcess;	// joint motion command data in radian to process
 	BOOL hasDataToProcess;						// indicates that there is data to process
 	int tidAddToIncQueue;						// ThreadId to add incremental values to the queue
-	int timeLeftover_ms;						// Time left over after reaching the end of a trajectory to complet the interpolation period
+	int timeLeftover_ms;						// Time left over after reaching the end of a trajectory to complete the interpolation period
 
 	AXIS_MOTION_TYPE axisType;					// Indicates whether axis is rotary or linear
 } CtrlGroup;
