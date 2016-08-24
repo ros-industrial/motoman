@@ -285,5 +285,13 @@
 			<limit lower="-3.1415" upper="3.1415" effort="100" velocity="6.9813" />
 		</joint>
 		<!-- end of joint list -->
+
+		<!-- ROS base_link (via link_l) to Motoman Robot (not Base) Frame transform -->
+		<link name="${prefix}base" />
+		<joint name="${prefix}link_l-base" type="fixed">
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+			<parent link="${prefix}link_l"/>
+			<child link="${prefix}base"/>
+		</joint>
 	</xacro:macro>
 </robot>

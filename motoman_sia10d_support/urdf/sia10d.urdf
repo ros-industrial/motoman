@@ -272,6 +272,12 @@
     <axis xyz="0 0 -1"/>
     <limit effort="100" lower="-3.1415" upper="3.1415" velocity="6.9813"/>
   </joint>
-  <!-- end of joint list -->
+
+  <link name="base"/>
+  <joint name="link_l-base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="link_l"/>
+    <child link="base"/>
+  </joint>
 </robot>
 
