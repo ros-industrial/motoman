@@ -192,6 +192,12 @@
     <parent link="link_t"/>
     <child link="tool0"/>
   </joint>
-  <!-- end of joint list -->
+
+  <link name="base"/>
+  <joint name="link_l-base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="link_l"/>
+    <child link="base"/>
+  </joint>
 </robot>
 
