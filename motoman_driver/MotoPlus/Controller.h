@@ -101,18 +101,18 @@ typedef struct
 	int numGroup;											// Actual number of defined group
 	int numRobot;											// Actual number of defined robot
 	CtrlGroup* ctrlGroups[MP_GRP_NUM];						// Array of the controller control group
-	
+
 	// Controller Status
 	MP_IO_INFO ioStatusAddr[IO_ROBOTSTATUS_MAX];			// Array of Specific Input Address representing the I/O status
-    USHORT ioStatus[IO_ROBOTSTATUS_MAX];					// Array storing the current status of the controller
-    int alarmCode;											// Alarm number currently active
+	USHORT ioStatus[IO_ROBOTSTATUS_MAX];					// Array storing the current status of the controller
+	int alarmCode;											// Alarm number currently active
 	BOOL bRobotJobReady;									// Boolean indicating that the controller is ready for increment move
-    BOOL bRobotJobReadyRaised;								// Indicates that the signal was raised since operating was resumed
-    BOOL bStopMotion;										// Flag to stop motion
+	BOOL bRobotJobReadyRaised;								// Indicates that the signal was raised since operating was resumed
+	BOOL bStopMotion;										// Flag to stop motion
 
 	// Connection Server
 	int tidConnectionSrv;
-	
+
 	// State Server Connection
 	int tidStateSendState;  								// ThreadId of thread sending the controller state
 	int	sdStateConnections[MAX_STATE_CONNECTIONS];			// Socket Descriptor array for State Server
@@ -126,7 +126,7 @@ typedef struct
 	BOOL bSkillMotionReady[2];								// Boolean indicating that the SKILL command required for DX100 is active
 	int RosListenForSkillID[2];								// ThreadId for listening to SkillSend command
 #endif
-	
+
 } Controller;
 
 extern BOOL Ros_Controller_Init(Controller* controller);
