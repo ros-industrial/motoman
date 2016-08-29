@@ -122,6 +122,7 @@
     <ClInclude Include="CtrlGroup.h" />
     <ClInclude Include="MotionServer.h" />
     <ClInclude Include="ParameterExtraction.h" />
+    <ClInclude Include="ParameterTypes.h" />
     <ClInclude Include="SimpleMessage.h" />
     <ClInclude Include="StateServer.h" />
   </ItemGroup>
