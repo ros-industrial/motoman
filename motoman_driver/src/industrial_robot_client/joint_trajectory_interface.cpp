@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include "motoman_driver/industrial_robot_client/joint_trajectory_interface.h"
+#include "motoman_driver/industrial_robot_client/motoman_utils.h"
 #include "simple_message/joint_traj_pt.h"
 #include "industrial_utils/param_utils.h"
 #include <vector>
@@ -38,6 +39,7 @@
 #include <string>
 
 using industrial_utils::param::getJointNames;
+using industrial_robot_client::motoman_utils::getJointGroups;
 using industrial::simple_message::SimpleMessage;
 namespace SpecialSeqValues = industrial::joint_traj_pt::SpecialSeqValues;
 typedef industrial::joint_traj_pt::JointTrajPt rbt_JointTrajPt;
@@ -59,7 +61,6 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bo
   // override IP/port with ROS params, if available
   ros::param::param<std::string>("robot_ip_address", ip, default_ip);
   ros::param::param<int>("~port", port, default_port);
-  ros::param::param<bool>("version0", this->version_0_, version_0);
 
   // check for valid parameter values
   if (ip.empty())
@@ -83,87 +84,23 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bo
 
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection)
 {
-  if (this->version_0_)
+  std::map<int, RobotGroup> robot_groups;
+  if(getJointGroups("topic_list", robot_groups))
   {
-    std::vector<std::string> joint_names;
-    if (!getJointNames("controller_joint_names", "robot_description", joint_names))
-      ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
-
-    return init(connection, joint_names);
-  }
-
-  else
-  {
-    std::map<int, RobotGroup> robot_groups;
-
-    std::string value;
-    ros::param::search("topics_list", value);
-
-    XmlRpc::XmlRpcValue topics_list_rpc;
-    ros::param::get(value, topics_list_rpc);
-
-    // Evaluating the topics_list parameter that contains the node configuration in
-    // respect to the characteristics for each group
-    std::vector<XmlRpc::XmlRpcValue> topics_list;
-
-    for (int i = 0; i < topics_list_rpc.size(); i++)
-    {
-      XmlRpc::XmlRpcValue state_value;
-      state_value = topics_list_rpc[i];
-      topics_list.push_back(state_value);
-    }
-
-    std::vector<XmlRpc::XmlRpcValue> groups_list;
-
-    // TODO(thiagodefreitas): check the consistency of the group numbers
-    for (int i = 0; i < topics_list[0]["state"].size(); i++)
-    {
-      XmlRpc::XmlRpcValue group_value;
-      group_value = topics_list[0]["state"][i];
-      groups_list.push_back(group_value);
-    }
-
-
-    for (int i = 0; i < groups_list.size(); i++)
-    {
-      RobotGroup rg;
-      std::vector<std::string> rg_joint_names;
-
-      XmlRpc::XmlRpcValue joints;
-
-      joints = groups_list[i]["group"][0]["joints"];
-      for (int jt = 0; jt < joints.size(); jt++)
-        rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
-
-      XmlRpc::XmlRpcValue group_number;
-
-
-      group_number = groups_list[i]["group"][0]["group_number"];
-      int group_number_int = static_cast<int>(group_number);
-
-      XmlRpc::XmlRpcValue name;
-      std::string name_string;
-
-      name = groups_list[i]["group"][0]["name"];
-      name_string = static_cast<std::string>(name);
-
-
-      XmlRpc::XmlRpcValue ns;
-      std::string ns_string;
-
-      ns = groups_list[i]["group"][0]["ns"];
-
-      ns_string = static_cast<std::string>(ns);
-
-      rg.set_group_id(group_number_int);
-      rg.set_joint_names(rg_joint_names);
-      rg.set_name(name_string);
-      rg.set_ns(ns_string);
-
-      robot_groups[group_number_int] = rg;
-    }
+    this->version_0_ = false;
     return init(connection, robot_groups);
   }
+  else
+  {
+    this->version_0_ = true;
+    std::vector<std::string> joint_names;
+    if (!getJointNames("controller_joint_names", "robot_description", joint_names))
+    {
+      ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
+    }
+    return init(connection, joint_names);
+  }
+  return false;
 }
 
 bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,

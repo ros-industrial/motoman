@@ -51,6 +51,7 @@ namespace joint_feedback_ex_relay_handler
 bool JointFeedbackExRelayHandler::init(SmplMsgConnection* connection,
                                        std::map<int, RobotGroup> &robot_groups)
 {
+  ROS_INFO_STREAM("Creating joint_feedback_ex_relay_handler with " << robot_groups.size() << " groups");
   this->pub_joint_control_state_ =
     this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>("feedback_states", 1);
   this->dynamic_pub_joint_control_state_ =

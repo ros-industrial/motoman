@@ -30,6 +30,7 @@
  */
 
 #include "motoman_driver/industrial_robot_client/robot_state_interface.h"
+#include "motoman_driver/industrial_robot_client/motoman_utils.h"
 #include "industrial_utils/param_utils.h"
 #include <map>
 #include <string>
@@ -37,6 +38,7 @@
 
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using industrial_utils::param::getJointNames;
+using industrial_robot_client::motoman_utils::getJointGroups;
 
 namespace industrial_robot_client
 {
@@ -60,8 +62,6 @@ bool RobotStateInterface::init(std::string default_ip, int default_port, bool ve
   // override IP/port with ROS params, if available
   ros::param::param<std::string>("robot_ip_address", ip, default_ip);
   ros::param::param<int>("~port", port, default_port);
-  ros::param::param<bool>("version0", this->version_0_, version_0);
-
   // check for valid parameter values
   if (ip.empty())
   {
@@ -84,116 +84,70 @@ bool RobotStateInterface::init(std::string default_ip, int default_port, bool ve
 
 bool RobotStateInterface::init(SmplMsgConnection* connection)
 {
-  if (this->version_0_)
+  std::map<int, RobotGroup> robot_groups;
+  if(getJointGroups("topic_list", robot_groups))
   {
-    std::vector<std::string> joint_names;
-    if (!getJointNames("controller_joint_names", "robot_description", joint_names))
-      ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
-
-    return init(connection, joint_names);
-  }
-
-  else
-  {
-    std::map<int, RobotGroup> robot_groups;
-
-    std::string value;
-    ros::param::search("topics_list", value);
-
-    XmlRpc::XmlRpcValue topics_list_rpc;
-    ros::param::get(value, topics_list_rpc);
-
-
-    std::vector<XmlRpc::XmlRpcValue> topics_list;
-
-    for (int i = 0; i < topics_list_rpc.size(); i++)
-    {
-      XmlRpc::XmlRpcValue state_value;
-      state_value = topics_list_rpc[i];
-      topics_list.push_back(state_value);
-    }
-
-    std::vector<XmlRpc::XmlRpcValue> groups_list;
-    // TODO(thiagodefreitas): check the consistency of the group numbers
-    for (int i = 0; i < topics_list[0]["state"].size(); i++)
-    {
-      XmlRpc::XmlRpcValue group_value;
-      group_value = topics_list[0]["state"][i];
-      groups_list.push_back(group_value);
-    }
-
-
-    for (int i = 0; i < groups_list.size(); i++)
-    {
-      RobotGroup rg;
-      std::vector<std::string> rg_joint_names;
-
-      XmlRpc::XmlRpcValue joints;
-
-      joints = groups_list[i]["group"][0]["joints"];
-      for (int jt = 0; jt < joints.size(); jt++)
-      {
-        rg_joint_names.push_back(static_cast<std::string>(joints[jt]));
-      }
-
-      XmlRpc::XmlRpcValue group_number;
-
-
-      group_number = groups_list[i]["group"][0]["group_number"];
-      int group_number_int = static_cast<int>(group_number);
-
-      XmlRpc::XmlRpcValue name;
-      std::string name_string;
-
-      name = groups_list[i]["group"][0]["name"];
-      name_string = static_cast<std::string>(name);
-
-      XmlRpc::XmlRpcValue ns;
-      std::string ns_string;
-
-      ns = groups_list[i]["group"][0]["ns"];
-
-      ns_string = static_cast<std::string>(ns);
-
-      rg.set_group_id(group_number_int);
-      rg.set_joint_names(rg_joint_names);
-      rg.set_name(name_string);
-      rg.set_ns(ns_string);
-
-      robot_groups[group_number] = rg;
-    }
-
+    this->version_0_ = false;
     return init(connection, robot_groups);
   }
+  else
+  {
+    this->version_0_ = true;
+    std::vector<std::string> joint_names;
+    if (!getJointNames("controller_joint_names", "robot_description", joint_names))
+    {
+      ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
+    }
+    return init(connection, joint_names);
+  }
+  return false;
 }
 
 bool RobotStateInterface::init(SmplMsgConnection* connection, std::map<int, RobotGroup> robot_groups)
 {
+  ROS_INFO_STREAM(" Initializing robot state " << robot_groups.size() << " groups");
   this->robot_groups_ = robot_groups;
   this->connection_ = connection;
-  connection_->makeConnect();
 
   // initialize message-manager
   if (!manager_.init(connection_))
+  {
+    ROS_ERROR("Failed to initialize message manager");
     return false;
+  }
 
   // initialize default handlers
   if (!default_joint_handler_.init(connection_, robot_groups_))
+  {
+    ROS_ERROR("Failed to initialialze joint handler");
     return false;
+  }
   this->add_handler(&default_joint_handler_);
 
   if (!default_joint_feedback_handler_.init(connection_, robot_groups_))
+  {
+    ROS_ERROR("Failed to initialize joint feedback handler");
     return false;
+  }
   this->add_handler(&default_joint_feedback_handler_);
 
   if (!default_joint_feedback_ex_handler_.init(connection_, robot_groups_))
+  {
+    ROS_ERROR("Failed to initialize joint(extended) feedback handler");
     return false;
+  }
   this->add_handler(&default_joint_feedback_ex_handler_);
 
   if (!default_robot_status_handler_.init(connection_))
+  {
+    ROS_ERROR("Failed to initialize robot status handler");
     return false;
+  }
   this->add_handler(&default_robot_status_handler_);
 
+  connection_->makeConnect();
+
+  ROS_INFO("Successfully initialized robot state interface");
   return true;
 }
 

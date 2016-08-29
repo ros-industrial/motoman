@@ -209,7 +209,7 @@ private:
    *
    */
 
-  void goalCB(JointTractoryActionServer::GoalHandle & gh);
+  void goalCB(JointTractoryActionServer::GoalHandle gh);
 
   /**
    * \brief Action server cancel callback method
@@ -218,7 +218,7 @@ private:
    *
    */
 
-  void cancelCB(JointTractoryActionServer::GoalHandle & gh);
+  void cancelCB(JointTractoryActionServer::GoalHandle gh);
   /**
    * \brief Controller state callback (executed when feedback message
    * received)
@@ -227,7 +227,7 @@ private:
    *
    */
 
-  void goalCB(JointTractoryActionServer::GoalHandle & gh, int group_number);
+  void goalCB(JointTractoryActionServer::GoalHandle gh, int group_number);
 
   /**
    * \brief Action server cancel callback method
@@ -236,7 +236,7 @@ private:
    *
    */
 
-  void cancelCB(JointTractoryActionServer::GoalHandle & gh, int group_number);
+  void cancelCB(JointTractoryActionServer::GoalHandle gh, int group_number);
   /**
    * \brief Controller state callback (executed when feedback message
    * received)
