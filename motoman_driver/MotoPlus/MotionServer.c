@@ -55,6 +55,9 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 BOOL Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receiveMsg, int byteSize, SimpleMsg* replyMsg);
 int Ros_MotionServer_MotionCtrlProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 BOOL Ros_MotionServer_StopMotion(Controller* controller);
+BOOL Ros_MotionServer_StartServos(Controller* controller);
+BOOL Ros_MotionServer_StopServos(Controller* controller);
+BOOL Ros_MotionServer_ResetAlarm(Controller* controller);
 BOOL Ros_MotionServer_StartTrajMode(Controller* controller);
 BOOL Ros_MotionServer_StopTrajMode(Controller* controller);
 int Ros_MotionServer_JointTrajDataProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
@@ -628,6 +631,42 @@ int Ros_MotionServer_MotionCtrlProcess(Controller* controller, SimpleMsg* receiv
 				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_FAILURE, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
 			break;
 		}
+		case ROS_CMD_START_SERVOS:
+		{
+			// Stop Motion
+			BOOL bRet = Ros_MotionServer_StartServos(controller);
+			
+			// Reply msg
+			if(bRet)
+				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_SUCCESS, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
+			else 
+				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_FAILURE, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
+			break;
+		}
+		case ROS_CMD_STOP_SERVOS:
+		{
+			// Stop Motion
+			BOOL bRet = Ros_MotionServer_StopServos(controller);
+			
+			// Reply msg
+			if(bRet)
+				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_SUCCESS, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
+			else 
+				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_FAILURE, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
+			break;
+		}
+		case ROS_CMD_RESET_ALARM:
+		{
+			// Stop Motion
+			BOOL bRet = Ros_MotionServer_ResetAlarm(controller);
+			
+			// Reply msg
+			if(bRet)
+				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_SUCCESS, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
+			else 
+				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_FAILURE, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
+			break;
+		}
 		case ROS_CMD_START_TRAJ_MODE:
 		{
 			// Start Trajectory mode by starting the INIT_ROS job on the controller
@@ -694,7 +733,138 @@ BOOL Ros_MotionServer_StopMotion(Controller* controller)
 	return(bStopped && bRet);
 }
 
+//-----------------------------------------------------------------------
+// Starts the servos
+//-----------------------------------------------------------------------
+BOOL Ros_MotionServer_StartServos(Controller* controller)
+{
+    int ret;
+	// Servo On
+	if(Ros_Controller_IsServoOn(controller) == FALSE)
+	{
+        printf("starting servos\n");
+		MP_SERVO_POWER_SEND_DATA sServoData;
+     	MP_STD_RSP_DATA rData;
+		memset(&sServoData, 0x00, sizeof(sServoData));
+   		memset(&rData, 0x00, sizeof(rData));
+		sServoData.sServoPower = 1;  // ON
+		ret = mpSetServoPower(&sServoData, &rData);
+		if( (ret == 0) && (rData.err_no ==0) )
+		{
+			// wait for the Servo On confirmation
+			int checkCount;
+			for(checkCount=0; checkCount<MOTION_START_TIMEOUT; checkCount+=MOTION_START_CHECK_PERIOD)
+			{
+				// Update status
+				Ros_Controller_StatusUpdate(controller);
+		
+				if(Ros_Controller_IsServoOn(controller) == TRUE)
+					continue;
+			
+				mpTaskDelay(MOTION_START_CHECK_PERIOD);
+			}
+			if(Ros_Controller_IsServoOn(controller) == FALSE)
+				goto updateStatus;			
+		}
+		else
+		{
+			char errMsg[ERROR_MSG_MAX_SIZE];
+			memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
+			Ros_Controller_ErrNo_ToString(rData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
+			printf("Can't turn on servo because: %s\r\n", errMsg);
+			goto updateStatus;			
+		}
+	}
+	
+updateStatus:	
+	// Update status
+	Ros_Controller_StatusUpdate(controller);
+    return Ros_Controller_IsServoOn(controller) == TRUE;
+}
 
+//-----------------------------------------------------------------------
+// Stops the servos and makes sure that the motion is also stopped
+//-----------------------------------------------------------------------
+BOOL Ros_MotionServer_StopServos(Controller* controller)
+{
+    int ret;
+    Ros_MotionServer_StopMotion(controller);
+
+ 	// Servo Off
+	if(Ros_Controller_IsServoOn(controller) == TRUE)
+	{
+        printf("stopping servos\n");
+		MP_SERVO_POWER_SEND_DATA sServoData;
+        MP_STD_RSP_DATA rData;
+		memset(&sServoData, 0x00, sizeof(sServoData));
+        memset(&rData, 0x00, sizeof(rData));
+		sServoData.sServoPower = 0;  // OFF
+		ret = mpSetServoPower(&sServoData, &rData);
+		if( (ret == 0) && (rData.err_no ==0) )
+		{
+			// wait for the Servo Off confirmation
+			int checkCount;
+			for(checkCount=0; checkCount<MOTION_START_TIMEOUT; checkCount+=MOTION_START_CHECK_PERIOD)
+			{
+				// Update status
+				Ros_Controller_StatusUpdate(controller);
+		
+				if(Ros_Controller_IsServoOn(controller) == FALSE)
+					continue;
+			
+				mpTaskDelay(MOTION_START_CHECK_PERIOD);
+			}
+			if(Ros_Controller_IsServoOn(controller) == TRUE)
+				goto updateStatus;			
+		}
+		else
+		{
+			char errMsg[ERROR_MSG_MAX_SIZE];
+			memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
+			Ros_Controller_ErrNo_ToString(rData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
+			printf("Can't turn off servo because: %s\r\n", errMsg);
+			goto updateStatus;			
+		}
+	}
+	
+updateStatus:	
+	// Update status
+	Ros_Controller_StatusUpdate(controller);
+    return Ros_Controller_IsServoOn(controller) == FALSE;
+}
+
+BOOL Ros_MotionServer_ResetAlarm(Controller* controller)
+{
+    int ret;
+    MP_ALARM_STATUS_RSP_DATA alarmstatus;
+    ret = mpGetAlarmStatus(&alarmstatus);
+    if( ret != 0 ) {
+        printf("could not get alarm status\n");
+        return FALSE;
+    }
+    
+    if( alarmstatus.sIsAlarm )
+    {
+        MP_ALARM_CODE_RSP_DATA alarmcode;
+        ret = mpGetAlarmCode(&alarmcode);
+        if( ret != 0 ) {
+            printf("could not get alarm code\n");
+            return FALSE;
+        }
+        printf("has alarm, errorno=0x%x, errordata=0x%x, alarmnum=%d, resetting...\n", alarmcode.usErrorNo, alarmcode.usErrorData, alarmcode.usAlarmNum);
+
+        MP_STD_RSP_DATA resetdata;
+        memset(&resetdata, 0, sizeof(resetdata));
+        resetdata.err_no = alarmcode.usErrorNo;
+        ret = mpResetAlarm(&resetdata);
+        if( ret != 0 ) {
+            printf("could not reset the alarm\n");
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
 
 //-----------------------------------------------------------------------
 // Attempts to start playback of a job to put the controller in RosMotion mode
@@ -981,7 +1151,7 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 			// Check if position matches current command position
 			if(abs(pulsePos[i] - curPos[i]) > START_MAX_PULSE_DEVIATION)
 			{
-				printf("ERROR: Trajectory start position doesn't match current position.\r\n");
+				printf("ERROR: Trajectory start position doesn't match current position (thresh is %d).\r\n", START_MAX_PULSE_DEVIATION);
 				printf("    %d, %d, %d, %d, %d, %d, %d, %d\r\n",
 					pulsePos[0], pulsePos[1], pulsePos[2],
 					pulsePos[3], pulsePos[4], pulsePos[5],

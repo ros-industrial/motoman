@@ -64,7 +64,7 @@
 
 #define ERROR_MSG_MAX_SIZE 64
 
-#define START_MAX_PULSE_DEVIATION 10
+#define START_MAX_PULSE_DEVIATION 60 // for MH-24 have seen ~55 pulse error due to brake releasing and gravity
 
 #define CONTROLLER_STATUS_UPDATE_PERIOD 10
 
