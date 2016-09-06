@@ -181,3 +181,7 @@ foreach(dir Inform launch MotoPlus)
    install(DIRECTORY ${dir}/
       DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)
+
+install(PROGRAMS src/move_to_joint.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
