@@ -2,18 +2,17 @@
   Compiling Controller.c
   Compiling CtrlGroup.c
 CtrlGroup.c : warning : In function `Ros_CtrlGroup_ConvertToRosPos'
-CtrlGroup.c(312): warning : comparison of unsigned expression >= 0 is always true
+CtrlGroup.c(344): warning : comparison of unsigned expression >= 0 is always true
 CtrlGroup.c : warning : In function `Ros_CtrlGroup_ConvertToMotoPos'
-CtrlGroup.c(355): warning : comparison of unsigned expression >= 0 is always true
+CtrlGroup.c(387): warning : comparison of unsigned expression >= 0 is always true
+CtrlGroup.c : warning : In function `Ros_CtrlGroup_IsRobot'
+CtrlGroup.c(435): warning : comparison of unsigned expression >= 0 is always true
   Compiling MotionServer.c
 MotionServer.c : warning : In function `Ros_MotionServer_WaitForSimpleMsg'
-MotionServer.c(275): warning : comparison between signed and unsigned
+MotionServer.c(278): warning : comparison between signed and unsigned
+MotionServer.c(310): warning : comparison between signed and unsigned
 MotionServer.c : warning : In function `Ros_MotionServer_SimpleMsgProcess'
-MotionServer.c(372): warning : comparison between signed and unsigned
-MotionServer.c : warning : In function `Ros_MotionServer_ReadIO'
-MotionServer.c(420): warning : unused parameter `controller'
-MotionServer.c : warning : In function `Ros_MotionServer_WriteIO'
-MotionServer.c(451): warning : unused parameter `controller'
+MotionServer.c(385): warning : comparison between signed and unsigned
   Compiling mpMain.c
   Compiling SimpleMessage.c
   Compiling StateServer.c

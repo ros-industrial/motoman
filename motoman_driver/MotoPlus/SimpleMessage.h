@@ -50,6 +50,7 @@ typedef struct
 
 typedef enum
 {
+	ROS_MSG_GET_VERSION = 2,
 	ROS_MSG_ROBOT_STATUS = 13,
 	ROS_MSG_JOINT_TRAJ_PT_FULL = 14,
 	ROS_MSG_JOINT_FEEDBACK = 15,
@@ -133,6 +134,9 @@ typedef enum
 	ROS_CMD_CHECK_MOTION_READY = 200101,
 	ROS_CMD_CHECK_QUEUE_CNT = 200102,
 	ROS_CMD_STOP_MOTION = 200111,
+	ROS_CMD_START_SERVOS = 200112, // starts the servo motors
+	ROS_CMD_STOP_SERVOS = 200113, // stops the servo motors and motion
+	ROS_CMD_RESET_ALARM = 200114, // clears the error in the current controller
 	ROS_CMD_START_TRAJ_MODE = 200121,
 	ROS_CMD_STOP_TRAJ_MODE = 200122,
 	ROS_CMD_DISCONNECT = 200130
