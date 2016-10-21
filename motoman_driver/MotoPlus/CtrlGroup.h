@@ -93,7 +93,7 @@ typedef struct
 	BOOL hasDataToProcess;						// indicates that there is data to process
 	int tidAddToIncQueue;						// ThreadId to add incremental values to the queue
 	int timeLeftover_ms;						// Time left over after reaching the end of a trajectory to complete the interpolation period
-
+	long prevPulsePos[MAX_PULSE_AXES];			// The commanded pulse position that the trajectory starts at (Ros_MotionServer_StartTrajMode)
 	AXIS_MOTION_TYPE axisType;					// Indicates whether axis is rotary or linear
 } CtrlGroup;
 
@@ -108,6 +108,7 @@ extern BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX
 
 extern BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
 
+extern BOOL Ros_CtrlGroup_GetTorque(CtrlGroup* ctrlGroup, double torqueValues[MAX_PULSE_AXES]);
 extern void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], float rosPos[MAX_PULSE_AXES]);
 
 extern void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE_AXES], long pulsePos[MAX_PULSE_AXES]);
