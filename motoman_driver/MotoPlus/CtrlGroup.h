@@ -81,7 +81,7 @@ typedef struct
 	MP_GRP_ID_TYPE groupId;						// control group ID
 	PULSE_TO_RAD pulseToRad;					// conversion ratio between pulse and radian
 	PULSE_TO_METER pulseToMeter;				// conversion ratio between pulse and meter (linear axis)
-	FB_PULSE_CORRECTION_DATA correctionData;  	// compensation for axes coupling
+	FB_PULSE_CORRECTION_DATA correctionData;	// compensation for axes coupling
 	MAX_INCREMENT_INFO maxInc;					// maximum increment per interpolation cycle
 	float maxSpeed[MP_GRP_AXES_NUM];			// maximum joint speed in radian/sec (rotational) or meter/sec (linear)
 	

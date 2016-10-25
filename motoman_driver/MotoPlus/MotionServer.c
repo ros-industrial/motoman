@@ -302,15 +302,15 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 				default:
 					bInvalidMsgType = TRUE;
 					break;
-        	}
-        }
+			}
+		}
 
-        bHasPreviousData = FALSE;
-        // Check message size
-       	if(byteSize >= expectedSize && expectedSize <= sizeof(SimpleMsg))
-       	{
-       		// Process the simple message
-          	ret = Ros_MotionServer_SimpleMsgProcess(controller, &receiveMsg, expectedSize, &replyMsg);
+		bHasPreviousData = FALSE;
+		// Check message size
+		if(byteSize >= expectedSize && expectedSize <= sizeof(SimpleMsg))
+		{
+			// Process the simple message
+			ret = Ros_MotionServer_SimpleMsgProcess(controller, &receiveMsg, expectedSize, &replyMsg);
 			if(ret == 1) 
 			{
 				bDisconnect = TRUE;
@@ -328,18 +328,18 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 			printf("Unknown Message Received(%d)\r\n", receiveMsg.header.msgType);
 			Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGTYPE, &replyMsg, 0);			
 		}
-       	else
-       	{
+		else
+		{
 			printf("MessageReceived(%d bytes): expectedSize=%d\r\n", byteSize,  expectedSize);
 			Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGSIZE, &replyMsg, 0);
-        	// Note: If messages are being combine together because of network transmission protocol
-        	// we may need to add code to store unused portion of the received buff that would be part of the next message
-        }
-        	
-        //Send reply message
-        byteSizeResponse = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);        
-        if (byteSizeResponse <= 0)
-        	break;	// Close the connection
+			// Note: If messages are being combine together because of network transmission protocol
+			// we may need to add code to store unused portion of the received buff that would be part of the next message
+		}
+
+		//Send reply message
+		byteSizeResponse = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);        
+		if (byteSizeResponse <= 0)
+			break;	// Close the connection
 	}
 	
 	mpTaskDelay(50);	// Just in case other associated task need time to clean-up.  Don't if necessary... but it doesn't hurt
@@ -806,7 +806,7 @@ BOOL Ros_MotionServer_ResetAlarm(Controller* controller)
 		//Ignore this error.  Continue to try and clear the alarm.
 	}
     
-	if (alarmstatus.sIsAlarm & 0x02) //alarm is active
+	if (alarmstatus.sIsAlarm & MASK_ISALARM_ACTIVEALARM) //alarm is active
 	{
 		MP_ALARM_CODE_RSP_DATA alarmcode;
 		ret = mpGetAlarmCode(&alarmcode);
@@ -829,7 +829,7 @@ BOOL Ros_MotionServer_ResetAlarm(Controller* controller)
 		}
 	}
 
-	if (alarmstatus.sIsAlarm & 0x01) //error is active
+	if (alarmstatus.sIsAlarm & MASK_ISALARM_ACTIVEERROR) //error is active
 	{
 		MP_ALARM_CODE_RSP_DATA alarmcode;
 		ret = mpGetAlarmCode(&alarmcode);
@@ -961,7 +961,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	// have to initialize the prevPulsePos that will be used when interpolating the traj
 	for(grpNo = 0; grpNo < MP_GRP_NUM; ++grpNo)
 	{
-		if( controller->ctrlGroups[grpNo] != NULL /*&& Ros_CtrlGroup_IsRobot(controller->ctrlGroups[grpNo])*/)
+		if(controller->ctrlGroups[grpNo] != NULL)
 		{
 			Ros_CtrlGroup_GetPulsePosCmd(controller->ctrlGroups[grpNo], controller->ctrlGroups[grpNo]->prevPulsePos);
 		}
@@ -1297,7 +1297,6 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 	int timeInc_ms;						// time increment in millisecond
 	int calculationTime_ms;				// time in ms at which the interpolation takes place
 	float interpolTime;      			// time increment in second
-	//long prevPulsePos[MP_GRP_AXES_NUM];
 	long newPulsePos[MP_GRP_AXES_NUM];
 	Incremental_data incData;
 
@@ -1310,9 +1309,6 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 	// Set the start of the trajectory interpolation as the current position (which should be the end of last interpolation)
 	memcpy(startTrajData, curTrajData, sizeof(JointMotionData));
 	
-	// Set pulse position references
-	//memset(prevPulsePos, 0x00, sizeof(prevPulsePos));
-	//Ros_CtrlGroup_ConvertToMotoPos(ctrlGroup, curTrajData->pos, controller->prevPulsePos);
 	memset(newPulsePos, 0x00, sizeof(newPulsePos));
 	memset(&incData, 0x00, sizeof(incData));
 	incData.frame = MP_INC_PULSE_DTYPE;
