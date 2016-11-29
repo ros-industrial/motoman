@@ -214,8 +214,12 @@ BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_
 	{
 		case MP_R1_GID: sData.sCtrlGrp = 0; break;
 		case MP_R2_GID: sData.sCtrlGrp = 1; break;
+		case MP_R3_GID: sData.sCtrlGrp = 2; break;
+		case MP_R4_GID: sData.sCtrlGrp = 3; break;
 		case MP_B1_GID: sData.sCtrlGrp = 8; break;
 		case MP_B2_GID: sData.sCtrlGrp = 9; break;
+		case MP_B3_GID: sData.sCtrlGrp = 10; break;
+		case MP_B4_GID: sData.sCtrlGrp = 11; break;
 		case MP_S1_GID: sData.sCtrlGrp = 16; break;
 		case MP_S2_GID: sData.sCtrlGrp = 17; break;
 		case MP_S3_GID: sData.sCtrlGrp = 18; break;
@@ -257,8 +261,12 @@ BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_A
 	{
 		case MP_R1_GID: sData.sCtrlGrp = 0; break;
 		case MP_R2_GID: sData.sCtrlGrp = 1; break;
+		case MP_R3_GID: sData.sCtrlGrp = 2; break;
+		case MP_R4_GID: sData.sCtrlGrp = 3; break;
 		case MP_B1_GID: sData.sCtrlGrp = 8; break;
 		case MP_B2_GID: sData.sCtrlGrp = 9; break;
+		case MP_B3_GID: sData.sCtrlGrp = 10; break;
+		case MP_B4_GID: sData.sCtrlGrp = 11; break;
 		case MP_S1_GID: sData.sCtrlGrp = 16; break;
 		case MP_S2_GID: sData.sCtrlGrp = 17; break;
 		case MP_S3_GID: sData.sCtrlGrp = 18; break;
@@ -298,6 +306,30 @@ BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_A
 }
 
 //-------------------------------------------------------------------
+// Retrieves the absolute value (Nm) of the maximum current servo torque.
+//-------------------------------------------------------------------
+BOOL Ros_CtrlGroup_GetTorque(CtrlGroup* ctrlGroup, double torqueValues[MAX_PULSE_AXES])
+{
+    MP_GRP_AXES_T dst_vel;
+    MP_TRQ_CTL_VAL dst_trq;
+  	LONG status = 0;
+  	int i;
+
+	memset(torqueValues, 0, sizeof(torqueValues)); // clear result, in case of error
+	memset(dst_trq.data, 0, sizeof(MP_TRQCTL_DATA));
+	dst_trq.unit = TRQ_NEWTON_METER; //request data in Nm
+
+	status = mpSvsGetVelTrqFb(dst_vel, &dst_trq);
+	if (status != OK)
+		return FALSE;
+
+	for (i = 0; i < MAX_PULSE_AXES; i += 1) 
+	{
+	    torqueValues[i] = (double)dst_trq.data[ctrlGroup->groupId][i] * 0.000001; //Use double.  Float only good for 6 sig digits.
+	}
+    
+    return TRUE;
+}
 // Convert Motoman position in pulse to Ros position in radian/meters
 // In the case of a 7 axis robot, adjust the order to match 
 // the physical axis sequence
@@ -400,5 +432,5 @@ UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup)
 //-------------------------------------------------------------------
 BOOL Ros_CtrlGroup_IsRobot(CtrlGroup* ctrlGroup)
 {
-	return((ctrlGroup->groupId == MP_R1_GID) || (ctrlGroup->groupId == MP_R2_GID));
+	return((ctrlGroup->groupId >= MP_R1_GID) && (ctrlGroup->groupId <= MP_R4_GID));
 }

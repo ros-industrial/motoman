@@ -172,6 +172,7 @@ BOOL Ros_Controller_Init(Controller* controller)
 			controller->ctrlGroups[grpNo] = Ros_CtrlGroup_Create(grpNo, controller->interpolPeriod);
 			if(controller->ctrlGroups[grpNo] != NULL)
 			{
+				Ros_CtrlGroup_GetPulsePosCmd(controller->ctrlGroups[grpNo], controller->ctrlGroups[grpNo]->prevPulsePos); // set the current commanded pulse
 				controller->numRobot++;  //This counter is required for DX100 controllers with two control-groups (robot OR ext axis)
 			}
 			else
@@ -400,6 +401,7 @@ void Ros_Controller_StatusInit(Controller* controller)
 	controller->ioStatusAddr[IO_ROBOTSTATUS_ESTOP_PP].ulAddr = 80026;   		// Pendant E-Stop
 	controller->ioStatusAddr[IO_ROBOTSTATUS_ESTOP_CTRL].ulAddr = 80027;   		// Controller E-Stop
 	controller->ioStatusAddr[IO_ROBOTSTATUS_WAITING_ROS].ulAddr = IO_FEEDBACK_WAITING_MP_INCMOVE; // Job input signaling ready for external motion
+	controller->ioStatusAddr[IO_ROBOTSTATUS_INECOMODE].ulAddr = 50727;			// Energy Saving Mode
 	controller->alarmCode = 0;
 }
 
@@ -444,7 +446,7 @@ BOOL Ros_Controller_IsHold(Controller* controller)
 
 BOOL Ros_Controller_IsServoOn(Controller* controller)
 {
-	return ((controller->ioStatus[IO_ROBOTSTATUS_SERVO]!=0));
+	return ((controller->ioStatus[IO_ROBOTSTATUS_SERVO] != 0) && (controller->ioStatus[IO_ROBOTSTATUS_INECOMODE] == 0));
 }
 
 BOOL Ros_Controller_IsEStop(Controller* controller)
@@ -785,7 +787,7 @@ int vsnprintf(char *s, size_t sz, const char *fmt, va_list args)
 	tmpBuf[sizeof(tmpBuf) - 1] = 0;  // be sure ending \0 is there
 	if (res >= sz)
 	{
-		// Buffer overrun... The shit is close to the fan
+		// Buffer overrun...
 		printf("Logging.. Error vsnprintf:%d max:%d, anyway:\r\n", (int)res, (int)sz);
 		printf("%s", tmpBuf);
 		res = -res;
