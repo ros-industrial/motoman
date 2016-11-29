@@ -302,7 +302,7 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
 {
   if (vec.size() > joints.getMaxNumJoints())
     ROS_ERROR_RETURN(false, "Failed to copy to JointData.  Len (%d) out of range (0 to %d)",
-                     vec.size(), joints.getMaxNumJoints());
+                     (int)vec.size(), joints.getMaxNumJoints());
 
   joints.init();
   for (int i = 0; i < vec.size(); ++i)
