@@ -32,7 +32,11 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#define APPLICATION_VERSION					"1.3.4"
+#include "MotoPlus.h"
+#include "CtrlGroup.h"
+#include "SimpleMessage.h"
+
+#define APPLICATION_VERSION					"1.3.7"
 
 #define TCP_PORT_MOTION						50240
 #define TCP_PORT_STATE						50241
@@ -60,13 +64,19 @@
 
 #define INVALID_SOCKET -1
 #define INVALID_TASK -1
+
+#ifndef IPPROTO_TCP
 #define IPPROTO_TCP  6
+#endif
 
 #define ERROR_MSG_MAX_SIZE 64
 
 #define START_MAX_PULSE_DEVIATION 10
 
 #define CONTROLLER_STATUS_UPDATE_PERIOD 10
+
+#define MASK_ISALARM_ACTIVEALARM 0x02
+#define MASK_ISALARM_ACTIVEERROR 0x01
 
 typedef enum 
 {
@@ -85,6 +95,7 @@ typedef enum
 	IO_ROBOTSTATUS_ESTOP_PP,
 	IO_ROBOTSTATUS_ESTOP_CTRL,
 	IO_ROBOTSTATUS_WAITING_ROS,
+	IO_ROBOTSTATUS_INECOMODE,
 	IO_ROBOTSTATUS_MAX
 } IoStatusIndex;
  
@@ -94,18 +105,18 @@ typedef struct
 	int numGroup;											// Actual number of defined group
 	int numRobot;											// Actual number of defined robot
 	CtrlGroup* ctrlGroups[MP_GRP_NUM];						// Array of the controller control group
-	
+
 	// Controller Status
 	MP_IO_INFO ioStatusAddr[IO_ROBOTSTATUS_MAX];			// Array of Specific Input Address representing the I/O status
-    USHORT ioStatus[IO_ROBOTSTATUS_MAX];					// Array storing the current status of the controller
-    int alarmCode;											// Alarm number currently active
+	USHORT ioStatus[IO_ROBOTSTATUS_MAX];					// Array storing the current status of the controller
+	int alarmCode;											// Alarm number currently active
 	BOOL bRobotJobReady;									// Boolean indicating that the controller is ready for increment move
-    BOOL bRobotJobReadyRaised;								// Indicates that the signal was raised since operating was resumed
-    BOOL bStopMotion;										// Flag to stop motion
+	BOOL bRobotJobReadyRaised;								// Indicates that the signal was raised since operating was resumed
+	BOOL bStopMotion;										// Flag to stop motion
 
 	// Connection Server
 	int tidConnectionSrv;
-	
+
 	// State Server Connection
 	int tidStateSendState;  								// ThreadId of thread sending the controller state
 	int	sdStateConnections[MAX_STATE_CONNECTIONS];			// Socket Descriptor array for State Server
@@ -119,7 +130,7 @@ typedef struct
 	BOOL bSkillMotionReady[2];								// Boolean indicating that the SKILL command required for DX100 is active
 	int RosListenForSkillID[2];								// ThreadId for listening to SkillSend command
 #endif
-	
+
 } Controller;
 
 extern BOOL Ros_Controller_Init(Controller* controller);

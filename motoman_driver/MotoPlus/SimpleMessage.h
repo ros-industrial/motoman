@@ -32,8 +32,11 @@
 #ifndef SIMPLE_MSG_H
 #define SIMPLE_MSG_H
 
+#include "MotoPlus.h"
+#include "CtrlGroup.h"
+
 #define ROS_MAX_JOINT 10
-#define MOT_MAX_GR	4
+#define MOT_MAX_GR     4
 
 //----------------
 // Prefix Section
@@ -50,6 +53,7 @@ typedef struct
 
 typedef enum
 {
+	ROS_MSG_GET_VERSION = 2,
 	ROS_MSG_ROBOT_STATUS = 13,
 	ROS_MSG_JOINT_TRAJ_PT_FULL = 14,
 	ROS_MSG_JOINT_FEEDBACK = 15,
@@ -66,7 +70,7 @@ typedef enum
 
 typedef enum
 {
-    ROS_COMM_INVALID = 0,
+	ROS_COMM_INVALID = 0,
 	ROS_COMM_TOPIC = 1,
 	ROS_COMM_SERVICE_REQUEST = 2,
 	ROS_COMM_SERVICE_REPLY = 3
@@ -86,8 +90,8 @@ struct _SmHeader
 	SmMsgType msgType;
 	SmCommType commType;
 	SmReplyType replyType;
-}  __attribute__((__packed__));
-typedef struct _SmHeader		SmHeader;
+} __attribute__((__packed__));
+typedef struct _SmHeader SmHeader;
 
 //--------------
 // Body Section
@@ -102,8 +106,8 @@ struct _SmBodyRobotStatus		// ROS_MSG_ROBOT_STATUS = 13
 	int in_motion;				// Is currently executing a motion command:  -1=Unknown, 1=True, 0=False 
 	int mode;  					// Controller/Pendant mode: -1=Unknown, 1=Manual(TEACH), 2=Auto(PLAY)
 	int motion_possible;		// Is the controller ready to receive motion: -1=Unknown, 1=ENABLED, 0=DISABLED 
-}  __attribute__((__packed__));  	
-typedef struct _SmBodyRobotStatus	SmBodyRobotStatus;
+} __attribute__((__packed__));
+typedef struct _SmBodyRobotStatus SmBodyRobotStatus;
 
 struct _SmBodyJointTrajPtFull	// ROS_MSG_JOINT_TRAJ_PT_FULL = 14
 {
@@ -114,8 +118,8 @@ struct _SmBodyJointTrajPtFull	// ROS_MSG_JOINT_TRAJ_PT_FULL = 14
 	float pos[ROS_MAX_JOINT];	// Desired joint positions in radian.  Base to Tool joint order  
 	float vel[ROS_MAX_JOINT];	// Desired joint velocities in radian/sec.  
 	float acc[ROS_MAX_JOINT];	// Desired joint accelerations in radian/sec^2.
-} __attribute__((__packed__));  	
-typedef struct _SmBodyJointTrajPtFull	SmBodyJointTrajPtFull;
+} __attribute__((__packed__));
+typedef struct _SmBodyJointTrajPtFull SmBodyJointTrajPtFull;
 
 struct _SmBodyJointFeedback		// ROS_MSG_JOINT_FEEDBACK = 15
 {
@@ -125,14 +129,17 @@ struct _SmBodyJointFeedback		// ROS_MSG_JOINT_FEEDBACK = 15
 	float pos[ROS_MAX_JOINT];	// Desired joint positions in radian.  Base to Tool joint order  
 	float vel[ROS_MAX_JOINT];	// Desired joint velocities in radian/sec.  
 	float acc[ROS_MAX_JOINT];	// Desired joint accelerations in radian/sec^2.
-} __attribute__((__packed__)); 
-typedef struct _SmBodyJointFeedback		SmBodyJointFeedback;
+} __attribute__((__packed__));
+typedef struct _SmBodyJointFeedback SmBodyJointFeedback;
 
 typedef enum 
 {
 	ROS_CMD_CHECK_MOTION_READY = 200101,
 	ROS_CMD_CHECK_QUEUE_CNT = 200102,
 	ROS_CMD_STOP_MOTION = 200111,
+	ROS_CMD_START_SERVOS = 200112, // starts the servo motors
+	ROS_CMD_STOP_SERVOS = 200113, // stops the servo motors and motion
+	ROS_CMD_RESET_ALARM = 200114, // clears the error in the current controller
 	ROS_CMD_START_TRAJ_MODE = 200121,
 	ROS_CMD_STOP_TRAJ_MODE = 200122,
 	ROS_CMD_DISCONNECT = 200130
@@ -145,8 +152,8 @@ struct _SmBodyMotoMotionCtrl	// ROS_MSG_MOTO_MOTION_CTRL = 2011
 	int sequence;				// Optional message tracking number that will be echoed back in the response.
 	SmCommandType command;		// Desired command
 	float data[ROS_MAX_JOINT];	// Command data - for future use  
-} __attribute__((__packed__)); 
-typedef struct _SmBodyMotoMotionCtrl	SmBodyMotoMotionCtrl;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoMotionCtrl SmBodyMotoMotionCtrl;
 
 typedef enum 
 {
@@ -174,7 +181,7 @@ typedef enum
 	ROS_RESULT_INVALID_DATA_START_POS,
 	ROS_RESULT_INVALID_DATA_POSITION,
 	ROS_RESULT_INVALID_DATA_SPEED,
-	ROS_RESULT_INVALID_DATA_ACCEL,	
+	ROS_RESULT_INVALID_DATA_ACCEL,
 	ROS_RESULT_INVALID_DATA_INSUFFICIENT
 } SmInvalidSubCode;
 
@@ -193,7 +200,7 @@ typedef enum
 	ROS_RESULT_NOT_READY_WAITING_ROS,
 	ROS_RESULT_NOT_READY_SKILLSEND
 } SmNotReadySubcode;
-	
+
 
 struct _SmBodyMotoMotionReply	// ROS_MSG_MOTO_MOTION_REPLY = 2012
 {
@@ -203,8 +210,8 @@ struct _SmBodyMotoMotionReply	// ROS_MSG_MOTO_MOTION_REPLY = 2012
 	SmResultType result;		// High level result code
 	int subcode;				// More detailed result code (optional)
 	float data[ROS_MAX_JOINT];	// Reply data - for future use 
-} __attribute__((__packed__)); 
-typedef struct _SmBodyMotoMotionReply	SmBodyMotoMotionReply;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoMotionReply SmBodyMotoMotionReply;
 
 struct _SmBodyJointTrajPtExData
 {
@@ -214,51 +221,51 @@ struct _SmBodyJointTrajPtExData
 	float pos[ROS_MAX_JOINT];	// Desired joint positions in radian.  Base to Tool joint order  
 	float vel[ROS_MAX_JOINT];	// Desired joint velocities in radian/sec.  
 	float acc[ROS_MAX_JOINT];	// Desired joint accelerations in radian/sec^2.
-} __attribute__((__packed__));  	
-typedef struct _SmBodyJointTrajPtExData	SmBodyJointTrajPtExData;
+} __attribute__((__packed__));
+typedef struct _SmBodyJointTrajPtExData SmBodyJointTrajPtExData;
 
 struct _SmBodyJointTrajPtFullEx
 {
 	int numberOfValidGroups;
 	int sequence;
 	SmBodyJointTrajPtExData	jointTrajPtData[MOT_MAX_GR];
-} __attribute__((__packed__)); 
-typedef struct _SmBodyJointTrajPtFullEx	SmBodyJointTrajPtFullEx;
+} __attribute__((__packed__));
+typedef struct _SmBodyJointTrajPtFullEx SmBodyJointTrajPtFullEx;
 
 
 struct _SmBodyJointFeedbackEx
 {
 	int numberOfValidGroups;
 	SmBodyJointFeedback	jointTrajPtData[MOT_MAX_GR];
-} __attribute__((__packed__)); 
-typedef struct _SmBodyJointFeedbackEx	SmBodyJointFeedbackEx;
+} __attribute__((__packed__));
+typedef struct _SmBodyJointFeedbackEx SmBodyJointFeedbackEx;
 
 
 struct _SmBodyMotoReadSingleIO
 {
 	UINT32 ioAddress;
-} __attribute__((__packed__)); 
-typedef struct _SmBodyMotoReadSingleIO	SmBodyMotoReadSingleIO;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoReadSingleIO SmBodyMotoReadSingleIO;
 
 struct _SmBodyMotoReadSingleIOReply
 {
 	UINT32 value;
 	UINT32 resultCode;
-} __attribute__((__packed__)); 
-typedef struct _SmBodyMotoReadSingleIOReply	SmBodyMotoReadSingleIOReply;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoReadSingleIOReply SmBodyMotoReadSingleIOReply;
 
 struct _SmBodyMotoWriteSingleIO
 {
 	UINT32 ioAddress;
 	UINT32 ioValue;
-} __attribute__((__packed__)); 
-typedef struct _SmBodyMotoWriteSingleIO	SmBodyMotoWriteSingleIO;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoWriteSingleIO SmBodyMotoWriteSingleIO;
 
 struct _SmBodyMotoWriteSingleIOReply
 {
 	UINT32 resultCode;
-} __attribute__((__packed__)); 
-typedef struct _SmBodyMotoWriteSingleIOReply	SmBodyMotoWriteSingleIOReply;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoWriteSingleIOReply SmBodyMotoWriteSingleIOReply;
 
 
 typedef union
@@ -286,7 +293,7 @@ struct _SimpleMsg
 	SmHeader header;
 	SmBody body;
 } __attribute__((__packed__));
-typedef struct _SimpleMsg	SimpleMsg;
+typedef struct _SimpleMsg SimpleMsg;
 
 
 //-------------------
@@ -300,7 +307,7 @@ extern int Ros_SimpleMsg_JointFeedbackEx_Build(int groupIndex, SimpleMsg* src_ms
 extern int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg, int ctrlGrp);
 
 //Uncomment the DEBUG definition to enable debug-messages at runtime
-// #define DEBUG  
+//#define DEBUG  
 
 #ifdef DEBUG
 // function to dump data structure for debugging

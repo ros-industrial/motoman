@@ -69,7 +69,7 @@ def move_to_joint(end_pos, duration):
   traj = build_traj(get_cur_pos(), end_pos, duration)
 
   # wait for subscribers to connect
-  pub = rospy.Publisher('joint_path_command', JointTrajectory)
+  pub = rospy.Publisher('joint_path_command', JointTrajectory, queue_size=1)
   if not wait_for_subs(pub, 1, 0.5, 2.0):
     rospy.logwarn('Timeout while waiting for subscribers.  Publishing trajectory anyway.')
 

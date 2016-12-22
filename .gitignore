@@ -25,3 +25,4 @@ motoman_driver/MotoPlus/MpRosAllControllers.v11.suo
 motoman_driver/MotoRos - Github driver folder/$tf/8/bef118b8-349a-45c0-8d86-1ae9c03b511e.gz
 motoman_driver/MotoRos - Github driver folder/$tf/localversion.tfb
 *.log
+*.opendb

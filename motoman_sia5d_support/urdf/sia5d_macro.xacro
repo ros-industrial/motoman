@@ -189,7 +189,14 @@
     <parent link="${prefix}link_t" />
     <child link="${prefix}tool0" />
   </joint>
-  
+
+    <!-- ROS base_link (via link_l) to Motoman Robot (not Base) Frame transform -->
+    <link name="${prefix}base" />
+    <joint name="${prefix}link_l-base" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}link_l"/>
+      <child link="${prefix}base"/>
+    </joint>
 	</xacro:macro>
 </robot>
 

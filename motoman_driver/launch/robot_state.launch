@@ -6,7 +6,7 @@
 	<arg name="robot_ip" />
 
 	<!-- Load the byte-swapping version of robot_state if required -->
-    <arg name="use_bswap" />
+	<arg name="use_bswap" />
 
 	<!-- put them on the parameter server -->
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
