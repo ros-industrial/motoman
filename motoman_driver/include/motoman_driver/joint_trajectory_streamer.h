@@ -32,6 +32,9 @@
 #ifndef MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 #define MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 
+#include <map>
+#include <string>
+#include <vector>
 #include "motoman_driver/motion_ctrl.h"
 #include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
 #include "simple_message/joint_data.h"
@@ -60,9 +63,7 @@ using industrial::smpl_msg_connection::SmplMsgConnection;
  */
 class MotomanJointTrajectoryStreamer : public JointTrajectoryStreamer
 {
-
 public:
-
   // since this class overrides some base-class methods,
   // these statements help find the base-class versions
   using JointTrajectoryStreamer::init;
@@ -73,8 +74,8 @@ public:
    *
    * \param robot_id robot group # on this controller (for multi-group systems)
    */
-  MotomanJointTrajectoryStreamer(int robot_id=-1) : JointTrajectoryStreamer(1),
-                                                  robot_id_(robot_id) {}
+  MotomanJointTrajectoryStreamer(int robot_id = -1) : JointTrajectoryStreamer(1),
+    robot_id_(robot_id) {}
 
   ~MotomanJointTrajectoryStreamer();
 
@@ -94,6 +95,21 @@ public:
                     const std::map<std::string, double> &velocity_limits = std::map<std::string, double>());
 
   /**
+   * \brief Class initializer
+   *
+   * \param connection simple message connection that will be used to send commands to robot (ALREADY INITIALIZED)
+   * \param joint_names list of expected joint-names.
+   *   - Count and order should match data sent to robot connection.
+   *   - Use blank-name to insert a placeholder joint position (typ. 0.0).
+   *   - Joints in the incoming JointTrajectory stream that are NOT listed here will be ignored.
+   * \param velocity_limits map of maximum velocities for each joint
+   *   - leave empty to lookup from URDF
+   * \return true on success, false otherwise (an invalid message type)
+   */
+  virtual bool init(SmplMsgConnection* connection, const std::map<int, RobotGroup> &robot_groups,
+                    const std::map<std::string, double> &velocity_limits = std::map<std::string, double>());
+
+  /**
    * \brief Create SimpleMessage for sending to the robot
    *
    * \param[in] seq sequence # of this point in the overall trajectory
@@ -104,25 +120,30 @@ public:
    */
   virtual bool create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage* msg);
 
+  virtual bool create_message(int seq, const motoman_msgs::DynamicJointsGroup &pt, SimpleMessage* msg);
+
+  virtual bool create_message_ex(int seq, const motoman_msgs::DynamicJointPoint &point, SimpleMessage* msg);
+
   virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
   virtual void streamingThread();
 
 protected:
-  static const double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
-  static const double start_pos_tol_  = 1e-4; // max difference btwn start & current position, for validation (rad)
 
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
 
+  std::map<int, MotomanMotionCtrl> motion_ctrl_map_;
+
   void trajectoryStop();
   bool is_valid(const trajectory_msgs::JointTrajectory &traj);
+  bool is_valid(const motoman_msgs::DynamicJointTrajectory &traj);
 
   static bool VectorToJointData(const std::vector<double> &vec,
                                 industrial::joint_data::JointData &joints);
 };
 
-} //joint_trajectory_streamer
-} //motoman
+}  // namespace joint_trajectory_streamer
+}  // namespace motoman
 
-#endif /* MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H */
+#endif  // MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H

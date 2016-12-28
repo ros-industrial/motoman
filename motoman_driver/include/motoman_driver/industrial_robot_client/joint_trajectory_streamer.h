@@ -29,11 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef JOINT_TRAJECTORY_STREAMER_H
-#define JOINT_TRAJECTORY_STREAMER_H
+#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_STREAMER_H
+#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_STREAMER_H
 
 #include <boost/thread/thread.hpp>
 #include "motoman_driver/industrial_robot_client/joint_trajectory_interface.h"
+#include <map>
+#include <vector>
+#include <string>
 
 namespace industrial_robot_client
 {
@@ -48,7 +51,7 @@ namespace TransferStates
 {
 enum TransferState
 {
-  IDLE = 0, STREAMING =1 //,STARTING, //, STOPPING
+  IDLE = 0, STREAMING = 1  // ,STARTING, //, STOPPING
 };
 }
 typedef TransferStates::TransferState TransferState;
@@ -57,7 +60,7 @@ typedef TransferStates::TransferState TransferState;
  * \brief Message handler that streams joint trajectories to the robot controller
  */
 
-//* JointTrajectoryStreamer
+// * JointTrajectoryStreamer
 /**
  *
  * THIS CLASS IS NOT THREAD-SAFE
@@ -65,9 +68,7 @@ typedef TransferStates::TransferState TransferState;
  */
 class JointTrajectoryStreamer : public JointTrajectoryInterface
 {
-
 public:
-
   // since this class defines a different init(), this helps find the base-class init()
   using JointTrajectoryInterface::init;
 
@@ -90,6 +91,22 @@ public:
    *   - leave empty to lookup from URDF
    * \return true on success, false otherwise (an invalid message type)
    */
+  virtual bool init(SmplMsgConnection* connection, const std::map<int, RobotGroup> &robot_groups,
+                    const std::map<std::string, double> &velocity_limits = std::map<std::string, double>());
+
+
+  /**
+   * \brief Class initializer
+   *
+   * \param connection simple message connection that will be used to send commands to robot (ALREADY INITIALIZED)
+   * \param joint_names list of expected joint-names.
+   *   - Count and order should match data sent to robot connection.
+   *   - Use blank-name to insert a placeholder joint position (typ. 0.0).
+   *   - Joints in the incoming JointTrajectory stream that are NOT listed here will be ignored.
+   * \param velocity_limits map of maximum velocities for each joint
+   *   - leave empty to lookup from URDF
+   * \return true on success, false otherwise (an invalid message type)
+   */
   virtual bool init(SmplMsgConnection* connection, const std::vector<std::string> &joint_names,
                     const std::map<std::string, double> &velocity_limits = std::map<std::string, double>());
 
@@ -97,14 +114,17 @@ public:
 
   virtual void jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
 
+  virtual void jointTrajectoryCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg);
+
   virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
+
+  virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
 
   virtual void streamingThread();
 
   bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
 protected:
-
   void trajectoryStop();
 
   boost::thread* streaming_thread_;
@@ -116,7 +136,7 @@ protected:
   int min_buffer_size_;
 };
 
-} //joint_trajectory_streamer
-} //industrial_robot_client
+}  // namespace joint_trajectory_streamer
+}  // namespace industrial_robot_client
 
-#endif /* JOINT_TRAJECTORY_STREAMER_H */
+#endif /* MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_STREAMER_H */

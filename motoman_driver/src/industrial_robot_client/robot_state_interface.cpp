@@ -7,14 +7,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Southwest Research Institute, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Southwest Research Institute, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -30,10 +30,15 @@
  */
 
 #include "motoman_driver/industrial_robot_client/robot_state_interface.h"
+#include "motoman_driver/industrial_robot_client/motoman_utils.h"
 #include "industrial_utils/param_utils.h"
+#include <map>
+#include <string>
+#include <vector>
 
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using industrial_utils::param::getJointNames;
+using industrial_robot_client::motoman_utils::getJointGroups;
 
 namespace industrial_robot_client
 {
@@ -45,10 +50,11 @@ RobotStateInterface::RobotStateInterface()
   this->connection_ = NULL;
   this->add_handler(&default_joint_handler_);
   this->add_handler(&default_joint_feedback_handler_);
+  this->add_handler(&default_joint_feedback_ex_handler_);
   this->add_handler(&default_robot_status_handler_);
 }
 
-bool RobotStateInterface::init(std::string default_ip, int default_port)
+bool RobotStateInterface::init(std::string default_ip, int default_port, bool version_0)
 {
   std::string ip;
   int port;
@@ -56,7 +62,6 @@ bool RobotStateInterface::init(std::string default_ip, int default_port)
   // override IP/port with ROS params, if available
   ros::param::param<std::string>("robot_ip_address", ip, default_ip);
   ros::param::param<int>("~port", port, default_port);
-
   // check for valid parameter values
   if (ip.empty())
   {
@@ -65,7 +70,7 @@ bool RobotStateInterface::init(std::string default_ip, int default_port)
   }
   if (port <= 0)
   {
-    ROS_ERROR("No valid robot IP port found.  Please set ROS '~port' param");
+    ROS_ERROR("No valid robot TCP port found.  Please set ROS '~port' param");
     return false;
   }
 
@@ -79,11 +84,71 @@ bool RobotStateInterface::init(std::string default_ip, int default_port)
 
 bool RobotStateInterface::init(SmplMsgConnection* connection)
 {
-  std::vector<std::string> joint_names;
-  if (!getJointNames("controller_joint_names", "robot_description", joint_names))
-    ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
+  std::map<int, RobotGroup> robot_groups;
+  if(getJointGroups("topic_list", robot_groups))
+  {
+    this->version_0_ = false;
+    return init(connection, robot_groups);
+  }
+  else
+  {
+    this->version_0_ = true;
+    std::vector<std::string> joint_names;
+    if (!getJointNames("controller_joint_names", "robot_description", joint_names))
+    {
+      ROS_WARN("Unable to read 'controller_joint_names' param.  Using standard 6-DOF joint names.");
+    }
+    return init(connection, joint_names);
+  }
+  return false;
+}
 
-  return init(connection, joint_names);
+bool RobotStateInterface::init(SmplMsgConnection* connection, std::map<int, RobotGroup> robot_groups)
+{
+  ROS_INFO_STREAM(" Initializing robot state " << robot_groups.size() << " groups");
+  this->robot_groups_ = robot_groups;
+  this->connection_ = connection;
+
+  // initialize message-manager
+  if (!manager_.init(connection_))
+  {
+    ROS_ERROR("Failed to initialize message manager");
+    return false;
+  }
+
+  // initialize default handlers
+  if (!default_joint_handler_.init(connection_, robot_groups_))
+  {
+    ROS_ERROR("Failed to initialialze joint handler");
+    return false;
+  }
+  this->add_handler(&default_joint_handler_);
+
+  if (!default_joint_feedback_handler_.init(connection_, robot_groups_))
+  {
+    ROS_ERROR("Failed to initialize joint feedback handler");
+    return false;
+  }
+  this->add_handler(&default_joint_feedback_handler_);
+
+  if (!default_joint_feedback_ex_handler_.init(connection_, robot_groups_))
+  {
+    ROS_ERROR("Failed to initialize joint(extended) feedback handler");
+    return false;
+  }
+  this->add_handler(&default_joint_feedback_ex_handler_);
+
+  if (!default_robot_status_handler_.init(connection_))
+  {
+    ROS_ERROR("Failed to initialize robot status handler");
+    return false;
+  }
+  this->add_handler(&default_robot_status_handler_);
+
+  connection_->makeConnect();
+
+  ROS_INFO("Successfully initialized robot state interface");
+  return true;
 }
 
 bool RobotStateInterface::init(SmplMsgConnection* connection, std::vector<std::string>& joint_names)
@@ -106,7 +171,7 @@ bool RobotStateInterface::init(SmplMsgConnection* connection, std::vector<std::s
   this->add_handler(&default_joint_feedback_handler_);
 
   if (!default_robot_status_handler_.init(connection_))
-      return false;
+    return false;
   this->add_handler(&default_robot_status_handler_);
 
   return true;
@@ -117,5 +182,5 @@ void RobotStateInterface::run()
   manager_.spin();
 }
 
-} // robot_state_interface
-} // industrial_robot_client
+}  // namespace robot_state_interface
+}  // namespace industrial_robot_client

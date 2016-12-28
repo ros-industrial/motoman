@@ -32,6 +32,10 @@
 #ifndef CTRLGROUP_H
 #define CTRLGROUP_H
 
+
+#include "ParameterTypes.h"
+
+
 #define Q_SIZE 200
 #define Q_LOCK_TIMEOUT 1000
 #define	Q_OFFSET_IDX( a, b, c )	(((a)+(b)) >= (c) ) ? ((a)+(b)-(c)) \
@@ -66,7 +70,6 @@ typedef struct
 	float acc[MP_GRP_AXES_NUM];		// acceleration in radians/s^2
 } JointMotionData;
 
-
 //---------------------------------------------------------------
 // CtrlGroup:
 // Structure containing all the data related to a control group 
@@ -76,19 +79,22 @@ typedef struct
 	int groupNo;								// sequence group number
 	int numAxes;								// number of axis in the control group
 	MP_GRP_ID_TYPE groupId;						// control group ID
-	GB_PULSE_TO_RAD pulseToRad;					// conversion ratio between pulse and radian
-	FB_PULSE_CORRECTION_DATA correctionData;  	// compensation for axes coupling
+	PULSE_TO_RAD pulseToRad;					// conversion ratio between pulse and radian
+	PULSE_TO_METER pulseToMeter;				// conversion ratio between pulse and meter (linear axis)
+	FB_PULSE_CORRECTION_DATA correctionData;	// compensation for axes coupling
 	MAX_INCREMENT_INFO maxInc;					// maximum increment per interpolation cycle
-	float maxSpeedRad[MP_GRP_AXES_NUM];			// maximum joint speed in radian/sec
+	float maxSpeed[MP_GRP_AXES_NUM];			// maximum joint speed in radian/sec (rotational) or meter/sec (linear)
 	
 	Incremental_q inc_q;						// incremental queue
-	long q_time;								// time to which the queue as been processed
+	long q_time;								// time to which the queue has been processed
 	
 	JointMotionData jointMotionData;			// joint motion command data in radian
 	JointMotionData jointMotionDataToProcess;	// joint motion command data in radian to process
 	BOOL hasDataToProcess;						// indicates that there is data to process
 	int tidAddToIncQueue;						// ThreadId to add incremental values to the queue
-	int timeLeftover_ms;						// Time left over after reaching the end of a trajectory to complet the interpolation period
+	int timeLeftover_ms;						// Time left over after reaching the end of a trajectory to complete the interpolation period
+	long prevPulsePos[MAX_PULSE_AXES];			// The commanded pulse position that the trajectory starts at (Ros_MotionServer_StartTrajMode)
+	AXIS_MOTION_TYPE axisType;					// Indicates whether axis is rotary or linear
 } CtrlGroup;
 
 
@@ -102,7 +108,8 @@ extern BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX
 
 extern BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
 
-extern void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], float radPos[MAX_PULSE_AXES]);
+extern BOOL Ros_CtrlGroup_GetTorque(CtrlGroup* ctrlGroup, double torqueValues[MAX_PULSE_AXES]);
+extern void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], float rosPos[MAX_PULSE_AXES]);
 
 extern void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE_AXES], long pulsePos[MAX_PULSE_AXES]);
 

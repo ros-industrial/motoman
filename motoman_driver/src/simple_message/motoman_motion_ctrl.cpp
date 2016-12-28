@@ -7,14 +7,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Southwest Research Institute, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Southwest Research Institute, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -28,6 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
 #ifdef ROS
 #include "motoman_driver/simple_message/motoman_motion_ctrl.h"
 #include "simple_message/shared_types.h"
@@ -40,7 +41,8 @@
 #include "log_wrapper.h"
 #endif
 
-using namespace industrial::shared_types;
+using industrial::shared_types::shared_int;
+using industrial::shared_types::shared_real;
 
 namespace motoman
 {
@@ -48,14 +50,12 @@ namespace simple_message
 {
 namespace motion_ctrl
 {
-
 MotionCtrl::MotionCtrl(void)
 {
   this->init();
 }
 MotionCtrl::~MotionCtrl(void)
 {
-
 }
 
 void MotionCtrl::init()
@@ -70,7 +70,7 @@ void MotionCtrl::init(shared_int robot_id, shared_int sequence,
   this->setSequence(sequence);
   this->setCommand(command);
   this->clearData();
-  this->setData(0,data);
+  this->setData(0, data);
 }
 
 void MotionCtrl::copyFrom(MotionCtrl &src)
@@ -78,7 +78,7 @@ void MotionCtrl::copyFrom(MotionCtrl &src)
   this->setRobotID(src.getRobotID());
   this->setSequence(src.getSequence());
   this->setCommand(src.getCommand());
-  for (size_t i=0; i<MAX_DATA_CNT; ++i)
+  for (size_t i = 0; i < MAX_DATA_CNT; ++i)
     this->setData(i, src.getData(i));
 }
 
@@ -88,7 +88,7 @@ bool MotionCtrl::operator==(MotionCtrl &rhs)
               this->sequence_ == rhs.sequence_ &&
               this->command_ == rhs.command_;
 
-  for (size_t i=0; i<MAX_DATA_CNT; ++i)
+  for (size_t i = 0; i < MAX_DATA_CNT; ++i)
     rslt &= (this->data_[i] == rhs.data_[i]);
 
   return rslt;
@@ -116,12 +116,12 @@ bool MotionCtrl::load(industrial::byte_array::ByteArray *buffer)
     return false;
   }
 
-  for (size_t i=0; i<MAX_DATA_CNT; ++i)
+  for (size_t i = 0; i < MAX_DATA_CNT; ++i)
   {
     shared_real value = this->getData(i);
     if (!buffer->load(value))
     {
-      LOG_ERROR("Failed to load MotionCtrl data element %d from data[%d]", (int)i, buffer->getBufferSize());
+      LOG_ERROR("Failed to load MotionCtrl data element %d from data[%d]", static_cast<int>(i), buffer->getBufferSize());
       return false;
     }
   }
@@ -134,12 +134,12 @@ bool MotionCtrl::unload(industrial::byte_array::ByteArray *buffer)
 {
   LOG_COMM("Executing MotionCtrl command unload");
 
-  for (int i=MAX_DATA_CNT-1; i>=0; --i)
+  for (int i = MAX_DATA_CNT - 1; i >= 0; --i)
   {
     shared_real value;
     if (!buffer->unload(value))
     {
-      LOG_ERROR("Failed to unload message data element: %d from data[%d]", (int)i, buffer->getBufferSize());
+      LOG_ERROR("Failed to unload message data element: %d from data[%d]", static_cast<int>(i), buffer->getBufferSize());
       return false;
     }
     this->setData(i, value);
@@ -167,6 +167,6 @@ bool MotionCtrl::unload(industrial::byte_array::ByteArray *buffer)
   return true;
 }
 
-}
-}
-}
+}  // namespace motion_ctrl
+}  // namespace simple_message
+}  // namespace motoman

@@ -43,7 +43,8 @@ int main(int argc, char** argv)
 
   // launch the FS100 JointTrajectoryStreamer connection/handlers
   MotomanJointTrajectoryStreamer motionInterface;
-  motionInterface.init("", FS100_motion_port);
+
+  motionInterface.init("", FS100_motion_port, false);
   motionInterface.run();
 
   return 0;

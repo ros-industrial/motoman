@@ -7,14 +7,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Southwest Research Institute, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Southwest Research Institute, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -29,9 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MOTOMAN_MOTION_REPLY_H
-#define MOTOMAN_MOTION_REPLY_H
+#ifndef MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_REPLY_H
+#define MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_REPLY_H
 
+#include <string>
 #ifdef ROS
 #include "simple_message/simple_serialize.h"
 #include "simple_message/shared_types.h"
@@ -56,18 +57,18 @@ namespace motion_reply
  */
 namespace MotionReplyResults
 {
-  enum MotionReplyResult
-  {
-    SUCCESS    = 0,
-    TRUE       = 0,
-    BUSY       = 1,
-    FAILURE    = 2,
-    FALSE      = 2,
-    INVALID    = 3,
-    ALARM      = 4,
-    NOT_READY  = 5,
-    MP_FAILURE = 6
-  };
+enum MotionReplyResult
+{
+  SUCCESS    = 0,
+  TRUE       = 0,
+  BUSY       = 1,
+  FAILURE    = 2,
+  FALSE      = 2,
+  INVALID    = 3,
+  ALARM      = 4,
+  NOT_READY  = 5,
+  MP_FAILURE = 6
+};
 }
 typedef MotionReplyResults::MotionReplyResult MotionReplyResult;
 
@@ -94,7 +95,7 @@ enum InvalidCode
   DATA_ACCEL,
   DATA_INSUFFICIENT
 };
-}
+}  // namespace Invalid
 
 namespace NotReady
 {
@@ -109,10 +110,11 @@ enum NotReadyCode
   SERVO_OFF,
   HOLD,
   NOT_STARTED,
-  WAITING_ROS
+  WAITING_ROS,
+  SKILLSEND
 };
-}
-} // MotionReplySubcodes
+}  // namespace NotReady
+}  // MotionReplySubcodes
 
 /**
  * \brief Class encapsulated motion control reply data.  These messages are sent
@@ -274,7 +276,7 @@ public:
    */
   void clearData()
   {
-    for (size_t i=0; i<MAX_DATA_CNT; ++i)
+    for (size_t i = 0; i < MAX_DATA_CNT; ++i)
       this->data_[i] = 0.0;
   }
 
@@ -286,11 +288,11 @@ public:
    */
   void setData(size_t idx, industrial::shared_types::shared_real val)
   {
-    if (idx<MAX_DATA_CNT)
+    if (idx < MAX_DATA_CNT)
       this->data_[idx] = val;
     else
       LOG_ERROR("MotionReply data index out-of-range (%d >= %d)",
-                (int)idx, (int)MAX_DATA_CNT);
+                static_cast<int>(idx), static_cast<int>(MAX_DATA_CNT));
   }
 
   /**
@@ -301,14 +303,14 @@ public:
    */
   industrial::shared_types::shared_real getData(size_t idx) const
   {
-    if (idx<MAX_DATA_CNT)
+    if (idx < MAX_DATA_CNT)
     {
       return this->data_[idx];
     }
     else
     {
       LOG_ERROR("MotionReply data index out-of-range (%d >= %d)",
-                (int)idx, (int)MAX_DATA_CNT);
+                static_cast<int>(idx), static_cast<int>(MAX_DATA_CNT));
 
       return 0;
     }
@@ -320,7 +322,10 @@ public:
    * \return string message associated with result code
    */
   static std::string getResultString(industrial::shared_types::shared_int code);
-  std::string getResultString() const { return getResultString(this->result_); }
+  std::string getResultString() const
+  {
+    return getResultString(this->result_);
+  }
 
   /*
    * \brief Returns a string interpretation of a result subcode
@@ -328,7 +333,10 @@ public:
    * \return string message associated with result subcode
    */
   static std::string getSubcodeString(industrial::shared_types::shared_int code);
-  std::string getSubcodeString() const { return getSubcodeString(this->subcode_); }
+  std::string getSubcodeString() const
+  {
+    return getSubcodeString(this->subcode_);
+  }
 
 
   /**
@@ -350,12 +358,11 @@ public:
   bool unload(industrial::byte_array::ByteArray *buffer);
   unsigned int byteLength()
   {
-    return 5*sizeof(industrial::shared_types::shared_int) +
-           MAX_DATA_CNT*sizeof(industrial::shared_types::shared_real);
+    return 5 * sizeof(industrial::shared_types::shared_int) +
+           MAX_DATA_CNT * sizeof(industrial::shared_types::shared_real);
   }
 
 private:
-
   /**
    * \brief Robot/group ID.
    *          0 = 1st robot
@@ -392,11 +399,9 @@ private:
    *        Contents of data-buffer are specific to each command.
    */
   industrial::shared_types::shared_real data_[MAX_DATA_CNT];
-
 };
+}  // namespace motion_reply
+}  // namespace simple_message
+}  // namespace motoman
 
-}
-}
-}
-
-#endif /* MOTOMAN_MOTION_REPLY_H */
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_REPLY_H

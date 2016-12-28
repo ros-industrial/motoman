@@ -39,7 +39,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "motoPlus.h"
+#include "MotoPlus.h"
 #include "ParameterExtraction.h"
 #include "CtrlGroup.h"
 #include "SimpleMessage.h"
@@ -123,6 +123,5 @@ void RosInitTask()
 		mpTaskDelay(CONTROLLER_STATUS_UPDATE_PERIOD);
 	}
 }
-
 
 

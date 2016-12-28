@@ -43,8 +43,8 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod);
 BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
 BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
 void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], 
-									float radPos[MAX_PULSE_AXES]);
-void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE_AXES], 
+									float rosPos[MAX_PULSE_AXES]);
+void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float rosPos[MAX_PULSE_AXES],
 									long pulsePos[MAX_PULSE_AXES]);
 UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup);
 BOOL Ros_CtrlGroup_IsRobot(CtrlGroup* ctrlGroup);
@@ -97,14 +97,22 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		// Allocate and initialize memory
 		ctrlGroup = mpMalloc(sizeof(CtrlGroup));
 		memset(ctrlGroup, 0x00, sizeof(CtrlGroup));
-
+		
 		// Populate values
 		ctrlGroup->groupNo = groupNo;
 		ctrlGroup->numAxes = numAxes;
 		ctrlGroup->groupId = Ros_CtrlGroup_FindGrpId(groupNo);
-		
+
+		status = GP_getAxisMotionType(groupNo, &ctrlGroup->axisType);
+		if (status != OK)
+			bInitOk = FALSE;
+
 		status = GP_getPulseToRad(groupNo, &ctrlGroup->pulseToRad);
-		if(status!=OK)
+		if (status != OK)
+			bInitOk = FALSE;
+
+		status = GP_getPulseToMeter(groupNo, &ctrlGroup->pulseToMeter);
+		if (status != OK)
 			bInitOk = FALSE;
 
 		status = GP_getFBPulseCorrection(groupNo, &ctrlGroup->correctionData);
@@ -133,16 +141,44 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		memset(maxSpeedPulse, 0x00, sizeof(maxSpeedPulse));
 		for(i=0; i<numAxes; i++)
 			maxSpeedPulse[i] = ctrlGroup->maxInc.maxIncrement[i] * 1000.0 / interpolPeriod; 
-		Ros_CtrlGroup_ConvertToRosPos(ctrlGroup, maxSpeedPulse, ctrlGroup->maxSpeedRad); 
+		Ros_CtrlGroup_ConvertToRosPos(ctrlGroup, maxSpeedPulse, ctrlGroup->maxSpeed); 
 
-		printf("maxInc: %d, %d, %d, %d, %d, %d, %d\r\n", 
+		printf("axisType[%d]: ", groupNo);
+		for (i = 0; i < numAxes; i++)
+		{
+			if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
+				printf("Lin\t");
+			else if (ctrlGroup->axisType.type[i] == ROTATION_AXIS)
+				printf("Rot\t");
+			else
+			{
+				printf("ERROR\t");
+				motoRosAssert(FALSE, SUBCODE_INVALID_AXIS_TYPE, "Grp%d Axs%d type invalid", groupNo, i);
+			}
+		}
+		printf(";\r\n");
+
+		printf("pulse->unit[%d]: ", groupNo);
+		for (i = 0; i < numAxes; i++)
+		{
+			if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
+				printf("%.4f\t", ctrlGroup->pulseToMeter.PtoM[i]);
+			else
+				printf("%.4f\t", ctrlGroup->pulseToRad.PtoR[i]);
+		}
+		printf(";\r\n");
+
+		printf("maxInc[%d]: %d, %d, %d, %d, %d, %d, %d\r\n", 
+			groupNo,
 			ctrlGroup->maxInc.maxIncrement[0],ctrlGroup->maxInc.maxIncrement[1],ctrlGroup->maxInc.maxIncrement[2],
 			ctrlGroup->maxInc.maxIncrement[3],ctrlGroup->maxInc.maxIncrement[4],ctrlGroup->maxInc.maxIncrement[5],
 			ctrlGroup->maxInc.maxIncrement[6]);
-		printf("maxSpeedRad: %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f\r\n", 
-			ctrlGroup->maxSpeedRad[0],ctrlGroup->maxSpeedRad[1],ctrlGroup->maxSpeedRad[2],
-			ctrlGroup->maxSpeedRad[3],ctrlGroup->maxSpeedRad[4],ctrlGroup->maxSpeedRad[5],
-			ctrlGroup->maxSpeedRad[6]);
+
+		printf("maxSpeed[%d]: %.6f, %.6f, %.6f, %.6f, %.6f, %.6f, %.6f\r\n",
+			groupNo,
+			ctrlGroup->maxSpeed[0],ctrlGroup->maxSpeed[1],ctrlGroup->maxSpeed[2],
+			ctrlGroup->maxSpeed[3],ctrlGroup->maxSpeed[4],ctrlGroup->maxSpeed[5],
+			ctrlGroup->maxSpeed[6]);
 
 		ctrlGroup->tidAddToIncQueue = INVALID_TASK;
 		
@@ -166,10 +202,10 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 //-------------------------------------------------------------------
 BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES])
 {
-  	LONG status = 0;
+	LONG status = 0;
 	MP_CTRL_GRP_SEND_DATA sData;
 	MP_PULSE_POS_RSP_DATA pulse_data;
-  	int i;
+	int i;
 
 	memset(pulsePos, 0, MAX_PULSE_AXES*sizeof(long));  // clear result, in case of error
 
@@ -178,29 +214,33 @@ BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_
 	{
 		case MP_R1_GID: sData.sCtrlGrp = 0; break;
 		case MP_R2_GID: sData.sCtrlGrp = 1; break;
+		case MP_R3_GID: sData.sCtrlGrp = 2; break;
+		case MP_R4_GID: sData.sCtrlGrp = 3; break;
 		case MP_B1_GID: sData.sCtrlGrp = 8; break;
 		case MP_B2_GID: sData.sCtrlGrp = 9; break;
+		case MP_B3_GID: sData.sCtrlGrp = 10; break;
+		case MP_B4_GID: sData.sCtrlGrp = 11; break;
 		case MP_S1_GID: sData.sCtrlGrp = 16; break;
 		case MP_S2_GID: sData.sCtrlGrp = 17; break;
 		case MP_S3_GID: sData.sCtrlGrp = 18; break;
-		default: 
-			printf("Failed to get pulse feedback position\nInvalid groupId: %d", ctrlGroup->groupId);
+		default:
+			printf("Failed to get pulse feedback position\nInvalid groupId: %d\n", ctrlGroup->groupId);
 			return FALSE;
 	}
 	
-  	// get the command joint positions
-  	status = mpGetPulsePos (&sData,&pulse_data);
-  	if (0 != status)
-  	{
-    	printf("Failed to get pulse position (command): %u", status);
-    	return FALSE;
-  	}
-	  	
-  	// assign return value
-  	for (i=0; i<ctrlGroup->numAxes; ++i)
-    	pulsePos[i] = pulse_data.lPos[i];
-    
-  	return TRUE;  	
+	// get the command joint positions
+	status = mpGetPulsePos (&sData,&pulse_data);
+	if (0 != status)
+	{
+		printf("Failed to get pulse position (command): %u\n", status);
+		return FALSE;
+	}
+	
+	// assign return value
+	for (i=0; i<ctrlGroup->numAxes; ++i)
+		pulsePos[i] = pulse_data.lPos[i];
+
+	return TRUE;
 }
 
 
@@ -209,10 +249,10 @@ BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_
 //-------------------------------------------------------------------
 BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES])
 {
-  	LONG status = 0;
+	LONG status = 0;
 	MP_CTRL_GRP_SEND_DATA sData;
 	MP_FB_PULSE_POS_RSP_DATA pulse_data;
-  	int i;
+	int i;
 
 	memset(pulsePos, 0, MAX_PULSE_AXES*sizeof(long));  // clear result, in case of error
 
@@ -221,73 +261,111 @@ BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_A
 	{
 		case MP_R1_GID: sData.sCtrlGrp = 0; break;
 		case MP_R2_GID: sData.sCtrlGrp = 1; break;
+		case MP_R3_GID: sData.sCtrlGrp = 2; break;
+		case MP_R4_GID: sData.sCtrlGrp = 3; break;
 		case MP_B1_GID: sData.sCtrlGrp = 8; break;
 		case MP_B2_GID: sData.sCtrlGrp = 9; break;
+		case MP_B3_GID: sData.sCtrlGrp = 10; break;
+		case MP_B4_GID: sData.sCtrlGrp = 11; break;
 		case MP_S1_GID: sData.sCtrlGrp = 16; break;
 		case MP_S2_GID: sData.sCtrlGrp = 17; break;
 		case MP_S3_GID: sData.sCtrlGrp = 18; break;
 		default: 
-			printf("Failed to get pulse feedback position\nInvalid groupId: %d", ctrlGroup->groupId);
+			printf("Failed to get pulse feedback position\nInvalid groupId: %d\n", ctrlGroup->groupId);
 			return FALSE;
 	}
 	
-  	// get raw (uncorrected/unscaled) joint positions
-  	status = mpGetFBPulsePos (&sData,&pulse_data);
-  	if (0 != status)
-  	{
-    	printf("Failed to get pulse feedback position: %u", status);
-    	return FALSE;
-  	}
+	// get raw (uncorrected/unscaled) joint positions
+	status = mpGetFBPulsePos (&sData,&pulse_data);
+	if (0 != status)
+	{
+		printf("Failed to get pulse feedback position: %u\n", status);
+		return FALSE;
+	}
 	
-	 // apply correction to account for cross-axis coupling
-	 // Note: this is only required for feedback position
-	 // controller handles this correction internally when 
-	 // dealing with command positon.
-  	for (i=0; i<MAX_PULSE_AXES; ++i)
-  	{
-    	FB_AXIS_CORRECTION *corr = &ctrlGroup->correctionData.correction[i];
-    	if (corr->bValid)
-    	{
-		    int src_axis = corr->ulSourceAxis;
-		    int dest_axis = corr->ulCorrectionAxis;
-		    pulse_data.lPos[dest_axis] -= (int)(pulse_data.lPos[src_axis] * corr->fCorrectionRatio);
-    	}
-  	}
-  	
-  	// assign return value
-  	for (i=0; i<ctrlGroup->numAxes; ++i)
-    	pulsePos[i] = pulse_data.lPos[i];
-    
-  	return TRUE;  	
+	// apply correction to account for cross-axis coupling
+	// Note: this is only required for feedback position
+	// controller handles this correction internally when 
+	// dealing with command positon.
+	for (i=0; i<MAX_PULSE_AXES; ++i)
+	{
+		FB_AXIS_CORRECTION *corr = &ctrlGroup->correctionData.correction[i];
+		if (corr->bValid)
+		{
+			int src_axis = corr->ulSourceAxis;
+			int dest_axis = corr->ulCorrectionAxis;
+			pulse_data.lPos[dest_axis] -= (int)(pulse_data.lPos[src_axis] * corr->fCorrectionRatio);
+		}
+	}
+	
+	// assign return value
+	for (i=0; i<ctrlGroup->numAxes; ++i)
+		pulsePos[i] = pulse_data.lPos[i];
+	
+	return TRUE;
 }
 
 //-------------------------------------------------------------------
-// Convert Motoman position in pulse to Ros position in radian
+// Retrieves the absolute value (Nm) of the maximum current servo torque.
+//-------------------------------------------------------------------
+BOOL Ros_CtrlGroup_GetTorque(CtrlGroup* ctrlGroup, double torqueValues[MAX_PULSE_AXES])
+{
+    MP_GRP_AXES_T dst_vel;
+    MP_TRQ_CTL_VAL dst_trq;
+  	LONG status = 0;
+  	int i;
+
+	memset(torqueValues, 0, sizeof(torqueValues)); // clear result, in case of error
+	memset(dst_trq.data, 0, sizeof(MP_TRQCTL_DATA));
+	dst_trq.unit = TRQ_NEWTON_METER; //request data in Nm
+
+	status = mpSvsGetVelTrqFb(dst_vel, &dst_trq);
+	if (status != OK)
+		return FALSE;
+
+	for (i = 0; i < MAX_PULSE_AXES; i += 1) 
+	{
+	    torqueValues[i] = (double)dst_trq.data[ctrlGroup->groupId][i] * 0.000001; //Use double.  Float only good for 6 sig digits.
+	}
+    
+    return TRUE;
+}
+// Convert Motoman position in pulse to Ros position in radian/meters
 // In the case of a 7 axis robot, adjust the order to match 
 // the physical axis sequence
 //-------------------------------------------------------------------
 void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], 
-									float radPos[MAX_PULSE_AXES])
+									float rosPos[MAX_PULSE_AXES])
 {
 	int i;
-		
+	float conversion = 1;
+	
 	// Adjust joint order for 7 axis robot
 	if((ctrlGroup->groupId >= MP_R1_GID) && (ctrlGroup->groupId <= MP_R4_GID) && (ctrlGroup->numAxes == 7))
 	{
 		for(i=0; i<ctrlGroup->numAxes; i++)
 		{
 			if(i<2)
-				radPos[i] = pulsePos[i] / ctrlGroup->pulseToRad.PtoR[i];
+				rosPos[i] = pulsePos[i] / ctrlGroup->pulseToRad.PtoR[i];
 			else if(i==2)
-				radPos[2] = pulsePos[6] / ctrlGroup->pulseToRad.PtoR[6];
+				rosPos[2] = pulsePos[6] / ctrlGroup->pulseToRad.PtoR[6];
 			else
-				radPos[i] = pulsePos[i-1] / ctrlGroup->pulseToRad.PtoR[i-1];		
+				rosPos[i] = pulsePos[i-1] / ctrlGroup->pulseToRad.PtoR[i-1];
 		}
 	}
 	else
 	{
-		for(i=0; i<ctrlGroup->numAxes; i++)
-			radPos[i] = pulsePos[i] / ctrlGroup->pulseToRad.PtoR[i];
+		for (i = 0; i < ctrlGroup->numAxes; i++)
+		{
+			if (ctrlGroup->axisType.type[i] == ROTATION_AXIS)
+				conversion = ctrlGroup->pulseToRad.PtoR[i];
+			else if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
+				conversion = ctrlGroup->pulseToMeter.PtoM[i];
+			else
+				conversion = 1.0;
+
+			rosPos[i] = pulsePos[i] / conversion;
+		}
 	}
 }
 
@@ -300,6 +378,7 @@ void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE
 									long pulsePos[MAX_PULSE_AXES])
 {
 	int i;
+	float conversion = 1;
 	
 	// Initilize memory space
 	memset(pulsePos, 0x00, sizeof(long)*MAX_PULSE_AXES);
@@ -320,8 +399,15 @@ void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE
 	else
 	{
 		// Convert to pulse
-		for(i=0; i<ctrlGroup->numAxes; i++)
-			 pulsePos[i] = (int)(radPos[i] * ctrlGroup->pulseToRad.PtoR[i]);	
+		for (i = 0; i < ctrlGroup->numAxes; i++)
+		{
+			if (ctrlGroup->axisType.type[i] == ROTATION_AXIS)
+				conversion = ctrlGroup->pulseToRad.PtoR[i];
+			else if (ctrlGroup->axisType.type[i] == LINEAR_AXIS)
+				conversion = ctrlGroup->pulseToMeter.PtoM[i];
+
+			pulsePos[i] = (int)(radPos[i] * conversion);
+		}
 	}
 }
 
@@ -346,5 +432,5 @@ UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup)
 //-------------------------------------------------------------------
 BOOL Ros_CtrlGroup_IsRobot(CtrlGroup* ctrlGroup)
 {
-	return((ctrlGroup->groupId == MP_R1_GID) || (ctrlGroup->groupId == MP_R2_GID));
+	return((ctrlGroup->groupId >= MP_R1_GID) && (ctrlGroup->groupId <= MP_R4_GID));
 }

@@ -14,9 +14,9 @@
   <!-- controller: Controller name (fs100 or dx100) -->
   <arg name="controller"/>
 
-	<rosparam command="load" file="$(find motoman_sia10d_support)/config/joint_names_sia10d.yaml" />
+  <rosparam command="load" file="$(find motoman_sia10d_support)/config/joint_names_sia10d.yaml" />
 
-	<include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
-		<arg name="robot_ip"   value="$(arg robot_ip)" />
-	</include>
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip"   value="$(arg robot_ip)" />
+  </include>
 </launch>

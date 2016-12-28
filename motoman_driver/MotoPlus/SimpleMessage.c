@@ -175,7 +175,7 @@ void Ros_SimpleMsg_DumpTrajPtFull(SmBodyJointTrajPtFull* data)
 	printf("  groupNo=%d\r\n", data->groupNo);
 	printf("  sequence=%d\r\n", data->sequence);
 	printf("  validFields=%d\r\n", data->validFields);
-	printf("  time=%%.5f\r\n", data->time);
+	printf("  time=%.5f\r\n", data->time);
 	printf("  pos: %.5f, %.5f, %.5f, %.5f, %.5f, %.5f, %.5f\r\n", 
 		data->pos[0], data->pos[1], data->pos[2], data->pos[3], 
 		data->pos[4], data->pos[5], data->pos[6]);

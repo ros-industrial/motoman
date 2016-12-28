@@ -7,14 +7,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * 	* Redistributions of source code must retain the above copyright
- * 	notice, this list of conditions and the following disclaimer.
- * 	* Redistributions in binary form must reproduce the above copyright
- * 	notice, this list of conditions and the following disclaimer in the
- * 	documentation and/or other materials provided with the distribution.
- * 	* Neither the name of the Southwest Research Institute, nor the names
- *	of its contributors may be used to endorse or promote products derived
- *	from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  * Neither the name of the Southwest Research Institute, nor the names
+ *  of its contributors may be used to endorse or promote products derived
+ *  from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MOTOMAN_MOTION_CTRL_MESSAGE_H
-#define MOTOMAN_MOTION_CTRL_MESSAGE_H
+#ifndef MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_MESSAGE_H
+#define MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_MESSAGE_H
 
 #ifdef ROS
 #include "simple_message/typed_message.h"
@@ -54,8 +54,6 @@ namespace simple_message
 {
 namespace motion_ctrl_message
 {
-
-
 /**
  * \brief Class encapsulated motoman motion control message generation methods
  * (either to or from a industrial::simple_message::SimpleMessage type.
@@ -68,9 +66,7 @@ namespace motion_ctrl_message
  * THIS CLASS IS NOT THREAD-SAFE
  *
  */
-
 class MotionCtrlMessage : public industrial::typed_message::TypedMessage
-
 {
 public:
   /**
@@ -120,12 +116,9 @@ public:
   motoman::simple_message::motion_ctrl::MotionCtrl cmd_;
 
 private:
-
-
 };
+}  // namespace motion_ctrl_message
+}  // namespace simple_message
+}  // namespace motoman
 
-}
-}
-}
-
-#endif /* MOTOMAN_MOTION_CTRL_MESSAGE_H */
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_MESSAGE_H

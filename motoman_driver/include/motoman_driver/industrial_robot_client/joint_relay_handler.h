@@ -30,18 +30,21 @@
  */
 
 
-#ifndef JOINT_RELAY_HANDLER_H
-#define JOINT_RELAY_HANDLER_H
+#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_RELAY_HANDLER_H
+#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_RELAY_HANDLER_H
 
 #include <string>
 #include <vector>
-
+#include <map>
+#include <algorithm>
 #include "ros/ros.h"
 #include "control_msgs/FollowJointTrajectoryFeedback.h"
 #include "sensor_msgs/JointState.h"
 #include "simple_message/message_handler.h"
 #include "simple_message/messages/joint_message.h"
 #include "trajectory_msgs/JointTrajectoryPoint.h"
+#include "motoman_driver/industrial_robot_client/robot_group.h"
+#include "motoman_msgs/DynamicJointsGroup.h"
 
 namespace industrial_robot_client
 {
@@ -51,7 +54,7 @@ namespace joint_relay_handler
 using industrial::joint_message::JointMessage;
 using industrial::simple_message::SimpleMessage;
 using trajectory_msgs::JointTrajectoryPoint;
-
+using motoman_msgs::DynamicJointsGroup;
 /**
  * \brief Message handler that relays joint positions (converts simple message
  * types to ROS message types and publishes them)
@@ -61,37 +64,54 @@ using trajectory_msgs::JointTrajectoryPoint;
  */
 class JointRelayHandler : public industrial::message_handler::MessageHandler
 {
-
 public:
 
   /**
-* \brief Constructor
-*/
+  * \brief Constructor
+  */
   JointRelayHandler() {};
 
+  typedef std::map<int, RobotGroup>::iterator it_type;
+  /**
+   * \brief Class initializer
+   *
+   * \param connection simple message connection that will be used to send replies.
+   * \param joint_names list of joint-names for msg-publishing.
+   *   - Count and order should match data from robot connection.
+   *   - Use blank-name to exclude a joint from publishing.
+   *
+   * \return true on success, false otherwise (an invalid message type)
+   */
+  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::map<int, RobotGroup> &robot_groups)
+  {
+    return init(connection, static_cast<int>(industrial::simple_message::StandardMsgTypes::JOINT), robot_groups);
+  }
 
- /**
-  * \brief Class initializer
-  *
-  * \param connection simple message connection that will be used to send replies.
-  * \param joint_names list of joint-names for msg-publishing.
-  *   - Count and order should match data from robot connection.
-  *   - Use blank-name to exclude a joint from publishing.
-  *
-  * \return true on success, false otherwise (an invalid message type)
-  */
- virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::vector<std::string> &joint_names)
- {
-   return init(connection, (int)industrial::simple_message::StandardMsgTypes::JOINT, joint_names);
- }
+  /**
+   * \brief Class initializer
+   *
+   * \param connection simple message connection that will be used to send replies.
+   * \param joint_names list of joint-names for msg-publishing.
+   *   - Count and order should match data from robot connection.
+   *   - Use blank-name to exclude a joint from publishing.
+   *
+   * \return true on success, false otherwise (an invalid message type)
+   */
+  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::vector<std::string> &joint_names)
+  {
+    return init(connection, static_cast<int>(industrial::simple_message::StandardMsgTypes::JOINT), joint_names);
+  }
 
 protected:
-
   std::vector<std::string> all_joint_names_;
+  std::map<int, RobotGroup> robot_groups_;
 
   ros::Publisher pub_joint_control_state_;
   ros::Publisher pub_joint_sensor_state_;
   ros::NodeHandle node_;
+
+  std::map<int, ros::Publisher> pub_controls_;
+  std::map<int, ros::Publisher> pub_states_;
 
   /**
    * \brief Class initializer
@@ -107,7 +127,19 @@ protected:
   virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection,
                     int msg_type, std::vector<std::string> &joint_names);
 
-
+  /**
+   * \brief Class initializer
+   *
+   * \param connection simple message connection that will be used to send replies.
+   * \param msg_type type of simple message processed by this handler
+   * \param joint_names list of joint-names for msg-publishing.
+   *   - Count and order should match data from robot connection.
+   *   - Use blank-name to exclude a joint from publishing.
+   *
+   * \return true on success, false otherwise (an invalid message type)
+   */
+  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection,
+                    int msg_type, std::map<int, RobotGroup> &robot_groups);
   /**
    * \brief Convert joint message into publish message-types
    *
@@ -120,6 +152,27 @@ protected:
   virtual bool create_messages(SimpleMessage& msg_in,
                                control_msgs::FollowJointTrajectoryFeedback* control_state,
                                sensor_msgs::JointState* sensor_state);
+
+  /**
+   * \brief Convert joint message into publish message-types
+   *
+   * \param[in] msg_in Message from robot connection
+   * \param[out] control_state FollowJointTrajectoryFeedback message for ROS publishing
+   * \param[out] sensor_state JointState message for ROS publishing
+   *
+   * \return true on success, false otherwise
+   */
+  virtual bool create_messages(SimpleMessage& msg_in,
+                               control_msgs::FollowJointTrajectoryFeedback* control_state,
+                               sensor_msgs::JointState* sensor_state, int robot_id);
+
+  /**
+   * \brief Convert joint message into intermediate message-type
+   *
+   * \param[in] msg_in Message from robot connection
+   * \param[out] joint_state JointTrajectoryPt message for intermediate processing
+   */
+  virtual bool convert_message(SimpleMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id);
 
   /**
    * \brief Convert joint message into intermediate message-type
@@ -145,6 +198,22 @@ protected:
   }
 
   /**
+   * \brief Transform joint state before publishing.
+   * Can be overridden to implement, e.g. robot-specific joint coupling.
+   *
+   * \param[in] state_in joint state, exactly as passed from robot connection.
+   * \param[out] state_out transformed joint state (in same order/count as input state)
+   *
+   * \return true on success, false otherwise
+   */
+  virtual bool transform(const DynamicJointsGroup& state_in, DynamicJointsGroup* state_out)
+  {
+    *state_out = state_in;  // by default, no transform is applied
+    return true;
+  }
+
+
+  /**
    * \brief Select specific joints for publishing
    *
    * \param[in] all_joint_state joint state, in count/order matching robot connection
@@ -156,6 +225,9 @@ protected:
    */
   virtual bool select(const JointTrajectoryPoint& all_joint_state, const std::vector<std::string>& all_joint_names,
                       JointTrajectoryPoint* pub_joint_state, std::vector<std::string>* pub_joint_names);
+
+  virtual bool select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
+                      DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names);
 
   /**
    * \brief Callback executed upon receiving a joint message
@@ -175,10 +247,18 @@ private:
    */
   bool convert_message(JointMessage& msg_in, JointTrajectoryPoint* joint_state);
 
-};//class JointRelayHandler
+  /**
+   * \brief Convert joint message into intermediate message-type
+   *
+   * \param[in] msg_in JointMessage from robot connection
+   * \param[out] joint_state JointTrajectoryPt message for intermediate processing
+   */
+  bool convert_message(JointMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id);
 
-}//joint_relay_handler
-}//industrial_robot_cliet
+};  // class JointRelayHandler
+
+}  // namespace joint_relay_handler
+}  // namespace industrial_robot_cliet
 
 
-#endif /* JOINT_RELAY_HANDLER_H */
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_RELAY_HANDLER_H
