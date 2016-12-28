@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DX100|Win32">
       <Configuration>DX100</Configuration>
@@ -16,7 +16,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{64C31524-A3C4-49D4-AD04-955D44202226}</ProjectGuid>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DX100|Win32'" Label="Configuration">
@@ -108,6 +108,9 @@
     <None Include="ParameterExtraction_DX100.mpLib" />
     <None Include="ParameterExtraction_DX200.dnLib" />
     <None Include="ParameterExtraction_FS100.fsLib" />
+    <None Include="RosSetupValidation.dnLib" />
+    <None Include="RosSetupValidation.fsLib" />
+    <None Include="RosSetupValidation.mpLib" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.c" />
@@ -123,6 +126,7 @@
     <ClInclude Include="MotionServer.h" />
     <ClInclude Include="ParameterExtraction.h" />
     <ClInclude Include="ParameterTypes.h" />
+    <ClInclude Include="RosSetupValidation.h" />
     <ClInclude Include="SimpleMessage.h" />
     <ClInclude Include="StateServer.h" />
   </ItemGroup>

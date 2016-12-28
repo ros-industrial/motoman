@@ -244,11 +244,14 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 	{
 		mpTaskDelay(0);	//give it some time to breathe, if needed
 		
-		//Receive message from the PC
-		memset(&receiveMsg, 0x00, sizeof(receiveMsg));
-		byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)(&receiveMsg), sizeof(receiveMsg), 0);
-		if (byteSize <= 0)
-			break; //end connection
+		if (!bHasPreviousData)
+		{
+			//Receive message from the PC
+			memset(&receiveMsg, 0x00, sizeof(receiveMsg));
+			byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)(&receiveMsg), sizeof(receiveMsg), 0);
+			if (byteSize <= 0)
+				break; //end connection
+		}
 		
 		bInvalidMsgType = FALSE;
 
