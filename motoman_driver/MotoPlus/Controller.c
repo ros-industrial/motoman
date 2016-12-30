@@ -36,6 +36,7 @@
 #include "Controller.h"
 #include "MotionServer.h"
 #include "StateServer.h"
+#include "RosSetupValidation.h"
 
 extern STATUS setsockopt
     (
@@ -96,6 +97,57 @@ void reportVersionInfoToController()
 #endif
 }
 
+// Verify most of the setup parameters of the robot controller.
+// Please note that some parameters cannot be checked, such as
+// the parameter(s) which enable this task to run.
+// Returns FALSE if a critical parameter is not set such that it
+// will prevent intialization.
+BOOL Ros_Controller_CheckSetup()
+{
+	int parameterValidationCode;
+
+	parameterValidationCode = ValidateMotoRosSetupParameters();
+	switch (parameterValidationCode)
+	{
+	case MOTOROS_SETUP_OK: return TRUE;
+
+	case MOTOROS_SETUP_RS0: 
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set RS000=2", parameterValidationCode);
+		return TRUE;
+
+	case MOTOROS_SETUP_S2C541:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C541=0", parameterValidationCode);
+		return TRUE;
+
+	case MOTOROS_SETUP_S2C542:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C542=0", parameterValidationCode);
+		return TRUE;
+
+	case MOTOROS_SETUP_S2C1100:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1100=1", parameterValidationCode);
+		return FALSE;
+
+	case MOTOROS_SETUP_S2C1103:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1103=2", parameterValidationCode);
+		return FALSE;
+
+	case MOTOROS_SETUP_S2C1117:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1117=1", parameterValidationCode);
+		return FALSE;
+
+	case MOTOROS_SETUP_S2C1119:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1119=0 or 2", parameterValidationCode);
+		return TRUE;
+
+	//For all other error codes, please contact Yaskawa Motoman
+	//to have the MotoROS Runtime functionality enabled on your
+	//robot controller.
+	default:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS: Controller cfg invalid", parameterValidationCode);
+		return FALSE;
+	}
+}
+
 //-------------------------------------------------------------------
 // Initialize the controller structure
 // This should be done before the controller is used for anything
@@ -141,6 +193,13 @@ BOOL Ros_Controller_Init(Controller* controller)
 	// wait for controller to be ready for reading parameter
 	Ros_Controller_WaitInitReady(controller);
 	
+	bInitOk = Ros_Controller_CheckSetup();
+	if (!bInitOk)
+		return FALSE; //Don't allow initialization to continue
+
+	// Wait for alarms to clear, in case Ros_Controller_CheckSetup raised an alarm
+	Ros_Controller_WaitInitReady(controller);
+
 	// Get the interpolation clock
 	status = GP_getInterpolationPeriod(&controller->interpolPeriod);
 	if(status!=OK)
