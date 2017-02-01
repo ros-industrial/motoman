@@ -1388,30 +1388,23 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 				ctrlGroup->timeLeftover_ms = calculationTime_ms - endTrajData->time;
 			} 
 		}
-		
-		//printf("%d: %.5f, %.5f, %.5f, %.5f, %.5f, %.5f, %.5f\r\n", curTrajData->time,
-		//	curTrajData->pos[0], curTrajData->pos[1], curTrajData->pos[2],
-		//	curTrajData->pos[3], curTrajData->pos[4], curTrajData->pos[5],
-		//	curTrajData->pos[6]);
 	
 		// Convert position in motoman pulse joint
 		Ros_CtrlGroup_ConvertToMotoPos(ctrlGroup, curTrajData->pos, newPulsePos);
 		
 		// Calculate the increment
 		incData.time = curTrajData->time;
-		for (i = 0; i < ctrlGroup->numAxes; i++)
+		for (i = 0; i < MP_GRP_AXES_NUM; i++)
 		{
-			incData.inc[i] = (newPulsePos[i]- ctrlGroup->prevPulsePos[i]);
+			if (ctrlGroup->axisType.type[i] != AXIS_INVALID)
+				incData.inc[i] = (newPulsePos[i] - ctrlGroup->prevPulsePos[i]);
+			else
+				incData.inc[i] = 0;
 		}
 		
 		// Add the increment to the queue
 		if(!Ros_MotionServer_AddPulseIncPointToQ(controller, groupNo, &incData))
 			break;
-		
-		//printf("%d: %d, %d, %d, %d, %d, %d, %d\r\n", incData.time,
-		//	incData.inc[0], incData.inc[1], incData.inc[2],
-		//	incData.inc[3], incData.inc[4], incData.inc[5],
-		//	incData.inc[6]);
 			
 		// Copy data to the previous pulse position for next iteration
 		memcpy(ctrlGroup->prevPulsePos, newPulsePos, sizeof(ctrlGroup->prevPulsePos));
