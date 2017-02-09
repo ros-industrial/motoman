@@ -1142,7 +1142,7 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 		Ros_MotionServer_ConvertToJointMotionData(jointTrajData, &ctrlGroup->jointMotionData);
 		ctrlGroup->timeLeftover_ms = 0;
 		ctrlGroup->q_time = ctrlGroup->jointMotionData.time;
-	
+
 		// Convert start position to pulse format
 		Ros_CtrlGroup_ConvertToMotoPos(ctrlGroup, ctrlGroup->jointMotionData.pos, pulsePos);
 		Ros_CtrlGroup_GetPulsePosCmd(ctrlGroup, curPos);
@@ -1162,6 +1162,7 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 					curPos[0], curPos[1], curPos[2],
 					curPos[3], curPos[4], curPos[5],
 					curPos[6], curPos[7]);
+
 				return ROS_RESULT_INVALID_DATA_START_POS;
 			}
 			

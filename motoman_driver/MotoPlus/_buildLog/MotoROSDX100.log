@@ -2,7 +2,7 @@
   Compiling Controller.c
   Compiling CtrlGroup.c
 CtrlGroup.c : warning : In function `Ros_CtrlGroup_IsRobot'
-CtrlGroup.c(543): warning : comparison of unsigned expression >= 0 is always true
+CtrlGroup.c(505): warning : comparison of unsigned expression >= 0 is always true
   Compiling MotionServer.c
 MotionServer.c : warning : In function `Ros_MotionServer_WaitForSimpleMsg'
 MotionServer.c(281): warning : comparison between signed and unsigned
