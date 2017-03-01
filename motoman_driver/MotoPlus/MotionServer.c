@@ -93,10 +93,30 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 {
 	int groupNo;
 	int connectionIndex;
+
+	//look for next available connection slot
+	for (connectionIndex = 0; connectionIndex < MAX_MOTION_CONNECTIONS; connectionIndex++)
+	{
+		if (controller->sdMotionConnections[connectionIndex] == INVALID_SOCKET)
+		{
+			controller->sdMotionConnections[connectionIndex] = sd;
+			break;
+		}
+	}
+	
+	if (connectionIndex == MAX_MOTION_CONNECTIONS)
+	{
+		puts("Motion server already connected... not accepting last attempt.");
+		mpClose(sd);
+		return;
+	}
 	
 	// If not started, start the IncMoveTask (there should be only one instance of this thread)
 	if(controller->tidIncMoveThread == INVALID_TASK)
 	{
+#ifdef DEBUG
+		puts("Creating new task: IncMoveTask");
+#endif
 		controller->tidIncMoveThread = mpCreateTask(MP_PRI_IP_CLK_TAKE, MP_STACK_SIZE, 
 													(FUNCPTR)Ros_MotionServer_IncMoveLoopStart,
 													(int)controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -113,56 +133,50 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 	// If not started, start the AddToIncQueueProcess for each control group
 	for(groupNo = 0; groupNo < controller->numGroup; groupNo++)
 	{
-		controller->ctrlGroups[groupNo]->tidAddToIncQueue = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
-																		(FUNCPTR)Ros_MotionServer_AddToIncQueueProcess,
-																		(int)controller, groupNo, 0, 0, 0, 0, 0, 0, 0, 0); 
-		if (controller->ctrlGroups[groupNo]->tidAddToIncQueue == ERROR)
+		if (controller->ctrlGroups[groupNo]->tidAddToIncQueue == INVALID_TASK)
 		{
-			puts("Failed to create task for parsing motion increments.  Check robot parameters.");
-			mpClose(sd);
-			controller->ctrlGroups[groupNo]->tidAddToIncQueue = INVALID_TASK;
-			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
-			return;
-		}
-	}
-	
-	//look for next available connection slot
-	for (connectionIndex = 0; connectionIndex < MAX_MOTION_CONNECTIONS; connectionIndex++)
-	{
-		if (controller->sdMotionConnections[connectionIndex] == INVALID_SOCKET)
-		{
-			//Start the new connection in a different task.
-			//Each task's memory will be unique IFF the data is on the stack.
-			//Any global or heap stuff will not be unique.
-			controller->sdMotionConnections[connectionIndex] = sd;
-			
-			//start new task for this specific connection
-			controller->tidMotionConnections[connectionIndex] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
-																			(FUNCPTR)Ros_MotionServer_WaitForSimpleMsg,
-																			(int)controller, connectionIndex, 0, 0, 0, 0, 0, 0, 0, 0);
-	
-			if (controller->tidMotionConnections[connectionIndex] != ERROR)
+#ifdef DEBUG
+			printf("Creating new task: tidAddToIncQueue (groupNo = %d)\n", groupNo);
+#endif
+			controller->ctrlGroups[groupNo]->tidAddToIncQueue = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
+																			(FUNCPTR)Ros_MotionServer_AddToIncQueueProcess,
+																			(int)controller, groupNo, 0, 0, 0, 0, 0, 0, 0, 0); 
+			if (controller->ctrlGroups[groupNo]->tidAddToIncQueue == ERROR)
 			{
-				Ros_Controller_SetIOState(IO_FEEDBACK_MOTIONSERVERCONNECTED, TRUE); //set feedback signal indicating success
-			}
-			else
-			{
-				puts("Could not create new task in the motion server.  Check robot parameters.");
+				puts("Failed to create task for parsing motion increments.  Check robot parameters.");
 				mpClose(sd);
-				controller->sdMotionConnections[connectionIndex] = INVALID_SOCKET;
-				controller->tidMotionConnections[connectionIndex] = INVALID_TASK;
+				controller->ctrlGroups[groupNo]->tidAddToIncQueue = INVALID_TASK;
 				Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
 				return;
 			}
-			
-			break;
 		}
 	}
-		
-	if (connectionIndex == MAX_MOTION_CONNECTIONS)
+	
+
+	if (controller->tidMotionConnections[connectionIndex] == INVALID_TASK)
 	{
-		puts("Motion server already connected... not accepting last attempt.");
-		mpClose(sd);
+#ifdef DEBUG
+		printf("Creating new task: tidMotionConnections (connectionIndex = %d)\n", connectionIndex);
+#endif
+			
+		//start new task for this specific connection
+		controller->tidMotionConnections[connectionIndex] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
+																		(FUNCPTR)Ros_MotionServer_WaitForSimpleMsg,
+																		(int)controller, connectionIndex, 0, 0, 0, 0, 0, 0, 0, 0);
+	
+		if (controller->tidMotionConnections[connectionIndex] != ERROR)
+		{
+			Ros_Controller_SetIOState(IO_FEEDBACK_MOTIONSERVERCONNECTED, TRUE); //set feedback signal indicating success
+		}
+		else
+		{
+			puts("Could not create new task in the motion server.  Check robot parameters.");
+			mpClose(sd);
+			controller->sdMotionConnections[connectionIndex] = INVALID_SOCKET;
+			controller->tidMotionConnections[connectionIndex] = INVALID_TASK;
+			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+			return;
+		}
 	}
 }
 
