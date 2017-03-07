@@ -59,6 +59,8 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
   pn.param("constraints/goal_threshold", goal_threshold_, DEFAULT_GOAL_THRESHOLD_);
 
+  paused_=false;
+  
   std::map<int, RobotGroup> robot_groups;
   getJointGroups("topic_list", robot_groups);
 
