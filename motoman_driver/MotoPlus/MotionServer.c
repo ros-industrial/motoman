@@ -773,6 +773,39 @@ BOOL Ros_MotionServer_ServoPower(Controller* controller, int servoOnOff)
 	if (servoOnOff == OFF)
 		Ros_MotionServer_StopMotion(controller);
 
+	if (servoOnOff == ON && Ros_Controller_IsEcoMode(controller) == TRUE)
+	{
+		//toggle servos to disable energy-savings mode
+		puts("Disabling energy-savings mode");
+		sServoData.sServoPower = 0;  // OFF
+		memset(&stdRespData, 0x00, sizeof(stdRespData));
+		ret = mpSetServoPower(&sServoData, &stdRespData);
+		if ((ret == 0) && (stdRespData.err_no == 0))
+		{
+			// wait for the Servo/Eco OFF confirmation
+			int checkCount;
+			for (checkCount = 0; checkCount<MOTION_START_TIMEOUT; checkCount += MOTION_START_CHECK_PERIOD)
+			{
+				// Update status
+				Ros_Controller_StatusUpdate(controller);
+
+				if (Ros_Controller_IsEcoMode(controller) == FALSE)
+					break;
+
+				mpTaskDelay(MOTION_START_CHECK_PERIOD);
+			}
+		}
+		else
+		{
+			char errMsg[ERROR_MSG_MAX_SIZE];
+			memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
+			Ros_Controller_ErrNo_ToString(stdRespData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
+			printf("Can't disable energy-savings mode because: %s\r\n", errMsg);
+			Ros_Controller_StatusUpdate(controller);
+			return Ros_Controller_IsServoOn(controller) == servoOnOff;
+		}
+	}
+
 	printf("Setting servo power: %d\n", servoOnOff);
 	memset(&sServoData, 0x00, sizeof(sServoData));
 	memset(&stdRespData, 0x00, sizeof(stdRespData));
@@ -944,9 +977,41 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	if(Ros_Controller_IsServoOn(controller) == FALSE)
 	{
 		MP_SERVO_POWER_SEND_DATA sServoData;
-		memset(&rData, 0x00, sizeof(rData));
 		memset(&sServoData, 0x00, sizeof(sServoData));
+
+		if (Ros_Controller_IsEcoMode(controller) == TRUE)
+		{
+			//toggle servos to disable energy-savings mode
+			sServoData.sServoPower = 0;  // OFF
+			memset(&rData, 0x00, sizeof(rData));
+			ret = mpSetServoPower(&sServoData, &rData);
+			if ((ret == 0) && (rData.err_no == 0))
+			{
+				// wait for the Servo/Eco OFF confirmation
+				int checkCount;
+				for (checkCount = 0; checkCount<MOTION_START_TIMEOUT; checkCount += MOTION_START_CHECK_PERIOD)
+				{
+					// Update status
+					Ros_Controller_StatusUpdate(controller);
+
+					if (Ros_Controller_IsEcoMode(controller) == FALSE)
+						break;
+
+					mpTaskDelay(MOTION_START_CHECK_PERIOD);
+				}
+			}
+			else
+			{
+				char errMsg[ERROR_MSG_MAX_SIZE];
+				memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
+				Ros_Controller_ErrNo_ToString(rData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
+				printf("Can't disable energy-savings mode because: %s\r\n", errMsg);
+				goto updateStatus;
+			}
+		}
+
 		sServoData.sServoPower = 1;  // ON
+		memset(&rData, 0x00, sizeof(rData));
 		ret = mpSetServoPower(&sServoData, &rData);
 		if( (ret == 0) && (rData.err_no ==0) )
 		{
@@ -957,8 +1022,8 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 				// Update status
 				Ros_Controller_StatusUpdate(controller);
 		
-				if(Ros_Controller_IsServoOn(controller) == TRUE)
-					continue;
+				if (Ros_Controller_IsServoOn(controller) == TRUE)
+					break;
 			
 				mpTaskDelay(MOTION_START_CHECK_PERIOD);
 			}

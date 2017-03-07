@@ -508,6 +508,11 @@ BOOL Ros_Controller_IsServoOn(Controller* controller)
 	return ((controller->ioStatus[IO_ROBOTSTATUS_SERVO] != 0) && (controller->ioStatus[IO_ROBOTSTATUS_INECOMODE] == 0));
 }
 
+BOOL Ros_Controller_IsEcoMode(Controller* controller)
+{
+	return (controller->ioStatus[IO_ROBOTSTATUS_INECOMODE] != 0);
+}
+
 BOOL Ros_Controller_IsEStop(Controller* controller)
 {
 	return ((controller->ioStatus[IO_ROBOTSTATUS_ESTOP_EX]==0) 
