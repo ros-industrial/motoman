@@ -100,6 +100,9 @@ JointTrajectoryAction::JointTrajectoryAction() :
     this->watchdog_timer_map_[group_number_int] = node_.createTimer(
           ros::Duration(WATCHD0G_PERIOD_), boost::bind(
             &JointTrajectoryAction::watchdog, this, _1, group_number_int));
+
+    pauser_ = node_.advertiseService("pause_robot", &JointTrajectoryAction::pauseRobotCB, this);
+    
   }
 
   pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
@@ -118,6 +121,29 @@ void JointTrajectoryAction::robotStatusCB(
   const industrial_msgs::RobotStatusConstPtr &msg)
 {
   last_robot_status_ = msg;  // caching robot status for later use.
+}
+
+
+bool JointTrajectoryAction::pauseRobotCB(std_srvs::SetBool::Request &req,
+                                         std_srvs::SetBool::Response &res)
+{
+  res.success = req.data != paused_;
+  paused_ = req.data;
+
+  if (paused_ && has_active_goal_)
+    cancelCB(active_goal_);
+  
+  if (!res.success)
+    res.message="Robot was already ";
+  else
+    res.message="Robot is now ";
+
+  if (paused_)
+    res.message += "paused";
+  else res.message += "unpaused";
+  
+  return true;
+  
 }
 
 void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
@@ -191,10 +217,19 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e, int group_number)
 
 void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh)
 {
-  gh.setAccepted();
 
   int group_number;
 
+  if (paused_)
+  {
+    control_msgs::FollowJointTrajectoryResult rslt;
+    rslt.error_code = control_msgs::FollowJointTrajectoryResult::INVALID_GOAL;
+    gh.setRejected(rslt, "Robot has been paused.  Goals will be ignored until the service is called to unpause the robot.");
+    return;
+  }
+    
+  gh.setAccepted();
+  
 // TODO(thiagodefreitas): change for getting the id from the group instead of a sequential checking on the map
 
   ros::Duration last_time_from_start(0.0);
@@ -314,6 +349,16 @@ void JointTrajectoryAction::cancelCB(JointTractoryActionServer::GoalHandle gh)
 
 void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh, int group_number)
 {
+
+  if (paused_)
+  {
+    control_msgs::FollowJointTrajectoryResult rslt;
+    rslt.error_code = control_msgs::FollowJointTrajectoryResult::INVALID_GOAL;
+    gh.setRejected(rslt, "Robot has been paused.  Goals will be ignored until the service is called to unpause the robot.");
+    return;
+  }
+
+
   if (!gh.getGoal()->trajectory.points.empty())
   {
     if (industrial_utils::isSimilar(

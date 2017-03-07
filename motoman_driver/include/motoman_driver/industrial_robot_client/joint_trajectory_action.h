@@ -39,7 +39,7 @@
 
 #include <ros/ros.h>
 #include <actionlib/server/action_server.h>
-
+#include <std_srvs/SetBool.h>
 #include <trajectory_msgs/JointTrajectory.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 #include <control_msgs/FollowJointTrajectoryFeedback.h>
@@ -123,6 +123,17 @@ private:
 
   std::map<int, ros::Timer>watchdog_timer_map_;
 
+   /**
+    * \brief Service used to Pause/Unpause the robot controller.  When paused,
+    * all incoming goals are ignored.
+    */
+  ros::ServiceServer pauser_;
+
+  /**
+   * \brief Controller is paused and ignoring incoming goals
+   */
+  bool paused_;
+  
   /**
    * \brief Indicates action has an active goal
    */
@@ -248,6 +259,16 @@ private:
 
   void controllerStateCB(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg, int robot_id);
 
+
+  /**
+   * \brief Pause/unpause the robot service callback
+   *
+   * \param bool service to pause/unpause (true/false) and response that is
+   * true if the state was flipped or false if the state has not changed.
+   *
+   */
+  bool pauseRobotCB(std_srvs::SetBool::Request &req,
+                    std_srvs::SetBool::Response &res);
 
   /**
    * \brief Controller status callback (executed when robot status
