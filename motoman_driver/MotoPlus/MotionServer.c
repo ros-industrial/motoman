@@ -78,6 +78,7 @@ void Ros_MotionServer_ConvertToJointMotionData(SmBodyJointTrajPtFull* jointTrajD
 // IO functions:
 int Ros_MotionServer_ReadIO(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 int Ros_MotionServer_WriteIO( SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix);
 
 
 //-----------------------
@@ -797,10 +798,7 @@ BOOL Ros_MotionServer_ServoPower(Controller* controller, int servoOnOff)
 		}
 		else
 		{
-			char errMsg[ERROR_MSG_MAX_SIZE];
-			memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
-			Ros_Controller_ErrNo_ToString(stdRespData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
-			printf("Can't disable energy-savings mode because: %s\r\n", errMsg);
+			Ros_MotionServer_PrintError(stdRespData.err_no, "Can't disable energy-savings mode because:");
 			Ros_Controller_StatusUpdate(controller);
 			return Ros_Controller_IsServoOn(controller) == servoOnOff;
 		}
@@ -829,10 +827,7 @@ BOOL Ros_MotionServer_ServoPower(Controller* controller, int servoOnOff)
 	}
 	else
 	{
-		char errMsg[ERROR_MSG_MAX_SIZE];
-		memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
-		Ros_Controller_ErrNo_ToString(stdRespData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
-		printf("Can't turn off servo because: %s\r\n", errMsg);
+		Ros_MotionServer_PrintError(stdRespData.err_no, "Can't turn off servo because:");
 	}
 	
 	// Update status
@@ -1002,10 +997,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 			}
 			else
 			{
-				char errMsg[ERROR_MSG_MAX_SIZE];
-				memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
-				Ros_Controller_ErrNo_ToString(rData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
-				printf("Can't disable energy-savings mode because: %s\r\n", errMsg);
+				Ros_MotionServer_PrintError(rData.err_no, "Can't disable energy-savings mode because:");
 				goto updateStatus;
 			}
 		}
@@ -1032,10 +1024,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 		}
 		else
 		{
-			char errMsg[ERROR_MSG_MAX_SIZE];
-			memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
-			Ros_Controller_ErrNo_ToString(rData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
-			printf("Can't turn on servo because: %s\r\n", errMsg);
+			Ros_MotionServer_PrintError(rData.err_no, "Can't turn on servo because:");
 			goto updateStatus;			
 		}
 	}
@@ -1057,10 +1046,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	ret = mpStartJob(&sStartData, &rData);
 	if( (ret != 0) || (rData.err_no !=0) )
 	{
-		char errMsg[ERROR_MSG_MAX_SIZE];
-		memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
-		Ros_Controller_ErrNo_ToString(rData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
-		printf("Can't start job %s because: %s\r\n", MOTION_INIT_ROS_JOB, errMsg);
+		Ros_MotionServer_PrintError(rData.err_no, "Can't start job because:");
 		goto updateStatus;		
 	}
 	
@@ -1253,6 +1239,14 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 			}
 		}
 		
+		// For MPL80/100 robot type (SLUBT): Controller automatically moves the B-axis
+		// to maintain orientation as other axes are moved.
+		if (ctrlGroup->bIsBaxisSlave)
+		{
+			ctrlGroup->jointMotionData.pos[3] += -ctrlGroup->jointMotionData.pos[1] + ctrlGroup->jointMotionData.pos[2];
+			ctrlGroup->jointMotionData.vel[3] += -ctrlGroup->jointMotionData.vel[1] + ctrlGroup->jointMotionData.vel[2];
+		}
+
 		//printf("Trajectory Start Initialized\r\n");
 		// Return success
 		return 0;
@@ -1391,7 +1385,15 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 	startTrajData = &_startTrajData;
 	// Set the start of the trajectory interpolation as the current position (which should be the end of last interpolation)
 	memcpy(startTrajData, curTrajData, sizeof(JointMotionData));
-	
+
+	// For MPL80/100 robot type (SLUBT): Controller automatically moves the B-axis
+	// to maintain orientation as other axes are moved.
+	if (ctrlGroup->bIsBaxisSlave)
+	{
+		endTrajData->pos[3] += -endTrajData->pos[1] + endTrajData->pos[2];
+		endTrajData->vel[3] += -endTrajData->vel[1] + endTrajData->vel[2];
+	}
+
 	memset(newPulsePos, 0x00, sizeof(newPulsePos));
 	memset(&incData, 0x00, sizeof(incData));
 	incData.frame = MP_INC_PULSE_DTYPE;
@@ -1819,4 +1821,10 @@ void Ros_MotionServer_ConvertToJointMotionData(SmBodyJointTrajPtFull* jointTrajD
 	}
 }
 
-
+void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix)
+{
+	char errMsg[ERROR_MSG_MAX_SIZE];
+	memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
+	Ros_Controller_ErrNo_ToString(err_no, errMsg, ERROR_MSG_MAX_SIZE);
+	printf("%s %s\r\n", msgPrefix, errMsg);
+}

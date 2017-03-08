@@ -166,6 +166,18 @@ extern STATUS 	GP_getAxisMotionType(int ctrlGrp, AXIS_MOTION_TYPE* axisType);
 /******************************************************************************/
 extern STATUS 	GP_getPulseToMeter(int ctrlGrp, PULSE_TO_METER* PulseToMeter);
 
+/******************************************************************************/
+/* << 20 >>                                                              	  */
+/* Function name : STATUS GP_isBaxisSlave()									  */
+/* Functionality : Determines if B axis is automatically moved relative to	  */
+/*				   other axes.												  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   BOOL* bBaxisIsSlave - TRUE if b axis is slave [OUT]		  */
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_isBaxisSlave(int ctrlGrp, BOOL* bBaxisIsSlave);
+
 #ifdef __cplusplus
 }
 #endif
