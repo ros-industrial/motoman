@@ -50,6 +50,7 @@
 // Main Task: 
 void Ros_MotionServer_StartNewConnection(Controller* controller, int sd);
 void Ros_MotionServer_StopConnection(Controller* controller, int connectionIndex);
+
 // WaitForSimpleMsg Task:
 void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionIndex);
 BOOL Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receiveMsg, int byteSize, SimpleMsg* replyMsg);
@@ -65,6 +66,7 @@ int Ros_MotionServer_InitTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPt
 int Ros_MotionServer_AddTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFull* jointTrajData);
 int Ros_MotionServer_AddTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence);
 int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+
 // AddToIncQueue Task:
 void Ros_MotionServer_AddToIncQueueProcess(Controller* controller, int groupNo);
 void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupNo);
@@ -73,12 +75,15 @@ BOOL Ros_MotionServer_ClearQ_All(Controller* controller);
 BOOL Ros_MotionServer_HasDataInQueue(Controller* controller);
 int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo);
 void Ros_MotionServer_IncMoveLoopStart(Controller* controller);
+
 // Utility functions:
 void Ros_MotionServer_ConvertToJointMotionData(SmBodyJointTrajPtFull* jointTrajData, JointMotionData* jointMotionData);
+STATUS Ros_MotionServer_DisableEcoMode(Controller* controller);
+void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix);
+
 // IO functions:
 int Ros_MotionServer_ReadIO(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 int Ros_MotionServer_WriteIO( SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix);
 
 
 //-----------------------
@@ -770,35 +775,16 @@ BOOL Ros_MotionServer_ServoPower(Controller* controller, int servoOnOff)
 	MP_SERVO_POWER_SEND_DATA sServoData;
 	MP_STD_RSP_DATA stdRespData;
 	int ret;
+	STATUS status;
 	
 	if (servoOnOff == OFF)
 		Ros_MotionServer_StopMotion(controller);
 
-	if (servoOnOff == ON && Ros_Controller_IsEcoMode(controller) == TRUE)
+	if (servoOnOff == ON)
 	{
-		//toggle servos to disable energy-savings mode
-		puts("Disabling energy-savings mode");
-		sServoData.sServoPower = 0;  // OFF
-		memset(&stdRespData, 0x00, sizeof(stdRespData));
-		ret = mpSetServoPower(&sServoData, &stdRespData);
-		if ((ret == 0) && (stdRespData.err_no == 0))
+		status = Ros_MotionServer_DisableEcoMode(controller);
+		if (status == NG)
 		{
-			// wait for the Servo/Eco OFF confirmation
-			int checkCount;
-			for (checkCount = 0; checkCount<MOTION_START_TIMEOUT; checkCount += MOTION_START_CHECK_PERIOD)
-			{
-				// Update status
-				Ros_Controller_StatusUpdate(controller);
-
-				if (Ros_Controller_IsEcoMode(controller) == FALSE)
-					break;
-
-				mpTaskDelay(MOTION_START_CHECK_PERIOD);
-			}
-		}
-		else
-		{
-			Ros_MotionServer_PrintError(stdRespData.err_no, "Can't disable energy-savings mode because:");
 			Ros_Controller_StatusUpdate(controller);
 			return Ros_Controller_IsServoOn(controller) == servoOnOff;
 		}
@@ -910,6 +896,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	MP_START_JOB_SEND_DATA sStartData;
 	int checkCount;
 	int grpNo;
+	STATUS status;
 
 	printf("In StartTrajMode\r\n");
 
@@ -974,32 +961,10 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 		MP_SERVO_POWER_SEND_DATA sServoData;
 		memset(&sServoData, 0x00, sizeof(sServoData));
 
-		if (Ros_Controller_IsEcoMode(controller) == TRUE)
+		status = Ros_MotionServer_DisableEcoMode(controller);
+		if (status == NG)
 		{
-			//toggle servos to disable energy-savings mode
-			sServoData.sServoPower = 0;  // OFF
-			memset(&rData, 0x00, sizeof(rData));
-			ret = mpSetServoPower(&sServoData, &rData);
-			if ((ret == 0) && (rData.err_no == 0))
-			{
-				// wait for the Servo/Eco OFF confirmation
-				int checkCount;
-				for (checkCount = 0; checkCount<MOTION_START_TIMEOUT; checkCount += MOTION_START_CHECK_PERIOD)
-				{
-					// Update status
-					Ros_Controller_StatusUpdate(controller);
-
-					if (Ros_Controller_IsEcoMode(controller) == FALSE)
-						break;
-
-					mpTaskDelay(MOTION_START_CHECK_PERIOD);
-				}
-			}
-			else
-			{
-				Ros_MotionServer_PrintError(rData.err_no, "Can't disable energy-savings mode because:");
-				goto updateStatus;
-			}
+			goto updateStatus;
 		}
 
 		sServoData.sServoPower = 1;  // ON
@@ -1827,4 +1792,45 @@ void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix)
 	memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
 	Ros_Controller_ErrNo_ToString(err_no, errMsg, ERROR_MSG_MAX_SIZE);
 	printf("%s %s\r\n", msgPrefix, errMsg);
+}
+
+STATUS Ros_MotionServer_DisableEcoMode(Controller* controller)
+{
+	MP_SERVO_POWER_SEND_DATA sServoData;
+	MP_STD_RSP_DATA rData;
+	int ret;
+
+	if (Ros_Controller_IsEcoMode(controller) == TRUE)
+	{
+		//toggle servos to disable energy-savings mode
+		sServoData.sServoPower = 0;  // OFF
+		memset(&sServoData, 0x00, sizeof(sServoData));
+		memset(&rData, 0x00, sizeof(rData));
+		ret = mpSetServoPower(&sServoData, &rData);
+		if ((ret == 0) && (rData.err_no == 0))
+		{
+			// wait for the Servo/Eco OFF confirmation
+			int checkCount;
+			for (checkCount = 0; checkCount<MOTION_START_TIMEOUT; checkCount += MOTION_START_CHECK_PERIOD)
+			{
+				// Update status
+				Ros_Controller_StatusUpdate(controller);
+
+				if (Ros_Controller_IsEcoMode(controller) == FALSE)
+					break;
+
+				mpTaskDelay(MOTION_START_CHECK_PERIOD);
+			}
+		}
+		else
+		{
+			Ros_MotionServer_PrintError(rData.err_no, "Can't disable energy-savings mode because:");
+			return NG;
+		}
+	}
+
+	if (Ros_Controller_IsEcoMode(controller) == FALSE)
+		return OK;
+	else
+		return NG;
 }
