@@ -70,7 +70,7 @@ bool JointTrajectoryInterface::init(std::string default_ip, int default_port, bo
   }
   if (port <= 0)
   {
-    ROS_ERROR("No valid robot IP port found.  Please set ROS '~port' param");
+    ROS_ERROR("No valid robot TCP port found.  Please set ROS '~port' param");
     return false;
   }
 
