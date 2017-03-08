@@ -124,15 +124,15 @@ private:
   std::map<int, ros::Timer>watchdog_timer_map_;
 
    /**
-    * \brief Service used to Pause/Unpause the robot controller.  When paused,
+    * \brief Service used to disable/enable the robot controller.  When disabled,
     * all incoming goals are ignored.
     */
-  ros::ServiceServer pauser_;
+  ros::ServiceServer disabler_;
 
   /**
-   * \brief Controller is paused and ignoring incoming goals
+   * \brief Controller is disabled and ignoring incoming goals
    */
-  bool paused_;
+  bool disabled_;
   
   /**
    * \brief Indicates action has an active goal
@@ -261,13 +261,13 @@ private:
 
 
   /**
-   * \brief Pause/unpause the robot service callback
+   * \brief disable/enable the robot service callback
    *
-   * \param bool service to pause/unpause (true/false) and response that is
+   * \param bool service to disable/enable (true/false) and response that is
    * true if the state was flipped or false if the state has not changed.
    *
    */
-  bool pauseRobotCB(std_srvs::SetBool::Request &req,
+  bool disableRobotCB(std_srvs::SetBool::Request &req,
                     std_srvs::SetBool::Response &res);
 
   /**

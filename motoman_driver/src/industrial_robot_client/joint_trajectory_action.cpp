@@ -59,7 +59,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
   pn.param("constraints/goal_threshold", goal_threshold_, DEFAULT_GOAL_THRESHOLD_);
 
-  paused_=false;
+  disabled_=false;
   
   std::map<int, RobotGroup> robot_groups;
   getJointGroups("topic_list", robot_groups);
@@ -103,7 +103,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
           ros::Duration(WATCHD0G_PERIOD_), boost::bind(
             &JointTrajectoryAction::watchdog, this, _1, group_number_int));
 
-    pauser_ = node_.advertiseService("pause_robot", &JointTrajectoryAction::pauseRobotCB, this);
+    disabler_ = node_.advertiseService("disable_robot", &JointTrajectoryAction::disableRobotCB, this);
     
   }
 
@@ -126,13 +126,13 @@ void JointTrajectoryAction::robotStatusCB(
 }
 
 
-bool JointTrajectoryAction::pauseRobotCB(std_srvs::SetBool::Request &req,
+bool JointTrajectoryAction::disableRobotCB(std_srvs::SetBool::Request &req,
                                          std_srvs::SetBool::Response &res)
 {
-  res.success = req.data != paused_;
-  paused_ = req.data;
+  res.success = req.data != disabled_;
+  disabled_ = req.data;
 
-  if (paused_ && has_active_goal_)
+  if (disabled_ && has_active_goal_)
     cancelCB(active_goal_);
   
   if (!res.success)
@@ -140,9 +140,9 @@ bool JointTrajectoryAction::pauseRobotCB(std_srvs::SetBool::Request &req,
   else
     res.message="Robot is now ";
 
-  if (paused_)
-    res.message += "paused";
-  else res.message += "unpaused";
+  if (disabled_)
+    res.message += "disabled";
+  else res.message += "enabled";
   
   return true;
   
@@ -222,11 +222,11 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh)
 
   int group_number;
 
-  if (paused_)
+  if (disabled_)
   {
     control_msgs::FollowJointTrajectoryResult rslt;
     rslt.error_code = control_msgs::FollowJointTrajectoryResult::INVALID_GOAL;
-    gh.setRejected(rslt, "Robot has been paused.  Goals will be ignored until the service is called to unpause the robot.");
+    gh.setRejected(rslt, "Robot has been disabled.  Goals will be ignored until the service is called to enable the robot.");
     return;
   }
     
@@ -352,11 +352,11 @@ void JointTrajectoryAction::cancelCB(JointTractoryActionServer::GoalHandle gh)
 void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh, int group_number)
 {
 
-  if (paused_)
+  if (disabled_)
   {
     control_msgs::FollowJointTrajectoryResult rslt;
     rslt.error_code = control_msgs::FollowJointTrajectoryResult::INVALID_GOAL;
-    gh.setRejected(rslt, "Robot has been paused.  Goals will be ignored until the service is called to unpause the robot.");
+    gh.setRejected(rslt, "Robot has been disabled.  Goals will be ignored until the service is called to enable the robot.");
     return;
   }
 
