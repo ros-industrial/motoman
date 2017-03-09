@@ -39,7 +39,8 @@
 
 #include <ros/ros.h>
 #include <actionlib/server/action_server.h>
-#include <std_srvs/SetBool.h>
+#include <std_srvs/Trigger.h>
+#include <industrial_msgs/GetEnabledStatus.h>
 #include <trajectory_msgs/JointTrajectory.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 #include <control_msgs/FollowJointTrajectoryFeedback.h>
@@ -123,11 +124,22 @@ private:
 
   std::map<int, ros::Timer>watchdog_timer_map_;
 
-   /**
-    * \brief Service used to disable/enable the robot controller.  When disabled,
-    * all incoming goals are ignored.
-    */
+  /**
+   * \brief Service used to disable the robot controller.  When disabled,
+   * all incoming goals are ignored.
+   */
   ros::ServiceServer disabler_;
+
+  /**
+   * \brief Service used to enable the robot controller.  When disabled, all
+   * incoming goals are ignored.
+   */
+  ros::ServiceServer enabler_;
+
+  /**
+   * \brief Service used to get the enabled/disabled state. 
+   */
+  ros::ServiceServer enabled_status_;
 
   /**
    * \brief Controller is disabled and ignoring incoming goals
@@ -259,17 +271,30 @@ private:
 
   void controllerStateCB(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg, int robot_id);
 
-
   /**
-   * \brief disable/enable the robot service callback
-   *
-   * \param bool service to disable/enable (true/false) and response that is
-   * true if the state was flipped or false if the state has not changed.
+   * \brief Disable the robot. Response is true if the state was flipped or
+   * false if the state has not changed.
    *
    */
-  bool disableRobotCB(std_srvs::SetBool::Request &req,
-                    std_srvs::SetBool::Response &res);
+  bool disableRobotCB(std_srvs::Trigger::Request &req,
+                      std_srvs::Trigger::Response &res);
 
+  /**
+   * \brief Enable the robot. Response is true if the state was flipped or
+   * false if the state has not changed.
+   *
+   */
+  bool enableRobotCB(std_srvs::Trigger::Request &req,
+                     std_srvs::Trigger::Response &res);
+
+  /**
+   * \brief Get status of enabled/disabled state.
+   *
+   *
+   */
+  bool enabledStatusCB(industrial_msgs::GetEnabledStatus::Request &req,
+                     industrial_msgs::GetEnabledStatus::Response &res);
+  
   /**
    * \brief Controller status callback (executed when robot status
    *  message received)

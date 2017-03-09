@@ -104,6 +104,10 @@ JointTrajectoryAction::JointTrajectoryAction() :
             &JointTrajectoryAction::watchdog, this, _1, group_number_int));
 
     disabler_ = node_.advertiseService("disable_robot", &JointTrajectoryAction::disableRobotCB, this);
+
+    enabler_ = node_.advertiseService("enable_robot", &JointTrajectoryAction::enableRobotCB, this);
+
+    enabled_status_ = node_.advertiseService("get_enabled_status", &JointTrajectoryAction::enabledStatusCB, this);
     
   }
 
@@ -126,28 +130,57 @@ void JointTrajectoryAction::robotStatusCB(
 }
 
 
-bool JointTrajectoryAction::disableRobotCB(std_srvs::SetBool::Request &req,
-                                         std_srvs::SetBool::Response &res)
+  bool JointTrajectoryAction::disableRobotCB(std_srvs::Trigger::Request &req,
+                                           std_srvs::Trigger::Response &res)
 {
-  res.success = req.data != disabled_;
-  disabled_ = req.data;
+  res.success = !disabled_;
+  disabled_ = true;
 
-  if (disabled_ && has_active_goal_)
+  if (has_active_goal_)
     cancelCB(active_goal_);
-  
+
   if (!res.success)
     res.message="Robot was already ";
   else
     res.message="Robot is now ";
 
-  if (disabled_)
-    res.message += "disabled";
-  else res.message += "enabled";
-  
+  res.message += "disabled";
+
+  if (res.success)
+    ROS_WARN("Robot has been disabled by request.  Incoming goals will be ignored");
+
   return true;
-  
+
 }
 
+bool JointTrajectoryAction::enableRobotCB(std_srvs::Trigger::Request &req,
+                                          std_srvs::Trigger::Response &res)
+{
+  res.success = disabled_;
+  disabled_ = false;
+
+  if (!res.success)
+    res.message="Robot was already ";
+  else
+    res.message="Robot is now ";
+
+  res.message += "enabled";
+
+  if (res.success)
+    ROS_WARN("Robot has been enabled by request.  Incoming goals will be processed.");
+
+  return true;
+
+}
+
+
+bool JointTrajectoryAction::enabledStatusCB(industrial_msgs::GetEnabledStatus::Request &req, industrial_msgs::GetEnabledStatus::Response &res)
+{
+  res.enabled = !disabled_;
+  return true;
+}
+
+  
 void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
 {
   // Some debug logging
