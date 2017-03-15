@@ -640,7 +640,7 @@ int Ros_MotionServer_MotionCtrlProcess(Controller* controller, SimpleMsg* receiv
 			if(Ros_Controller_IsMotionReady(controller))
 				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_TRUE, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
 			else
-				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_FALSE, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
+				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_FALSE, Ros_Controller_GetNotReadySubcode(controller), replyMsg, receiveMsg->body.motionCtrl.groupNo);
 			break;
 		}
 		case ROS_CMD_CHECK_QUEUE_CNT:
