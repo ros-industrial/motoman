@@ -128,12 +128,16 @@ bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &
   bool ret = motion_ctrl_.setTrajMode(false);  
   res.success = ret;
   
-  if (!res.success)
-    res.message="Robot was NOT disabled. Please re-examine and retry.";
-  else
-    res.message="Robot is now disabled and will NOT accept motion commands.";
+  if (!res.success) {
+    res.message="Motoman robot was NOT disabled. Please re-examine and retry.";
+    ROS_ERROR_STREAM(res.message);
+  }
+  else {
+    res.message="Motoman robot is now disabled and will NOT accept motion commands.";
+    ROS_WARN_STREAM(res.message);
+  }
+    
 
-  ROS_WARN_STREAM(res.message);
 
   return true;
 
@@ -145,13 +149,14 @@ bool MotomanJointTrajectoryStreamer::enableRobotCB(std_srvs::Trigger::Request &r
   bool ret = motion_ctrl_.setTrajMode(true);  
   res.success = ret;
   
-  if (!res.success)
-    res.message="Robot was NOT enabled. Please re-examine and retry.";
-  else
-    res.message="Robot is now enabled and will accept motion commands.";
-
-
-  ROS_WARN_STREAM(res.message);
+  if (!res.success) {
+    res.message="Motoman robot was NOT enabled. Please re-examine and retry.";
+    ROS_ERROR_STREAM(res.message);
+  }
+  else {
+    res.message="Motoman robot is now enabled and will accept motion commands.";
+    ROS_WARN_STREAM(res.message);
+  }
 
   return true;
 
