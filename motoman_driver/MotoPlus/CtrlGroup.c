@@ -85,6 +85,7 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 	long maxSpeedPulse[MP_GRP_AXES_NUM];
 	STATUS status;
 	BOOL bInitOk;
+	BOOL slaveAxis;
 	
 	// Check if group is defined
 	numAxes = GP_getNumberOfAxes(groupNo);
@@ -119,9 +120,15 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		if(status!=OK)
 			bInitOk = FALSE;
 
-		status = GP_getMaxIncPerIpCycle(groupNo, interpolPeriod , &ctrlGroup->maxInc);
-		if(status!=OK)
+		status = GP_getMaxIncPerIpCycle(groupNo, interpolPeriod, &ctrlGroup->maxInc);
+		if (status != OK)
 			bInitOk = FALSE;
+
+		status = GP_isBaxisSlave(groupNo, &slaveAxis);
+		if (status != OK)
+			bInitOk = FALSE;
+
+		ctrlGroup->bIsBaxisSlave = (numAxes == 5) && slaveAxis;
 
 		//adjust the axisType field to account for robots with non-contiguous axes (such as delta or palletizing which use SLU--T axes)
 		for (i = 0; i < MP_GRP_AXES_NUM; i += 1)
