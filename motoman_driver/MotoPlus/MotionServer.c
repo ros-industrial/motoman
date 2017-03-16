@@ -1176,6 +1176,9 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 		// Convert start position to pulse format
 		Ros_CtrlGroup_ConvertToMotoPos(ctrlGroup, ctrlGroup->jointMotionData.pos, pulsePos);
 		Ros_CtrlGroup_GetPulsePosCmd(ctrlGroup, curPos);
+
+		// Initialize prevPulsePos to the current position
+		Ros_CtrlGroup_GetPulsePosCmd(ctrlGroup, ctrlGroup->prevPulsePos);
 		
 		// Check for each axis
 		for(i=0; i<MAX_PULSE_AXES; i++)
