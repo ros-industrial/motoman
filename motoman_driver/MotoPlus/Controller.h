@@ -36,7 +36,7 @@
 #include "CtrlGroup.h"
 #include "SimpleMessage.h"
 
-#define APPLICATION_VERSION					"1.4.0"
+#define APPLICATION_VERSION					"1.4.1"
 
 #define TCP_PORT_MOTION						50240
 #define TCP_PORT_STATE						50241
@@ -148,6 +148,7 @@ extern BOOL Ros_Controller_IsRemote(Controller* controller);
 extern BOOL Ros_Controller_IsOperating(Controller* controller);
 extern BOOL Ros_Controller_IsHold(Controller* controller);
 extern BOOL Ros_Controller_IsServoOn(Controller* controller);
+extern BOOL Ros_Controller_IsEcoMode(Controller* controller);
 extern BOOL Ros_Controller_IsEStop(Controller* controller);
 extern BOOL Ros_Controller_IsWaitingRos(Controller* controller);
 extern BOOL Ros_Controller_IsMotionReady(Controller* controller);

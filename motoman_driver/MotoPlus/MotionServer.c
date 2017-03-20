@@ -50,6 +50,7 @@
 // Main Task: 
 void Ros_MotionServer_StartNewConnection(Controller* controller, int sd);
 void Ros_MotionServer_StopConnection(Controller* controller, int connectionIndex);
+
 // WaitForSimpleMsg Task:
 void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionIndex);
 BOOL Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receiveMsg, int byteSize, SimpleMsg* replyMsg);
@@ -65,6 +66,7 @@ int Ros_MotionServer_InitTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPt
 int Ros_MotionServer_AddTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFull* jointTrajData);
 int Ros_MotionServer_AddTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence);
 int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+
 // AddToIncQueue Task:
 void Ros_MotionServer_AddToIncQueueProcess(Controller* controller, int groupNo);
 void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupNo);
@@ -73,8 +75,12 @@ BOOL Ros_MotionServer_ClearQ_All(Controller* controller);
 BOOL Ros_MotionServer_HasDataInQueue(Controller* controller);
 int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo);
 void Ros_MotionServer_IncMoveLoopStart(Controller* controller);
+
 // Utility functions:
 void Ros_MotionServer_ConvertToJointMotionData(SmBodyJointTrajPtFull* jointTrajData, JointMotionData* jointMotionData);
+STATUS Ros_MotionServer_DisableEcoMode(Controller* controller);
+void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix);
+
 // IO functions:
 int Ros_MotionServer_ReadIO(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 int Ros_MotionServer_WriteIO( SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
@@ -93,10 +99,30 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 {
 	int groupNo;
 	int connectionIndex;
+
+	//look for next available connection slot
+	for (connectionIndex = 0; connectionIndex < MAX_MOTION_CONNECTIONS; connectionIndex++)
+	{
+		if (controller->sdMotionConnections[connectionIndex] == INVALID_SOCKET)
+		{
+			controller->sdMotionConnections[connectionIndex] = sd;
+			break;
+		}
+	}
+	
+	if (connectionIndex == MAX_MOTION_CONNECTIONS)
+	{
+		puts("Motion server already connected... not accepting last attempt.");
+		mpClose(sd);
+		return;
+	}
 	
 	// If not started, start the IncMoveTask (there should be only one instance of this thread)
 	if(controller->tidIncMoveThread == INVALID_TASK)
 	{
+#ifdef DEBUG
+		puts("Creating new task: IncMoveTask");
+#endif
 		controller->tidIncMoveThread = mpCreateTask(MP_PRI_IP_CLK_TAKE, MP_STACK_SIZE, 
 													(FUNCPTR)Ros_MotionServer_IncMoveLoopStart,
 													(int)controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -113,56 +139,50 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 	// If not started, start the AddToIncQueueProcess for each control group
 	for(groupNo = 0; groupNo < controller->numGroup; groupNo++)
 	{
-		controller->ctrlGroups[groupNo]->tidAddToIncQueue = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
-																		(FUNCPTR)Ros_MotionServer_AddToIncQueueProcess,
-																		(int)controller, groupNo, 0, 0, 0, 0, 0, 0, 0, 0); 
-		if (controller->ctrlGroups[groupNo]->tidAddToIncQueue == ERROR)
+		if (controller->ctrlGroups[groupNo]->tidAddToIncQueue == INVALID_TASK)
 		{
-			puts("Failed to create task for parsing motion increments.  Check robot parameters.");
-			mpClose(sd);
-			controller->ctrlGroups[groupNo]->tidAddToIncQueue = INVALID_TASK;
-			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
-			return;
-		}
-	}
-	
-	//look for next available connection slot
-	for (connectionIndex = 0; connectionIndex < MAX_MOTION_CONNECTIONS; connectionIndex++)
-	{
-		if (controller->sdMotionConnections[connectionIndex] == INVALID_SOCKET)
-		{
-			//Start the new connection in a different task.
-			//Each task's memory will be unique IFF the data is on the stack.
-			//Any global or heap stuff will not be unique.
-			controller->sdMotionConnections[connectionIndex] = sd;
-			
-			//start new task for this specific connection
-			controller->tidMotionConnections[connectionIndex] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
-																			(FUNCPTR)Ros_MotionServer_WaitForSimpleMsg,
-																			(int)controller, connectionIndex, 0, 0, 0, 0, 0, 0, 0, 0);
-	
-			if (controller->tidMotionConnections[connectionIndex] != ERROR)
+#ifdef DEBUG
+			printf("Creating new task: tidAddToIncQueue (groupNo = %d)\n", groupNo);
+#endif
+			controller->ctrlGroups[groupNo]->tidAddToIncQueue = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
+																			(FUNCPTR)Ros_MotionServer_AddToIncQueueProcess,
+																			(int)controller, groupNo, 0, 0, 0, 0, 0, 0, 0, 0); 
+			if (controller->ctrlGroups[groupNo]->tidAddToIncQueue == ERROR)
 			{
-				Ros_Controller_SetIOState(IO_FEEDBACK_MOTIONSERVERCONNECTED, TRUE); //set feedback signal indicating success
-			}
-			else
-			{
-				puts("Could not create new task in the motion server.  Check robot parameters.");
+				puts("Failed to create task for parsing motion increments.  Check robot parameters.");
 				mpClose(sd);
-				controller->sdMotionConnections[connectionIndex] = INVALID_SOCKET;
-				controller->tidMotionConnections[connectionIndex] = INVALID_TASK;
+				controller->ctrlGroups[groupNo]->tidAddToIncQueue = INVALID_TASK;
 				Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
 				return;
 			}
-			
-			break;
 		}
 	}
-		
-	if (connectionIndex == MAX_MOTION_CONNECTIONS)
+	
+
+	if (controller->tidMotionConnections[connectionIndex] == INVALID_TASK)
 	{
-		puts("Motion server already connected... not accepting last attempt.");
-		mpClose(sd);
+#ifdef DEBUG
+		printf("Creating new task: tidMotionConnections (connectionIndex = %d)\n", connectionIndex);
+#endif
+			
+		//start new task for this specific connection
+		controller->tidMotionConnections[connectionIndex] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
+																		(FUNCPTR)Ros_MotionServer_WaitForSimpleMsg,
+																		(int)controller, connectionIndex, 0, 0, 0, 0, 0, 0, 0, 0);
+	
+		if (controller->tidMotionConnections[connectionIndex] != ERROR)
+		{
+			Ros_Controller_SetIOState(IO_FEEDBACK_MOTIONSERVERCONNECTED, TRUE); //set feedback signal indicating success
+		}
+		else
+		{
+			puts("Could not create new task in the motion server.  Check robot parameters.");
+			mpClose(sd);
+			controller->sdMotionConnections[connectionIndex] = INVALID_SOCKET;
+			controller->tidMotionConnections[connectionIndex] = INVALID_TASK;
+			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+			return;
+		}
 	}
 }
 
@@ -620,7 +640,7 @@ int Ros_MotionServer_MotionCtrlProcess(Controller* controller, SimpleMsg* receiv
 			if(Ros_Controller_IsMotionReady(controller))
 				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_TRUE, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
 			else
-				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_FALSE, 0, replyMsg, receiveMsg->body.motionCtrl.groupNo);
+				Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_FALSE, Ros_Controller_GetNotReadySubcode(controller), replyMsg, receiveMsg->body.motionCtrl.groupNo);
 			break;
 		}
 		case ROS_CMD_CHECK_QUEUE_CNT:
@@ -755,9 +775,20 @@ BOOL Ros_MotionServer_ServoPower(Controller* controller, int servoOnOff)
 	MP_SERVO_POWER_SEND_DATA sServoData;
 	MP_STD_RSP_DATA stdRespData;
 	int ret;
+	STATUS status;
 	
 	if (servoOnOff == OFF)
 		Ros_MotionServer_StopMotion(controller);
+
+	if (servoOnOff == ON)
+	{
+		status = Ros_MotionServer_DisableEcoMode(controller);
+		if (status == NG)
+		{
+			Ros_Controller_StatusUpdate(controller);
+			return Ros_Controller_IsServoOn(controller) == servoOnOff;
+		}
+	}
 
 	printf("Setting servo power: %d\n", servoOnOff);
 	memset(&sServoData, 0x00, sizeof(sServoData));
@@ -782,10 +813,7 @@ BOOL Ros_MotionServer_ServoPower(Controller* controller, int servoOnOff)
 	}
 	else
 	{
-		char errMsg[ERROR_MSG_MAX_SIZE];
-		memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
-		Ros_Controller_ErrNo_ToString(stdRespData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
-		printf("Can't turn off servo because: %s\r\n", errMsg);
+		Ros_MotionServer_PrintError(stdRespData.err_no, "Can't turn off servo because:");
 	}
 	
 	// Update status
@@ -868,6 +896,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	MP_START_JOB_SEND_DATA sStartData;
 	int checkCount;
 	int grpNo;
+	STATUS status;
 
 	printf("In StartTrajMode\r\n");
 
@@ -930,9 +959,16 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	if(Ros_Controller_IsServoOn(controller) == FALSE)
 	{
 		MP_SERVO_POWER_SEND_DATA sServoData;
-		memset(&rData, 0x00, sizeof(rData));
 		memset(&sServoData, 0x00, sizeof(sServoData));
+
+		status = Ros_MotionServer_DisableEcoMode(controller);
+		if (status == NG)
+		{
+			goto updateStatus;
+		}
+
 		sServoData.sServoPower = 1;  // ON
+		memset(&rData, 0x00, sizeof(rData));
 		ret = mpSetServoPower(&sServoData, &rData);
 		if( (ret == 0) && (rData.err_no ==0) )
 		{
@@ -943,8 +979,8 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 				// Update status
 				Ros_Controller_StatusUpdate(controller);
 		
-				if(Ros_Controller_IsServoOn(controller) == TRUE)
-					continue;
+				if (Ros_Controller_IsServoOn(controller) == TRUE)
+					break;
 			
 				mpTaskDelay(MOTION_START_CHECK_PERIOD);
 			}
@@ -953,10 +989,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 		}
 		else
 		{
-			char errMsg[ERROR_MSG_MAX_SIZE];
-			memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
-			Ros_Controller_ErrNo_ToString(rData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
-			printf("Can't turn on servo because: %s\r\n", errMsg);
+			Ros_MotionServer_PrintError(rData.err_no, "Can't turn on servo because:");
 			goto updateStatus;			
 		}
 	}
@@ -978,10 +1011,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	ret = mpStartJob(&sStartData, &rData);
 	if( (ret != 0) || (rData.err_no !=0) )
 	{
-		char errMsg[ERROR_MSG_MAX_SIZE];
-		memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
-		Ros_Controller_ErrNo_ToString(rData.err_no, errMsg, ERROR_MSG_MAX_SIZE);
-		printf("Can't start job %s because: %s\r\n", MOTION_INIT_ROS_JOB, errMsg);
+		Ros_MotionServer_PrintError(rData.err_no, "Can't start job because:");
 		goto updateStatus;		
 	}
 	
@@ -1146,6 +1176,9 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 		// Convert start position to pulse format
 		Ros_CtrlGroup_ConvertToMotoPos(ctrlGroup, ctrlGroup->jointMotionData.pos, pulsePos);
 		Ros_CtrlGroup_GetPulsePosCmd(ctrlGroup, curPos);
+
+		// Initialize prevPulsePos to the current position
+		Ros_CtrlGroup_GetPulsePosCmd(ctrlGroup, ctrlGroup->prevPulsePos);
 		
 		// Check for each axis
 		for(i=0; i<MAX_PULSE_AXES; i++)
@@ -1174,6 +1207,14 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 			}
 		}
 		
+		// For MPL80/100 robot type (SLUBT): Controller automatically moves the B-axis
+		// to maintain orientation as other axes are moved.
+		if (ctrlGroup->bIsBaxisSlave)
+		{
+			ctrlGroup->jointMotionData.pos[3] += -ctrlGroup->jointMotionData.pos[1] + ctrlGroup->jointMotionData.pos[2];
+			ctrlGroup->jointMotionData.vel[3] += -ctrlGroup->jointMotionData.vel[1] + ctrlGroup->jointMotionData.vel[2];
+		}
+
 		//printf("Trajectory Start Initialized\r\n");
 		// Return success
 		return 0;
@@ -1312,7 +1353,15 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 	startTrajData = &_startTrajData;
 	// Set the start of the trajectory interpolation as the current position (which should be the end of last interpolation)
 	memcpy(startTrajData, curTrajData, sizeof(JointMotionData));
-	
+
+	// For MPL80/100 robot type (SLUBT): Controller automatically moves the B-axis
+	// to maintain orientation as other axes are moved.
+	if (ctrlGroup->bIsBaxisSlave)
+	{
+		endTrajData->pos[3] += -endTrajData->pos[1] + endTrajData->pos[2];
+		endTrajData->vel[3] += -endTrajData->vel[1] + endTrajData->vel[2];
+	}
+
 	memset(newPulsePos, 0x00, sizeof(newPulsePos));
 	memset(&incData, 0x00, sizeof(incData));
 	incData.frame = MP_INC_PULSE_DTYPE;
@@ -1740,4 +1789,51 @@ void Ros_MotionServer_ConvertToJointMotionData(SmBodyJointTrajPtFull* jointTrajD
 	}
 }
 
+void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix)
+{
+	char errMsg[ERROR_MSG_MAX_SIZE];
+	memset(errMsg, 0x00, ERROR_MSG_MAX_SIZE);
+	Ros_Controller_ErrNo_ToString(err_no, errMsg, ERROR_MSG_MAX_SIZE);
+	printf("%s %s\r\n", msgPrefix, errMsg);
+}
 
+STATUS Ros_MotionServer_DisableEcoMode(Controller* controller)
+{
+	MP_SERVO_POWER_SEND_DATA sServoData;
+	MP_STD_RSP_DATA rData;
+	int ret;
+
+	if (Ros_Controller_IsEcoMode(controller) == TRUE)
+	{
+		//toggle servos to disable energy-savings mode
+		sServoData.sServoPower = 0;  // OFF
+		memset(&sServoData, 0x00, sizeof(sServoData));
+		memset(&rData, 0x00, sizeof(rData));
+		ret = mpSetServoPower(&sServoData, &rData);
+		if ((ret == 0) && (rData.err_no == 0))
+		{
+			// wait for the Servo/Eco OFF confirmation
+			int checkCount;
+			for (checkCount = 0; checkCount<MOTION_START_TIMEOUT; checkCount += MOTION_START_CHECK_PERIOD)
+			{
+				// Update status
+				Ros_Controller_StatusUpdate(controller);
+
+				if (Ros_Controller_IsEcoMode(controller) == FALSE)
+					break;
+
+				mpTaskDelay(MOTION_START_CHECK_PERIOD);
+			}
+		}
+		else
+		{
+			Ros_MotionServer_PrintError(rData.err_no, "Can't disable energy-savings mode because:");
+			return NG;
+		}
+	}
+
+	if (Ros_Controller_IsEcoMode(controller) == FALSE)
+		return OK;
+	else
+		return NG;
+}
