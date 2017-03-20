@@ -86,9 +86,9 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
     motion_ctrl_map_[robot_id] = motion_ctrl;
   }
 
-  disabler_ = node_.advertiseService("/motoman_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
+  disabler_ = node_.advertiseService("/robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
 
-  enabler_ = node_.advertiseService("/motoman_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
+  enabler_ = node_.advertiseService("/robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
 
   return rtn;
 }
@@ -109,9 +109,9 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   rtn &= motion_ctrl_.init(connection, robot_id_);
 
-  disabler_ = node_.advertiseService("/motoman_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
+  disabler_ = node_.advertiseService("/robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
 
-  enabler_ = node_.advertiseService("/motoman_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
+  enabler_ = node_.advertiseService("/robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
 
   return rtn;
 }
@@ -125,6 +125,9 @@ MotomanJointTrajectoryStreamer::~MotomanJointTrajectoryStreamer()
 bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &req,
                                            std_srvs::Trigger::Response &res)
 {
+
+  trajectoryStop();
+
   bool ret = motion_ctrl_.setTrajMode(false);  
   res.success = ret;
   
@@ -137,7 +140,6 @@ bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &
     ROS_WARN_STREAM(res.message);
   }
     
-
 
   return true;
 
@@ -367,7 +369,7 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
 bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
   if (!motion_ctrl_.controllerReady())
-    ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion.  Trajectory ABORTED.  Send /motoman_enable signal when safe and re-send trajectory.");
+    ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion, so trajectory ABORTED.\n If safe, call /robot_enable service to (re-)enable Motoplus motion.");
 
   return JointTrajectoryStreamer::send_to_robot(messages);
 }
