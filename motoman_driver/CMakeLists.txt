@@ -41,7 +41,6 @@ catkin_package(
     industrial_utils
     motoman_msgs
     roscpp
-    roslint
     sensor_msgs
     simple_message
     std_msgs
