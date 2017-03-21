@@ -2,8 +2,8 @@
 Changelog for package motoman_sia10d_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.6 (2017-03-20)
+------------------
 * sia10: add 'base' coordinate frame to xacro. For `#45 <https://github.com/ros-industrial/motoman/issues/45>`_.
   This corresponds to the Motoman 'Robot Frame' (not the 'Base Frame'). This
   frame has its origin at the intersection of the S axis and a horizontal

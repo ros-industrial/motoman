@@ -2,8 +2,8 @@
 Changelog for package motoman_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.6 (2017-03-20)
+------------------
 * No changes
 
 0.3.5 (2016-07-03)

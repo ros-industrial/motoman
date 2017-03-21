@@ -2,8 +2,8 @@
 Changelog for package motoman_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.6 (2017-03-20)
+------------------
 * v1.3.7 MotoROS Driver
   Based on updates from Rosen Diankov (Mujin):
   > Detection of "energy savings" mode.
