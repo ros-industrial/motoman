@@ -2,6 +2,10 @@
 Changelog for package motoman_sia20d_moveit_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* No changes
+
 0.3.5 (2016-07-03)
 ------------------
 * No changes

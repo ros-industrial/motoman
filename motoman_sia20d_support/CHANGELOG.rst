@@ -2,6 +2,25 @@
 Changelog for package motoman_sia20d_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* sia20: add 'base' coordinate frame to xacro. For `#45 <https://github.com/ros-industrial/motoman/issues/45>`_.
+  This corresponds to the Motoman 'Robot Frame' (not the 'Base Frame'). This
+  frame has its origin at the intersection of the S axis and a horizontal
+  plane going through the L axis.
+* Fix for issue `#106 <https://github.com/ros-industrial/motoman/issues/106>`_: use full-precision PI for tool0 transform (`#110 <https://github.com/ros-industrial/motoman/issues/110>`_)
+  * sia10f: don't round PI in joint_t-tool0 transform.
+  Leads to incorrect 'base->tool0' transform orientations.
+  * sia20: don't round PI in joint_t-tool0 transform. Fix `#106 <https://github.com/ros-industrial/motoman/issues/106>`_.
+  Leads to incorrect 'base->tool0' transform orientations.
+* Fix for issue `#102 <https://github.com/ros-industrial/motoman/issues/102>`_: fix incorrect joint limits in SIA20 urdf/xacro (`#109 <https://github.com/ros-industrial/motoman/issues/109>`_)
+  * sia20d: fix joint limits S, R & T. Fix `#102 <https://github.com/ros-industrial/motoman/issues/102>`_.
+  This floors PI, instead of rounding. This makes the joint limits slightly
+  stricter than what is specced, but will avoid OOB errors on the controller.
+  * sia20d: make all joint limits correspond to specsheet.
+  All values truncated after the 4th digit.
+* Contributors: G.A. vd. Hoorn, gavanderhoorn
+
 0.3.5 (2016-07-03)
 ------------------
 * No changes

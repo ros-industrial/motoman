@@ -2,6 +2,13 @@
 Changelog for package motoman_sda10f_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* sda10f_support: fix malformed stl warning. Fix `#123 <https://github.com/ros-industrial/motoman/issues/123>`_.
+  This simply changes the 'solid' that occurs in the STL header to 'dilos', which
+  should be enough to not result in ASCII vs Binary STL loader problems.
+* Contributors: gavanderhoorn
+
 0.3.5 (2016-07-03)
 ------------------
 * No changes

@@ -2,6 +2,14 @@
 Changelog for package motoman_sia5d_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* sia5: add 'base' coordinate frame to xacro. For `#45 <https://github.com/ros-industrial/motoman/issues/45>`_.
+  This corresponds to the Motoman 'Robot Frame' (not the 'Base Frame'). This
+  frame has its origin at the intersection of the S axis and a horizontal
+  plane going through the L axis.
+* Contributors: gavanderhoorn
+
 0.3.5 (2016-07-03)
 ------------------
 * No changes
