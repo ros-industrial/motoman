@@ -39,6 +39,7 @@
 #include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
 #include "simple_message/joint_data.h"
 #include "simple_message/simple_message.h"
+#include "std_srvs/Trigger.h"
 
 namespace motoman
 {
@@ -141,6 +142,36 @@ protected:
 
   static bool VectorToJointData(const std::vector<double> &vec,
                                 industrial::joint_data::JointData &joints);
+
+  /**
+   * \brief Service used to disable the robot controller.  When disabled,
+   * all incoming goals are ignored.
+   */
+  ros::ServiceServer disabler_;
+
+  /**
+   * \brief Service used to enable the robot controller.  When disabled, all
+   * incoming goals are ignored.
+   */
+  ros::ServiceServer enabler_;
+
+  /**
+   * \brief Disable the robot. Response is true if the state was flipped or
+   * false if the state has not changed.
+   *
+   */
+  bool disableRobotCB(std_srvs::Trigger::Request &req,
+                      std_srvs::Trigger::Response &res);
+
+  /**
+   * \brief Enable the robot. Response is true if the state was flipped or
+   * false if the state has not changed.
+   *
+   */
+  bool enableRobotCB(std_srvs::Trigger::Request &req,
+                     std_srvs::Trigger::Response &res);
+
+
 };
 
 }  // namespace joint_trajectory_streamer
