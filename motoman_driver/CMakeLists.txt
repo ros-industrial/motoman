@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(motoman_driver)
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS std_msgs roscpp actionlib
+find_package(catkin REQUIRED COMPONENTS std_msgs std_srvs roscpp actionlib
     trajectory_msgs actionlib_msgs control_msgs sensor_msgs urdf
     industrial_msgs industrial_robot_client industrial_utils simple_message motoman_msgs roslint)
 find_package(Boost REQUIRED COMPONENTS system thread)
@@ -17,7 +17,7 @@ add_definitions(-DROS=1)
 
 catkin_package(
     DEPENDS
-    CATKIN_DEPENDS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs
+    CATKIN_DEPENDS std_msgs std_srvs roscpp actionlib trajectory_msgs actionlib_msgs
             control_msgs sensor_msgs simple_message urdf industrial_msgs
             industrial_robot_client motoman_msgs
     INCLUDE_DIRS include
