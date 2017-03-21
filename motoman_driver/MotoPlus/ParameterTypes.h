@@ -50,8 +50,9 @@ typedef struct
 
 typedef enum
 {
-	ROTATION_AXIS,
-	LINEAR_AXIS
+	AXIS_ROTATION,
+	AXIS_LINEAR,
+	AXIS_INVALID
 } AXIS_TYPE;
 
 typedef struct

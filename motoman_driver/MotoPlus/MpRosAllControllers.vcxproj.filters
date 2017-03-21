@@ -46,6 +46,15 @@
     <None Include="ParameterExtraction_DX100.mpLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
+    <None Include="RosSetupValidation.dnLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="RosSetupValidation.fsLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="RosSetupValidation.mpLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.c">
@@ -87,6 +96,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParameterTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RosSetupValidation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

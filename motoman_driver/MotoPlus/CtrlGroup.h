@@ -95,6 +95,8 @@ typedef struct
 	int timeLeftover_ms;						// Time left over after reaching the end of a trajectory to complete the interpolation period
 	long prevPulsePos[MAX_PULSE_AXES];			// The commanded pulse position that the trajectory starts at (Ros_MotionServer_StartTrajMode)
 	AXIS_MOTION_TYPE axisType;					// Indicates whether axis is rotary or linear
+
+	BOOL bIsBaxisSlave;							// Indicates the B axis will automatically move to maintain orientation as other axes are moved
 } CtrlGroup;
 
 
