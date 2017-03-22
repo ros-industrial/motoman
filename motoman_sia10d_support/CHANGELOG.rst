@@ -2,8 +2,8 @@
 Changelog for package motoman_sia10d_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.7 (2017-03-21)
+------------------
 * No changes
 
 0.3.6 (2017-03-20)
