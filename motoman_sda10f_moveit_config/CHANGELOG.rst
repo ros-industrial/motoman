@@ -2,6 +2,10 @@
 Changelog for package motoman_sda10f_moveit_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* No changes
+
 0.3.6 (2017-03-20)
 ------------------
 * No changes

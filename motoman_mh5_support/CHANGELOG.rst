@@ -2,6 +2,10 @@
 Changelog for package motoman_mh5_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* No changes
+
 0.3.6 (2017-03-20)
 ------------------
 * No changes

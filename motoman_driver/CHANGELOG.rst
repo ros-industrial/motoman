@@ -2,6 +2,11 @@
 Changelog for package motoman_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add dep on std_srvs. Fix `#159 <https://github.com/ros-industrial/motoman/issues/159>`_.
+* Contributors: Shaun Edwards, gavanderhoorn
+
 0.3.6 (2017-03-20)
 ------------------
 * v1.3.7 MotoROS Driver
