@@ -2,9 +2,25 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(motoman_driver)
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS std_msgs roscpp actionlib
-    trajectory_msgs actionlib_msgs control_msgs sensor_msgs urdf
-    industrial_msgs industrial_robot_client industrial_utils simple_message motoman_msgs roslint)
+find_package(
+  catkin REQUIRED
+  COMPONENTS
+    actionlib
+    actionlib_msgs
+    control_msgs
+    industrial_msgs
+    industrial_robot_client
+    industrial_utils
+    motoman_msgs
+    roscpp
+    roslint
+    sensor_msgs
+    simple_message
+    std_msgs
+    std_srvs
+    trajectory_msgs
+    urdf
+)
 find_package(Boost REQUIRED COMPONENTS system thread)
 
 roslint_cpp()
@@ -16,12 +32,25 @@ add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
 add_definitions(-DROS=1)
 
 catkin_package(
-    DEPENDS
-    CATKIN_DEPENDS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs
-            control_msgs sensor_msgs simple_message urdf industrial_msgs
-            industrial_robot_client motoman_msgs
-    INCLUDE_DIRS include
-    LIBRARIES
+  CATKIN_DEPENDS
+    actionlib
+    actionlib_msgs
+    control_msgs
+    industrial_msgs
+    industrial_robot_client
+    industrial_utils
+    motoman_msgs
+    roscpp
+    sensor_msgs
+    simple_message
+    std_msgs
+    std_srvs
+    trajectory_msgs
+    urdf
+  DEPENDS
+  INCLUDE_DIRS
+    include
+  LIBRARIES
 )
 
 
