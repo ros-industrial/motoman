@@ -103,6 +103,8 @@ private:
    * robot driver).
    */
   ros::Subscriber sub_trajectory_state_;
+  
+  ros::Subscriber sub_trajectory_state_all_;
 
   std::map<int, ros::Subscriber> sub_trajectories_;
 
