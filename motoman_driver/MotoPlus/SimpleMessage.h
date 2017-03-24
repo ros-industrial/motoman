@@ -59,10 +59,14 @@ typedef enum
 	ROS_MSG_JOINT_FEEDBACK = 15,
 	ROS_MSG_MOTO_MOTION_CTRL = 2001,
 	ROS_MSG_MOTO_MOTION_REPLY = 2002,
-	ROS_MSG_MOTO_READ_SINGLE_IO = 2003,
-	ROS_MSG_MOTO_READ_SINGLE_IO_REPLY = 2004,
-	ROS_MSG_MOTO_WRITE_SINGLE_IO = 2005,
-	ROS_MSG_MOTO_WRITE_SINGLE_IO_REPLY = 2006,
+	ROS_MSG_MOTO_READ_IO_BIT = 2003,
+	ROS_MSG_MOTO_READ_IO_BIT_REPLY = 2004,
+	ROS_MSG_MOTO_WRITE_IO_BIT = 2005,
+	ROS_MSG_MOTO_WRITE_IO_BIT_REPLY = 2006,
+	ROS_MSG_MOTO_READ_IO_GROUP = 2007,
+	ROS_MSG_MOTO_READ_IO_GROUP_REPLY = 2008,
+	ROS_MSG_MOTO_WRITE_IO_GROUP = 2009,
+	ROS_MSG_MOTO_WRITE_IO_GROUP_REPLY = 2010,
 	ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016,
 	ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017
 } SmMsgType;
@@ -83,6 +87,68 @@ typedef enum
 	ROS_REPLY_SUCCESS = 1,
 	ROS_REPLY_FAILURE = 2,
 } SmReplyType;
+
+
+typedef enum
+{
+	ROS_CMD_CHECK_MOTION_READY = 200101,
+	ROS_CMD_CHECK_QUEUE_CNT = 200102,
+	ROS_CMD_STOP_MOTION = 200111,
+	ROS_CMD_START_SERVOS = 200112, // starts the servo motors
+	ROS_CMD_STOP_SERVOS = 200113, // stops the servo motors and motion
+	ROS_CMD_RESET_ALARM = 200114, // clears the error in the current controller
+	ROS_CMD_START_TRAJ_MODE = 200121,
+	ROS_CMD_STOP_TRAJ_MODE = 200122,
+	ROS_CMD_DISCONNECT = 200130
+} SmCommandType;
+
+
+typedef enum
+{
+	ROS_RESULT_SUCCESS = 0,
+	ROS_RESULT_TRUE = 0,
+	ROS_RESULT_BUSY = 1,
+	ROS_RESULT_FAILURE = 2,
+	ROS_RESULT_FALSE = 2,
+	ROS_RESULT_INVALID = 3,
+	ROS_RESULT_ALARM = 4,
+	ROS_RESULT_NOT_READY = 5,
+	ROS_RESULT_MP_FAILURE = 6
+} SmResultType;
+
+
+typedef enum
+{
+	ROS_RESULT_INVALID_UNSPECIFIED = 3000,
+	ROS_RESULT_INVALID_MSGSIZE,
+	ROS_RESULT_INVALID_MSGHEADER,
+	ROS_RESULT_INVALID_MSGTYPE,
+	ROS_RESULT_INVALID_GROUPNO,
+	ROS_RESULT_INVALID_SEQUENCE,
+	ROS_RESULT_INVALID_COMMAND,
+	ROS_RESULT_INVALID_DATA = 3010,
+	ROS_RESULT_INVALID_DATA_START_POS,
+	ROS_RESULT_INVALID_DATA_POSITION,
+	ROS_RESULT_INVALID_DATA_SPEED,
+	ROS_RESULT_INVALID_DATA_ACCEL,
+	ROS_RESULT_INVALID_DATA_INSUFFICIENT
+} SmInvalidSubCode;
+
+
+typedef enum
+{
+	ROS_RESULT_NOT_READY_UNSPECIFIED = 5000,
+	ROS_RESULT_NOT_READY_ALARM,
+	ROS_RESULT_NOT_READY_ERROR,
+	ROS_RESULT_NOT_READY_ESTOP,
+	ROS_RESULT_NOT_READY_NOT_PLAY,
+	ROS_RESULT_NOT_READY_NOT_REMOTE,
+	ROS_RESULT_NOT_READY_SERVO_OFF,
+	ROS_RESULT_NOT_READY_HOLD,
+	ROS_RESULT_NOT_READY_NOT_STARTED,
+	ROS_RESULT_NOT_READY_WAITING_ROS,
+	ROS_RESULT_NOT_READY_SKILLSEND
+} SmNotReadySubcode;
 
 
 struct _SmHeader
@@ -132,19 +198,6 @@ struct _SmBodyJointFeedback		// ROS_MSG_JOINT_FEEDBACK = 15
 } __attribute__((__packed__));
 typedef struct _SmBodyJointFeedback SmBodyJointFeedback;
 
-typedef enum 
-{
-	ROS_CMD_CHECK_MOTION_READY = 200101,
-	ROS_CMD_CHECK_QUEUE_CNT = 200102,
-	ROS_CMD_STOP_MOTION = 200111,
-	ROS_CMD_START_SERVOS = 200112, // starts the servo motors
-	ROS_CMD_STOP_SERVOS = 200113, // stops the servo motors and motion
-	ROS_CMD_RESET_ALARM = 200114, // clears the error in the current controller
-	ROS_CMD_START_TRAJ_MODE = 200121,
-	ROS_CMD_STOP_TRAJ_MODE = 200122,
-	ROS_CMD_DISCONNECT = 200130
-} SmCommandType;
-
 
 struct _SmBodyMotoMotionCtrl	// ROS_MSG_MOTO_MOTION_CTRL = 2011
 {
@@ -154,52 +207,6 @@ struct _SmBodyMotoMotionCtrl	// ROS_MSG_MOTO_MOTION_CTRL = 2011
 	float data[ROS_MAX_JOINT];	// Command data - for future use  
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoMotionCtrl SmBodyMotoMotionCtrl;
-
-typedef enum 
-{
-	ROS_RESULT_SUCCESS = 0,
-	ROS_RESULT_TRUE = 0,
-	ROS_RESULT_BUSY = 1,
-	ROS_RESULT_FAILURE = 2,
-	ROS_RESULT_FALSE = 2,
-	ROS_RESULT_INVALID = 3,
-	ROS_RESULT_ALARM = 4,
-	ROS_RESULT_NOT_READY = 5,
-	ROS_RESULT_MP_FAILURE = 6
-} SmResultType;
-
-typedef enum 
-{
-	ROS_RESULT_INVALID_UNSPECIFIED = 3000,
-	ROS_RESULT_INVALID_MSGSIZE,
-	ROS_RESULT_INVALID_MSGHEADER,
-	ROS_RESULT_INVALID_MSGTYPE,
-	ROS_RESULT_INVALID_GROUPNO,
-	ROS_RESULT_INVALID_SEQUENCE,
-	ROS_RESULT_INVALID_COMMAND,
-	ROS_RESULT_INVALID_DATA = 3010,
-	ROS_RESULT_INVALID_DATA_START_POS,
-	ROS_RESULT_INVALID_DATA_POSITION,
-	ROS_RESULT_INVALID_DATA_SPEED,
-	ROS_RESULT_INVALID_DATA_ACCEL,
-	ROS_RESULT_INVALID_DATA_INSUFFICIENT
-} SmInvalidSubCode;
-
-
-typedef enum
-{
-	ROS_RESULT_NOT_READY_UNSPECIFIED = 5000,
-	ROS_RESULT_NOT_READY_ALARM,
-	ROS_RESULT_NOT_READY_ERROR,
-	ROS_RESULT_NOT_READY_ESTOP,
-	ROS_RESULT_NOT_READY_NOT_PLAY,
-	ROS_RESULT_NOT_READY_NOT_REMOTE,
-	ROS_RESULT_NOT_READY_SERVO_OFF,
-	ROS_RESULT_NOT_READY_HOLD,
-	ROS_RESULT_NOT_READY_NOT_STARTED,
-	ROS_RESULT_NOT_READY_WAITING_ROS,
-	ROS_RESULT_NOT_READY_SKILLSEND
-} SmNotReadySubcode;
 
 
 struct _SmBodyMotoMotionReply	// ROS_MSG_MOTO_MOTION_REPLY = 2012
@@ -240,33 +247,66 @@ struct _SmBodyJointFeedbackEx
 } __attribute__((__packed__));
 typedef struct _SmBodyJointFeedbackEx SmBodyJointFeedbackEx;
 
+//--------------
+// IO Commands
+//--------------
 
-struct _SmBodyMotoReadSingleIO
+struct _SmBodyMotoReadIOBit
 {
 	UINT32 ioAddress;
 } __attribute__((__packed__));
-typedef struct _SmBodyMotoReadSingleIO SmBodyMotoReadSingleIO;
+typedef struct _SmBodyMotoReadIOBit SmBodyMotoReadIOBit;
 
-struct _SmBodyMotoReadSingleIOReply
+struct _SmBodyMotoReadIOBitReply
 {
 	UINT32 value;
 	UINT32 resultCode;
 } __attribute__((__packed__));
-typedef struct _SmBodyMotoReadSingleIOReply SmBodyMotoReadSingleIOReply;
+typedef struct _SmBodyMotoReadIOBitReply SmBodyMotoReadIOBitReply;
 
-struct _SmBodyMotoWriteSingleIO
+struct _SmBodyMotoWriteIOBit
 {
 	UINT32 ioAddress;
 	UINT32 ioValue;
 } __attribute__((__packed__));
-typedef struct _SmBodyMotoWriteSingleIO SmBodyMotoWriteSingleIO;
+typedef struct _SmBodyMotoWriteIOBit SmBodyMotoWriteIOBit;
 
-struct _SmBodyMotoWriteSingleIOReply
+struct _SmBodyMotoWriteIOBitReply
 {
 	UINT32 resultCode;
 } __attribute__((__packed__));
-typedef struct _SmBodyMotoWriteSingleIOReply SmBodyMotoWriteSingleIOReply;
+typedef struct _SmBodyMotoWriteIOBitReply SmBodyMotoWriteIOBitReply;
 
+struct _SmBodyMotoReadIOGroup
+{
+	UINT32 ioAddress;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoReadIOGroup SmBodyMotoReadIOGroup;
+
+struct _SmBodyMotoReadIOGroupReply
+{
+	UINT32 value;
+	UINT32 resultCode;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoReadIOGroupReply SmBodyMotoReadIOGroupReply;
+
+struct _SmBodyMotoWriteIOGroup
+{
+	UINT32 ioAddress;
+	UINT32 ioValue;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoWriteIOGroup SmBodyMotoWriteIOGroup;
+
+struct _SmBodyMotoWriteIOGroupReply
+{
+	UINT32 resultCode;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoWriteIOGroupReply SmBodyMotoWriteIOGroupReply;
+
+
+//--------------
+// Body Union
+//--------------
 
 typedef union
 {
@@ -277,12 +317,15 @@ typedef union
 	SmBodyMotoMotionReply motionReply;
 	SmBodyJointTrajPtFullEx jointTrajDataEx;
 	SmBodyJointFeedbackEx jointFeedbackEx;
-	SmBodyMotoReadSingleIO readSingleIo;
-	SmBodyMotoReadSingleIOReply readSingleIoReply;
-	SmBodyMotoWriteSingleIO writeSingleIo;
-	SmBodyMotoWriteSingleIOReply writeSingleIoReply;
+	SmBodyMotoReadIOBit readIOBit;
+	SmBodyMotoReadIOBitReply readIOBitReply;
+	SmBodyMotoWriteIOBit writeIOBit;
+	SmBodyMotoWriteIOBitReply writeIOBitReply;
+	SmBodyMotoReadIOGroup readIOGroup;
+	SmBodyMotoReadIOGroupReply readIOGroupReply;
+	SmBodyMotoWriteIOGroup writeIOGroup;
+	SmBodyMotoWriteIOGroupReply writeIOGroupReply;
 } SmBody;
-
 
 //-------------------
 // SimpleMsg Section

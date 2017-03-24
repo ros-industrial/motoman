@@ -37,15 +37,6 @@
     <None Include="FS100LinkerArguments.mps">
       <Filter>Compile Settings</Filter>
     </None>
-    <None Include="ParameterExtraction_FS100.fsLib">
-      <Filter>MotoPlus Libraries</Filter>
-    </None>
-    <None Include="ParameterExtraction_DX200.dnLib">
-      <Filter>MotoPlus Libraries</Filter>
-    </None>
-    <None Include="ParameterExtraction_DX100.mpLib">
-      <Filter>MotoPlus Libraries</Filter>
-    </None>
     <None Include="RosSetupValidation.dnLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
@@ -53,6 +44,27 @@
       <Filter>MotoPlus Libraries</Filter>
     </None>
     <None Include="RosSetupValidation.mpLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="YRC1000CompilerArguments.mps">
+      <Filter>Compile Settings</Filter>
+    </None>
+    <None Include="YRC1000LinkerArguments.mps">
+      <Filter>Compile Settings</Filter>
+    </None>
+    <None Include="RosSetupValidation.yrcLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="ParameterExtraction.dnLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="ParameterExtraction.fsLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="ParameterExtraction.mpLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="ParameterExtraction.yrcLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
   </ItemGroup>

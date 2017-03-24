@@ -13,6 +13,10 @@
       <Configuration>FS100</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="YRC1000|Win32">
+      <Configuration>YRC1000</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{64C31524-A3C4-49D4-AD04-955D44202226}</ProjectGuid>
@@ -31,6 +35,10 @@
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRC1000|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -41,6 +49,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DX200|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='YRC1000|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -83,7 +94,23 @@
     <IntDir>
     </IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRC1000|Win32'">
+    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRos$(Configuration)" -o build</NMakeBuildCommandLine>
+    <NMakeOutput>MotoRos$(Configuration).out</NMakeOutput>
+    <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);$(Configuration)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>$(MP_VS_Install)$(Configuration)\inc</NMakeIncludeSearchPath>
+    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRos$(Configuration)" -o rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRos$(Configuration)" -o clean</NMakeCleanCommandLine>
+    <NMakeForcedIncludes />
+    <OutDir>$(SolutionDir)output\$(Configuration)\</OutDir>
+    <IntDir />
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DX200|Win32'">
+    <BuildLog>
+      <Path>_buildLog\MotoROS$(Configuration).log</Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='YRC1000|Win32'">
     <BuildLog>
       <Path>_buildLog\MotoROS$(Configuration).log</Path>
     </BuildLog>
@@ -105,12 +132,16 @@
     <None Include="DX200LinkerArguments.mps" />
     <None Include="FS100CompilerArguments.mps" />
     <None Include="FS100LinkerArguments.mps" />
-    <None Include="ParameterExtraction_DX100.mpLib" />
-    <None Include="ParameterExtraction_DX200.dnLib" />
-    <None Include="ParameterExtraction_FS100.fsLib" />
+    <None Include="ParameterExtraction.dnLib" />
+    <None Include="ParameterExtraction.fsLib" />
+    <None Include="ParameterExtraction.mpLib" />
+    <None Include="ParameterExtraction.yrcLib" />
     <None Include="RosSetupValidation.dnLib" />
     <None Include="RosSetupValidation.fsLib" />
     <None Include="RosSetupValidation.mpLib" />
+    <None Include="RosSetupValidation.yrcLib" />
+    <None Include="YRC1000CompilerArguments.mps" />
+    <None Include="YRC1000LinkerArguments.mps" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.c" />
