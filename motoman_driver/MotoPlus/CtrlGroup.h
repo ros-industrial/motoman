@@ -37,7 +37,13 @@
 
 
 #define Q_SIZE 200
+
+#if (DX100 || DX200 || FS100)
 #define Q_LOCK_TIMEOUT 1000
+#else
+#define Q_LOCK_TIMEOUT 5000  //YRC1000 tick period is 0.2 ms
+#endif
+
 #define	Q_OFFSET_IDX( a, b, c )	(((a)+(b)) >= (c) ) ? ((a)+(b)-(c)) \
 				: ( (((a)+(b)) < 0 ) ? ((a)+(b)+(c)) : ((a)+(b)) )
 				

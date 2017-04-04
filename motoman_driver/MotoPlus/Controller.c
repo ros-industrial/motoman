@@ -84,7 +84,9 @@ void Ros_Controller_ErrNo_ToString(int errNo, char errMsg[ERROR_MSG_MAX_SIZE], i
 //Report version info to display on pendant (DX200 only)
 void reportVersionInfoToController()
 {
-#ifdef DX200
+#if DX100 || FS100
+	return;
+#else
 	MP_APPINFO_SEND_DATA appInfoSendData;
 	MP_STD_RSP_DATA stdResponseData;
 
@@ -138,6 +140,10 @@ BOOL Ros_Controller_CheckSetup()
 	case MOTOROS_SETUP_S2C1119:
 		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1119=0 or 2", parameterValidationCode);
 		return TRUE;
+
+	case MOTOROS_SETUP_NotCompatibleWithPFL:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS not compatible with PFL", parameterValidationCode);
+		return FALSE;
 
 	//For all other error codes, please contact Yaskawa Motoman
 	//to have the MotoROS Runtime functionality enabled on your
@@ -289,7 +295,7 @@ BOOL Ros_Controller_WaitInitReady(Controller* controller)
 	do  //minor alarms can be delayed briefly after bootup
 	{
 		puts("Waiting for robot alarms to clear...");
-		mpTaskDelay(2500);
+		Ros_Sleep(2500);
 		Ros_Controller_StatusRead(controller, controller->ioStatus);
 
 	}while(Ros_Controller_IsAlarm(controller));
@@ -534,7 +540,7 @@ BOOL Ros_Controller_IsMotionReady(Controller* controller)
 	{
 		return (controller->bRobotJobReady && controller->bSkillMotionReady[0] && controller->bSkillMotionReady[1]);
 	}
-#elif (FS100 || DX200)
+#else
 	return (controller->bRobotJobReady);
 #endif
 }
@@ -557,6 +563,7 @@ int Ros_Controller_GetNotReadySubcode(Controller* controller)
 	if(!Ros_Controller_IsPlay(controller))
 		return ROS_RESULT_NOT_READY_NOT_PLAY;
 	
+#ifndef DUMMY_SERVO_MODE
 	// Check remote
 	if(!Ros_Controller_IsRemote(controller))
 		return ROS_RESULT_NOT_READY_NOT_REMOTE;
@@ -564,6 +571,7 @@ int Ros_Controller_GetNotReadySubcode(Controller* controller)
 	// Check servo power
 	if(!Ros_Controller_IsServoOn(controller))
 		return ROS_RESULT_NOT_READY_SERVO_OFF;
+#endif
 
 	// Check hold
 	if(Ros_Controller_IsHold(controller))
@@ -674,10 +682,15 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 						{
 							if(i==IO_ROBOTSTATUS_WAITING_ROS)
 								controller->bRobotJobReadyRaised = TRUE;
-								
+							
+#ifndef DUMMY_SERVO_MODE	
 							if(controller->bRobotJobReadyRaised
 								&& (Ros_Controller_IsOperating(controller))
 								&& (Ros_Controller_IsRemote(controller)) )
+#else
+							if(controller->bRobotJobReadyRaised
+								&& (Ros_Controller_IsOperating(controller))
+#endif
 							{
 								controller->bRobotJobReady = TRUE;
 								if(Ros_Controller_IsMotionReady(controller))
@@ -795,7 +808,7 @@ void Ros_Controller_ListenForSkill(Controller* controller, int sl)
 		//mpEndSkillCommandProcess(sl, &skillMsg); 
 		mpEndSkillCommandProcess(sl, &skillMsg);
 		
-		mpTaskDelay(4); //sleepy time
+		Ros_Sleep(4); //sleepy time
 		
 		//Get SKILL command
 		//task will wait for a skillsnd command in INFORM
@@ -904,7 +917,12 @@ void motoRosAssert(BOOL mustBeTrue, ROS_ASSERTION_CODE subCodeIfFalse, char* msg
 		while (TRUE) //forever
 		{
 			puts(msg);
-			mpTaskDelay(5000);
+			Ros_Sleep(5000);
 		}
 	}
+}
+
+void Ros_Sleep(float milliseconds)
+{
+	mpTaskDelay(milliseconds / mpGetRtc()); //Tick length varies between controller models
 }

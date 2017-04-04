@@ -36,7 +36,7 @@
 #include "CtrlGroup.h"
 #include "SimpleMessage.h"
 
-#define APPLICATION_VERSION					"1.4.1"
+#define APPLICATION_VERSION					"1.5.0"
 
 #define TCP_PORT_MOTION						50240
 #define TCP_PORT_STATE						50241
@@ -168,5 +168,12 @@ typedef enum
 	SUBCODE_INVALID_AXIS_TYPE
 } ROS_ASSERTION_CODE;
 extern void motoRosAssert(BOOL mustBeTrue, ROS_ASSERTION_CODE subCodeIfFalse, char* msgFmtIfFalse, ...);
+
+extern void Ros_Sleep(float milliseconds);
+
+//#define DUMMY_SERVO_MODE 1	// Dummy servo mode is used for testing with Yaskawa debug controllers
+#ifdef DUMMY_SERVO_MODE
+#warning Dont forget to disable DUMMY_SERO_MODE when done testing
+#endif
 
 #endif
