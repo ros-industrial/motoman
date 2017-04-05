@@ -1,0 +1,23 @@
+<launch>
+  <arg name="ip_str" value="127.0.0.1" />
+
+  <group ns="load_mpl80__">
+    <include file="$(find motoman_mpl80_support)/launch/load_mpl80.launch"/>
+  </group>
+
+  <group ns="test_mpl80__">
+    <include file="$(find motoman_mpl80_support)/launch/test_irb2400.launch"/>
+  </group>
+
+  <group ns="robot_interface_download_mpl80__">
+    <include file="$(find motoman_mpl80_support)/launch/robot_interface_download_mpl80.launch">
+      <arg name="robot_ip" value="$(arg ip_str)" />
+    </include>
+  </group>
+
+  <group ns="robot_state_visualize_mpl80__">
+    <include file="$(find motoman_mpl80_support)/launch/robot_state_visualize_mpl80.launch">
+      <arg name="robot_ip" value="$(arg ip_str)" />
+    </include>
+  </group>
+</launch>

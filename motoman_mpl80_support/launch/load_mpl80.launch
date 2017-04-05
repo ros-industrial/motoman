@@ -1,0 +1,3 @@
+<launch>
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find motoman_mpl80_support)/urdf/mpl80.xacro'" />
+</launch>
