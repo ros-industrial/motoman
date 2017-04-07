@@ -123,7 +123,7 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <origin xyz="-1.571 -0.291 -1.446" rpy="0 0 0"/>
             <geometry>
                 <mesh filename="package://motoman_mpl80_support/meshes/mpl80/collision/mpl80_link_t.stl"/>
             </geometry>
