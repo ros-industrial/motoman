@@ -7,7 +7,7 @@
            controller_joint_names: [joint_1, joint_2, ... joint_N] 
        - Update with joint names for your robot (in order expected by rbt controller)
        - and uncomment the following line: -->
-  <rosparam command="load" file="$(find motoman_mpl80_support)/config/joint_names_mpl80.yaml"/>
+  <rosparam command="load" file="$(find motoman_mpl_support)/config/joint_names_mpl80.yaml"/>
  
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
   <!--  - if sim=false, a robot_ip and controller(fs100|dx100) arguments is required -->
@@ -30,7 +30,7 @@
   <!--   - this typically includes: robot_state, motion_interface, and joint_trajectory_action nodes -->
   <!--   - replace these calls with appropriate robot-specific calls or launch files -->
   <group unless="$(arg sim)">
-    <include file="$(find motoman_mpl80_support)/launch/robot_interface_streaming_mpl80.launch" >
+    <include file="$(find motoman_mpl_support)/launch/robot_interface_streaming_mpl80.launch" >
       <arg name="robot_ip" value="$(arg robot_ip)"/>
       <arg name="controller" value="$(arg controller)"/>
     </include>

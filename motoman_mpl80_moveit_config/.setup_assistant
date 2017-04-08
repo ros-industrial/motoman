@@ -1,6 +1,6 @@
 moveit_setup_assistant_config:
   URDF:
-    package: motoman_mpl80_support
+    package: motoman_mpl_support
     relative_path: urdf/mpl80.xacro
   SRDF:
     relative_path: config/motoman_mpl80.srdf
