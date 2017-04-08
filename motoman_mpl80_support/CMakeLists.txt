@@ -12,6 +12,6 @@ if (CATKIN_ENABLE_TESTING)
 endif()
 
 foreach(dir config launch meshes urdf)
-   install(DIRECTORY ${dir}/
-      DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
+  install(DIRECTORY ${dir}/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach()

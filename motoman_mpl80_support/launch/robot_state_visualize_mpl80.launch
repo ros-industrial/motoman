@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <!--
   Manipulator specific version of the state visualizer.
 
@@ -14,7 +15,7 @@
   <rosparam command="load" file="$(find motoman_mpl80_support)/config/joint_names_mpl80.yaml" />
 
   <include file="$(find motoman_driver)/launch/robot_state_$(arg controller).launch">
-    <arg name="robot_ip"    value="$(arg robot_ip)" />
+    <arg name="robot_ip" value="$(arg robot_ip)" />
   </include>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" 

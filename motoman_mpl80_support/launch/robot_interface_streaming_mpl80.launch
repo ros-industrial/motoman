@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <!--
   Manipulator specific version of 'robot_interface_streaming.launch'.
 
@@ -8,14 +9,14 @@
     robot_interface_streaming_mpl80.launch robot_ip:=<value> controller:=<dx200>
 -->
 <launch>
-        <arg name="robot_ip" />
+  <arg name="robot_ip" />
 
   <!-- controller: Controller name (dx200) -->
-  <arg name="controller"/>
+  <arg name="controller" />
 
-        <rosparam command="load" file="$(find motoman_mpl80_support)/config/joint_names_mpl80.yaml" />
+  <rosparam command="load" file="$(find motoman_mpl80_support)/config/joint_names_mpl80.yaml" />
 
-        <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
-                <arg name="robot_ip"   value="$(arg robot_ip)" />
-        </include>
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+  </include>
 </launch>
