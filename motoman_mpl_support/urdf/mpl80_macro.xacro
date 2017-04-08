@@ -4,7 +4,7 @@
   <!-- link list -->
   <link name="${prefix}base_link">
     <visual>
-      <origin xyz="-0.407 -0.287 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/base_link.stl"/>
       </geometry>
@@ -13,7 +13,7 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="-0.407 -0.287 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/base_link.stl"/>
       </geometry>
@@ -24,14 +24,14 @@
   </link>
   <link name="${prefix}link_s">
     <visual>
-      <origin xyz="-0.407 -0.287 -0.540" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_s.stl"/>
       </geometry>
       <material name="blue"/>
     </visual>
     <collision>
-      <origin xyz="-0.407 -0.287 -0.540" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_s.stl"/>
       </geometry>
@@ -40,14 +40,14 @@
   </link>
   <link name="${prefix}link_l">
     <visual>
-      <origin xyz="-0.552 -0.287 -0.540" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_l.stl"/>
       </geometry>
       <material name="blue"/>
     </visual>
     <collision>
-      <origin xyz="-0.552 -0.287 -0.540" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_l.stl"/>
       </geometry>
@@ -56,14 +56,14 @@
   </link>
   <link name="${prefix}link_u">
     <visual>
-      <origin xyz="-0.546 -0.287 -1.411" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_u.stl"/>
       </geometry>
       <material name="blue"/>
     </visual>
     <collision>
-      <origin xyz="-0.546 -0.287 -1.411" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_u.stl"/>
       </geometry>
@@ -72,14 +72,14 @@
   </link>
   <link name="${prefix}link_r">
     <visual>
-      <origin xyz="-0.546 -0.287 -1.621" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_r.stl"/>
       </geometry>
       <material name="blue"/>
     </visual>
     <collision>
-      <origin xyz="-0.546 -0.287 -1.621" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_r.stl"/>
       </geometry>
@@ -88,14 +88,14 @@
   </link>
   <link name="${prefix}link_b">
     <visual>
-      <origin xyz="-1.571 -0.291 -1.621" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_b.stl"/>
       </geometry>
       <material name="blue"/>
     </visual>
     <collision>
-      <origin xyz="-1.571 -0.291 -1.621" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_b.stl"/>
       </geometry>
@@ -104,14 +104,14 @@
   </link>
   <link name="${prefix}link_t">
     <visual>
-      <origin xyz="-1.571 -0.291 -1.446" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_t.stl"/>
       </geometry>
       <material name="blue"/>
     </visual>
     <collision>
-      <origin xyz="-1.571 -0.291 -1.446" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_t.stl"/>
       </geometry>
