@@ -7,11 +7,11 @@
   </group>
 
   <group ns="test_mpl80__">
-    <include file="$(find motoman_mpl_support)/launch/test_irb2400.launch"/>
+    <include file="$(find motoman_mpl_support)/launch/test_mpl80.launch"/>
   </group>
 
-  <group ns="robot_interface_download_mpl80__">
-    <include file="$(find motoman_mpl_support)/launch/robot_interface_download_mpl80.launch">
+  <group ns="robot_interface_streaming_mpl80__">
+    <include file="$(find motoman_mpl_support)/launch/robot_interface_streaming_mpl80.launch">
       <arg name="robot_ip" value="$(arg ip_str)" />
     </include>
   </group>
