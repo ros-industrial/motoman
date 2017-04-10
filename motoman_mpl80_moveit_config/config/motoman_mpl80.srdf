@@ -20,13 +20,6 @@
         <joint name="joint_t" value="0" />
         <joint name="joint_u" value="0" />
     </group_state>
-    <group_state name="B10deg" group="manipulator">
-        <joint name="joint_b" value="0.174533" />
-        <joint name="joint_l" value="0" />
-        <joint name="joint_s" value="0" />
-        <joint name="joint_t" value="0" />
-        <joint name="joint_u" value="0" />
-    </group_state>
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
     <virtual_joint name="FixedBase" type="fixed" parent_frame="world" child_link="base_link" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
