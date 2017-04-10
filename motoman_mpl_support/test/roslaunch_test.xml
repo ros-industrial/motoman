@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="ip_str" value="127.0.0.1" />
+  <arg name="ctrlr" value="dx200" />
+
+  <group ns="load_mpl80__">
+    <include file="$(find motoman_mpl_support)/launch/load_mpl80.launch"/>
+  </group>
+
+  <group ns="test_mpl80__">
+    <include file="$(find motoman_mpl_support)/launch/test_mpl80.launch"/>
+  </group>
+
+  <group ns="robot_interface_streaming_mpl80__">
+    <include file="$(find motoman_mpl_support)/launch/robot_interface_streaming_mpl80.launch">
+      <arg name="robot_ip" value="$(arg ip_str)" />
+      <arg name="controller" value="$(arg ctrlr)" />
+    </include>
+  </group>
+
+  <group ns="robot_state_visualize_mpl80__">
+    <include file="$(find motoman_mpl_support)/launch/robot_state_visualize_mpl80.launch">
+      <arg name="robot_ip" value="$(arg ip_str)" />
+      <arg name="controller" value="$(arg ctrlr)" />
+    </include>
+  </group>
+</launch>
