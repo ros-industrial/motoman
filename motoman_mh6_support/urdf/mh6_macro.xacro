@@ -1,0 +1,173 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:property name="pi" value="3.141592653589793" />
+
+	<xacro:macro name="motoman_mh6" params="prefix">
+
+		<!-- link list -->
+		<link name="${prefix}base_link">
+			<visual>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/visual/MH6_BASE_AXIS.stl" />
+				</geometry>
+				<material name="blue">
+					<color rgba="0 0 1 1"/>
+				</material>
+			</visual>
+			<collision>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/collision/MH6_BASE_AXIS.stl" />
+				</geometry>
+				<material name="yellow">
+					<color rgba="0 1 1 1"/>
+				</material>
+			</collision>
+		</link>
+
+		<link name="${prefix}link_s">
+			<visual>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/visual/MH6_S_AXIS.stl"/>
+				</geometry>
+				<material name="silver">
+					<color rgba="0.8 0.8 0.8 1"/>
+				</material>
+			</visual>
+			<collision>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/collision/MH6_S_AXIS.stl" />
+				</geometry>
+				<material name="yellow"/>
+			</collision>
+		</link>
+
+		<link name="${prefix}link_l">
+			<visual>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/visual/MH6_L_AXIS.stl"/>
+				</geometry>
+				<material name="blue"/>
+			</visual>
+			<collision>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/collision/MH6_L_AXIS.stl" />
+				</geometry>
+				<material name="yellow"/>
+			</collision>
+		</link>
+
+		<link name="${prefix}link_u">
+			<visual>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/visual/MH6_U_AXIS.stl"/>
+				</geometry>
+				<material name="silver"/>
+			</visual>
+			<collision>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/collision/MH6_U_AXIS.stl" />
+				</geometry>
+				<material name="yellow"/>
+			</collision>
+		</link>
+
+		<link name="${prefix}link_r">
+			<visual>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/visual/MH6_R_AXIS.stl"/>
+				</geometry>
+				<material name="blue"/>
+			</visual>
+			<collision>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/collision/MH6_R_AXIS.stl" />
+				</geometry>
+				<material name="yellow"/>
+			</collision>
+		</link>
+
+		<link name="${prefix}link_b">
+			<visual>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/visual/MH6_B_AXIS.stl"/>
+				</geometry>
+				<material name="silver"/>
+			</visual>
+			<collision>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/collision/MH6_B_AXIS.stl" />
+				</geometry>
+				<material name="yellow"/>
+			</collision>
+		</link>
+
+		<link name="${prefix}link_t">
+			<visual>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/visual/MH6_T_AXIS.stl" />
+				</geometry>
+				<material name="blue"/>
+			</visual>
+			<collision>
+				<geometry>
+					<mesh filename="package://motoman_mh6_support/meshes/mh6/collision/MH6_T_AXIS.stl" />
+				</geometry>
+				<material name="yellow"/>
+			</collision>
+		</link>
+		<!-- end of link list -->
+
+		<!-- joint list -->
+		<joint name="${prefix}joint_s" type="revolute">
+			<parent link="${prefix}base_link"/>
+			<child link="${prefix}link_s"/>
+			<origin xyz="0 0 0" />
+			<axis xyz="0 0 1" />
+			<limit lower="${-170 * pi / 180}" upper="${170 * pi / 180}" effort="100" velocity="${220 * pi / 180}" />
+		</joint>
+
+		<joint name="${prefix}joint_l" type="revolute">
+			<parent link="${prefix}link_s"/>
+			<child link="${prefix}link_l"/>
+			<origin xyz="0.152 0 0.450" />
+			<axis xyz="0 1 0" />
+			<limit lower="${-90 * pi / 180}" upper="${155 * pi / 180}" effort="100" velocity="${200 * pi / 180}" />
+		</joint>
+
+		<joint name="${prefix}joint_u" type="revolute">
+			<parent link="${prefix}link_l"/>
+			<child link="${prefix}link_u"/>
+			<origin xyz="0 0 0.614" />
+			<axis xyz="0 -1 0" />
+			<!-- These limits are from the datasheet, but they always cause self collisions. -->
+			<limit lower="${-175 * pi / 180}" upper="${250 * pi / 180}" effort="100" velocity="${220 * pi / 180}" />
+		</joint>
+
+		<joint name="${prefix}joint_r" type="revolute">
+			<parent link="${prefix}link_u"/>
+			<child link="${prefix}link_r"/>
+			<origin xyz="0.197 0 0.155" />
+			<axis xyz="-1 0 0" />
+			<limit lower="${-180 * pi / 180}" upper="${180 * pi / 180}" effort="100" velocity="${410 * pi / 180}" />
+		</joint>
+
+		<joint name="${prefix}joint_b" type="revolute">
+			<parent link="${prefix}link_r"/>
+			<child link="${prefix}link_b"/>
+			<origin xyz="0.443 0 0" />
+			<axis xyz="0 -1 0" />
+			<limit lower="${-45 * pi / 180}" upper="${225 * pi / 180}" effort="100" velocity="${410 * pi / 180}" />
+		</joint>
+
+		<joint name="${prefix}joint_t" type="revolute">
+			<parent link="${prefix}link_b"/>
+			<child link="${prefix}link_t"/>
+			<origin xyz="0 0 -0.095" />
+			<axis xyz="0 0 1" />
+			<limit lower="${-360 * pi / 180}" upper="${360 * pi / 180}" effort="100" velocity="${610 * pi / 180}" />
+		</joint>
+		<!-- end of joint list -->
+
+	</xacro:macro>
+</robot>
+
