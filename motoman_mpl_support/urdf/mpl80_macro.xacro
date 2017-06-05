@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:macro name="motoman_mpl80" params="prefix">
+  <!-- link list -->
+  <link name="${prefix}base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/base_link.stl"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/base_link.stl"/>
+      </geometry>
+      <material name="collision_material">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </collision>
+  </link>
+  <link name="${prefix}link_s">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_s.stl"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_s.stl"/>
+      </geometry>
+      <material name="collision_material"/>
+    </collision>
+  </link>
+  <link name="${prefix}link_l">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_l.stl"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_l.stl"/>
+      </geometry>
+      <material name="collision_material"/>
+    </collision>
+  </link>
+  <link name="${prefix}link_u">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_u.stl"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_u.stl"/>
+      </geometry>
+      <material name="collision_material"/>
+    </collision>
+  </link>
+  <link name="${prefix}link_r">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_r.stl"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_r.stl"/>
+      </geometry>
+      <material name="collision_material"/>
+    </collision>
+  </link>
+  <link name="${prefix}link_b">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_b.stl"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_b.stl"/>
+      </geometry>
+      <material name="collision_material"/>
+    </collision>
+  </link>
+  <link name="${prefix}link_t">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/visual/link_t.stl"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_mpl_support/meshes/mpl80/collision/link_t.stl"/>
+      </geometry>
+      <material name="collision_material"/>
+    </collision>
+  </link>
+  <link name="${prefix}tool0"/>
+  <!-- end of link list -->
+
+  <!-- joint list -->
+  <joint name="${prefix}joint_s" type="revolute">
+    <origin xyz="0 0 0.540" rpy="0 0 0"/>
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}link_s"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14159" upper="3.14159" effort="100" velocity="2.967" />
+  </joint>
+  <joint name="${prefix}joint_l" type="revolute">
+    <origin xyz="0.145 0 0" rpy="0 0 0"/>
+    <parent link="${prefix}link_s"/>
+    <child link="${prefix}link_l"/>
+    <axis xyz="0 1 0" />
+    <limit lower="-1.5707" upper="2.3561" effort="100" velocity="2.967" />
+  </joint>
+  <joint name="${prefix}joint_u" type="revolute">
+    <origin xyz="0 0 0.870" rpy="0 0 0"/>
+    <parent link="${prefix}link_l"/>
+    <child link="${prefix}link_u"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="-1.3962" upper="3.5953" effort="100" velocity="2.967" />
+  </joint>
+  <joint name="${prefix}joint_r" type="fixed">
+    <origin xyz="0 0 0.210" rpy="0 0 0"/>
+    <parent link="${prefix}link_u"/>
+    <child link="${prefix}link_r"/>
+  </joint>
+  <joint name="${prefix}joint_b" type="revolute">
+    <origin xyz="1.025 0 0" rpy="0 0 0"/>
+    <parent link="${prefix}link_r"/>
+    <child link="${prefix}link_b"/>
+    <axis xyz="0 -1 0" />
+    <limit lower="-0.6108" upper="3.0543" effort="100" velocity="2.967" />
+  </joint>
+  <joint name="${prefix}joint_t" type="revolute">
+    <origin xyz="0 0 -0.175" rpy="0 0 0"/>
+    <parent link="${prefix}link_b"/>
+    <child link="${prefix}link_t"/>
+    <axis xyz="0 0 1" />
+    <limit lower="-6.2831" upper="6.2831" effort="100" velocity="6.108" />
+  </joint>
+  <joint name="${prefix}joint_t-tool0" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="${prefix}link_t"/>
+    <child link="${prefix}tool0"/> 
+  </joint>
+  <!-- end of joint list -->
+
+  <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
+  <link name="${prefix}base" />
+  <joint name="${prefix}base_link-base" type="fixed">
+    <origin xyz="0 0 0.540" rpy="0 0 0"/>
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}base"/>
+  </joint>
+</xacro:macro>
+</robot>

@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: motoman_mpl_support
+    relative_path: urdf/mpl80.xacro
+  SRDF:
+    relative_path: config/motoman_mpl80.srdf
+  CONFIG:
+    author_name: Eric Marcil
+    author_email: eric.marcil@motoman.com
+    generated_timestamp: 1488564864
