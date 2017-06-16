@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: motoman_mh5_support
+    relative_path: urdf/mh5.urdf
+  SRDF:
+    relative_path: config/motoman_mh5.srdf
+  CONFIG:
+    author_name: Nitish Sharma
+    author_email: nitisharma.1993@utexas.edu
+    generated_timestamp: 1497638135
