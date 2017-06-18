@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+
+ <include file="$(find kinematics_base_test)/launch/test_ikfast_plugin.launch" />
+</launch>
