@@ -1,0 +1,1 @@
+rosrun moveit_ikfast create_ikfast_moveit_plugin.py motoman_mh5 manipulator motoman_mh5_ikfast_manipulator_plugin /home/nitishsharma/Desktop/Issues/Issue172/motoman_mh5_ikfast_manipulator/catkin_ws/src/motoman_mh5_ikfast_manipulator_plugin/src/motoman_mh5_manipulator_ikfast_solver.cpp
