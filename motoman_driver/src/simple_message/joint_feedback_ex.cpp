@@ -117,12 +117,23 @@ bool JointFeedbackEx::unload(industrial::byte_array::ByteArray *buffer)
     return false;
   }
 
+  const int num_groups_ignored = MAX_NUM_GROUPS - this->groups_number_;
+
+  for (int i = 0; i < num_groups_ignored; ++i)
+  {
+    JointFeedback j_feedback;
+
+    if (!buffer->unload(j_feedback))
+    {
+      LOG_ERROR("Failed to unload joint feedback groups_number");
+      return false;
+    }
+  }
+
   for (int i = 0; i < this->groups_number_; i++)
   {
     JointFeedbackMessage tmp_msg;
     JointFeedback j_feedback;
-
-
 
     if (!buffer->unload(j_feedback))
     {

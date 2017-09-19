@@ -153,7 +153,7 @@ bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
   sensor_state->position = pub_joint_state.positions;
   sensor_state->velocity = pub_joint_state.velocities;
 
-  this->pub_joint_sensor_state_.publish(*sensor_state);
+//  this->pub_joint_sensor_state_.publish(*sensor_state);
 
   return true;
 }

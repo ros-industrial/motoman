@@ -15,6 +15,6 @@
 	<include file="$(find motoman_driver)/launch/robot_interface_streaming.launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
-		<arg name="version0"  value="$(arg version0)" />
+    <arg name="version0"  value="false" />
 	</include>
 </launch>

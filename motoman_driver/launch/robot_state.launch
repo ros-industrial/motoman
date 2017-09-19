@@ -13,7 +13,7 @@
 
 	<!-- load the correct version of the robot state node -->
 	<node if="$(arg use_bswap)" name="joint_state" 
-		pkg="motoman_driver" type="robot_state_bswap" />
+		pkg="motoman_driver" type="robot_state_bswap" output="screen"/>
 	<node unless="$(arg use_bswap)" name="joint_state" 
-		pkg="motoman_driver" type="robot_state" />
+		pkg="motoman_driver" type="robot_state" output="screen"/>
 </launch>
