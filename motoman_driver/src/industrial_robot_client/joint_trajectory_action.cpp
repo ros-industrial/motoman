@@ -277,26 +277,6 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh) {
             dyn_group.effort.begin() + j,
             *(gh.getGoal()->trajectory.points[i].effort.begin() + ros_idx));
         }
-        
-
-        /*
-        // Generate message for groups that were not present in the trajectory message
-        } else {
-          std::vector<double> positions(num_joints, 0.0);
-          std::vector<double> velocities(num_joints, 0.0);
-          std::vector<double> accelerations(num_joints, 0.0);
-          std::vector<double> effort(num_joints, 0.0);
-
-          dyn_group.positions = positions;
-          dyn_group.velocities = velocities;
-          dyn_group.accelerations = accelerations;
-          dyn_group.effort = effort;
-
-          dyn_group.time_from_start = gh.getGoal()->trajectory.points[i].time_from_start;
-          dyn_group.group_number = group_number;
-          dyn_group.num_joints = num_joints;
-        }
-        */
       }
       dyn_group.time_from_start = gh.getGoal()->trajectory.points[i].time_from_start;
       dyn_group.group_number = group_number;
