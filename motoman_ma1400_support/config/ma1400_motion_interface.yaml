@@ -1,0 +1,9 @@
+topic_list:
+    - name: dx200_r1_controller
+      ns: dx200
+      group: 0
+      joints: ['joint_s','joint_l','joint_u','joint_r','joint_b','joint_t']
+    - name: dx200_s1_controller
+      ns: dx200
+      group: 1
+      joints: ['joint_s','joint_l','joint_u','joint_r','joint_b','joint_t']
