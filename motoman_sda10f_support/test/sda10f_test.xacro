@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+
+<robot name="motoman_sda10f_test" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find motoman_sda10f_support)/urdf/sda10f_macro.xacro" />
+  <xacro:motoman_sda10f prefix=""/>
+  <!-- xacro below should not be used, use form above-->
+  <!--xacro:sda10f/-->
+  <xacro:motoman_sda10f prefix="my_prefix_"/>
+  
+  
+  <joint name="base_link_joint" type="fixed" >
+    <origin xyz="1.0 0 0"/>
+    <parent link="torso_base_link" />
+    <child link="my_prefix_torso_base_link" />
+  </joint>
+  
+</robot>
+

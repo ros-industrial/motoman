@@ -38,6 +38,11 @@
   <group ns="test_sda10f">
 	  <include file="$(find motoman_sda10f_support)/launch/test_sda10f.launch"/>
   </group>
+  
+  
+  <group ns="urdf_sda10f">
+	  <param name="robot_description" command="$(find xacro)/xacro.py '$(find motoman_sda10f_support)/test/sda10f_test.xacro'" />
+  </group>
 
 
   <group ns="robot_interface_streaming_sda10f">
