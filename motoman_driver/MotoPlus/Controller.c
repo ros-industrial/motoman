@@ -689,7 +689,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 								&& (Ros_Controller_IsRemote(controller)) )
 #else
 							if(controller->bRobotJobReadyRaised
-								&& (Ros_Controller_IsOperating(controller))
+								&& Ros_Controller_IsOperating(controller))
 #endif
 							{
 								controller->bRobotJobReady = TRUE;

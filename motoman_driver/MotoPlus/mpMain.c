@@ -60,9 +60,9 @@ int RosInitTaskID;
 void mpUsrRoot(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10)
 {
 
-//#ifdef DX100
+#ifdef DX100
 	Ros_Sleep(10000);  // 10 sec. delay to enable DX100 system to complete initialization
-//#endif
+#endif
 	
 	//Creates and starts a new task in a seperate thread of execution.
 	//All arguments will be passed to the new task if the function
@@ -123,5 +123,4 @@ void RosInitTask()
 		Ros_Sleep(CONTROLLER_STATUS_UPDATE_PERIOD);
 	}
 }
-
 

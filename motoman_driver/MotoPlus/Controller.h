@@ -36,7 +36,7 @@
 #include "CtrlGroup.h"
 #include "SimpleMessage.h"
 
-#define APPLICATION_VERSION					"1.5.0"
+#define APPLICATION_VERSION					"1.5.1"
 
 #define TCP_PORT_MOTION						50240
 #define TCP_PORT_STATE						50241
