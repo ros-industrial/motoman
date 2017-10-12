@@ -37,12 +37,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "MotoPlus.h"
-#include "ParameterExtraction.h"
-#include "CtrlGroup.h"
-#include "SimpleMessage.h"
-#include "Controller.h"
-#include "MotionServer.h"
+#include "MotoROS.h"
 
 //-----------------------
 // Function Declarations
@@ -92,27 +87,6 @@ int Ros_MotionServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 // Function implementation
 //-----------------------
 
-#if DX100
-extern int vsnprintf(char * s, size_t n, const char * format, va_list arg);
-#endif
-
-void Db_Motion_Print(char* msgFormat, ...)
-{
-#ifdef DEBUG
-	const int MAX_MSG_LEN = 128;
-	char msg[MAX_MSG_LEN];
-	va_list va;
-
-	memset(msg, 0x00, MAX_MSG_LEN);
-
-	va_start(va, msgFormat);
-	vsnprintf(msg, MAX_MSG_LEN, msgFormat, va);
-	va_end(va);
-
-	printf(msg);
-#endif
-}
-
 //-----------------------------------------------------------------------
 // Start the tasks for a new motion server connection:
 // - WaitForSimpleMsg: Task that waits to receive new SimpleMessage
@@ -122,6 +96,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 {
 	int groupNo;
 	int connectionIndex;
+	
+	printf("Starting new connection to the Motion Server\r\n");
 
 	//look for next available connection slot
 	for (connectionIndex = 0; connectionIndex < MAX_MOTION_CONNECTIONS; connectionIndex++)
@@ -143,9 +119,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 	// If not started, start the IncMoveTask (there should be only one instance of this thread)
 	if(controller->tidIncMoveThread == INVALID_TASK)
 	{
-#ifdef DEBUG
 		puts("Creating new task: IncMoveTask");
-#endif
+		
 		controller->tidIncMoveThread = mpCreateTask(MP_PRI_IP_CLK_TAKE, MP_STACK_SIZE, 
 													(FUNCPTR)Ros_MotionServer_IncMoveLoopStart,
 													(int)controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -164,9 +139,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 	{
 		if (controller->ctrlGroups[groupNo]->tidAddToIncQueue == INVALID_TASK)
 		{
-#ifdef DEBUG
 			printf("Creating new task: tidAddToIncQueue (groupNo = %d)\n", groupNo);
-#endif
+			
 			controller->ctrlGroups[groupNo]->tidAddToIncQueue = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
 																			(FUNCPTR)Ros_MotionServer_AddToIncQueueProcess,
 																			(int)controller, groupNo, 0, 0, 0, 0, 0, 0, 0, 0); 
@@ -184,9 +158,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 
 	if (controller->tidMotionConnections[connectionIndex] == INVALID_TASK)
 	{
-#ifdef DEBUG
 		printf("Creating new task: tidMotionConnections (connectionIndex = %d)\n", connectionIndex);
-#endif
+		
 			
 		//start new task for this specific connection
 		controller->tidMotionConnections[connectionIndex] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
@@ -398,7 +371,7 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 					else
 					{
 						// Preserve the remaining bytes and treat them as the start of a new message
-						Db_Motion_Print("MessageReceived(%d bytes): expectedSize=%d, processing rest of bytes (%d, %d, %d)\r\n", byteSize, expectedSize, sizeof(receiveMsg), receiveMsg.body.jointTrajData.sequence, ((int*)((char*)&receiveMsg + expectedSize))[5]);
+						Db_Print("MessageReceived(%d bytes): expectedSize=%d, processing rest of bytes (%d, %d, %d)\r\n", byteSize, expectedSize, sizeof(receiveMsg), receiveMsg.body.jointTrajData.sequence, ((int*)((char*)&receiveMsg + expectedSize))[5]);
 						partialMsgByteCount = byteSize - expectedSize;
 						memmove(&receiveMsg, (char*)&receiveMsg + expectedSize, partialMsgByteCount);
 
@@ -415,13 +388,13 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 			}
 			else // Not enough data to process the command
 			{
-				Db_Motion_Print("MessageReceived(%d bytes): expectedSize=%d\r\n", byteSize, expectedSize);
+				Db_Print("MessageReceived(%d bytes): expectedSize=%d\r\n", byteSize, expectedSize);
 				Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGSIZE, &replyMsg, 0);
 			}
 		}
 		else // Didn't even receive a command ID
 		{
-			Db_Motion_Print("Unknown Data Received (%d bytes)\r\n", byteSize);
+			Db_Print("Unknown Data Received (%d bytes)\r\n", byteSize);
 			Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGSIZE, &replyMsg, 0);
 		}
 
@@ -463,24 +436,26 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 		ret = Ros_MotionServer_JointTrajPtFullExProcess(controller, receiveMsg, replyMsg);
 		break;
 
+
+//Maintain backward compatibility for users who are sending I/O over motion-server
 	//-----------------------
 	case ROS_MSG_MOTO_READ_IO_BIT:
-		ret = Ros_MotionServer_ReadIOBit(receiveMsg, replyMsg);
+		ret = Ros_IoServer_ReadIOBit(receiveMsg, replyMsg);
 		break;
 
 	//-----------------------
 	case ROS_MSG_MOTO_WRITE_IO_BIT:
-		ret = Ros_MotionServer_WriteIOBit(receiveMsg, replyMsg);
+		ret = Ros_IoServer_WriteIOBit(receiveMsg, replyMsg);
 		break;
 
 	//-----------------------
 	case ROS_MSG_MOTO_READ_IO_GROUP:
-		ret = Ros_MotionServer_ReadIOGroup(receiveMsg, replyMsg);
+		ret = Ros_IoServer_ReadIOGroup(receiveMsg, replyMsg);
 		break;
 
 	//-----------------------
 	case ROS_MSG_MOTO_WRITE_IO_GROUP:
-		ret = Ros_MotionServer_WriteIOGroup(receiveMsg, replyMsg);
+		ret = Ros_IoServer_WriteIOGroup(receiveMsg, replyMsg);
 		break;
 
 	//-----------------------
@@ -498,143 +473,6 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	}
 		
 	return ret;
-}
-
-int Ros_MotionServer_ReadIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{
-	int apiRet;
-	MP_IO_INFO ioReadInfo;
-	USHORT ioValue;
-	int resultCode;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-	
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoReadIOBitReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_READ_IO_BIT_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-	
-	ioReadInfo.ulAddr = receiveMsg->body.readIOBit.ioAddress;
-	apiRet = mpReadIO(&ioReadInfo, &ioValue, 1);
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.readIOBitReply.value = ioValue;
-	replyMsg->body.readIOBitReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
-}
-
-int Ros_MotionServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{
-	int apiRet;
-	MP_IO_INFO ioReadInfo[8];
-	USHORT ioValue[8];
-	int resultCode;
-	int resultValue = 0;
-	int i;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoReadIOGroupReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_READ_IO_GROUP_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-
-	for (i = 0; i < 8; i += 1)
-	{
-		ioReadInfo[i].ulAddr = (receiveMsg->body.readIOGroup.ioAddress * 10) + i;
-	}
-	apiRet = mpReadIO(ioReadInfo, ioValue, 8);
-
-	resultValue = 0;
-	for (i = 0; i < 8; i += 1)
-	{
-		resultValue |= (ioValue[i] << i);
-	}
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.readIOGroupReply.value = resultValue;
-	replyMsg->body.readIOGroupReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
-}
-
-int Ros_MotionServer_WriteIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{	
-	int apiRet;
-	MP_IO_DATA ioWriteData;
-	int resultCode;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-	
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoWriteIOBitReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_IO_BIT_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-	
-	ioWriteData.ulAddr = receiveMsg->body.writeIOBit.ioAddress;
-	ioWriteData.ulValue = receiveMsg->body.writeIOBit.ioValue;
-	apiRet = mpWriteIO(&ioWriteData, 1);
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.writeIOBitReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
-}
-
-int Ros_MotionServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{
-	int apiRet;
-	MP_IO_DATA ioWriteData[8];
-	int resultCode;
-	int i;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoWriteIOGroupReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_IO_GROUP_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-
-	for (i = 0; i < 8; i += 1)
-	{
-		ioWriteData[i].ulAddr = (receiveMsg->body.writeIOGroup.ioAddress * 10) + i;
-		ioWriteData[i].ulValue = (receiveMsg->body.writeIOGroup.ioValue & (1 << i)) >> i;
-	}
-	apiRet = mpWriteIO(ioWriteData, 8);
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.writeIOGroupReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
 }
 
 

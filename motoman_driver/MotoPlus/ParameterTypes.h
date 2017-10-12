@@ -32,8 +32,6 @@
 #ifndef _INC_MOTOMANPARAMETER_TYPES_H
 #define _INC_MOTOMANPARAMETER_TYPES_H
 
-#include "MotoPlus.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

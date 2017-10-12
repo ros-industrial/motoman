@@ -33,9 +33,6 @@
 #define CTRLGROUP_H
 
 
-#include "ParameterTypes.h"
-
-
 #define Q_SIZE 200
 
 #if (DX100 || DX200 || FS100)

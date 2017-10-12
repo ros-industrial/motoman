@@ -39,13 +39,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "MotoPlus.h"
-#include "ParameterExtraction.h"
-#include "CtrlGroup.h"
-#include "SimpleMessage.h"
-#include "Controller.h"
-#include "StateServer.h"
-#include "MotionServer.h"
+#include "MotoROS.h"
 
 
 #ifdef DEBUG
