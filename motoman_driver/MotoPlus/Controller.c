@@ -34,6 +34,7 @@
 #include "CtrlGroup.h"
 #include "SimpleMessage.h"
 #include "Controller.h"
+#include "IoServer.h"
 #include "MotionServer.h"
 #include "StateServer.h"
 #include "RosSetupValidation.h"
@@ -176,7 +177,7 @@ BOOL Ros_Controller_Init(Controller* controller)
 	Ros_Controller_SetIOState(IO_FEEDBACK_CONNECTSERVERRUNNING, FALSE);
 	Ros_Controller_SetIOState(IO_FEEDBACK_MOTIONSERVERCONNECTED, FALSE);
 	Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, FALSE);
-	Ros_Controller_SetIOState(IO_FEEDBACK_RESERVED_0, FALSE);
+	Ros_Controller_SetIOState(IO_FEEDBACK_IOSERVERCONNECTED, FALSE);
 	Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, FALSE);
 	
 	Ros_Controller_SetIOState(IO_FEEDBACK_RESERVED_1, FALSE);
@@ -253,6 +254,12 @@ BOOL Ros_Controller_Init(Controller* controller)
 	
 	// Initialize Thread ID and Socket to invalid value
 	controller->tidConnectionSrv = INVALID_TASK;
+
+	for (i = 0; i < MAX_IO_CONNECTIONS; i++)
+	{
+		controller->sdIoConnections[i] = INVALID_SOCKET;
+		controller->tidIoConnections[i] = INVALID_TASK;
+	}
 
 	controller->tidStateSendState = INVALID_TASK;
 	for (i = 0; i < MAX_STATE_CONNECTIONS; i++)
@@ -370,6 +377,7 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 {
 	int     sdMotionServer = INVALID_SOCKET;
 	int     sdStateServer = INVALID_SOCKET;
+	int     sdIoServer = INVALID_SOCKET;
 	struct  fd_set  fds;
 	int     sdAccepted = INVALID_SOCKET;
 	struct  sockaddr_in     clientSockAddr;
@@ -390,14 +398,19 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 	sdStateServer = Ros_Controller_OpenSocket(TCP_PORT_STATE);
 	if(sdStateServer < 0)
 		goto closeSockHandle;
+	
+	sdIoServer = Ros_Controller_OpenSocket(TCP_PORT_IO);
+	if(sdIoServer < 0)
+		goto closeSockHandle;
 
 	FOREVER //Continue to accept multiple connections forever
 	{
 		FD_ZERO(&fds);
 		FD_SET(sdMotionServer, &fds); 
 		FD_SET(sdStateServer, &fds); 
+		FD_SET(sdIoServer, &fds); 
 		
-		if(mpSelect(sdStateServer+1, &fds, NULL, NULL, NULL) > 0)
+		if(mpSelect(sdIoServer+1, &fds, NULL, NULL, NULL) > 0)
 		{
 			memset(&clientSockAddr, 0, sizeof(clientSockAddr));
 			sizeofSockAddr = sizeof(clientSockAddr);
@@ -407,6 +420,8 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 				sdAccepted = mpAccept(sdMotionServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
 			else if(FD_ISSET(sdStateServer, &fds))
 				sdAccepted = mpAccept(sdStateServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
+			else if(FD_ISSET(sdIoServer, &fds))
+				sdAccepted = mpAccept(sdIoServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
 			else
 				continue;
 				
@@ -425,6 +440,8 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 				Ros_MotionServer_StartNewConnection(controller, sdAccepted);
 			else if(FD_ISSET(sdStateServer, &fds))
 				Ros_StateServer_StartNewConnection(controller, sdAccepted);
+			else if(FD_ISSET(sdIoServer, &fds))
+				Ros_IoServer_StartNewConnection(controller, sdAccepted);
 			else
 				mpClose(sdAccepted);
 		}
@@ -433,6 +450,8 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 closeSockHandle:
 	printf("Error!?... Connection Server is aborting.  Reboot the controller.\r\n");
 
+	if(sdIoServer >= 0)
+		mpClose(sdIoServer);
 	if(sdMotionServer >= 0)
 		mpClose(sdMotionServer);
 	if(sdStateServer >= 0)

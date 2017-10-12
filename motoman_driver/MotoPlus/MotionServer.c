@@ -81,12 +81,6 @@ void Ros_MotionServer_ConvertToJointMotionData(SmBodyJointTrajPtFull* jointTrajD
 STATUS Ros_MotionServer_DisableEcoMode(Controller* controller);
 void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix);
 
-// IO functions:
-int Ros_MotionServer_ReadIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-int Ros_MotionServer_WriteIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-int Ros_MotionServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-int Ros_MotionServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-
 
 //-----------------------
 // Function implementation
@@ -425,48 +419,6 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 		break;
 
 	//-----------------------
-	case ROS_MSG_MOTO_READ_IO_BIT:
-		// Check that the appropriate message size was received
-		expectedBytes += sizeof(SmBodyMotoReadIOBit);
-		if(expectedBytes == byteSize)
-			ret = Ros_MotionServer_ReadIOBit(receiveMsg, replyMsg);
-		else
-			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
-		break;
-
-	//-----------------------
-	case ROS_MSG_MOTO_WRITE_IO_BIT:
-		// Check that the appropriate message size was received
-		expectedBytes += sizeof(SmBodyMotoWriteIOBit);
-		if(expectedBytes == byteSize)
-			ret = Ros_MotionServer_WriteIOBit(receiveMsg, replyMsg);
-		else
-			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
-		break;
-
-
-	//-----------------------
-	case ROS_MSG_MOTO_READ_IO_GROUP:
-		// Check that the appropriate message size was received
-		expectedBytes += sizeof(SmBodyMotoReadIOGroup);
-		if (expectedBytes == byteSize)
-			ret = Ros_MotionServer_ReadIOGroup(receiveMsg, replyMsg);
-		else
-			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
-		break;
-
-	//-----------------------
-	case ROS_MSG_MOTO_WRITE_IO_GROUP:
-		// Check that the appropriate message size was received
-		expectedBytes += sizeof(SmBodyMotoWriteIOGroup);
-		if (expectedBytes == byteSize)
-			ret = Ros_MotionServer_WriteIOGroup(receiveMsg, replyMsg);
-		else
-			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
-		break;
-
-
-	//-----------------------
 	default:
 		printf("Invalid message type: %d\n", receiveMsg->header.msgType);
 		invalidSubcode = ROS_RESULT_INVALID_MSGTYPE;
@@ -481,143 +433,6 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	}
 		
 	return ret;
-}
-
-int Ros_MotionServer_ReadIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{
-	int apiRet;
-	MP_IO_INFO ioReadInfo;
-	USHORT ioValue;
-	int resultCode;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-	
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoReadIOBitReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_READ_IO_BIT_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-	
-	ioReadInfo.ulAddr = receiveMsg->body.readIOBit.ioAddress;
-	apiRet = mpReadIO(&ioReadInfo, &ioValue, 1);
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.readIOBitReply.value = ioValue;
-	replyMsg->body.readIOBitReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
-}
-
-int Ros_MotionServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{
-	int apiRet;
-	MP_IO_INFO ioReadInfo[8];
-	USHORT ioValue[8];
-	int resultCode;
-	int resultValue = 0;
-	int i;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoReadIOGroupReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_READ_IO_GROUP_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-
-	for (i = 0; i < 8; i += 1)
-	{
-		ioReadInfo[i].ulAddr = (receiveMsg->body.readIOGroup.ioAddress * 10) + i;
-	}
-	apiRet = mpReadIO(ioReadInfo, ioValue, 8);
-
-	resultValue = 0;
-	for (i = 0; i < 8; i += 1)
-	{
-		resultValue |= (ioValue[i] << i);
-	}
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.readIOGroupReply.value = resultValue;
-	replyMsg->body.readIOGroupReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
-}
-
-int Ros_MotionServer_WriteIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{	
-	int apiRet;
-	MP_IO_DATA ioWriteData;
-	int resultCode;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-	
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoWriteIOBitReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_IO_BIT_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-	
-	ioWriteData.ulAddr = receiveMsg->body.writeIOBit.ioAddress;
-	ioWriteData.ulValue = receiveMsg->body.writeIOBit.ioValue;
-	apiRet = mpWriteIO(&ioWriteData, 1);
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.writeIOBitReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
-}
-
-int Ros_MotionServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{
-	int apiRet;
-	MP_IO_DATA ioWriteData[8];
-	int resultCode;
-	int i;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoWriteIOGroupReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_IO_GROUP_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-
-	for (i = 0; i < 8; i += 1)
-	{
-		ioWriteData[i].ulAddr = (receiveMsg->body.writeIOGroup.ioAddress * 10) + i;
-		ioWriteData[i].ulValue = (receiveMsg->body.writeIOGroup.ioValue & (1 << i)) >> i;
-	}
-	apiRet = mpWriteIO(ioWriteData, 8);
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.writeIOGroupReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
 }
 
 
