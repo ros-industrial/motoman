@@ -32,9 +32,6 @@
 #ifndef SIMPLE_MSG_H
 #define SIMPLE_MSG_H
 
-#include "MotoPlus.h"
-#include "CtrlGroup.h"
-
 #define ROS_MAX_JOINT 10
 #define MOT_MAX_GR     4
 
@@ -55,10 +52,13 @@ typedef enum
 {
 	ROS_MSG_GET_VERSION = 2,
 	ROS_MSG_ROBOT_STATUS = 13,
+
 	ROS_MSG_JOINT_TRAJ_PT_FULL = 14,
 	ROS_MSG_JOINT_FEEDBACK = 15,
+
 	ROS_MSG_MOTO_MOTION_CTRL = 2001,
 	ROS_MSG_MOTO_MOTION_REPLY = 2002,
+
 	ROS_MSG_MOTO_READ_IO_BIT = 2003,
 	ROS_MSG_MOTO_READ_IO_BIT_REPLY = 2004,
 	ROS_MSG_MOTO_WRITE_IO_BIT = 2005,
@@ -67,6 +67,8 @@ typedef enum
 	ROS_MSG_MOTO_READ_IO_GROUP_REPLY = 2008,
 	ROS_MSG_MOTO_WRITE_IO_GROUP = 2009,
 	ROS_MSG_MOTO_WRITE_IO_GROUP_REPLY = 2010,
+	ROS_MSG_MOTO_IOCTRL_REPLY = 2011,
+
 	ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016,
 	ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017
 } SmMsgType;
@@ -199,7 +201,7 @@ struct _SmBodyJointFeedback		// ROS_MSG_JOINT_FEEDBACK = 15
 typedef struct _SmBodyJointFeedback SmBodyJointFeedback;
 
 
-struct _SmBodyMotoMotionCtrl	// ROS_MSG_MOTO_MOTION_CTRL = 2011
+struct _SmBodyMotoMotionCtrl	// ROS_MSG_MOTO_MOTION_CTRL = 2001
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
 	int sequence;				// Optional message tracking number that will be echoed back in the response.
@@ -209,7 +211,7 @@ struct _SmBodyMotoMotionCtrl	// ROS_MSG_MOTO_MOTION_CTRL = 2011
 typedef struct _SmBodyMotoMotionCtrl SmBodyMotoMotionCtrl;
 
 
-struct _SmBodyMotoMotionReply	// ROS_MSG_MOTO_MOTION_REPLY = 2012
+struct _SmBodyMotoMotionReply	// ROS_MSG_MOTO_MOTION_REPLY = 2002
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
 	int sequence;				// Optional message tracking number that will be echoed back in the response.
@@ -303,6 +305,12 @@ struct _SmBodyMotoWriteIOGroupReply
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoWriteIOGroupReply SmBodyMotoWriteIOGroupReply;
 
+struct _SmBodyMotoIoCtrlReply	// ROS_MSG_MOTO_IOCTRL_REPLY = 2011
+{
+	SmResultType result;		// High level result code
+	int subcode;				// More detailed result code (optional)
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoIoCtrlReply SmBodyMotoIoCtrlReply;
 
 //--------------
 // Body Union
@@ -325,6 +333,7 @@ typedef union
 	SmBodyMotoReadIOGroupReply readIOGroupReply;
 	SmBodyMotoWriteIOGroup writeIOGroup;
 	SmBodyMotoWriteIOGroupReply writeIOGroupReply;
+	SmBodyMotoIoCtrlReply ioCtrlReply;
 } SmBody;
 
 //-------------------
@@ -348,11 +357,13 @@ extern void Ros_SimpleMsg_JointFeedbackEx_Init(int numberOfGroups, SimpleMsg* se
 extern int Ros_SimpleMsg_JointFeedbackEx_Build(int groupIndex, SimpleMsg* src_msgFeedback, SimpleMsg* dst_msgExtendedFeedback);
 
 extern int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, SimpleMsg* replyMsg, int ctrlGrp);
+extern int Ros_SimpleMsg_IoReply(int result, int subcode, SimpleMsg* replyMsg);
 
 //Uncomment the DEBUG definition to enable debug-messages at runtime
 //#define DEBUG  1
 
 #ifdef DEBUG
+#warning Dont forget to disable the DEBUG flag
 // function to dump data structure for debugging
 extern void Ros_SimpleMsg_DumpTrajPtFull(SmBodyJointTrajPtFull* data);
 #endif

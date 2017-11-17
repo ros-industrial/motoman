@@ -1,9 +1,10 @@
-﻿//StateServer.h
+// IoServer.h
 //
 /*
 * Software License Agreement (BSD License) 
 *
 * Copyright (c) 2013, Yaskawa America, Inc.
+* Copyright (c) 2017, Delft University of Technology
 * All rights reserved.
 *
 * Redistribution and use in binary form, with or without modification,
@@ -29,11 +30,14 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#ifndef STATESERVER_H
-#define STATESERVER_H
+#ifndef IOSERVER_H
+#define IOSERVER_H
 
-#define STATE_UPDATE_MIN_PERIOD 25   // Time delay between each state update
+extern void Ros_IoServer_StartNewConnection(Controller* controller, int sd);
 
-extern void Ros_StateServer_StartNewConnection(Controller* controller, int sd);
+extern int Ros_IoServer_ReadIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+extern int Ros_IoServer_WriteIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+extern int Ros_IoServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+extern int Ros_IoServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 
 #endif

@@ -35,11 +35,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "MotoPlus.h"
-#include "ParameterExtraction.h"
-#include "CtrlGroup.h"
-#include "SimpleMessage.h"
-#include "Controller.h"
+#include "MotoROS.h"
 
 //-----------------------
 // Function Declarations
@@ -164,6 +160,28 @@ int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, Si
 	replyMsg->body.motionReply.result = result;
 	replyMsg->body.motionReply.subcode = subcode;
 	
+	return(replyMsg->prefix.length + sizeof(SmPrefix));
+}
+
+// Creates a simple message of type ROS_MSG_MOTO_IOCTRL_REPLY to reply to a received message 
+// result error code and subcode.  (Not used for successful commands.)
+int Ros_SimpleMsg_IoReply(int result, int subcode, SimpleMsg* replyMsg)
+{
+	//initialize memory
+	memset(replyMsg, 0x00, sizeof(SimpleMsg));
+
+	// set prefix: length of message excluding the prefix
+	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoMotionReply);
+
+	// set header information of the reply
+	replyMsg->header.msgType = ROS_MSG_MOTO_MOTION_REPLY;
+	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+	replyMsg->header.replyType = ROS_REPLY_SUCCESS;
+
+	// set reply body
+	replyMsg->body.ioCtrlReply.result = result;
+	replyMsg->body.ioCtrlReply.subcode = subcode;
+
 	return(replyMsg->prefix.length + sizeof(SmPrefix));
 }
 

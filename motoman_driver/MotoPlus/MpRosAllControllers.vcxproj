@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClCompile Include="Controller.c" />
     <ClCompile Include="CtrlGroup.c" />
+    <ClCompile Include="IoServer.c" />
     <ClCompile Include="MotionServer.c" />
     <ClCompile Include="mpMain.c" />
     <ClCompile Include="SimpleMessage.c" />
@@ -154,7 +155,9 @@
   <ItemGroup>
     <ClInclude Include="Controller.h" />
     <ClInclude Include="CtrlGroup.h" />
+    <ClInclude Include="IoServer.h" />
     <ClInclude Include="MotionServer.h" />
+    <ClInclude Include="MotoROS.h" />
     <ClInclude Include="ParameterExtraction.h" />
     <ClInclude Include="ParameterTypes.h" />
     <ClInclude Include="RosSetupValidation.h" />

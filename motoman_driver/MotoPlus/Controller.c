@@ -29,14 +29,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "MotoPlus.h"
-#include "ParameterExtraction.h"
-#include "CtrlGroup.h"
-#include "SimpleMessage.h"
-#include "Controller.h"
-#include "MotionServer.h"
-#include "StateServer.h"
-#include "RosSetupValidation.h"
+#include "MotoROS.h"
 
 extern STATUS setsockopt
     (
@@ -176,7 +169,7 @@ BOOL Ros_Controller_Init(Controller* controller)
 	Ros_Controller_SetIOState(IO_FEEDBACK_CONNECTSERVERRUNNING, FALSE);
 	Ros_Controller_SetIOState(IO_FEEDBACK_MOTIONSERVERCONNECTED, FALSE);
 	Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, FALSE);
-	Ros_Controller_SetIOState(IO_FEEDBACK_RESERVED_0, FALSE);
+	Ros_Controller_SetIOState(IO_FEEDBACK_IOSERVERCONNECTED, FALSE);
 	Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, FALSE);
 	
 	Ros_Controller_SetIOState(IO_FEEDBACK_RESERVED_1, FALSE);
@@ -253,6 +246,12 @@ BOOL Ros_Controller_Init(Controller* controller)
 	
 	// Initialize Thread ID and Socket to invalid value
 	controller->tidConnectionSrv = INVALID_TASK;
+
+	for (i = 0; i < MAX_IO_CONNECTIONS; i++)
+	{
+		controller->sdIoConnections[i] = INVALID_SOCKET;
+		controller->tidIoConnections[i] = INVALID_TASK;
+	}
 
 	controller->tidStateSendState = INVALID_TASK;
 	for (i = 0; i < MAX_STATE_CONNECTIONS; i++)
@@ -370,6 +369,8 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 {
 	int     sdMotionServer = INVALID_SOCKET;
 	int     sdStateServer = INVALID_SOCKET;
+	int     sdIoServer = INVALID_SOCKET;
+	int		sdMax;
 	struct  fd_set  fds;
 	int     sdAccepted = INVALID_SOCKET;
 	struct  sockaddr_in     clientSockAddr;
@@ -390,49 +391,81 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 	sdStateServer = Ros_Controller_OpenSocket(TCP_PORT_STATE);
 	if(sdStateServer < 0)
 		goto closeSockHandle;
+	
+	sdIoServer = Ros_Controller_OpenSocket(TCP_PORT_IO);
+	if(sdIoServer < 0)
+		goto closeSockHandle;
+
+	sdMax = max(sdMotionServer, sdStateServer);
+	sdMax = max(sdMax, sdIoServer);
 
 	FOREVER //Continue to accept multiple connections forever
 	{
 		FD_ZERO(&fds);
 		FD_SET(sdMotionServer, &fds); 
 		FD_SET(sdStateServer, &fds); 
+		FD_SET(sdIoServer, &fds); 
 		
-		if(mpSelect(sdStateServer+1, &fds, NULL, NULL, NULL) > 0)
+		if(mpSelect(sdMax+1, &fds, NULL, NULL, NULL) > 0)
 		{
 			memset(&clientSockAddr, 0, sizeof(clientSockAddr));
 			sizeofSockAddr = sizeof(clientSockAddr);
 			
-			//Accept the connection and get a new socket handle
+			//Check motion server
 			if(FD_ISSET(sdMotionServer, &fds))
-				sdAccepted = mpAccept(sdMotionServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
-			else if(FD_ISSET(sdStateServer, &fds))
-				sdAccepted = mpAccept(sdStateServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
-			else
-				continue;
-				
-			if (sdAccepted < 0)
-				break;
-			
-			printf("Accepted connection from client PC\r\n");
-			
-			s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
-			if( OK != s )
 			{
-				printf("Failed to set TCP_NODELAY.\r\n");
+				sdAccepted = mpAccept(sdMotionServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
+				if (sdAccepted < 0)
+					break;
+					
+				s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
+				if( OK != s )
+				{
+					printf("Failed to set TCP_NODELAY.\r\n");
+				}
+				
+				Ros_MotionServer_StartNewConnection(controller, sdAccepted);
 			}
 			
-			if(FD_ISSET(sdMotionServer, &fds))
-				Ros_MotionServer_StartNewConnection(controller, sdAccepted);
-			else if(FD_ISSET(sdStateServer, &fds))
+			//Check state server
+			if(FD_ISSET(sdStateServer, &fds))
+			{
+				sdAccepted = mpAccept(sdStateServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
+				if (sdAccepted < 0)
+					break;
+					
+				s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
+				if( OK != s )
+				{
+					printf("Failed to set TCP_NODELAY.\r\n");
+				}
+				
 				Ros_StateServer_StartNewConnection(controller, sdAccepted);
-			else
-				mpClose(sdAccepted);
+			}
+			
+			//Check IO server
+			if(FD_ISSET(sdIoServer, &fds))
+			{
+				sdAccepted = mpAccept(sdIoServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
+				if (sdAccepted < 0)
+					break;
+					
+				s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
+				if( OK != s )
+				{
+					printf("Failed to set TCP_NODELAY.\r\n");
+				}
+				
+				Ros_IoServer_StartNewConnection(controller, sdAccepted);
+			}
 		}
 	}
 	
 closeSockHandle:
 	printf("Error!?... Connection Server is aborting.  Reboot the controller.\r\n");
 
+	if(sdIoServer >= 0)
+		mpClose(sdIoServer);
 	if(sdMotionServer >= 0)
 		mpClose(sdMotionServer);
 	if(sdStateServer >= 0)
@@ -689,7 +722,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 								&& (Ros_Controller_IsRemote(controller)) )
 #else
 							if(controller->bRobotJobReadyRaised
-								&& (Ros_Controller_IsOperating(controller))
+								&& Ros_Controller_IsOperating(controller))
 #endif
 							{
 								controller->bRobotJobReady = TRUE;
@@ -920,6 +953,23 @@ void motoRosAssert(BOOL mustBeTrue, ROS_ASSERTION_CODE subCodeIfFalse, char* msg
 			Ros_Sleep(5000);
 		}
 	}
+}
+
+void Db_Print(char* msgFormat, ...)
+{
+#ifdef DEBUG
+	const int MAX_MSG_LEN = 128;
+	char msg[MAX_MSG_LEN];
+	va_list va;
+
+	memset(msg, 0x00, MAX_MSG_LEN);
+
+	va_start(va, msgFormat);
+	vsnprintf(msg, MAX_MSG_LEN, msgFormat, va);
+	va_end(va);
+
+	printf(msg);
+#endif
 }
 
 void Ros_Sleep(float milliseconds)
