@@ -161,6 +161,14 @@ struct _SmHeader
 } __attribute__((__packed__));
 typedef struct _SmHeader SmHeader;
 
+typedef enum
+{
+	Valid_Time = 1,
+	Valid_Position = 2,
+	Valid_Velocity = 4,
+	Valid_Acceleration = 8
+} FlagsValidFields;
+
 //--------------
 // Body Section
 //--------------
@@ -181,7 +189,7 @@ struct _SmBodyJointTrajPtFull	// ROS_MSG_JOINT_TRAJ_PT_FULL = 14
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
 	int sequence;				// Index of point in trajectory; 0 = Initial trajectory point, which should match the robot current position.
-	int validFields;			// Bit-mask indicating which “optional” fields are filled with data. 1=time, 2=position, 4=velocity, 8=acceleration
+	FlagsValidFields validFields;	// Bit-mask indicating which “optional” fields are filled with data. 1=time, 2=position, 4=velocity, 8=acceleration
 	float time;					// Timestamp associated with this trajectory point; Units: in seconds 
 	float pos[ROS_MAX_JOINT];	// Desired joint positions in radian.  Base to Tool joint order  
 	float vel[ROS_MAX_JOINT];	// Desired joint velocities in radian/sec.  
@@ -192,11 +200,11 @@ typedef struct _SmBodyJointTrajPtFull SmBodyJointTrajPtFull;
 struct _SmBodyJointFeedback		// ROS_MSG_JOINT_FEEDBACK = 15
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
-	int validFields;			// Bit-mask indicating which “optional” fields are filled with data. 1=time, 2=position, 4=velocity, 8=acceleration
+	FlagsValidFields validFields;	// Bit-mask indicating which “optional” fields are filled with data. 1=time, 2=position, 4=velocity, 8=acceleration
 	float time;					// Timestamp associated with this trajectory point; Units: in seconds 
-	float pos[ROS_MAX_JOINT];	// Desired joint positions in radian.  Base to Tool joint order  
-	float vel[ROS_MAX_JOINT];	// Desired joint velocities in radian/sec.  
-	float acc[ROS_MAX_JOINT];	// Desired joint accelerations in radian/sec^2.
+	float pos[ROS_MAX_JOINT];	// Feedback joint positions in radian.  Base to Tool joint order  
+	float vel[ROS_MAX_JOINT];	// Feedback joint velocities in radian/sec.  
+	float acc[ROS_MAX_JOINT];	// Feedback joint accelerations in radian/sec^2.
 } __attribute__((__packed__));
 typedef struct _SmBodyJointFeedback SmBodyJointFeedback;
 
@@ -225,7 +233,7 @@ typedef struct _SmBodyMotoMotionReply SmBodyMotoMotionReply;
 struct _SmBodyJointTrajPtExData
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
-	int validFields;			// Bit-mask indicating which “optional” fields are filled with data. 1=time, 2=position, 4=velocity, 8=acceleration
+	FlagsValidFields validFields;	// Bit-mask indicating which “optional” fields are filled with data. 1=time, 2=position, 4=velocity, 8=acceleration
 	float time;					// Timestamp associated with this trajectory point; Units: in seconds 
 	float pos[ROS_MAX_JOINT];	// Desired joint positions in radian.  Base to Tool joint order  
 	float vel[ROS_MAX_JOINT];	// Desired joint velocities in radian/sec.  

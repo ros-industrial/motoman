@@ -43,7 +43,9 @@
 
 #define	Q_OFFSET_IDX( a, b, c )	(((a)+(b)) >= (c) ) ? ((a)+(b)-(c)) \
 				: ( (((a)+(b)) < 0 ) ? ((a)+(b)+(c)) : ((a)+(b)) )
-				
+		
+#define RAD_PER_DEGREE (0.0174533)
+
 typedef struct
 {
 	LONG time;
@@ -60,8 +62,6 @@ typedef struct
 	LONG idx;
 	Incremental_data data[Q_SIZE];
 } Incremental_q;
-
-
 
 // jointMotionData values are in radian and joint order in sequential order 
 typedef struct
@@ -100,6 +100,8 @@ typedef struct
 	AXIS_MOTION_TYPE axisType;					// Indicates whether axis is rotary or linear
 
 	BOOL bIsBaxisSlave;							// Indicates the B axis will automatically move to maintain orientation as other axes are moved
+
+	JOINT_FEEDBACK_SPEED_ADDRESSES speedFeedbackRegisterAddress; //CIO address for the registers containing feedback speed
 } CtrlGroup;
 
 
@@ -110,12 +112,12 @@ typedef struct
 extern CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod);
 
 extern BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
-
 extern BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
+extern BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PULSE_AXES]);
 
 extern BOOL Ros_CtrlGroup_GetTorque(CtrlGroup* ctrlGroup, double torqueValues[MAX_PULSE_AXES]);
-extern void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], float rosPos[MAX_PULSE_AXES]);
 
+extern void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], float rosPos[MAX_PULSE_AXES]);
 extern void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float radPos[MAX_PULSE_AXES], long pulsePos[MAX_PULSE_AXES]);
 
 extern UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup);
