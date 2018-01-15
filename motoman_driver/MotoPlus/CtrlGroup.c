@@ -110,7 +110,10 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, BOOL bIsLastGrpToInit, float interp
 		if (status != OK)
 			bInitOk = FALSE;
 
-		status = GP_getFeedbackSpeedMRegisterAddresses(groupNo, TRUE, bIsLastGrpToInit, &ctrlGroup->speedFeedbackRegisterAddress);
+		status = GP_getFeedbackSpeedMRegisterAddresses(groupNo, //zero based index of the control group
+														TRUE, //If the register-speed-feedback is not enabled, automatically modify the SC.PRM file to enable this feature.
+														bIsLastGrpToInit, //If activating the reg-speed-feedback feature, delay the alarm until all the groups have been processed.
+														&ctrlGroup->speedFeedbackRegisterAddress); //[OUT] Index of the M registers containing the feedback speed values.
 		if (status != OK)
 		{
 			ctrlGroup->speedFeedbackRegisterAddress.bFeedbackSpeedEnabled = FALSE;
@@ -359,13 +362,13 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 		//convert to pulse/sec
 		if (ctrlGroup->axisType.type[i] == AXIS_ROTATION)
 		{
-			dblRegister /= 10000.0; //deg/sec
+			dblRegister /= 1.0E4; //deg/sec
 			dblRegister *= RAD_PER_DEGREE; //rad/sec
 			dblRegister *= ctrlGroup->pulseToRad.PtoR[i]; //pulse/sec
 		}
 		else if (ctrlGroup->axisType.type[i] == AXIS_LINEAR)
 		{
-			dblRegister /= 1000000.0; //m/sec
+			dblRegister /= 1.0E6; //m/sec
 			dblRegister *= ctrlGroup->pulseToMeter.PtoM[i]; //pulse/sec
 		}
 

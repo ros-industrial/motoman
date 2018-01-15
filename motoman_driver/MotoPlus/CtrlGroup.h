@@ -109,6 +109,11 @@ typedef struct
 // External Functions Declaration
 //---------------------------------
 
+//Initialize specific control group. This should be called for each group connected to the robot
+//controller in numerical order.
+//	int groupNo: Zero based index of the group number (0-3)
+//	BOOL bIsLastGrpToInit: TRUE if this is the final group that is being initialized. FALSE if you plan to call this function again.
+//	float interpolPeriod: Value of the interpolation period (ms) for the robot controller.
 extern CtrlGroup* Ros_CtrlGroup_Create(int groupNo, BOOL bIsLastGrpToInit, float interpolPeriod);
 
 extern BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
