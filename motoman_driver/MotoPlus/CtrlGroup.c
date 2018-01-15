@@ -32,20 +32,6 @@
 #include "MotoROS.h"
 
 //-----------------------
-// Function Declarations
-//-----------------------
-MP_GRP_ID_TYPE Ros_CtrlGroup_FindGrpId(int groupNo);
-CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod);
-BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
-BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
-void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], 
-									float rosPos[MAX_PULSE_AXES]);
-void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float rosPos[MAX_PULSE_AXES],
-									long pulsePos[MAX_PULSE_AXES]);
-UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup);
-BOOL Ros_CtrlGroup_IsRobot(CtrlGroup* ctrlGroup);
-
-//-----------------------
 // Function implementation
 //-----------------------
 
@@ -70,7 +56,7 @@ MP_GRP_ID_TYPE Ros_CtrlGroup_FindGrpId(int groupNo)
 // Create a CtrlGroup data structure for existing group otherwise 
 // return NULL
 //-------------------------------------------------------------------
-CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
+CtrlGroup* Ros_CtrlGroup_Create(int groupNo, BOOL bIsLastGrpToInit, float interpolPeriod)
 {
 	CtrlGroup* ctrlGroup;
 	int numAxes;
@@ -124,7 +110,7 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		if (status != OK)
 			bInitOk = FALSE;
 
-		status = GP_getFeedbackSpeedMRegisterAddresses(groupNo, TRUE, &ctrlGroup->speedFeedbackRegisterAddress);
+		status = GP_getFeedbackSpeedMRegisterAddresses(groupNo, TRUE, bIsLastGrpToInit, &ctrlGroup->speedFeedbackRegisterAddress);
 		if (status != OK)
 		{
 			ctrlGroup->speedFeedbackRegisterAddress.bFeedbackSpeedEnabled = FALSE;
@@ -367,13 +353,22 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 		registerValuesLong[i * 2] = registerValues[i * 2];
 		registerValuesLong[(i * 2) + 1] = registerValues[(i * 2) + 1];
 
-		//combine both registers into single 4 byte value (0.0001 deg/sec)
+		//combine both registers into single 4 byte value (0.0001 deg/sec or 1 um/sec)
 		dblRegister = (registerValuesLong[(i * 2) + 1] << 16) | registerValuesLong[i * 2];
 
 		//convert to pulse/sec
-		dblRegister /= 10000.0; //deg/sec
-		dblRegister *= RAD_PER_DEGREE; //rad/sec
-		dblRegister *= ctrlGroup->pulseToRad.PtoR[i]; //pulse/sec
+		if (ctrlGroup->axisType.type[i] == AXIS_ROTATION)
+		{
+			dblRegister /= 10000.0; //deg/sec
+			dblRegister *= RAD_PER_DEGREE; //rad/sec
+			dblRegister *= ctrlGroup->pulseToRad.PtoR[i]; //pulse/sec
+		}
+		else if (ctrlGroup->axisType.type[i] == AXIS_LINEAR)
+		{
+			dblRegister /= 1000000.0; //m/sec
+			dblRegister *= ctrlGroup->pulseToMeter.PtoM[i]; //pulse/sec
+		}
+
 		pulseSpeed[i] = (long)dblRegister;
 	}
 

@@ -109,7 +109,7 @@ typedef struct
 // External Functions Declaration
 //---------------------------------
 
-extern CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod);
+extern CtrlGroup* Ros_CtrlGroup_Create(int groupNo, BOOL bIsLastGrpToInit, float interpolPeriod);
 
 extern BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
 extern BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
