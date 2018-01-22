@@ -1142,6 +1142,7 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 		// to maintain orientation as other axes are moved.
 		if (ctrlGroup->bIsBaxisSlave)
 		{
+			//ROS joint order
 			ctrlGroup->jointMotionData.pos[3] += -ctrlGroup->jointMotionData.pos[1] + ctrlGroup->jointMotionData.pos[2];
 			ctrlGroup->jointMotionData.vel[3] += -ctrlGroup->jointMotionData.vel[1] + ctrlGroup->jointMotionData.vel[2];
 		}
@@ -1159,15 +1160,19 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 			// Check if position matches current command position
 			if(abs(pulsePos[i] - curPos[i]) > START_MAX_PULSE_DEVIATION)
 			{
-				printf("ERROR: Trajectory start position doesn't match current position.\r\n");
-				printf("    %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
+				printf("ERROR: Trajectory start position doesn't match current position (MOTO joint order).\r\n");
+				printf(" - Requested start: %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
 					pulsePos[0], pulsePos[1], pulsePos[2],
 					pulsePos[3], pulsePos[4], pulsePos[5],
 					pulsePos[6], pulsePos[7]);
-				printf("    %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
+				printf(" - Current pos: %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
 					curPos[0], curPos[1], curPos[2],
 					curPos[3], curPos[4], curPos[5],
 					curPos[6], curPos[7]);
+				printf(" - ctrlGroup->prevPulsePos: %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
+					ctrlGroup->prevPulsePos[0], ctrlGroup->prevPulsePos[1], ctrlGroup->prevPulsePos[2],
+					ctrlGroup->prevPulsePos[3], ctrlGroup->prevPulsePos[4], ctrlGroup->prevPulsePos[5],
+					ctrlGroup->prevPulsePos[6], ctrlGroup->prevPulsePos[7]);
 
 				return ROS_RESULT_INVALID_DATA_START_POS;
 			}
@@ -1323,6 +1328,7 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 	// to maintain orientation as other axes are moved.
 	if (ctrlGroup->bIsBaxisSlave)
 	{
+		//ROS joint order
 		endTrajData->pos[3] += -endTrajData->pos[1] + endTrajData->pos[2];
 		endTrajData->vel[3] += -endTrajData->vel[1] + endTrajData->vel[2];
 	}
