@@ -1,13 +1,5 @@
 ﻿// MotionServer.c
 //
-// History:
-// 05/22/2013: Original release v.1.0.0
-// 06/05/2013: Fix for multi-arm control to prevent return -3 (Invalid group) 
-//			   when calling function mpExRcsIncrementMove.
-// 06/12/2013: Release v.1.0.1
-// June 2014:	Release v1.2.0
-//				Add support for multiple control groups.
-//				Add support for DX200 controller.
 /*
 * Software License Agreement (BSD License) 
 *
@@ -37,12 +29,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "MotoPlus.h"
-#include "ParameterExtraction.h"
-#include "CtrlGroup.h"
-#include "SimpleMessage.h"
-#include "Controller.h"
-#include "MotionServer.h"
+#include "MotoROS.h"
 
 //-----------------------
 // Function Declarations
@@ -53,7 +40,7 @@ void Ros_MotionServer_StopConnection(Controller* controller, int connectionIndex
 
 // WaitForSimpleMsg Task:
 void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionIndex);
-BOOL Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receiveMsg, int byteSize, SimpleMsg* replyMsg);
+BOOL Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 int Ros_MotionServer_MotionCtrlProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 BOOL Ros_MotionServer_StopMotion(Controller* controller);
 BOOL Ros_MotionServer_ServoPower(Controller* controller, int servoOnOff);
@@ -82,8 +69,10 @@ STATUS Ros_MotionServer_DisableEcoMode(Controller* controller);
 void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix);
 
 // IO functions:
-int Ros_MotionServer_ReadIO(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-int Ros_MotionServer_WriteIO( SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+int Ros_MotionServer_ReadIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+int Ros_MotionServer_WriteIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+int Ros_MotionServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+int Ros_MotionServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 
 
 //-----------------------
@@ -99,6 +88,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 {
 	int groupNo;
 	int connectionIndex;
+	
+	printf("Starting new connection to the Motion Server\r\n");
 
 	//look for next available connection slot
 	for (connectionIndex = 0; connectionIndex < MAX_MOTION_CONNECTIONS; connectionIndex++)
@@ -120,9 +111,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 	// If not started, start the IncMoveTask (there should be only one instance of this thread)
 	if(controller->tidIncMoveThread == INVALID_TASK)
 	{
-#ifdef DEBUG
 		puts("Creating new task: IncMoveTask");
-#endif
+		
 		controller->tidIncMoveThread = mpCreateTask(MP_PRI_IP_CLK_TAKE, MP_STACK_SIZE, 
 													(FUNCPTR)Ros_MotionServer_IncMoveLoopStart,
 													(int)controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -141,9 +131,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 	{
 		if (controller->ctrlGroups[groupNo]->tidAddToIncQueue == INVALID_TASK)
 		{
-#ifdef DEBUG
 			printf("Creating new task: tidAddToIncQueue (groupNo = %d)\n", groupNo);
-#endif
+			
 			controller->ctrlGroups[groupNo]->tidAddToIncQueue = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
 																			(FUNCPTR)Ros_MotionServer_AddToIncQueueProcess,
 																			(int)controller, groupNo, 0, 0, 0, 0, 0, 0, 0, 0); 
@@ -161,9 +150,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 
 	if (controller->tidMotionConnections[connectionIndex] == INVALID_TASK)
 	{
-#ifdef DEBUG
 		printf("Creating new task: tidMotionConnections (connectionIndex = %d)\n", connectionIndex);
-#endif
+		
 			
 		//start new task for this specific connection
 		controller->tidMotionConnections[connectionIndex] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
@@ -243,7 +231,58 @@ void Ros_MotionServer_StopConnection(Controller* controller, int connectionIndex
 	mpDeleteTask(tid);
 }
 
+int Ros_MotionServer_GetExpectedByteSizeForMessageType(SimpleMsg* receiveMsg, int recvByteSize)
+{
+	int minSize = sizeof(SmPrefix) + sizeof(SmHeader);
+	int expectedSize;
 
+	switch (receiveMsg->header.msgType)
+	{
+	case ROS_MSG_ROBOT_STATUS:
+		expectedSize = minSize + sizeof(SmBodyRobotStatus);
+		break;
+	case ROS_MSG_JOINT_TRAJ_PT_FULL:
+		expectedSize = minSize + sizeof(SmBodyJointTrajPtFull);
+		break;
+	case ROS_MSG_JOINT_FEEDBACK:
+		expectedSize = minSize + sizeof(SmBodyJointFeedback);
+		break;
+	case ROS_MSG_MOTO_MOTION_CTRL:
+		expectedSize = minSize + sizeof(SmBodyMotoMotionCtrl);
+		break;
+	case ROS_MSG_MOTO_MOTION_REPLY:
+		expectedSize = minSize + sizeof(SmBodyMotoMotionReply);
+		break;
+	case ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX:
+		//Don't require the user to send data for non-existant control groups
+		if (recvByteSize >= (int)(minSize + sizeof(int))) //make sure I can at least get to [numberOfGroups] field
+		{
+			expectedSize = minSize + (sizeof(int) * 2);
+			expectedSize += (sizeof(SmBodyJointTrajPtExData) * receiveMsg->body.jointTrajDataEx.numberOfValidGroups); //check the number of groups to determine size of data
+		}
+		else
+			expectedSize = minSize + sizeof(SmBodyJointTrajPtFullEx);
+		break;
+	case ROS_MSG_MOTO_JOINT_FEEDBACK_EX:
+		expectedSize = minSize + sizeof(SmBodyJointFeedbackEx);
+		break;
+	case ROS_MSG_MOTO_READ_IO_BIT:
+		expectedSize = minSize + sizeof(SmBodyMotoReadIOBit);
+		break;
+	case ROS_MSG_MOTO_WRITE_IO_BIT:
+		expectedSize = minSize + sizeof(SmBodyMotoWriteIOBit);
+		break;
+	case ROS_MSG_MOTO_READ_IO_GROUP:
+		expectedSize = minSize + sizeof(SmBodyMotoReadIOGroup);
+		break;
+	case ROS_MSG_MOTO_WRITE_IO_GROUP:
+		expectedSize = minSize + sizeof(SmBodyMotoWriteIOGroup);
+		break;
+	default: //invalid message type
+		return -1;
+	}
+	return expectedSize;
+}
 
 //-----------------------------------------------------------------------
 // Task that waits to receive new SimpleMessage and then processes it
@@ -257,115 +296,107 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 	int expectedSize;
 	int ret = 0;
 	BOOL bDisconnect = FALSE;
-	BOOL bHasPreviousData = FALSE; // if true, then receiveMsg is already filled with valid data
-	BOOL bInvalidMsgType = FALSE;
+	int partialMsgByteCount = 0;
+	BOOL bSkipNetworkRecv = FALSE;
 
 	while(!bDisconnect) //keep accepting messages until connection closes
 	{
-		mpTaskDelay(0);	//give it some time to breathe, if needed
+		Ros_Sleep(0);	//give it some time to breathe, if needed
 		
-		if (!bHasPreviousData)
+		if (!bSkipNetworkRecv)
 		{
-			//Receive message from the PC
-			memset(&receiveMsg, 0x00, sizeof(receiveMsg));
-			byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)(&receiveMsg), sizeof(receiveMsg), 0);
-			if (byteSize <= 0)
-				break; //end connection
+			if (partialMsgByteCount) //partial (incomplete) message already received
+			{
+				//Receive message from the PC
+				memset((&receiveMsg) + partialMsgByteCount, 0x00, sizeof(SimpleMsg) - partialMsgByteCount);
+				byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)((&receiveMsg) + partialMsgByteCount), sizeof(SimpleMsg) - partialMsgByteCount, 0);
+				if (byteSize <= 0)
+					break; //end connection
+
+				byteSize += partialMsgByteCount;
+				partialMsgByteCount = 0;
+			}
+			else //get whole message
+			{
+				//Receive message from the PC
+				memset(&receiveMsg, 0x00, sizeof(receiveMsg));
+				byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)(&receiveMsg), sizeof(SimpleMsg), 0);
+				if (byteSize <= 0)
+					break; //end connection
+			}
 		}
-		
-		bInvalidMsgType = FALSE;
+		else
+		{
+			byteSize = partialMsgByteCount;
+			partialMsgByteCount = 0;
+			bSkipNetworkRecv = FALSE;
+		}
 
 		// Determine the expected size of the message
 		expectedSize = -1;
 		if(byteSize >= minSize)
 		{
-			switch(receiveMsg.header.msgType)
+			expectedSize = Ros_MotionServer_GetExpectedByteSizeForMessageType(&receiveMsg, byteSize);
+
+			if (expectedSize == -1)
 			{
-				case ROS_MSG_ROBOT_STATUS: 
-					expectedSize = minSize + sizeof(SmBodyRobotStatus);
-					break;
-				case ROS_MSG_JOINT_TRAJ_PT_FULL: 
-					expectedSize = minSize + sizeof(SmBodyJointTrajPtFull);
-					break;
-				case ROS_MSG_JOINT_FEEDBACK:
-					expectedSize = minSize + sizeof(SmBodyJointFeedback);
-					break;
-				case ROS_MSG_MOTO_MOTION_CTRL:
-					expectedSize = minSize + sizeof(SmBodyMotoMotionCtrl);
-					break;
-				case ROS_MSG_MOTO_MOTION_REPLY:
-					expectedSize = minSize + sizeof(SmBodyMotoMotionReply);
-					break;
-				case ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX:
-					//Don't require the user to send data for non-existant control groups
-					if (byteSize >= (minSize + sizeof(int))) //make sure I can at least get to [numberOfGroups] field
+				printf("Unknown Message Received (%d)\r\n", receiveMsg.header.msgType);
+				Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGTYPE, &replyMsg, 0);
+			}			
+			else if (byteSize >= expectedSize) // Check message size
+			{
+				// Process the simple message
+				ret = Ros_MotionServer_SimpleMsgProcess(controller, &receiveMsg, &replyMsg);
+				if (ret == 1) //error during processing
+				{
+					bDisconnect = TRUE;
+				}
+				else if (byteSize > expectedSize) // Received extra data in single message
+				{
+					//Special case where ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX message could have different lengths
+					if (receiveMsg.header.msgType == ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX &&
+						byteSize == (int)(minSize + sizeof(SmBodyJointTrajPtFullEx)))
 					{
-						expectedSize = minSize + (sizeof(int) * 2);
-						expectedSize += (sizeof(SmBodyJointTrajPtExData) * receiveMsg.body.jointTrajDataEx.numberOfValidGroups); //check the number of groups to determine size of data
+						// All good
+						partialMsgByteCount = 0;
 					}
 					else
-						expectedSize = minSize + sizeof(SmBodyJointTrajPtFullEx);
-					break;
-				case ROS_MSG_MOTO_JOINT_FEEDBACK_EX:
-					expectedSize = minSize + sizeof(SmBodyJointFeedbackEx);
-					break;
-					
-				case ROS_MSG_MOTO_READ_SINGLE_IO:
-					expectedSize = minSize + sizeof(SmBodyMotoReadSingleIO);
-					break;
-				case ROS_MSG_MOTO_READ_SINGLE_IO_REPLY:
-					expectedSize = minSize + sizeof(SmBodyMotoReadSingleIOReply);
-					break;
-				case ROS_MSG_MOTO_WRITE_SINGLE_IO:
-					expectedSize = minSize + sizeof(SmBodyMotoWriteSingleIO);
-					break;
-				case ROS_MSG_MOTO_WRITE_SINGLE_IO_REPLY:
-					expectedSize = minSize + sizeof(SmBodyMotoWriteSingleIOReply);
-					break;
-				default:
-					bInvalidMsgType = TRUE;
-					break;
-			}
-		}
+					{
+						// Preserve the remaining bytes and treat them as the start of a new message
+						Db_Print("MessageReceived(%d bytes): expectedSize=%d, processing rest of bytes (%d, %d, %d)\r\n", byteSize, expectedSize, sizeof(receiveMsg), receiveMsg.body.jointTrajData.sequence, ((int*)((char*)&receiveMsg + expectedSize))[5]);
+						partialMsgByteCount = byteSize - expectedSize;
+						memmove(&receiveMsg, (char*)&receiveMsg + expectedSize, partialMsgByteCount);
 
-		bHasPreviousData = FALSE;
-		// Check message size
-		if(byteSize >= expectedSize && expectedSize <= sizeof(SimpleMsg))
-		{
-			// Process the simple message
-			ret = Ros_MotionServer_SimpleMsgProcess(controller, &receiveMsg, expectedSize, &replyMsg);
-			if(ret == 1) 
-			{
-				bDisconnect = TRUE;
+						//Did I receive multiple full messages at once that all need to be processed before listening for new data?
+						if (partialMsgByteCount >= minSize)
+						{
+							expectedSize = Ros_MotionServer_GetExpectedByteSizeForMessageType(&receiveMsg, partialMsgByteCount);
+							bSkipNetworkRecv = (partialMsgByteCount >= expectedSize); //does my modified receiveMsg buffer contain a full message to process?
+						}
+					}
+				}
+				else // All good
+					partialMsgByteCount = 0;
 			}
-			else if( byteSize > expectedSize ) 
+			else // Not enough data to process the command
 			{
-				printf("MessageReceived(%d bytes): expectedSize=%d, processing rest of bytes (%d, %d, %d)\r\n", byteSize,  expectedSize, sizeof(receiveMsg), receiveMsg.body.jointTrajData.sequence, ((int*)((char*)&receiveMsg +  expectedSize))[5]);
-				memmove(&receiveMsg, (char*)&receiveMsg + expectedSize, byteSize-expectedSize);
-				byteSize -= expectedSize;
-				bHasPreviousData = TRUE;
+				Db_Print("MessageReceived(%d bytes): expectedSize=%d\r\n", byteSize, expectedSize);
+				Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGSIZE, &replyMsg, 0);
 			}
 		}
-		else if (bInvalidMsgType)
+		else // Didn't even receive a command ID
 		{
-			printf("Unknown Message Received(%d)\r\n", receiveMsg.header.msgType);
-			Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGTYPE, &replyMsg, 0);			
-		}
-		else
-		{
-			printf("MessageReceived(%d bytes): expectedSize=%d\r\n", byteSize,  expectedSize);
+			Db_Print("Unknown Data Received (%d bytes)\r\n", byteSize);
 			Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGSIZE, &replyMsg, 0);
-			// Note: If messages are being combine together because of network transmission protocol
-			// we may need to add code to store unused portion of the received buff that would be part of the next message
 		}
 
 		//Send reply message
-		byteSizeResponse = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);        
+		byteSizeResponse = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);
 		if (byteSizeResponse <= 0)
 			break;	// Close the connection
 	}
 	
-	mpTaskDelay(50);	// Just in case other associated task need time to clean-up.  Don't if necessary... but it doesn't hurt
+	Ros_Sleep(50);	// Just in case other associated task need time to clean-up.
 	
 	//close this connection
 	Ros_MotionServer_StopConnection(controller, connectionIndex);
@@ -376,67 +407,50 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 // Checks the type of message and processes it accordingly
 // Return -1=Failure; 0=Success; 1=CloseConnection; 
 //-----------------------------------------------------------------------
-int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receiveMsg, 
-										int byteSize, SimpleMsg* replyMsg)
+int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 {
 	int ret = 0;
-	int expectedBytes = sizeof(SmPrefix) + sizeof(SmHeader);
 	int invalidSubcode = 0;
-	
-	//printf("In SimpleMsgProcess\r\n");
 	
 	switch(receiveMsg->header.msgType)
 	{
 	case ROS_MSG_JOINT_TRAJ_PT_FULL:
-		// Check that the appropriate message size was received
-		expectedBytes += sizeof(SmBodyJointTrajPtFull);
-		if(expectedBytes == byteSize)
-			ret = Ros_MotionServer_JointTrajDataProcess(controller, receiveMsg, replyMsg);
-		else
-			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
+		ret = Ros_MotionServer_JointTrajDataProcess(controller, receiveMsg, replyMsg);
 		break;
+
+	//-----------------------
 	case ROS_MSG_MOTO_MOTION_CTRL:
-		// Check that the appropriate message size was received
-		expectedBytes += sizeof(SmBodyMotoMotionCtrl);
-		if(expectedBytes == byteSize)
-			ret = Ros_MotionServer_MotionCtrlProcess(controller, receiveMsg, replyMsg);
-		else
-			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
+		ret = Ros_MotionServer_MotionCtrlProcess(controller, receiveMsg, replyMsg);
 		break;
+
+	//-----------------------
 	case ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX:
-		// Check that the appropriate message size was received
-		if (byteSize >= (expectedBytes + sizeof(int))) //make sure I can at least get to [numberOfGroups] field
-		{
-			expectedBytes += (sizeof(int) * 2);
-			expectedBytes += (sizeof(SmBodyJointTrajPtExData) * receiveMsg->body.jointTrajDataEx.numberOfValidGroups); //check the number of groups to determine size of data
-		}
-		else
-			expectedBytes += sizeof(SmBodyJointTrajPtFullEx);
-
-		if(expectedBytes <= byteSize)
-			ret = Ros_MotionServer_JointTrajPtFullExProcess(controller, receiveMsg, replyMsg);
-		else
-			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
-		break;
-
-	case ROS_MSG_MOTO_READ_SINGLE_IO:
-		// Check that the appropriate message size was received
-		expectedBytes += sizeof(SmBodyMotoReadSingleIO);
-		if(expectedBytes == byteSize)
-			ret = Ros_MotionServer_ReadIO(receiveMsg, replyMsg);
-		else
-			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
-		break;
-	case ROS_MSG_MOTO_WRITE_SINGLE_IO:
-		// Check that the appropriate message size was received
-		expectedBytes += sizeof(SmBodyMotoWriteSingleIO);
-		if(expectedBytes == byteSize)
-			ret = Ros_MotionServer_WriteIO(receiveMsg, replyMsg);
-		else
-			invalidSubcode = ROS_RESULT_INVALID_MSGSIZE;
+		ret = Ros_MotionServer_JointTrajPtFullExProcess(controller, receiveMsg, replyMsg);
 		break;
 
 
+//Maintain backward compatibility for users who are sending I/O over motion-server
+	//-----------------------
+	case ROS_MSG_MOTO_READ_IO_BIT:
+		ret = Ros_IoServer_ReadIOBit(receiveMsg, replyMsg);
+		break;
+
+	//-----------------------
+	case ROS_MSG_MOTO_WRITE_IO_BIT:
+		ret = Ros_IoServer_WriteIOBit(receiveMsg, replyMsg);
+		break;
+
+	//-----------------------
+	case ROS_MSG_MOTO_READ_IO_GROUP:
+		ret = Ros_IoServer_ReadIOGroup(receiveMsg, replyMsg);
+		break;
+
+	//-----------------------
+	case ROS_MSG_MOTO_WRITE_IO_GROUP:
+		ret = Ros_IoServer_WriteIOGroup(receiveMsg, replyMsg);
+		break;
+
+	//-----------------------
 	default:
 		printf("Invalid message type: %d\n", receiveMsg->header.msgType);
 		invalidSubcode = ROS_RESULT_INVALID_MSGTYPE;
@@ -453,67 +467,6 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	return ret;
 }
 
-int Ros_MotionServer_ReadIO(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{
-	int apiRet;
-	MP_IO_INFO ioReadInfo;
-	USHORT ioValue;
-	int resultCode;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-	
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoReadSingleIOReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_READ_SINGLE_IO_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-	
-	ioReadInfo.ulAddr = receiveMsg->body.readSingleIo.ioAddress;
-	apiRet = mpReadIO(&ioReadInfo, &ioValue, 1);
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.readSingleIoReply.value = ioValue;
-	replyMsg->body.readSingleIoReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
-}
-
-int Ros_MotionServer_WriteIO(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
-{	
-	int apiRet;
-	MP_IO_DATA ioWriteData;
-	int resultCode;
-
-	//initialize memory
-	memset(replyMsg, 0x00, sizeof(SimpleMsg));
-	
-	// set prefix: length of message excluding the prefix
-	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoWriteSingleIOReply);
-
-	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_SINGLE_IO_REPLY;
-	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
-	
-	ioWriteData.ulAddr = receiveMsg->body.writeSingleIo.ioAddress;
-	ioWriteData.ulValue = receiveMsg->body.writeSingleIo.ioValue;
-	apiRet = mpWriteIO(&ioWriteData, 1);
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
-	else
-		resultCode = ROS_REPLY_FAILURE;
-
-	replyMsg->body.writeSingleIoReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
-}
-
 
 //-----------------------------------------------------------------------
 // Processes message of type: ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX
@@ -525,6 +478,7 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 	SmBodyJointTrajPtFullEx* msgBody;	
 	CtrlGroup* ctrlGroup;
 	int ret, i;
+	FlagsValidFields validationFlags;
 
 	msgBody = &receiveMsg->body.jointTrajDataEx;
 
@@ -560,7 +514,8 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 		}
 			
 		// Check that minimum information (time, position, velocity) is valid
-		if( (msgBody->jointTrajPtData[i].validFields & 0x07) != 0x07 )
+		validationFlags = Valid_Time | Valid_Position | Valid_Velocity;
+		if( (msgBody->jointTrajPtData[i].validFields & validationFlags) != validationFlags)
 		{
 			printf("ERROR: Validfields = %d\r\n", msgBody->jointTrajPtData[i].validFields);
 			Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_DATA_INSUFFICIENT, replyMsg, msgBody->jointTrajPtData[i].groupNo);
@@ -754,7 +709,7 @@ BOOL Ros_MotionServer_StopMotion(Controller* controller)
 		if(bStopped)
 			break;
 		else
-			mpTaskDelay(1);
+			Ros_Sleep(1);
 	}
 	
 	// Clear queues
@@ -776,6 +731,10 @@ BOOL Ros_MotionServer_ServoPower(Controller* controller, int servoOnOff)
 	MP_STD_RSP_DATA stdRespData;
 	int ret;
 	STATUS status;
+	
+#ifdef DUMMY_SERVO_MODE
+	return TRUE;
+#endif
 	
 	if (servoOnOff == OFF)
 		Ros_MotionServer_StopMotion(controller);
@@ -808,7 +767,7 @@ BOOL Ros_MotionServer_ServoPower(Controller* controller, int servoOnOff)
 			if(Ros_Controller_IsServoOn(controller) == servoOnOff)
 				break;
 			
-			mpTaskDelay(MOTION_START_CHECK_PERIOD);
+			Ros_Sleep(MOTION_START_CHECK_PERIOD);
 		}		
 	}
 	else
@@ -911,11 +870,13 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	if(Ros_Controller_IsOperating(controller))
 		return FALSE;
 		
+#ifndef DUMMY_SERVO_MODE
 	// Check for condition that need operator manual intervention	
 	if(Ros_Controller_IsEStop(controller)
 		|| Ros_Controller_IsHold(controller)
 		|| !Ros_Controller_IsRemote(controller))
 		return FALSE;
+#endif
 		
 	// Check for condition that can be fixed remotely
 	if(Ros_Controller_IsError(controller))
@@ -945,7 +906,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 				if(Ros_Controller_IsAlarm(controller) == FALSE)
 					continue;
 			
-				mpTaskDelay(MOTION_START_CHECK_PERIOD);
+				Ros_Sleep(MOTION_START_CHECK_PERIOD);
 			}
 			if(Ros_Controller_IsAlarm(controller))
 				goto updateStatus;
@@ -955,6 +916,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	}
 	
 
+#ifndef DUMMY_SERVO_MODE
 	// Servo On
 	if(Ros_Controller_IsServoOn(controller) == FALSE)
 	{
@@ -982,7 +944,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 				if (Ros_Controller_IsServoOn(controller) == TRUE)
 					break;
 			
-				mpTaskDelay(MOTION_START_CHECK_PERIOD);
+				Ros_Sleep(MOTION_START_CHECK_PERIOD);
 			}
 			if(Ros_Controller_IsServoOn(controller) == FALSE)
 				goto updateStatus;			
@@ -993,6 +955,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 			goto updateStatus;			
 		}
 	}
+#endif
 
 	// have to initialize the prevPulsePos that will be used when interpolating the traj
 	for(grpNo = 0; grpNo < MP_GRP_NUM; ++grpNo)
@@ -1024,7 +987,7 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 		if(Ros_Controller_IsMotionReady(controller))
 			return(TRUE);
 			
-		mpTaskDelay(MOTION_START_CHECK_PERIOD);
+		Ros_Sleep(MOTION_START_CHECK_PERIOD);
 	}
 	
 updateStatus:	
@@ -1073,6 +1036,7 @@ int Ros_MotionServer_JointTrajDataProcess(Controller* controller, SimpleMsg* rec
 	SmBodyJointTrajPtFull* trajData;
 	CtrlGroup* ctrlGroup;
 	int ret;
+	FlagsValidFields validationFlags;
 
 	// Check if controller is able to receive incremental move and if the incremental move thread is running
 	if(!Ros_Controller_IsMotionReady(controller))
@@ -1098,7 +1062,8 @@ int Ros_MotionServer_JointTrajDataProcess(Controller* controller, SimpleMsg* rec
 	}
 	
 	// Check that minimum information (time, position, velocity) is valid
-	if( (trajData->validFields & 0x07) != 0x07 )
+	validationFlags = Valid_Time | Valid_Position | Valid_Velocity;
+	if( (trajData->validFields & validationFlags) != validationFlags)
 	{
 		printf("ERROR: Validfields = %d\r\n", trajData->validFields);
 		Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_DATA_INSUFFICIENT, replyMsg, receiveMsg->body.jointTrajData.groupNo);
@@ -1172,6 +1137,15 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 		Ros_MotionServer_ConvertToJointMotionData(jointTrajData, &ctrlGroup->jointMotionData);
 		ctrlGroup->timeLeftover_ms = 0;
 		ctrlGroup->q_time = ctrlGroup->jointMotionData.time;
+		
+		// For MPL80/100 robot type (SLUBT): Controller automatically moves the B-axis
+		// to maintain orientation as other axes are moved.
+		if (ctrlGroup->bIsBaxisSlave)
+		{
+			//ROS joint order
+			ctrlGroup->jointMotionData.pos[3] += -ctrlGroup->jointMotionData.pos[1] + ctrlGroup->jointMotionData.pos[2];
+			ctrlGroup->jointMotionData.vel[3] += -ctrlGroup->jointMotionData.vel[1] + ctrlGroup->jointMotionData.vel[2];
+		}
 
 		// Convert start position to pulse format
 		Ros_CtrlGroup_ConvertToMotoPos(ctrlGroup, ctrlGroup->jointMotionData.pos, pulsePos);
@@ -1186,15 +1160,19 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 			// Check if position matches current command position
 			if(abs(pulsePos[i] - curPos[i]) > START_MAX_PULSE_DEVIATION)
 			{
-				printf("ERROR: Trajectory start position doesn't match current position.\r\n");
-				printf("    %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
+				printf("ERROR: Trajectory start position doesn't match current position (MOTO joint order).\r\n");
+				printf(" - Requested start: %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
 					pulsePos[0], pulsePos[1], pulsePos[2],
 					pulsePos[3], pulsePos[4], pulsePos[5],
 					pulsePos[6], pulsePos[7]);
-				printf("    %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
+				printf(" - Current pos: %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
 					curPos[0], curPos[1], curPos[2],
 					curPos[3], curPos[4], curPos[5],
 					curPos[6], curPos[7]);
+				printf(" - ctrlGroup->prevPulsePos: %ld, %ld, %ld, %ld, %ld, %ld, %ld, %ld\r\n",
+					ctrlGroup->prevPulsePos[0], ctrlGroup->prevPulsePos[1], ctrlGroup->prevPulsePos[2],
+					ctrlGroup->prevPulsePos[3], ctrlGroup->prevPulsePos[4], ctrlGroup->prevPulsePos[5],
+					ctrlGroup->prevPulsePos[6], ctrlGroup->prevPulsePos[7]);
 
 				return ROS_RESULT_INVALID_DATA_START_POS;
 			}
@@ -1205,15 +1183,7 @@ int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFu
 				// excessive speed
 				return ROS_RESULT_INVALID_DATA_SPEED;
 			}
-		}
-		
-		// For MPL80/100 robot type (SLUBT): Controller automatically moves the B-axis
-		// to maintain orientation as other axes are moved.
-		if (ctrlGroup->bIsBaxisSlave)
-		{
-			ctrlGroup->jointMotionData.pos[3] += -ctrlGroup->jointMotionData.pos[1] + ctrlGroup->jointMotionData.pos[2];
-			ctrlGroup->jointMotionData.vel[3] += -ctrlGroup->jointMotionData.vel[1] + ctrlGroup->jointMotionData.vel[2];
-		}
+		}		
 
 		//printf("Trajectory Start Initialized\r\n");
 		// Return success
@@ -1316,7 +1286,7 @@ void Ros_MotionServer_AddToIncQueueProcess(Controller* controller, int groupNo)
 			ctrlGroup->hasDataToProcess = FALSE;
 		}
 		
-		mpTaskDelay(interpolPeriod);
+		Ros_Sleep(interpolPeriod);
 	}		
 }
 
@@ -1358,6 +1328,7 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 	// to maintain orientation as other axes are moved.
 	if (ctrlGroup->bIsBaxisSlave)
 	{
+		//ROS joint order
 		endTrajData->pos[3] += -endTrajData->pos[1] + endTrajData->pos[2];
 		endTrajData->vel[3] += -endTrajData->vel[1] + endTrajData->vel[2];
 	}
@@ -1475,7 +1446,7 @@ BOOL Ros_MotionServer_AddPulseIncPointToQ(Controller* controller, int groupNo, I
 	while( q->cnt >= Q_SIZE ) //queue is full
 	{
 		//wait for items to be removed from the queue
-		mpTaskDelay(controller->interpolPeriod);
+		Ros_Sleep(controller->interpolPeriod);
 		
 		//make sure we don't get stuck in infinite loop
 		if (!Ros_Controller_IsMotionReady(controller)) //<- they probably pressed HOLD or ESTOP
@@ -1609,9 +1580,9 @@ BOOL Ros_MotionServer_HasDataInQueue(Controller* controller)
 //-------------------------------------------------------------------
 void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK priority task
 {
-#ifdef DX100
+#if DX100
 	MP_POS_DATA moveData;
-#elif (FS100 || DX200)
+#else
 	MP_EXPOS_DATA moveData;
 #endif
 
@@ -1718,7 +1689,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 				}
 			}	
 
-#ifdef DX100
+#if DX100
 			// first robot
 			moveData.ctrl_grp = 1;
 			ret = mpMeiIncrementMove(MP_SL_ID1, &moveData);
@@ -1742,7 +1713,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 						printf("mpMeiIncrementMove returned: %d\r\n", ret);
 				}
 			}			
-#elif (FS100 || DX200)
+#else
 			ret = mpExRcsIncrementMove(&moveData);
 			if(ret != 0)
 			{
@@ -1803,6 +1774,10 @@ STATUS Ros_MotionServer_DisableEcoMode(Controller* controller)
 	MP_STD_RSP_DATA rData;
 	int ret;
 
+#ifdef DUMMY_SERVO_MODE
+	return OK;
+#endif
+
 	if (Ros_Controller_IsEcoMode(controller) == TRUE)
 	{
 		//toggle servos to disable energy-savings mode
@@ -1822,7 +1797,7 @@ STATUS Ros_MotionServer_DisableEcoMode(Controller* controller)
 				if (Ros_Controller_IsEcoMode(controller) == FALSE)
 					break;
 
-				mpTaskDelay(MOTION_START_CHECK_PERIOD);
+				Ros_Sleep(MOTION_START_CHECK_PERIOD);
 			}
 		}
 		else

@@ -1,0 +1,1 @@
+-march=atom -nostdlib -fno-builtin -fno-defer-pop -fno-implicit-fp -fno-zero-initialized-in-bss -Wall -Werror-implicit-function-declaration -g -MD -MP -DCPU=_VX_ATOM -DTOOL_FAMILY=gnu -DTOOL=gnu -DYRC1000 -D_WRS_KERNEL -I"~ProjectDir~" -I"~IncludeDir~" -O0 -c "~FilePath~" -o "~OutputPath~"

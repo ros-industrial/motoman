@@ -116,7 +116,7 @@
 	    <link name="${prefix}link_tool0" />
 		
 		<joint name="${prefix}joint_1_s" type="revolute">
-			<parent link="torso_link_b1"/>
+			<parent link="${parent}"/>
 			<child link="${prefix}link_1_s"/>
 			<origin xyz="0.09996 ${reflect*0.0275} 0.32214" rpy="1.57 0 ${(reflect-1)*1.57}"/>
 			<axis xyz="0 0 ${-reflect}" />

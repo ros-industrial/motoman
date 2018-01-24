@@ -32,8 +32,6 @@
 #ifndef _INC_MOTOMANPARAMETER_TYPES_H
 #define _INC_MOTOMANPARAMETER_TYPES_H
 
-#include "MotoPlus.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -107,6 +105,12 @@ typedef struct
 {
 	INT32 maxLimit[MAX_PULSE_AXES];
 } JOINT_ANGULAR_VELOCITY_LIMITS;
+
+typedef struct
+{
+	BOOL bFeedbackSpeedEnabled;
+	ULONG cioAddressForAxis[MAX_PULSE_AXES][2];
+} JOINT_FEEDBACK_SPEED_ADDRESSES;
 
 #ifdef __cplusplus
 }
