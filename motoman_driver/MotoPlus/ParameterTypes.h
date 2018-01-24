@@ -106,6 +106,12 @@ typedef struct
 	INT32 maxLimit[MAX_PULSE_AXES];
 } JOINT_ANGULAR_VELOCITY_LIMITS;
 
+typedef struct
+{
+	BOOL bFeedbackSpeedEnabled;
+	ULONG cioAddressForAxis[MAX_PULSE_AXES][2];
+} JOINT_FEEDBACK_SPEED_ADDRESSES;
+
 #ifdef __cplusplus
 }
 #endif

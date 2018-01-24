@@ -32,20 +32,6 @@
 #include "MotoROS.h"
 
 //-----------------------
-// Function Declarations
-//-----------------------
-MP_GRP_ID_TYPE Ros_CtrlGroup_FindGrpId(int groupNo);
-CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod);
-BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
-BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES]);
-void Ros_CtrlGroup_ConvertToRosPos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES], 
-									float rosPos[MAX_PULSE_AXES]);
-void Ros_CtrlGroup_ConvertToMotoPos(CtrlGroup* ctrlGroup, float rosPos[MAX_PULSE_AXES],
-									long pulsePos[MAX_PULSE_AXES]);
-UCHAR Ros_CtrlGroup_GetAxisConfig(CtrlGroup* ctrlGroup);
-BOOL Ros_CtrlGroup_IsRobot(CtrlGroup* ctrlGroup);
-
-//-----------------------
 // Function implementation
 //-----------------------
 
@@ -70,7 +56,7 @@ MP_GRP_ID_TYPE Ros_CtrlGroup_FindGrpId(int groupNo)
 // Create a CtrlGroup data structure for existing group otherwise 
 // return NULL
 //-------------------------------------------------------------------
-CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
+CtrlGroup* Ros_CtrlGroup_Create(int groupNo, BOOL bIsLastGrpToInit, float interpolPeriod)
 {
 	CtrlGroup* ctrlGroup;
 	int numAxes;
@@ -123,6 +109,15 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 		status = GP_isBaxisSlave(groupNo, &slaveAxis);
 		if (status != OK)
 			bInitOk = FALSE;
+
+		status = GP_getFeedbackSpeedMRegisterAddresses(groupNo, //zero based index of the control group
+														TRUE, //If the register-speed-feedback is not enabled, automatically modify the SC.PRM file to enable this feature.
+														bIsLastGrpToInit, //If activating the reg-speed-feedback feature, delay the alarm until all the groups have been processed.
+														&ctrlGroup->speedFeedbackRegisterAddress); //[OUT] Index of the M registers containing the feedback speed values.
+		if (status != OK)
+		{
+			ctrlGroup->speedFeedbackRegisterAddress.bFeedbackSpeedEnabled = FALSE;
+		}
 
 		ctrlGroup->bIsBaxisSlave = (numAxes == 5) && slaveAxis;
 
@@ -211,12 +206,14 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, float interpolPeriod)
 
 //-------------------------------------------------------------------
 // Get the commanded pulse position in pulse (in motoman joint order)
+// Used for MOTION SERVER connection for positional planning calculations.
 //-------------------------------------------------------------------
 BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES])
 {
 	LONG status = 0;
 	MP_CTRL_GRP_SEND_DATA sData;
 	MP_PULSE_POS_RSP_DATA pulse_data;
+	float rosAnglePos[MP_GRP_AXES_NUM]; //temporary storage for B axis compensation
 	int i;
 
 	memset(pulsePos, 0, MAX_PULSE_AXES*sizeof(long));  // clear result, in case of error
@@ -252,12 +249,23 @@ BOOL Ros_CtrlGroup_GetPulsePosCmd(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_
 	for (i=0; i<MAX_PULSE_AXES; ++i)
 		pulsePos[i] = pulse_data.lPos[i];
 
+	// For MPL80/100 robot type (SLUBT): Controller automatically moves the B-axis
+	// to maintain orientation as other axes are moved.
+	if (ctrlGroup->bIsBaxisSlave)
+	{
+		//B axis compensation works on the ROS ANGLE positions, not on MOTO PULSE positions
+		Ros_CtrlGroup_ConvertToRosPos(ctrlGroup, pulsePos, rosAnglePos);
+		rosAnglePos[3] += -rosAnglePos[1] + rosAnglePos[2];
+		Ros_CtrlGroup_ConvertToMotoPos(ctrlGroup, rosAnglePos, pulsePos);
+	}
+
 	return TRUE;
 }
 
 
 //-------------------------------------------------------------------
-// Get the corrected feedback pulse position in pulse
+// Get the corrected feedback pulse position in pulse.
+// Used exclusively for STATE SERVER connection to report position.
 //-------------------------------------------------------------------
 BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_AXES])
 {
@@ -321,7 +329,96 @@ BOOL Ros_CtrlGroup_GetFBPulsePos(CtrlGroup* ctrlGroup, long pulsePos[MAX_PULSE_A
 	// assign return value
 	for (i=0; i<MAX_PULSE_AXES; ++i)
 		pulsePos[i] = pulse_data.lPos[i];
+
+	//--------------------------------------------------------------------
+	//NOTE: Do NOT apply any B axis compensation here. 
+	//		This is actual feedback which is reported to the state server.
+	//--------------------------------------------------------------------
 	
+	return TRUE;
+}
+
+//-------------------------------------------------------------------
+// Get the corrected feedback pulse speed in pulse for each axis.
+//-------------------------------------------------------------------
+BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PULSE_AXES])
+{
+	int i;
+
+#ifndef DUMMY_SERVO_MODE
+	LONG status;
+	MP_IO_INFO registerInfo[MAX_PULSE_AXES * 2]; //values are 4 bytes, which consumes 2 registers
+	USHORT registerValues[MAX_PULSE_AXES * 2];
+	UINT32 registerValuesLong[MAX_PULSE_AXES * 2];
+	double dblRegister;
+
+	if (!ctrlGroup->speedFeedbackRegisterAddress.bFeedbackSpeedEnabled)
+		return FALSE;
+
+	for (i = 0; i < MAX_PULSE_AXES; i += 1)
+	{
+		registerInfo[i * 2].ulAddr = ctrlGroup->speedFeedbackRegisterAddress.cioAddressForAxis[i][0];
+		registerInfo[(i * 2) + 1].ulAddr = ctrlGroup->speedFeedbackRegisterAddress.cioAddressForAxis[i][1];
+	}
+
+	// get raw (uncorrected/unscaled) joint speeds
+	status = mpReadIO(registerInfo, registerValues, MAX_PULSE_AXES * 2);
+	if (status != OK)
+	{
+		printf("Failed to get pulse feedback speed: %u\n", status);
+		return FALSE;
+	}
+
+	for (i = 0; i < MAX_PULSE_AXES; i += 1)
+	{
+		//move to 32 bit storage
+		registerValuesLong[i * 2] = registerValues[i * 2];
+		registerValuesLong[(i * 2) + 1] = registerValues[(i * 2) + 1];
+
+		//combine both registers into single 4 byte value (0.0001 deg/sec or 1 um/sec)
+		dblRegister = (registerValuesLong[(i * 2) + 1] << 16) | registerValuesLong[i * 2];
+
+		//convert to pulse/sec
+		if (ctrlGroup->axisType.type[i] == AXIS_ROTATION)
+		{
+			dblRegister /= 1.0E4; //deg/sec
+			dblRegister *= RAD_PER_DEGREE; //rad/sec
+			dblRegister *= ctrlGroup->pulseToRad.PtoR[i]; //pulse/sec
+		}
+		else if (ctrlGroup->axisType.type[i] == AXIS_LINEAR)
+		{
+			dblRegister /= 1.0E6; //m/sec
+			dblRegister *= ctrlGroup->pulseToMeter.PtoM[i]; //pulse/sec
+		}
+
+		pulseSpeed[i] = (long)dblRegister;
+	}
+
+	// Apply correction to account for cross-axis coupling.
+	// Note: This is only required for feedback.
+	// Controller handles this correction internally when 
+	// dealing with command positon.
+	for (i = 0; i<MAX_PULSE_AXES; ++i)
+	{
+		FB_AXIS_CORRECTION *corr = &ctrlGroup->correctionData.correction[i];
+		if (corr->bValid)
+		{
+			int src_axis = corr->ulSourceAxis;
+			int dest_axis = corr->ulCorrectionAxis;
+			pulseSpeed[dest_axis] -= (int)(pulseSpeed[src_axis] * corr->fCorrectionRatio);
+		}
+	}
+#else
+	MP_CTRL_GRP_SEND_DATA sData;
+	MP_SERVO_SPEED_RSP_DATA pulse_data;
+
+	mpGetServoSpeed(&sData, &pulse_data);
+
+	// assign return value
+	for (i = 0; i<MAX_PULSE_AXES; ++i)
+		pulseSpeed[i] = pulse_data.lSpeed[i];
+#endif
+
 	return TRUE;
 }
 
