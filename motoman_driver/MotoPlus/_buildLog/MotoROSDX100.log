@@ -1,10 +1,10 @@
 ﻿  ------ Now building project: MotoRosDX100------
   Compiling Controller.c
 Controller.c : warning : In function `Db_Print'
-Controller.c(958): warning : unused parameter `msgFormat'
+Controller.c(960): warning : unused parameter `msgFormat'
   Compiling CtrlGroup.c
 CtrlGroup.c : warning : In function `Ros_CtrlGroup_IsRobot'
-CtrlGroup.c(516): warning : comparison of unsigned expression >= 0 is always true
+CtrlGroup.c(613): warning : comparison of unsigned expression >= 0 is always true
   Compiling IoServer.c
   Compiling MotionServer.c
   Compiling mpMain.c

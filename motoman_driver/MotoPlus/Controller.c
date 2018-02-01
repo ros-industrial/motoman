@@ -227,7 +227,9 @@ BOOL Ros_Controller_Init(Controller* controller)
 		if(grpNo < controller->numGroup)
 		{
 			// Determine if specific group exists and allocate memory for it
-			controller->ctrlGroups[grpNo] = Ros_CtrlGroup_Create(grpNo, controller->interpolPeriod);
+			controller->ctrlGroups[grpNo] = Ros_CtrlGroup_Create(grpNo,								//Zero based index of the group number(0 - 3)
+																(grpNo==(controller->numGroup-1)),	//TRUE if this is the final group that is being initialized. FALSE if you plan to call this function again.
+																controller->interpolPeriod);		//Value of the interpolation period (ms) for the robot controller.
 			if(controller->ctrlGroups[grpNo] != NULL)
 			{
 				Ros_CtrlGroup_GetPulsePosCmd(controller->ctrlGroups[grpNo], controller->ctrlGroups[grpNo]->prevPulsePos); // set the current commanded pulse
