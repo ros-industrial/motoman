@@ -35,11 +35,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "MotoPlus.h"
-#include "ParameterExtraction.h"
-#include "CtrlGroup.h"
-#include "SimpleMessage.h"
-#include "Controller.h"
+#include "MotoROS.h"
 
 //-----------------------
 // Function Declarations
@@ -56,6 +52,7 @@ int Ros_SimpleMsg_JointFeedback(CtrlGroup* ctrlGroup, SimpleMsg* sendMsg)
 {
 	int bRet;
 	long pulsePos[MAX_PULSE_AXES];
+	long pulseSpeed[MAX_PULSE_AXES];
 	
 	//initialize memory
 	memset(sendMsg, 0x00, sizeof(SimpleMsg));
@@ -70,21 +67,21 @@ int Ros_SimpleMsg_JointFeedback(CtrlGroup* ctrlGroup, SimpleMsg* sendMsg)
 	
 	// set body
 	sendMsg->body.jointFeedback.groupNo = ctrlGroup->groupNo;
-	sendMsg->body.jointFeedback.validFields = 2;
+	sendMsg->body.jointFeedback.validFields = Valid_Position;
 	
+	//feedback position
 	bRet = Ros_CtrlGroup_GetFBPulsePos(ctrlGroup, pulsePos);
 	if(bRet!=TRUE)
-		return 0;
-				
+		return 0;				
 	Ros_CtrlGroup_ConvertToRosPos(ctrlGroup, pulsePos, sendMsg->body.jointFeedback.pos);
 
-	// For testing
-	//bRet = Ros_CtrlGroup_GetPulsePosCmd(ctrlGroup, pulsePos);
-	//if(bRet!=TRUE)
-	//	return 0;
-	//	
-	//Ros_CtrlGroup_ConvertToRosPos(ctrlGroup, pulsePos, sendMsg->body.jointFeedback.vel);
-	// End testing
+	//servo speed
+	bRet = Ros_CtrlGroup_GetFBServoSpeed(ctrlGroup, pulseSpeed);
+	if (bRet == TRUE)
+	{
+		Ros_CtrlGroup_ConvertToRosPos(ctrlGroup, pulseSpeed, sendMsg->body.jointFeedback.vel);
+		sendMsg->body.jointFeedback.validFields |= Valid_Velocity;
+	}
 	
 	return(sendMsg->prefix.length + sizeof(SmPrefix));
 }
@@ -164,6 +161,28 @@ int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, Si
 	replyMsg->body.motionReply.result = result;
 	replyMsg->body.motionReply.subcode = subcode;
 	
+	return(replyMsg->prefix.length + sizeof(SmPrefix));
+}
+
+// Creates a simple message of type ROS_MSG_MOTO_IOCTRL_REPLY to reply to a received message 
+// result error code and subcode.  (Not used for successful commands.)
+int Ros_SimpleMsg_IoReply(int result, int subcode, SimpleMsg* replyMsg)
+{
+	//initialize memory
+	memset(replyMsg, 0x00, sizeof(SimpleMsg));
+
+	// set prefix: length of message excluding the prefix
+	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoMotionReply);
+
+	// set header information of the reply
+	replyMsg->header.msgType = ROS_MSG_MOTO_MOTION_REPLY;
+	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+	replyMsg->header.replyType = ROS_REPLY_SUCCESS;
+
+	// set reply body
+	replyMsg->body.ioCtrlReply.result = result;
+	replyMsg->body.ioCtrlReply.subcode = subcode;
+
 	return(replyMsg->prefix.length + sizeof(SmPrefix));
 }
 

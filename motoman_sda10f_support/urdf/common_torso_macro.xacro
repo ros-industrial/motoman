@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:macro name="torso" params="name prefix">
 		<!-- link list -->
-		<link name="base_link">
+		<link name="${prefix}base_link">
 			<visual>
 				<geometry>
 					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_base.stl" />
@@ -58,14 +58,14 @@
 		</link>
 		<!-- joint list -->
 		<joint name="${prefix}joint_b1" type="revolute">
-			<parent link="base_link"/>
+			<parent link="${prefix}base_link"/>
 			<child link="${prefix}link_b1"/>
 			<origin xyz="0.09257 0 0.8835" rpy="0 0 0"/>
 			<axis xyz="0 0 1" />
 			<limit lower="-2.9570" upper="2.9570" effort="100" velocity="2.26" />
 		</joint>
 		<joint name="${prefix}joint_b2" type="revolute">
-			<parent link="base_link"/>
+			<parent link="${prefix}base_link"/>
 			<child link="${prefix}link_b2"/>
 			<origin xyz="0.09257 0 0.8835" rpy="0 0 0"/>
 			<axis xyz="0 0 1" />

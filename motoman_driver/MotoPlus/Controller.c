@@ -29,14 +29,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "MotoPlus.h"
-#include "ParameterExtraction.h"
-#include "CtrlGroup.h"
-#include "SimpleMessage.h"
-#include "Controller.h"
-#include "MotionServer.h"
-#include "StateServer.h"
-#include "RosSetupValidation.h"
+#include "MotoROS.h"
 
 extern STATUS setsockopt
     (
@@ -84,7 +77,9 @@ void Ros_Controller_ErrNo_ToString(int errNo, char errMsg[ERROR_MSG_MAX_SIZE], i
 //Report version info to display on pendant (DX200 only)
 void reportVersionInfoToController()
 {
-#ifdef DX200
+#if DX100 || FS100
+	return;
+#else
 	MP_APPINFO_SEND_DATA appInfoSendData;
 	MP_STD_RSP_DATA stdResponseData;
 
@@ -139,6 +134,10 @@ BOOL Ros_Controller_CheckSetup()
 		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1119=0 or 2", parameterValidationCode);
 		return TRUE;
 
+	case MOTOROS_SETUP_NotCompatibleWithPFL:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS not compatible with PFL", parameterValidationCode);
+		return FALSE;
+
 	//For all other error codes, please contact Yaskawa Motoman
 	//to have the MotoROS Runtime functionality enabled on your
 	//robot controller.
@@ -170,7 +169,7 @@ BOOL Ros_Controller_Init(Controller* controller)
 	Ros_Controller_SetIOState(IO_FEEDBACK_CONNECTSERVERRUNNING, FALSE);
 	Ros_Controller_SetIOState(IO_FEEDBACK_MOTIONSERVERCONNECTED, FALSE);
 	Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, FALSE);
-	Ros_Controller_SetIOState(IO_FEEDBACK_RESERVED_0, FALSE);
+	Ros_Controller_SetIOState(IO_FEEDBACK_IOSERVERCONNECTED, FALSE);
 	Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, FALSE);
 	
 	Ros_Controller_SetIOState(IO_FEEDBACK_RESERVED_1, FALSE);
@@ -228,7 +227,9 @@ BOOL Ros_Controller_Init(Controller* controller)
 		if(grpNo < controller->numGroup)
 		{
 			// Determine if specific group exists and allocate memory for it
-			controller->ctrlGroups[grpNo] = Ros_CtrlGroup_Create(grpNo, controller->interpolPeriod);
+			controller->ctrlGroups[grpNo] = Ros_CtrlGroup_Create(grpNo,								//Zero based index of the group number(0 - 3)
+																(grpNo==(controller->numGroup-1)),	//TRUE if this is the final group that is being initialized. FALSE if you plan to call this function again.
+																controller->interpolPeriod);		//Value of the interpolation period (ms) for the robot controller.
 			if(controller->ctrlGroups[grpNo] != NULL)
 			{
 				Ros_CtrlGroup_GetPulsePosCmd(controller->ctrlGroups[grpNo], controller->ctrlGroups[grpNo]->prevPulsePos); // set the current commanded pulse
@@ -247,6 +248,12 @@ BOOL Ros_Controller_Init(Controller* controller)
 	
 	// Initialize Thread ID and Socket to invalid value
 	controller->tidConnectionSrv = INVALID_TASK;
+
+	for (i = 0; i < MAX_IO_CONNECTIONS; i++)
+	{
+		controller->sdIoConnections[i] = INVALID_SOCKET;
+		controller->tidIoConnections[i] = INVALID_TASK;
+	}
 
 	controller->tidStateSendState = INVALID_TASK;
 	for (i = 0; i < MAX_STATE_CONNECTIONS; i++)
@@ -289,7 +296,7 @@ BOOL Ros_Controller_WaitInitReady(Controller* controller)
 	do  //minor alarms can be delayed briefly after bootup
 	{
 		puts("Waiting for robot alarms to clear...");
-		mpTaskDelay(2500);
+		Ros_Sleep(2500);
 		Ros_Controller_StatusRead(controller, controller->ioStatus);
 
 	}while(Ros_Controller_IsAlarm(controller));
@@ -364,6 +371,8 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 {
 	int     sdMotionServer = INVALID_SOCKET;
 	int     sdStateServer = INVALID_SOCKET;
+	int     sdIoServer = INVALID_SOCKET;
+	int		sdMax;
 	struct  fd_set  fds;
 	int     sdAccepted = INVALID_SOCKET;
 	struct  sockaddr_in     clientSockAddr;
@@ -384,49 +393,81 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 	sdStateServer = Ros_Controller_OpenSocket(TCP_PORT_STATE);
 	if(sdStateServer < 0)
 		goto closeSockHandle;
+	
+	sdIoServer = Ros_Controller_OpenSocket(TCP_PORT_IO);
+	if(sdIoServer < 0)
+		goto closeSockHandle;
+
+	sdMax = max(sdMotionServer, sdStateServer);
+	sdMax = max(sdMax, sdIoServer);
 
 	FOREVER //Continue to accept multiple connections forever
 	{
 		FD_ZERO(&fds);
 		FD_SET(sdMotionServer, &fds); 
 		FD_SET(sdStateServer, &fds); 
+		FD_SET(sdIoServer, &fds); 
 		
-		if(mpSelect(sdStateServer+1, &fds, NULL, NULL, NULL) > 0)
+		if(mpSelect(sdMax+1, &fds, NULL, NULL, NULL) > 0)
 		{
 			memset(&clientSockAddr, 0, sizeof(clientSockAddr));
 			sizeofSockAddr = sizeof(clientSockAddr);
 			
-			//Accept the connection and get a new socket handle
+			//Check motion server
 			if(FD_ISSET(sdMotionServer, &fds))
-				sdAccepted = mpAccept(sdMotionServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
-			else if(FD_ISSET(sdStateServer, &fds))
-				sdAccepted = mpAccept(sdStateServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
-			else
-				continue;
-				
-			if (sdAccepted < 0)
-				break;
-			
-			printf("Accepted connection from client PC\r\n");
-			
-			s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
-			if( OK != s )
 			{
-				printf("Failed to set TCP_NODELAY.\r\n");
+				sdAccepted = mpAccept(sdMotionServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
+				if (sdAccepted < 0)
+					break;
+					
+				s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
+				if( OK != s )
+				{
+					printf("Failed to set TCP_NODELAY.\r\n");
+				}
+				
+				Ros_MotionServer_StartNewConnection(controller, sdAccepted);
 			}
 			
-			if(FD_ISSET(sdMotionServer, &fds))
-				Ros_MotionServer_StartNewConnection(controller, sdAccepted);
-			else if(FD_ISSET(sdStateServer, &fds))
+			//Check state server
+			if(FD_ISSET(sdStateServer, &fds))
+			{
+				sdAccepted = mpAccept(sdStateServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
+				if (sdAccepted < 0)
+					break;
+					
+				s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
+				if( OK != s )
+				{
+					printf("Failed to set TCP_NODELAY.\r\n");
+				}
+				
 				Ros_StateServer_StartNewConnection(controller, sdAccepted);
-			else
-				mpClose(sdAccepted);
+			}
+			
+			//Check IO server
+			if(FD_ISSET(sdIoServer, &fds))
+			{
+				sdAccepted = mpAccept(sdIoServer, (struct sockaddr *)&clientSockAddr, &sizeofSockAddr);
+				if (sdAccepted < 0)
+					break;
+					
+				s = setsockopt(sdAccepted, IPPROTO_TCP, TCP_NODELAY, (char*)&useNoDelay, sizeof (int));
+				if( OK != s )
+				{
+					printf("Failed to set TCP_NODELAY.\r\n");
+				}
+				
+				Ros_IoServer_StartNewConnection(controller, sdAccepted);
+			}
 		}
 	}
 	
 closeSockHandle:
 	printf("Error!?... Connection Server is aborting.  Reboot the controller.\r\n");
 
+	if(sdIoServer >= 0)
+		mpClose(sdIoServer);
 	if(sdMotionServer >= 0)
 		mpClose(sdMotionServer);
 	if(sdStateServer >= 0)
@@ -534,7 +575,7 @@ BOOL Ros_Controller_IsMotionReady(Controller* controller)
 	{
 		return (controller->bRobotJobReady && controller->bSkillMotionReady[0] && controller->bSkillMotionReady[1]);
 	}
-#elif (FS100 || DX200)
+#else
 	return (controller->bRobotJobReady);
 #endif
 }
@@ -557,6 +598,7 @@ int Ros_Controller_GetNotReadySubcode(Controller* controller)
 	if(!Ros_Controller_IsPlay(controller))
 		return ROS_RESULT_NOT_READY_NOT_PLAY;
 	
+#ifndef DUMMY_SERVO_MODE
 	// Check remote
 	if(!Ros_Controller_IsRemote(controller))
 		return ROS_RESULT_NOT_READY_NOT_REMOTE;
@@ -564,6 +606,7 @@ int Ros_Controller_GetNotReadySubcode(Controller* controller)
 	// Check servo power
 	if(!Ros_Controller_IsServoOn(controller))
 		return ROS_RESULT_NOT_READY_SERVO_OFF;
+#endif
 
 	// Check hold
 	if(Ros_Controller_IsHold(controller))
@@ -674,10 +717,15 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 						{
 							if(i==IO_ROBOTSTATUS_WAITING_ROS)
 								controller->bRobotJobReadyRaised = TRUE;
-								
+							
+#ifndef DUMMY_SERVO_MODE	
 							if(controller->bRobotJobReadyRaised
 								&& (Ros_Controller_IsOperating(controller))
 								&& (Ros_Controller_IsRemote(controller)) )
+#else
+							if(controller->bRobotJobReadyRaised
+								&& Ros_Controller_IsOperating(controller))
+#endif
 							{
 								controller->bRobotJobReady = TRUE;
 								if(Ros_Controller_IsMotionReady(controller))
@@ -795,7 +843,7 @@ void Ros_Controller_ListenForSkill(Controller* controller, int sl)
 		//mpEndSkillCommandProcess(sl, &skillMsg); 
 		mpEndSkillCommandProcess(sl, &skillMsg);
 		
-		mpTaskDelay(4); //sleepy time
+		Ros_Sleep(4); //sleepy time
 		
 		//Get SKILL command
 		//task will wait for a skillsnd command in INFORM
@@ -904,7 +952,29 @@ void motoRosAssert(BOOL mustBeTrue, ROS_ASSERTION_CODE subCodeIfFalse, char* msg
 		while (TRUE) //forever
 		{
 			puts(msg);
-			mpTaskDelay(5000);
+			Ros_Sleep(5000);
 		}
 	}
+}
+
+void Db_Print(char* msgFormat, ...)
+{
+#ifdef DEBUG
+	const int MAX_MSG_LEN = 128;
+	char msg[MAX_MSG_LEN];
+	va_list va;
+
+	memset(msg, 0x00, MAX_MSG_LEN);
+
+	va_start(va, msgFormat);
+	vsnprintf(msg, MAX_MSG_LEN, msgFormat, va);
+	va_end(va);
+
+	printf(msg);
+#endif
+}
+
+void Ros_Sleep(float milliseconds)
+{
+	mpTaskDelay(milliseconds / mpGetRtc()); //Tick length varies between controller models
 }

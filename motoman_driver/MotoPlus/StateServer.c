@@ -29,12 +29,7 @@
 * POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-#include "MotoPlus.h"
-#include "ParameterExtraction.h"
-#include "CtrlGroup.h"
-#include "SimpleMessage.h"
-#include "Controller.h"
-#include "StateServer.h"
+#include "MotoROS.h"
 
 //-----------------------
 // Function Declarations
@@ -150,7 +145,7 @@ void Ros_StateServer_SendState(Controller* controller)
 		{
 			Ros_StateServer_SendMsgToAllClient(controller, &sendMsg, msgSize);
 		}
-		mpTaskDelay(STATE_UPDATE_MIN_PERIOD);
+		Ros_Sleep(STATE_UPDATE_MIN_PERIOD);
 	}
 	
 	// Terminate this task

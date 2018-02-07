@@ -26,3 +26,10 @@ motoman_driver/MotoRos - Github driver folder/$tf/8/bef118b8-349a-45c0-8d86-1ae9
 motoman_driver/MotoRos - Github driver folder/$tf/localversion.tfb
 *.log
 *.opendb
+*.gz
+motoman_driver/$tf/properties.tf1
+motoman_driver/MotoPlus/.vs/MpRosAllControllers/v15/Browse.VC.db
+*.ipch
+*.db
+motoman_driver/MotoPlus/MpRosAllControllers.VC.db
+motoman_driver/MotoPlus/MpRosAllControllers.VC.db
