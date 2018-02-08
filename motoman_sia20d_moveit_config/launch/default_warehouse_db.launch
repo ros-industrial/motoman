@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="reset" default="false"/>
+  <arg name="reset" default="false" doc="Reset the database"/>
 
   <!-- Launch the warehouse with a default database location -->  
   <include file="$(find motoman_sia20d_moveit_config)/launch/warehouse.launch">

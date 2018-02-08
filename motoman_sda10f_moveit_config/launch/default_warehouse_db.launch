@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="reset" default="false"/>
+  <arg name="reset" default="false" doc="Reset DB"/>
 
   <!-- Launch the warehouse with a default database location -->  
   <include file="$(find motoman_sda10f_moveit_config)/launch/warehouse.launch">
