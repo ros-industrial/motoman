@@ -1,10 +1,10 @@
 <launch>
 
   <!-- By default, we do not start a database (it can be large) -->
-  <arg name="db" default="false" doc="Start the database"/>
+  <arg name="db" default="false" />
 
   <!-- By default, we are not in debug mode -->
-  <arg name="debug" default="false" doc="Start debug mode"/>
+  <arg name="debug" default="false" />
 
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
   <include file="$(find motoman_sia20d_moveit_config)/launch/planning_context.launch">
