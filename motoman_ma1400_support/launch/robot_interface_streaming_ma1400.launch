@@ -20,4 +20,6 @@
 	<include file="$(find ma1400_sim)/launch/dead_robot_complete.gazebo.launch">
 		<arg name="use_sim_time" value="$(arg use_sim_time)"/>
 	</include>
+
+	<node pkg="phidgets_interface_kit" type="interface_kit" name="interface_kit" output="screen"/>
 </launch>
