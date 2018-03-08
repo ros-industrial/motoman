@@ -21,5 +21,7 @@
 		<arg name="use_sim_time" value="$(arg use_sim_time)"/>
 	</include>
 
-	<node pkg="phidgets_interface_kit" type="interface_kit" name="interface_kit" output="screen"/>
+	<node pkg="phidgets_interface_kit" type="interface_kit" name="interface_kit" output="log"/>
+
+	<node pkg="i2c_ros" type="i2c_ros" name="i2c_ros" output="log"/>
 </launch>

@@ -38,6 +38,8 @@
  <run_depend>robot_state_publisher</run_depend>
  <run_depend>rviz</run_depend>
  <run_depend>joint_state_publisher</run_depend>
+ <run_depend>phidgets_interface_kit</run_depend>
+ <run_depend>i2c_ros</run_depend>
  <export>
   <architecture_independent/>
  </export>
