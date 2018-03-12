@@ -1,4 +1,4 @@
-﻿/* mp_main.c - MotoPlus Test Application for Real Time Process */
+/* mp_main.c - MotoPlus Test Application for Real Time Process */
 // History:
 // 06/12/2013: Fix reply to ROS_MSG_JOINT_TRAJ_PT_FULL message
 // 06/12/2013: Release v.1.0.1

@@ -1,4 +1,4 @@
-﻿// SimpleMessage.c
+// SimpleMessage.c
 //
 // History:
 // 06/12/2013: Fix reply to ROS_MSG_JOINT_TRAJ_PT_FULL message

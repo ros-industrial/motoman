@@ -1,4 +1,4 @@
-﻿// StateServer.c
+// StateServer.c
 //
 /*
 * Software License Agreement (BSD License) 

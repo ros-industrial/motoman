@@ -1,4 +1,4 @@
-﻿/* ParameterTypes.h - Parameter Extraction type definitions header file */
+/* ParameterTypes.h - Parameter Extraction type definitions header file */
 
 /*
 * Software License Agreement (BSD License) 
