@@ -1,4 +1,4 @@
-﻿// MotionServer.h
+// MotionServer.h
 //
 /*
 * Software License Agreement (BSD License) 

@@ -1,4 +1,4 @@
-﻿// Controller.c
+// Controller.c
 //
 /*
 * Software License Agreement (BSD License) 

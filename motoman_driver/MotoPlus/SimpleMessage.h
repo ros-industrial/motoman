@@ -1,4 +1,4 @@
-﻿// SimpleMessage.h
+// SimpleMessage.h
 //
 /*
 * Software License Agreement (BSD License) 

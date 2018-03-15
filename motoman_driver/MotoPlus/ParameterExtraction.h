@@ -1,4 +1,4 @@
-﻿/* ParameterExtraction.h - Parameter Extraction definitions header file */
+/* ParameterExtraction.h - Parameter Extraction definitions header file */
 
 /*
 * Software License Agreement (BSD License) 

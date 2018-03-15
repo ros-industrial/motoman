@@ -1,4 +1,4 @@
-﻿// CtrlGroup.c
+// CtrlGroup.c
 //
 /*
 * Software License Agreement (BSD License) 
