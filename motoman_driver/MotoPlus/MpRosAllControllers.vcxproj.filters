@@ -87,6 +87,9 @@
     <ClCompile Include="StateServer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IoServer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller.h">
@@ -111,6 +114,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RosSetupValidation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IoServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MotoROS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
