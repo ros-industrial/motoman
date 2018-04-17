@@ -4,7 +4,7 @@ Controller.c : warning : In function `Db_Print'
 Controller.c(959): warning : unused parameter `msgFormat'
   Compiling CtrlGroup.c
 CtrlGroup.c : warning : In function `Ros_CtrlGroup_IsRobot'
-CtrlGroup.c(613): warning : comparison of unsigned expression >= 0 is always true
+CtrlGroup.c(632): warning : comparison of unsigned expression >= 0 is always true
   Compiling IoServer.c
   Compiling MotionServer.c
   Compiling mpMain.c
