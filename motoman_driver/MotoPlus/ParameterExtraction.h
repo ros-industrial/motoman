@@ -32,55 +32,12 @@
 #ifndef _INC_GETMOTOMANPARAMETERS_H
 #define _INC_GETMOTOMANPARAMETERS_H
 
+#include "ParameterTypes.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define MAX_PARAM_BUFF 4000 //4k
-#define TAG_BUFF_LEN 10
-
-typedef struct
-{
-	float PtoR[MAX_PULSE_AXES]; //Array to store PULSE TO RADIAN conversion factors for each axes
-}GB_PULSE_TO_RAD;
-
-typedef struct
-{
-	BOOL  bValid;			//TRUE if ulSourceAxis != 0
-	INT32 ulSourceAxis;		
-	INT32 ulCorrectionAxis;	 
-	float fCorrectionRatio;	
-} FB_AXIS_CORRECTION;
-
-typedef struct
-{
-	FB_AXIS_CORRECTION  correction[MAX_PULSE_AXES];
-} FB_PULSE_CORRECTION_DATA;
-
-typedef struct
-{
-	UINT32	qtyOfOutFiles;				
-	UINT32	qtyOfHighPriorityTasks;		
-	UINT32	qtyOfNormalPriorityTasks;	
-} TASK_QTY_INFO;
-	
-typedef struct
-{
-	UINT16 periodInMilliseconds;
-} GP_INTERPOLATION_PERIOD;
-
-typedef struct
-{
-	UINT32	maxIncrement[MAX_PULSE_AXES];
-} MAX_INCREMENT_INFO;
-
-typedef struct
-{
-	int ctrlGrp;				//Robot control group
-	int IpCycleInMilliseconds;	//Interpolation Cycle in milliseconds
-	MAX_INCREMENT_INFO info;	//Maximum increment per interpolation cycle
-} MAX_INC_PIPC;
-	
 /******************************************************************************/
 /* << 2 >>                                                              	  */
 /* Function name : int  GP_getNumberOfGroups()								  */
@@ -110,8 +67,8 @@ extern int  	GP_getNumberOfAxes(int ctrlGrp);
 /* Return value	 : Success = OK 											  */
 /*				 : Failure = NG												  */	
 /******************************************************************************/
-extern STATUS 	GP_getPulseToRad(int ctrlGrp, GB_PULSE_TO_RAD *PulseToRad);
-	
+extern STATUS 	GP_getPulseToRad(int ctrlGrp, PULSE_TO_RAD *PulseToRad);
+
 /******************************************************************************/
 /* << 11 >>                                                             	  */
 /* Function name : STATUS GetFBPulseCorrection()							  */
@@ -164,6 +121,80 @@ extern STATUS GP_getMaxIncPerIpCycle(int ctrlGrp, int interpolationPeriodInMilli
 /*				 : Failure = -1												  */	
 /******************************************************************************/
 extern float GP_getGovForIncMotion(int ctrlGrp);
+
+/******************************************************************************/
+/* << 16 >>                                                              	  */
+/* Function name : STATUS GP_getJointPulseLimits()							  */
+/* Functionality : Gets the Pulse to radians conversion factors				  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   GB_PULSE_TO_RAD *PulseToRad -array of conversion data [OUT]*/
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS GP_getJointPulseLimits(int ctrlGrp, JOINT_PULSE_LIMITS* jointPulseLimits);
+
+/******************************************************************************/
+/* << 17 >>                                                              	  */
+/* Function name : STATUS GP_getJointVelocityLimits()						  */
+/* Functionality : Gets the velocity limit for each joint					  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   JOINT_ANGULAR_VELOCITY_LIMITS *GP_getJointAngularVelocityLimits (deg/sec) [OUT]*/
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS GP_getJointAngularVelocityLimits(int ctrlGrp, JOINT_ANGULAR_VELOCITY_LIMITS* jointVelocityLimits);
+
+/******************************************************************************/
+/* << 18 >>                                                              	  */
+/* Function name : STATUS GP_getAxisMotionType()							  */
+/* Functionality : Gets the motion type of each axis in the group			  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   AXIS_MOTION_TYPE *axisType -array of data [OUT]			  */
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_getAxisMotionType(int ctrlGrp, AXIS_MOTION_TYPE* axisType);
+
+/******************************************************************************/
+/* << 19 >>                                                              	  */
+/* Function name : STATUS GP_getPulseToMeter()								  */
+/* Functionality : Gets the Pulse to meter conversion factors				  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   PULSE_TO_METER *PulseToMeter -array of conversion data [OUT]*/
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_getPulseToMeter(int ctrlGrp, PULSE_TO_METER* PulseToMeter);
+
+/******************************************************************************/
+/* << 20 >>                                                              	  */
+/* Function name : STATUS GP_isBaxisSlave()									  */
+/* Functionality : Determines if B axis is automatically moved relative to	  */
+/*				   other axes.												  */
+/* Parameter	 : int ctrlGrp - Robot control to fetch data	[IN]		  */
+/*				   BOOL* bBaxisIsSlave - TRUE if b axis is slave [OUT]		  */
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_isBaxisSlave(int ctrlGrp, BOOL* bBaxisIsSlave);
+
+/******************************************************************************/
+/* << 21 >>                                                              	  */
+/* Function name : STATUS GP_getFeedbackSpeedMRegisterAddresses()			  */
+/* Functionality : Obtains the MRegister CIO addresses that contain the 	  */
+/*				   feedback speed for each axis. Optionally enables this      */
+/*				   feature if not already enabled.						      */
+/* Parameter	 : int ctrlGrp - Robot control group (zero based index) [IN]  */
+/*				   BOOL bActivateIfNotEnabled - TRUE to enable feature [IN]   */
+/*				   BOOL bForceRebootAfterActivation - TRUE to force the user  */
+/*				   to reboot if this feature gets activated. Set to FALSE if  */
+/*				   you plan to enable for additional control groups. [IN]     */
+/*				   JOINT_FEEDBACK_SPEED_ADDRESSES* registerAddresses -		  */
+/*				   Obtains the CIO register address for the feedback data [OUT]*/
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS	GP_getFeedbackSpeedMRegisterAddresses(int ctrlGrp, BOOL bActivateIfNotEnabled, BOOL bForceRebootAfterActivation, JOINT_FEEDBACK_SPEED_ADDRESSES* registerAddresses);
 
 #ifdef __cplusplus
 }

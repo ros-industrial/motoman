@@ -1,0 +1,6 @@
+# Job files must have CRLF (ie: Windows) line-endings.
+# avoids "ERROR 3200 : NOP or END instruction not found" errors when
+# loading job files onto the controller.
+*.JBI text eol=crlf
+
+*.DAT text eol=crlf

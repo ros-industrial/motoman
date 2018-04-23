@@ -2,6 +2,17 @@
 Changelog for package motoman
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.5 (2016-07-03)
+------------------
+* No changes
+
+0.3.4 (2016-07-03)
+------------------
+* Remove deprecated motoman_config pkg. Fix `#76 <https://github.com/shaun-edwards/motoman/issues/76>`_.
+  Has been deprecated since 2014-01-28, see 1257a94b.
+* Support for multiple motion group control
+* Contributors: gavanderhoorn
+
 0.3.3 (2014-02-07)
 ------------------
 * No changes

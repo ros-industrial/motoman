@@ -37,13 +37,34 @@
     <None Include="FS100LinkerArguments.mps">
       <Filter>Compile Settings</Filter>
     </None>
-    <None Include="ParameterExtraction_FS100.fsLib">
+    <None Include="RosSetupValidation.dnLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
-    <None Include="ParameterExtraction_DX200.dnLib">
+    <None Include="RosSetupValidation.fsLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
-    <None Include="ParameterExtraction_DX100.mpLib">
+    <None Include="RosSetupValidation.mpLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="YRC1000CompilerArguments.mps">
+      <Filter>Compile Settings</Filter>
+    </None>
+    <None Include="YRC1000LinkerArguments.mps">
+      <Filter>Compile Settings</Filter>
+    </None>
+    <None Include="RosSetupValidation.yrcLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="ParameterExtraction.dnLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="ParameterExtraction.fsLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="ParameterExtraction.mpLib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="ParameterExtraction.yrcLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
   </ItemGroup>
@@ -66,6 +87,9 @@
     <ClCompile Include="StateServer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IoServer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller.h">
@@ -84,6 +108,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StateServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParameterTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RosSetupValidation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IoServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MotoROS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

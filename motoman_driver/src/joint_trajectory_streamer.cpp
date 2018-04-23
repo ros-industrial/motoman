@@ -56,6 +56,12 @@ namespace motoman
 namespace joint_trajectory_streamer
 {
 
+namespace
+{
+  const double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
+  const double start_pos_tol_  = 1e-4;  // max difference btwn start & current position, for validation (rad)
+}
+
 #define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
 
 // override init() to read "robot_id" parameter and subscribe to joint_states
@@ -79,6 +85,11 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
     motion_ctrl_map_[robot_id] = motion_ctrl;
   }
+
+  disabler_ = node_.advertiseService("/robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
+
+  enabler_ = node_.advertiseService("/robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
+
   return rtn;
 }
 
@@ -98,6 +109,10 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   rtn &= motion_ctrl_.init(connection, robot_id_);
 
+  disabler_ = node_.advertiseService("/robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
+
+  enabler_ = node_.advertiseService("/robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
+
   return rtn;
 }
 
@@ -107,6 +122,50 @@ MotomanJointTrajectoryStreamer::~MotomanJointTrajectoryStreamer()
   motion_ctrl_.setTrajMode(false);   // release TrajMode, so INFORM jobs can run
 }
 
+bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &req,
+                                           std_srvs::Trigger::Response &res)
+{
+
+  trajectoryStop();
+
+  bool ret = motion_ctrl_.setTrajMode(false);  
+  res.success = ret;
+  
+  if (!res.success) {
+    res.message="Motoman robot was NOT disabled. Please re-examine and retry.";
+    ROS_ERROR_STREAM(res.message);
+  }
+  else {
+    res.message="Motoman robot is now disabled and will NOT accept motion commands.";
+    ROS_WARN_STREAM(res.message);
+  }
+    
+
+  return true;
+
+}
+
+bool MotomanJointTrajectoryStreamer::enableRobotCB(std_srvs::Trigger::Request &req,
+						   std_srvs::Trigger::Response &res)
+{
+  bool ret = motion_ctrl_.setTrajMode(true);  
+  res.success = ret;
+  
+  if (!res.success) {
+    res.message="Motoman robot was NOT enabled. Please re-examine and retry.";
+    ROS_ERROR_STREAM(res.message);
+  }
+  else {
+    res.message="Motoman robot is now enabled and will accept motion commands.";
+    ROS_WARN_STREAM(res.message);
+  }
+
+  return true;
+
+}
+
+
+  
 // override create_message to generate JointTrajPtFull message (instead of default JointTrajPt)
 bool MotomanJointTrajectoryStreamer::create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage *msg)
 {
@@ -295,8 +354,8 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
     JointData &joints)
 {
   if (vec.size() > joints.getMaxNumJoints())
-    ROS_ERROR_RETURN(false, "Failed to copy to JointData.  Len (%ld) out of range (0 to %d)",
-                     vec.size(), joints.getMaxNumJoints());
+    ROS_ERROR_RETURN(false, "Failed to copy to JointData.  Len (%d) out of range (0 to %d)",
+                     (int)vec.size(), joints.getMaxNumJoints());
 
   joints.init();
   for (int i = 0; i < vec.size(); ++i)
@@ -305,12 +364,12 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
   }
   return true;
 }
-
+  
 // override send_to_robot to provide controllerReady() and setTrajMode() calls
 bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
-  if (!motion_ctrl_.controllerReady() && !motion_ctrl_.setTrajMode(true))
-    ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion.  Trajectory ABORTED.  Correct issue and re-send trajectory.");
+  if (!motion_ctrl_.controllerReady())
+    ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion, so trajectory ABORTED.\n If safe, call /robot_enable service to (re-)enable Motoplus motion.");
 
   return JointTrajectoryStreamer::send_to_robot(messages);
 }

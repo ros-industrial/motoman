@@ -2,9 +2,25 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(motoman_driver)
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS std_msgs roscpp actionlib
-    trajectory_msgs actionlib_msgs control_msgs sensor_msgs urdf
-    industrial_msgs industrial_robot_client industrial_utils simple_message motoman_msgs roslint)
+find_package(
+  catkin REQUIRED
+  COMPONENTS
+    actionlib
+    actionlib_msgs
+    control_msgs
+    industrial_msgs
+    industrial_robot_client
+    industrial_utils
+    motoman_msgs
+    roscpp
+    roslint
+    sensor_msgs
+    simple_message
+    std_msgs
+    std_srvs
+    trajectory_msgs
+    urdf
+)
 find_package(Boost REQUIRED COMPONENTS system thread)
 
 roslint_cpp()
@@ -16,12 +32,25 @@ add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
 add_definitions(-DROS=1)
 
 catkin_package(
-    DEPENDS
-    CATKIN_DEPENDS std_msgs roscpp actionlib trajectory_msgs actionlib_msgs
-            control_msgs sensor_msgs simple_message urdf industrial_msgs
-            industrial_robot_client motoman_msgs
-    INCLUDE_DIRS include
-    LIBRARIES
+  CATKIN_DEPENDS
+    actionlib
+    actionlib_msgs
+    control_msgs
+    industrial_msgs
+    industrial_robot_client
+    industrial_utils
+    motoman_msgs
+    roscpp
+    sensor_msgs
+    simple_message
+    std_msgs
+    std_srvs
+    trajectory_msgs
+    urdf
+  DEPENDS
+  INCLUDE_DIRS
+    include
+  LIBRARIES
 )
 
 
@@ -29,8 +58,16 @@ set(MSG_SRC_FILES
   src/simple_message/motoman_motion_ctrl.cpp
   src/simple_message/motoman_motion_ctrl_message.cpp
   src/simple_message/motoman_motion_reply.cpp
-  src/simple_message/motoman_motion_reply_message.cpp)
-
+  src/simple_message/motoman_motion_reply_message.cpp
+  src/simple_message/messages/motoman_read_single_io_message.cpp
+  src/simple_message/messages/motoman_read_single_io_reply_message.cpp
+  src/simple_message/messages/motoman_write_single_io_message.cpp
+  src/simple_message/messages/motoman_write_single_io_reply_message.cpp
+  src/simple_message/motoman_read_single_io.cpp
+  src/simple_message/motoman_read_single_io_reply.cpp
+  src/simple_message/motoman_write_single_io.cpp
+  src/simple_message/motoman_write_single_io_reply.cpp
+)
 
 set(CLIENT_SRC_FILES
   src/industrial_robot_client/joint_relay_handler.cpp
@@ -39,6 +76,7 @@ set(CLIENT_SRC_FILES
   src/industrial_robot_client/robot_state_interface.cpp
   src/industrial_robot_client/joint_trajectory_interface.cpp
   src/industrial_robot_client/joint_trajectory_streamer.cpp
+  src/industrial_robot_client/motoman_utils.cpp
   src/simple_message/joint_feedback_ex.cpp
   src/simple_message/joint_traj_pt_full_ex.cpp
   src/simple_message/messages/joint_feedback_ex_message.cpp
@@ -133,7 +171,9 @@ add_executable(${PROJECT_NAME}_joint_trajectory_action
   src/joint_trajectory_action_node.cpp
   src/industrial_robot_client/joint_trajectory_action.cpp)
 target_link_libraries(${PROJECT_NAME}_joint_trajectory_action
-  industrial_robot_client ${catkin_LIBRARIES})
+  industrial_robot_client
+  motoman_industrial_robot_client
+  ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME}_joint_trajectory_action ${catkin_EXPORTED_TARGETS})
 #############
 ## Install ##
@@ -170,3 +210,7 @@ foreach(dir Inform launch MotoPlus)
    install(DIRECTORY ${dir}/
       DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)
+
+install(PROGRAMS src/move_to_joint.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
