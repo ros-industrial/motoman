@@ -1,6 +1,7 @@
 ﻿  ------ Now building project: MotoRosFS100------
   Compiling Controller.c
   Compiling CtrlGroup.c
+  Compiling IoServer.c
   Compiling MotionServer.c
   Compiling mpMain.c
   Compiling SimpleMessage.c
