@@ -17,7 +17,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>roslint</build_depend>
+  <test_depend>roslint</test_depend>
 
   <depend>actionlib</depend>
   <depend>actionlib_msgs</depend>

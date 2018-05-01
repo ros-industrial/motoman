@@ -13,7 +13,6 @@ find_package(
     industrial_utils
     motoman_msgs
     roscpp
-    roslint
     sensor_msgs
     simple_message
     std_msgs
@@ -23,8 +22,6 @@ find_package(
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread)
-
-roslint_cpp()
 
 #######################################
 ## Adding directories and definitions #
@@ -220,3 +217,13 @@ install(DIRECTORY
 
 install(PROGRAMS src/move_to_joint.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+
+#############
+## Testing ##
+#############
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(roslint REQUIRED)
+  roslint_cpp()
+endif()
