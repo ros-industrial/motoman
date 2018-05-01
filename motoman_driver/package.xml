@@ -6,6 +6,8 @@
     This package provides nodes for interfacing with Motoman industrial robot controllers.
   </description>
   <author>Jeremy Zoss (Southwest Research Institute)</author>
+  <author>Ted Miller (MotoROS) (Yaskawa Motoman)</author>
+  <author>Eric Marcil (MotoROS) (Yaskawa Motoman)</author>
   <maintainer email="jeremy.zoss@swri.org">Jeremy Zoss (Southwest Research Institute)</maintainer>
   <license>BSD</license>
 
