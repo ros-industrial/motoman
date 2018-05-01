@@ -181,7 +181,6 @@ target_link_libraries(${PROJECT_NAME}_joint_trajectory_action
   ${catkin_LIBRARIES})
 
 
-add_dependencies(${PROJECT_NAME}_joint_trajectory_action ${catkin_EXPORTED_TARGETS})
 #############
 ## Install ##
 #############
