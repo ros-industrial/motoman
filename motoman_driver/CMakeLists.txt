@@ -144,7 +144,7 @@ target_link_libraries(motoman_simple_message_bswap
 
 # Industrial client library
 add_library(motoman_industrial_robot_client_bswap ${CLIENT_SRC_FILES})
-set_target_properties(motoman_industrial_robot_client PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
+set_target_properties(motoman_industrial_robot_client_bswap PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
 target_link_libraries(motoman_industrial_robot_client_bswap
   industrial_robot_client_bswap
   industrial_utils)
