@@ -28,7 +28,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 #######################################
 include_directories(
   include
-  ${Boost_INCLUDE_DIR}
+  ${Boost_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS})
 
 add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
