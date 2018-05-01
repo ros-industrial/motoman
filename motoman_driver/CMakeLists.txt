@@ -53,10 +53,8 @@ catkin_package(
     std_srvs
     trajectory_msgs
     urdf
-  DEPENDS
   INCLUDE_DIRS
     include
-  LIBRARIES
 )
 
 
