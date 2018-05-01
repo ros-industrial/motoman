@@ -29,7 +29,10 @@ roslint_cpp()
 #######################################
 ## Adding directories and definitions #
 #######################################
-include_directories(include MotoPlus inform ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
+include_directories(
+  include
+  ${Boost_INCLUDE_DIR}
+  ${catkin_INCLUDE_DIRS})
 
 add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
 add_definitions(-DROS=1)
