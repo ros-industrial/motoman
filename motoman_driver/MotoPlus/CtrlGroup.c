@@ -353,13 +353,13 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 	if (ctrlGroup->groupNo >= MOT_MAX_GR)
 		return FALSE;
 	
-	status = mpSvsGetVelTrqFb(dst_vel, NULL);
+	status = mpSvsGetVelTrqFb(dst_vel, NULL); //units are 0.1 pulse/sec
 	if (status != OK)
 		return FALSE;
 
 	for (i = 0; i < MAX_PULSE_AXES; i += 1)
 	{
-		pulseSpeed[i] = dst_vel[ctrlGroup->groupNo][i];
+		pulseSpeed[i] = dst_vel[ctrlGroup->groupNo][i] * 0.1;
 	}
 
 #else //DX200 and newer supports the M-register analog feedback (higher precision feedback)
