@@ -350,7 +350,7 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 	MP_GRP_AXES_T dst_vel;
 	LONG status;
 
-	if (ctrlGroup->groupNo >= MOT_MAX_GR)
+	if (ctrlGroup->groupNo >= MAX_CONTROLLABLE_GROUPS)
 		return FALSE;
 	
 	status = mpSvsGetVelTrqFb(dst_vel, NULL); //units are 0.1 pulse/sec
