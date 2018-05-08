@@ -135,7 +135,8 @@ BOOL Ros_Controller_CheckSetup()
 		return TRUE;
 
 	case MOTOROS_SETUP_NotCompatibleWithPFL:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS not compatible with PFL", parameterValidationCode);
+	case MOTOROS_SETUP_NotCompatibleHCrobot:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS not compatible with HC10", parameterValidationCode);
 		return FALSE;
 
 	//For all other error codes, please contact Yaskawa Motoman
