@@ -20,6 +20,8 @@ typedef enum
 	MOTOROS_SETUP_NotCompatibleWithPFL,	//Not compatible with Human Collaborative robots
 	MOTOROS_SETUP_NotCompatibleHCrobot,	//Not compatible with Human Collaborative robots
 
+	MOTOROS_SETUP_InvalidSdaConfiguration,	//For DX100, the SDA control groups must be reconfigured to support MotoROS.
+
 	//For all other error codes, please contact Yaskawa Motoman
 	//to have the MotoROS Runtime functionality enabled on
 	//your robot controller.

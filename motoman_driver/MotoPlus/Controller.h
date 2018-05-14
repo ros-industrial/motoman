@@ -59,9 +59,9 @@
 #define MAX_STATE_CONNECTIONS	4
 
 #if (DX100)
-#define MAX_CONTROLLABLE_GROUPS	2
+	#define MAX_CONTROLLABLE_GROUPS	3
 #else
-#define MAX_CONTROLLABLE_GROUPS	4
+	#define MAX_CONTROLLABLE_GROUPS	4
 #endif
 
 #define INVALID_SOCKET -1
@@ -135,6 +135,7 @@ typedef struct
 #ifdef DX100
 	BOOL bSkillMotionReady[2];								// Boolean indicating that the SKILL command required for DX100 is active
 	int RosListenForSkillID[2];								// ThreadId for listening to SkillSend command
+	BOOL bIsDx100Sda;										// Special case to control the waist axis (axis 15)
 #endif
 
 } Controller;

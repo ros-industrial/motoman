@@ -1691,7 +1691,10 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 
 #if DX100
 			// first robot
-			moveData.ctrl_grp = 1;
+			if (controller->bIsDx100Sda)
+				moveData.ctrl_grp = 1 | (1 << 2); //R1 + B1
+			else
+				moveData.ctrl_grp = 1; //R1 only
 			ret = mpMeiIncrementMove(MP_SL_ID1, &moveData);
 			if(ret != 0)
 			{
@@ -1700,8 +1703,8 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 				else
 					printf("mpMeiIncrementMove returned: %d\r\n", ret);
 			}
-			// if second robot  // This is not tested but was introduce to help future development
-			moveData.ctrl_grp = 2;
+			// if second robot
+			moveData.ctrl_grp = 2; //R2 only
 			if(controller->numRobot > 1)
 			{
 				ret = mpMeiIncrementMove(MP_SL_ID2, &moveData);
