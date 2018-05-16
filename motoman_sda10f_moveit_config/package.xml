@@ -1,5 +1,5 @@
-<package>
-
+<?xml version="1.0"?>
+<package format="2">
   <name>motoman_sda10f_moveit_config</name>
   <version>0.3.5</version>
   <description>
@@ -14,16 +14,18 @@
   <url type="bugtracker">https://github.com/ros-planning/moveit_setup_assistant/issues</url>
   <url type="repository">https://github.com/ros-planning/moveit_setup_assistant</url>
 
-  <run_depend>moveit_ros_move_group</run_depend>
-  <run_depend>moveit_planners_ompl</run_depend>
-  <run_depend>moveit_ros_visualization</run_depend>
-  <run_depend>joint_state_publisher</run_depend>
-  <run_depend>robot_state_publisher</run_depend>
-  <run_depend>xacro</run_depend>
-  <build_depend>motoman_sda10f_support</build_depend>
-  <run_depend>motoman_sda10f_support</run_depend>
-
+  <exec_depend>moveit_ros_move_group</exec_depend>
+  <exec_depend>moveit_planners_ompl</exec_depend>
+  <exec_depend>moveit_ros_visualization</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>industrial_robot_simulator</exec_depend>
+  <exec_depend>motoman_sda10f_support</exec_depend>
 
   <buildtool_depend>catkin</buildtool_depend>
-  
+
+  <export>
+    <architecture_independent/>
+  </export>
 </package>
