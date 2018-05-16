@@ -345,7 +345,7 @@ void JointTrajectoryStreamer::streamingThread()
       break;
 
     case TransferStates::POINT_STREAMING:
-      ROS_INFO("I'm streaming, sir.");
+      
       // if no points in queue, streaming complete, set to idle.
       if (this->streaming_queue_.empty())
       {
@@ -376,7 +376,11 @@ void JointTrajectoryStreamer::streamingThread()
         ROS_WARN("Failed sent joint point, will try again");
 
       break;
-      // consider checking for controller point starvation here. use a timer to check if the state is popping in and out of POINT_STREAMING mode, indicating something is trying to send streaming points, but is doing so too slowly. It may, in fact, not matter other than motion won't be smooth.
+      // TODO Consider checking for controller point starvation here. use a
+      //      timer to check if the state is popping in and out of
+      //      POINT_STREAMING mode, indicating something is trying to send
+      //      streaming points, but is doing so too slowly. It may, in fact, not
+      //      matter other than motion won't be smooth.
 
     default:
       ROS_ERROR("Joint trajectory streamer: unknown state, %d", this->state_);
@@ -400,4 +404,3 @@ void JointTrajectoryStreamer::trajectoryStop()
 
 }  // namespace joint_trajectory_streamer
 }  // namespace industrial_robot_client
-

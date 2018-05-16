@@ -271,12 +271,6 @@ void JointTrajectoryInterface::jointTrajectoryCB(
   send_to_robot(robot_msgs);
 }
 
-void JointTrajectoryInterface::jointCommandCB(
-  const trajectory_msgs::JointTrajectoryConstPtr &msg)
-{
-  //ROS_INFO("Yessir?");
-}
-
 bool JointTrajectoryInterface::trajectory_to_msgs(
   const motoman_msgs::DynamicJointTrajectoryConstPtr& traj,
   std::vector<SimpleMessage>* msgs)
@@ -741,4 +735,3 @@ void JointTrajectoryInterface::jointStateCB(
 
 }  // namespace joint_trajectory_interface
 }   // namespace industrial_robot_client
-

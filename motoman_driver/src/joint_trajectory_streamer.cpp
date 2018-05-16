@@ -469,7 +469,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         {
           time_since_last = ros::Time::now().toSec() - time_of_last;
           ros::Duration(0.005).sleep();
-          //ROS_INFO("Time since last point: %f", time_since_last);
+          ROS_DEBUG("Time since last point: %f", time_since_last);
           break;
         }
         else

@@ -300,7 +300,13 @@ protected:
    */
   virtual void jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
 
-  virtual void jointCommandCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
+  /**
+   * \brief Callback function registered to joint_command topic subscriber.
+   *   Specific method is implemented in JointTrajectoryStreamer class.
+   *
+   * \param msg JointTrajectory message
+   */
+  virtual void jointCommandCB(const trajectory_msgs::JointTrajectoryConstPtr &msg) = 0;
 
   /**
    * \brief Callback function registered to ROS stopMotion service
