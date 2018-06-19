@@ -17,7 +17,10 @@ typedef enum
 	MOTOROS_SETUP_S2C1117,	//Set S2C1117 = 1
 	MOTOROS_SETUP_S2C1119,	//Set S2C1119 = 0 (optionally can be =2 to allow telnet connections)
 
-	MOTOROS_SETUP_NotCompatibleWithPFL,	//Uninstall the PFL driver for the HC-10
+	MOTOROS_SETUP_NotCompatibleWithPFL,	//Not compatible with Human Collaborative robots
+	MOTOROS_SETUP_NotCompatibleHCrobot,	//Not compatible with Human Collaborative robots
+
+	MOTOROS_SETUP_InvalidSdaConfiguration,	//For DX100, the SDA control groups must be reconfigured to support MotoROS.
 
 	//For all other error codes, please contact Yaskawa Motoman
 	//to have the MotoROS Runtime functionality enabled on

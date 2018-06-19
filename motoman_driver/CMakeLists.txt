@@ -1,10 +1,10 @@
-# http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
 cmake_minimum_required(VERSION 2.8.3)
 project(motoman_driver)
+
 # Load catkin and all dependencies required for this package
 find_package(
-  catkin REQUIRED
-  COMPONENTS
+  catkin
+  REQUIRED COMPONENTS
     actionlib
     actionlib_msgs
     control_msgs
@@ -13,7 +13,6 @@ find_package(
     industrial_utils
     motoman_msgs
     roscpp
-    roslint
     sensor_msgs
     simple_message
     std_msgs
@@ -21,13 +20,17 @@ find_package(
     trajectory_msgs
     urdf
 )
+
 find_package(Boost REQUIRED COMPONENTS system thread)
 
-roslint_cpp()
 #######################################
 ## Adding directories and definitions #
 #######################################
-include_directories(include MotoPlus inform ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
+include_directories(
+  include
+  ${Boost_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS})
+
 add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
 add_definitions(-DROS=1)
 
@@ -47,22 +50,20 @@ catkin_package(
     std_srvs
     trajectory_msgs
     urdf
-  DEPENDS
   INCLUDE_DIRS
     include
-  LIBRARIES
 )
 
 
 set(MSG_SRC_FILES
-  src/simple_message/motoman_motion_ctrl.cpp
-  src/simple_message/motoman_motion_ctrl_message.cpp
-  src/simple_message/motoman_motion_reply.cpp
-  src/simple_message/motoman_motion_reply_message.cpp
   src/simple_message/messages/motoman_read_single_io_message.cpp
   src/simple_message/messages/motoman_read_single_io_reply_message.cpp
   src/simple_message/messages/motoman_write_single_io_message.cpp
   src/simple_message/messages/motoman_write_single_io_reply_message.cpp
+  src/simple_message/motoman_motion_ctrl.cpp
+  src/simple_message/motoman_motion_ctrl_message.cpp
+  src/simple_message/motoman_motion_reply.cpp
+  src/simple_message/motoman_motion_reply_message.cpp
   src/simple_message/motoman_read_single_io.cpp
   src/simple_message/motoman_read_single_io_reply.cpp
   src/simple_message/motoman_write_single_io.cpp
@@ -70,22 +71,23 @@ set(MSG_SRC_FILES
 )
 
 set(CLIENT_SRC_FILES
-  src/industrial_robot_client/joint_relay_handler.cpp
-  src/industrial_robot_client/joint_feedback_relay_handler.cpp
   src/industrial_robot_client/joint_feedback_ex_relay_handler.cpp
-  src/industrial_robot_client/robot_state_interface.cpp
+  src/industrial_robot_client/joint_feedback_relay_handler.cpp
+  src/industrial_robot_client/joint_relay_handler.cpp
   src/industrial_robot_client/joint_trajectory_interface.cpp
   src/industrial_robot_client/joint_trajectory_streamer.cpp
   src/industrial_robot_client/motoman_utils.cpp
+  src/industrial_robot_client/robot_state_interface.cpp
   src/simple_message/joint_feedback_ex.cpp
   src/simple_message/joint_traj_pt_full_ex.cpp
   src/simple_message/messages/joint_feedback_ex_message.cpp
-  src/simple_message/messages/joint_traj_pt_full_ex_message.cpp)
+  src/simple_message/messages/joint_traj_pt_full_ex_message.cpp
+)
+
 
 ###########
 ## Build ##
 ###########
-
 
 #-------------------------------------------------------------
 # dx100 uses same byte-ordering as most i386-based PCs
@@ -137,7 +139,7 @@ target_link_libraries(motoman_simple_message_bswap
 
 # Industrial client library
 add_library(motoman_industrial_robot_client_bswap ${CLIENT_SRC_FILES})
-set_target_properties(motoman_industrial_robot_client PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
+set_target_properties(motoman_industrial_robot_client_bswap PROPERTIES COMPILE_DEFINITIONS "BYTE_SWAPPING")
 target_link_libraries(motoman_industrial_robot_client_bswap
   industrial_robot_client_bswap
   industrial_utils)
@@ -174,43 +176,54 @@ target_link_libraries(${PROJECT_NAME}_joint_trajectory_action
   industrial_robot_client
   motoman_industrial_robot_client
   ${catkin_LIBRARIES})
-add_dependencies(${PROJECT_NAME}_joint_trajectory_action ${catkin_EXPORTED_TARGETS})
+
+
 #############
 ## Install ##
 #############
 
 # binaries
 install(TARGETS
-    motoman_robot_state
-    motoman_motion_streaming_interface
-    motoman_robot_state_bswap
-    motoman_motion_streaming_interface_bswap
-    ${PROJECT_NAME}_joint_trajectory_action
+  ${PROJECT_NAME}_joint_trajectory_action
+  motoman_motion_streaming_interface
+  motoman_motion_streaming_interface_bswap
+  motoman_robot_state
+  motoman_robot_state_bswap
 
-    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 # libraries
 install(TARGETS
-    motoman_simple_message
-    motoman_industrial_robot_client
-    motoman_simple_message_bswap
-    motoman_industrial_robot_client_bswap
+  motoman_industrial_robot_client
+  motoman_industrial_robot_client_bswap
+  motoman_simple_message
+  motoman_simple_message_bswap
 
-    DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
 
 # headers
 install(DIRECTORY include/${PROJECT_NAME}/
-    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
 # other files
-foreach(dir Inform launch MotoPlus)
-   install(DIRECTORY ${dir}/
-      DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
-endforeach(dir)
+install(DIRECTORY
+    Inform
+    launch
+    MotoPlus
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 install(PROGRAMS src/move_to_joint.py
-    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+
+#############
+## Testing ##
+#############
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(roslint REQUIRED)
+  roslint_cpp()
+endif()
