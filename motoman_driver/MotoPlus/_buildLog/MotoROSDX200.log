@@ -1,4 +1,4 @@
-﻿  ------ Now building project: MotoRosDX200------
+﻿  ------ Now building project: MotoRosDX2_------
   Compiling Controller.c
   Compiling CtrlGroup.c
   Compiling IoServer.c
@@ -6,6 +6,6 @@
   Compiling mpMain.c
   Compiling SimpleMessage.c
   Compiling StateServer.c
-  Building MotoRosDX200.out
-  Build Successful!  Check 'DX200\MotoRosDX200' folder for MotoRosDX200.out
+  Building MotoRosDX2_.out
+  Build Successful!  Check 'DX200\MotoRosDX2_' folder for MotoRosDX2_.out
   ------

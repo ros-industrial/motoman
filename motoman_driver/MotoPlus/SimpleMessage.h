@@ -33,7 +33,8 @@
 #define SIMPLE_MSG_H
 
 #define ROS_MAX_JOINT 10
-#define MOT_MAX_GR     4
+#define MOT_MAX_GR	4
+
 
 //----------------
 // Prefix Section
