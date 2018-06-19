@@ -67,6 +67,18 @@
     <None Include="ParameterExtraction.yrcLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
+    <None Include="ParameterExtraction.yrcmlib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="YRC1000uCompilerArguments.mps">
+      <Filter>Compile Settings</Filter>
+    </None>
+    <None Include="YRC1000uLinkerArguments.mps">
+      <Filter>Compile Settings</Filter>
+    </None>
+    <None Include="RosSetupValidation.yrcmlib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.c">

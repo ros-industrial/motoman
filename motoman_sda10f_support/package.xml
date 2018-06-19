@@ -1,5 +1,5 @@
-
-<package>
+<?xml version="1.0"?>
+<package format="2">
  <name>motoman_sda10f_support</name>
  <version>0.3.5</version>
  <description>
@@ -32,15 +32,16 @@
  <author email="tdf@ipa.fhg.de">Thiago de Freitas</author>
  <maintainer email="tdf@ipa.fhg.de">Thiago de Freitas</maintainer>
  <license>BSD</license>
- <url type="website">http://ros.org/wiki/motoman_sda10f_support</url>
+ <url type="website">http://wiki.ros.org/motoman_sda10f_support</url>
  <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
  <url type="repository">https://github.com/ros-industrial/motoman</url>
  <buildtool_depend>catkin</buildtool_depend>
- <build_depend>roslaunch</build_depend>
- <run_depend>motoman_driver</run_depend>
- <run_depend>robot_state_publisher</run_depend>
- <run_depend>rviz</run_depend>
- <run_depend>joint_state_publisher</run_depend>
+ <test_depend>roslaunch</test_depend>
+ <exec_depend>joint_state_publisher</exec_depend>
+ <exec_depend>motoman_driver</exec_depend>
+ <exec_depend>robot_state_publisher</exec_depend>
+ <exec_depend>rviz</exec_depend>
+ <exec_depend>xacro</exec_depend>
  <export>
   <architecture_independent/>
  </export>

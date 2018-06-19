@@ -135,8 +135,15 @@ BOOL Ros_Controller_CheckSetup()
 		return TRUE;
 
 	case MOTOROS_SETUP_NotCompatibleWithPFL:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS not compatible with PFL", parameterValidationCode);
+	case MOTOROS_SETUP_NotCompatibleHCrobot:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS not compatible with HC10", parameterValidationCode);
 		return FALSE;
+
+#if (DX100)
+	case MOTOROS_SETUP_InvalidSdaConfiguration:
+		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS: Reconfigure waist axis", parameterValidationCode);
+		return FALSE;
+#endif
 
 	//For all other error codes, please contact Yaskawa Motoman
 	//to have the MotoROS Runtime functionality enabled on your
@@ -199,6 +206,13 @@ BOOL Ros_Controller_Init(Controller* controller)
 	// Wait for alarms to clear, in case Ros_Controller_CheckSetup raised an alarm
 	Ros_Controller_WaitInitReady(controller);
 
+#if (DX100)
+	// Determine if the robot is a DX100 SDA which requires a special case for the motion API
+	status = GP_isSdaRobot(&controller->bIsDx100Sda);
+	if (status != OK)
+		bInitOk = FALSE;
+#endif
+
 	// Get the interpolation clock
 	status = GP_getInterpolationPeriod(&controller->interpolPeriod);
 	if(status!=OK)
@@ -212,11 +226,10 @@ BOOL Ros_Controller_Init(Controller* controller)
 	if(controller->numGroup < 1)
 		bInitOk = FALSE;
 
-	if (controller->numGroup > MOT_MAX_GR)
+	if (controller->numGroup > MAX_CONTROLLABLE_GROUPS)
 	{
-		mpSetAlarm(8001, "WARNING: Too many groups for ROS", 0); //force user to acknowledge ignored groups
-		printf("!!!---Detected %d control groups.  MotoROS will only control %d.---!!!\n", controller->numGroup, MOT_MAX_GR);
-		controller->numGroup = MOT_MAX_GR;
+		printf("!!!---Detected %d control groups.  MotoROS will only control %d.---!!!\n", controller->numGroup, MAX_CONTROLLABLE_GROUPS);
+		controller->numGroup = MAX_CONTROLLABLE_GROUPS;
 	}
 	
 	controller->numRobot = 0;
