@@ -165,7 +165,8 @@ public:
    */
   void add_handler(MessageHandler* handler, bool allow_replace = true)
   {
-    this->manager_.add(handler, allow_replace);
+    if (!this->manager_.add(handler, allow_replace))
+      ROS_WARN_STREAM("Failed to add handler!!!!");
   }
 
 protected:

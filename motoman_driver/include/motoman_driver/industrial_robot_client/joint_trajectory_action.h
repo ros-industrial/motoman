@@ -203,6 +203,13 @@ private:
   void watchdog(const ros::TimerEvent &e, int group_number);
 
   /**
+   * \brief Check if all robot groups finished their trajectory.
+   *
+   * \return true if all robot groups finished their trajectory.
+   */
+  bool allGroupsFinished() const;
+
+  /**
    * \brief Action server goal callback method
    *
    * \param gh goal handle

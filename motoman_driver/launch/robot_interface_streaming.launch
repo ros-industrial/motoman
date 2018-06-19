@@ -39,7 +39,7 @@
 	<!-- motion_streaming_interface: sends robot motion commands by 
 	     STREAMING path to robot (using socket connection to robot) 
 	-->
-	<include file="$(find motoman_driver)/launch/motion_streaming_interface.launch">
+  <include file="$(find motoman_driver)/launch/motion_streaming_interface.launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
 	</include>
