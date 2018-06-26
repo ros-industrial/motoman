@@ -122,6 +122,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 			mpClose(sd);
 			controller->tidIncMoveThread = INVALID_TASK;
 			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+			mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 4);
+
 			return;
 		}
 	}
@@ -142,6 +144,7 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 				mpClose(sd);
 				controller->ctrlGroups[groupNo]->tidAddToIncQueue = INVALID_TASK;
 				Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+				mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 5);
 				return;
 			}
 		}
@@ -169,6 +172,7 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 			controller->sdMotionConnections[connectionIndex] = INVALID_SOCKET;
 			controller->tidMotionConnections[connectionIndex] = INVALID_TASK;
 			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+			mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 6);
 			return;
 		}
 	}
