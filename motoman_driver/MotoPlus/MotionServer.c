@@ -1552,7 +1552,7 @@ int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo)
 	}
 		
 	printf("ERROR: Unable to access queue count.  Queue is locked up!\r\n");
-	return -1;
+	return ERROR;
 }
 
 
@@ -1563,11 +1563,15 @@ int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo)
 BOOL Ros_MotionServer_HasDataInQueue(Controller* controller)
 {
 	int groupNo;
+	int qCnt;
 	
 	for(groupNo=0; groupNo<controller->numGroup; groupNo++)
 	{
-		if(Ros_MotionServer_GetQueueCnt(controller, groupNo) > 0)
+		qCnt = Ros_MotionServer_GetQueueCnt(controller, groupNo);
+		if (qCnt > 0)
 			return TRUE;
+		else if (qCnt == ERROR)
+			return ERROR;
 	}
 		
 	return FALSE;

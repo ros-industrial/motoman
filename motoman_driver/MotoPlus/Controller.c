@@ -640,6 +640,50 @@ int Ros_Controller_GetNotReadySubcode(Controller* controller)
 	return ROS_RESULT_NOT_READY_UNSPECIFIED;
 }
 
+BOOL Ros_Controller_IsInMotion(Controller* controller)
+{
+	int i;
+	int groupNo;
+	long fbPulsePos[MAX_PULSE_AXES];
+	long cmdPulsePos[MAX_PULSE_AXES];
+	BOOL bDataInQ;
+	CtrlGroup* ctrlGroup;
+
+	bDataInQ = Ros_MotionServer_HasDataInQueue(controller);
+
+	if (bDataInQ == TRUE)
+		return TRUE;
+	else if (bDataInQ == ERROR)
+		return ERROR;
+	else
+	{
+		//for each control group
+		for (groupNo = 0; groupNo < controller->numGroup; groupNo++)
+		{
+			//Check group number valid
+			if (!Ros_Controller_IsValidGroupNo(controller, groupNo))
+				continue;
+
+			//Check if the feeback position has caught up to the command position
+			ctrlGroup = controller->ctrlGroups[groupNo];
+
+			Ros_CtrlGroup_GetFBPulsePos(ctrlGroup, fbPulsePos);
+			Ros_CtrlGroup_GetPulsePosCmd(ctrlGroup, cmdPulsePos);
+
+			for (i = 0; i < MP_GRP_AXES_NUM; i += 1)
+			{
+				if (ctrlGroup->axisType.type[i] != AXIS_INVALID)
+				{
+					// Check if position matches current command position
+					if (abs(fbPulsePos[i] - cmdPulsePos[i]) > START_MAX_PULSE_DEVIATION)
+						return TRUE;
+				}
+			}
+		}
+	}
+
+	return FALSE;
+}
 
 // Creates a simple message of type: ROS_MSG_ROBOT_STATUS = 13
 // Simple message containing the current state of the controller
@@ -661,7 +705,7 @@ int Ros_Controller_StatusToMsg(Controller* controller, SimpleMsg* sendMsg)
 	sendMsg->body.robotStatus.e_stopped = (int)(Ros_Controller_IsEStop(controller));
 	sendMsg->body.robotStatus.error_code = controller->alarmCode;
 	sendMsg->body.robotStatus.in_error = (int)Ros_Controller_IsAlarm(controller);
-	sendMsg->body.robotStatus.in_motion = (int)(Ros_MotionServer_HasDataInQueue(controller));
+	sendMsg->body.robotStatus.in_motion = (int)(Ros_Controller_IsInMotion(controller));
 	if(Ros_Controller_IsPlay(controller))
 		sendMsg->body.robotStatus.mode = 2;
 	else
