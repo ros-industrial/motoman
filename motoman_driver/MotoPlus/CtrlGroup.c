@@ -353,6 +353,8 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 	if (ctrlGroup->groupNo >= MAX_CONTROLLABLE_GROUPS)
 		return FALSE;
 	
+	memset(&dst_vel, 0x00, sizeof(MP_GRP_AXES_T));
+
 	status = mpSvsGetVelTrqFb(dst_vel, NULL); //units are 0.1 pulse/sec
 	if (status != OK)
 		return FALSE;
@@ -454,6 +456,8 @@ BOOL Ros_CtrlGroup_GetTorque(CtrlGroup* ctrlGroup, double torqueValues[MAX_PULSE
 	memset(torqueValues, 0, sizeof(torqueValues)); // clear result, in case of error
 	memset(dst_trq.data, 0, sizeof(MP_TRQCTL_DATA));
 	dst_trq.unit = TRQ_NEWTON_METER; //request data in Nm
+
+	memset(&dst_vel, 0x00, sizeof(MP_GRP_AXES_T));
 
 	status = mpSvsGetVelTrqFb(dst_vel, &dst_trq);
 	if (status != OK)
