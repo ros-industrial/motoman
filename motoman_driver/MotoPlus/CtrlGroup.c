@@ -364,6 +364,21 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 		pulseSpeed[i] = dst_vel[ctrlGroup->groupNo][i] * 0.1;
 	}
 
+	// Apply correction to account for cross-axis coupling.
+	// Note: This is only required for feedback.
+	// Controller handles this correction internally when 
+	// dealing with command positon.
+	for (i = 0; i< MAX_PULSE_AXES; ++i)
+	{
+		FB_AXIS_CORRECTION *corr = &ctrlGroup->correctionData.correction[i];
+		if (corr->bValid)
+		{
+			int src_axis = corr->ulSourceAxis;
+			int dest_axis = corr->ulCorrectionAxis;
+			pulseSpeed[dest_axis] -= (int)(pulseSpeed[src_axis] * corr->fCorrectionRatio);
+		}
+	}
+
 #else //DX200 and newer supports the M-register analog feedback (higher precision feedback)
 	LONG status;
 	MP_IO_INFO registerInfo[MAX_PULSE_AXES * 2]; //values are 4 bytes, which consumes 2 registers
@@ -413,21 +428,6 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 		pulseSpeed[i] = (long)dblRegister;
 	}
 #endif
-
-	// Apply correction to account for cross-axis coupling.
-	// Note: This is only required for feedback.
-	// Controller handles this correction internally when 
-	// dealing with command positon.
-	for (i = 0; i<  MAX_PULSE_AXES; ++i)
-	{
-		FB_AXIS_CORRECTION *corr = &ctrlGroup->correctionData.correction[i];
-		if (corr->bValid)
-		{
-			int src_axis = corr->ulSourceAxis;
-			int dest_axis = corr->ulCorrectionAxis;
-			pulseSpeed[dest_axis] -= (int)(pulseSpeed[src_axis] * corr->fCorrectionRatio);
-		}
-	}
 
 #else //dummy-servo mode for testing
 	MP_CTRL_GRP_SEND_DATA sData;
