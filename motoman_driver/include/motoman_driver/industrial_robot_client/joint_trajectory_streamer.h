@@ -132,13 +132,14 @@ protected:
 
   boost::thread* streaming_thread_;
   boost::mutex mutex_;
-  int current_point_, streaming_sequence;
+  int current_point_;
   std::vector<SimpleMessage> current_traj_;
   TransferState state_;
   ros::Time streaming_start_;
   int min_buffer_size_;
-  
-  std::queue<SimpleMessage> streaming_queue_;
+
+  int ptstreaming_seq_count_; // sequence count for point streaming (--> JointTrajPtFull::sequence_)
+  std::queue<SimpleMessage> ptstreaming_queue_; // message queue for point streaming
 };
 
 }  // namespace joint_trajectory_streamer

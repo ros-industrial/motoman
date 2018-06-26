@@ -172,7 +172,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     this->mutex_.lock();
     this->state_ = TransferStates::POINT_STREAMING;
     this->current_point_ = 0;
-    this->streaming_sequence = 0;
+    this->ptstreaming_seq_count_ = 0;
     this->streaming_start_ = ros::Time::now();
     this->mutex_.unlock();
     state = TransferStates::POINT_STREAMING;
@@ -201,13 +201,13 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
       return;
 
     // convert trajectory point to ROS message
-    if (!create_message(this->streaming_sequence, xform_pt, &message))
+    if (!create_message(this->ptstreaming_seq_count_, xform_pt, &message))
       return;
 
     //Points get pushed into queue here. They will be popped in the Streaming Thread and sent to controller.
     this->mutex_.lock();
-    this->streaming_queue_.push(message);
-    this->streaming_sequence++;
+    this->ptstreaming_queue_.push(message);
+    this->ptstreaming_seq_count_++;
     this->mutex_.unlock();
   }
 
@@ -345,9 +345,9 @@ void JointTrajectoryStreamer::streamingThread()
       break;
 
     case TransferStates::POINT_STREAMING:
-      
+
       // if no points in queue, streaming complete, set to idle.
-      if (this->streaming_queue_.empty())
+      if (this->ptstreaming_queue_.empty())
       {
         ROS_INFO("Point streaming complete, setting state to IDLE");
         this->state_ = TransferStates::IDLE;
@@ -361,8 +361,8 @@ void JointTrajectoryStreamer::streamingThread()
         break;
       }
       // otherwise, send point to robot.
-      tmpMsg = this->streaming_queue_.front();
-      this->streaming_queue_.pop();
+      tmpMsg = this->ptstreaming_queue_.front();
+      this->ptstreaming_queue_.pop();
       msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
                ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
 
