@@ -122,6 +122,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 			mpClose(sd);
 			controller->tidIncMoveThread = INVALID_TASK;
 			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+			mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 4);
+
 			return;
 		}
 	}
@@ -142,6 +144,7 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 				mpClose(sd);
 				controller->ctrlGroups[groupNo]->tidAddToIncQueue = INVALID_TASK;
 				Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+				mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 5);
 				return;
 			}
 		}
@@ -169,6 +172,7 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 			controller->sdMotionConnections[connectionIndex] = INVALID_SOCKET;
 			controller->tidMotionConnections[connectionIndex] = INVALID_TASK;
 			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+			mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 6);
 			return;
 		}
 	}
@@ -1552,7 +1556,7 @@ int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo)
 	}
 		
 	printf("ERROR: Unable to access queue count.  Queue is locked up!\r\n");
-	return -1;
+	return ERROR;
 }
 
 
@@ -1563,11 +1567,15 @@ int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo)
 BOOL Ros_MotionServer_HasDataInQueue(Controller* controller)
 {
 	int groupNo;
+	int qCnt;
 	
 	for(groupNo=0; groupNo<controller->numGroup; groupNo++)
 	{
-		if(Ros_MotionServer_GetQueueCnt(controller, groupNo) > 0)
+		qCnt = Ros_MotionServer_GetQueueCnt(controller, groupNo);
+		if (qCnt > 0)
 			return TRUE;
+		else if (qCnt == ERROR)
+			return ERROR;
 	}
 		
 	return FALSE;
