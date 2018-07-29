@@ -1,0 +1,29 @@
+
+<!--
+  Manipulator specific version of the state visualizer.
+
+  Defaults provided for mh50:
+   - 6 joints
+
+  Usage:
+    robot_state_visualize_mh50.launch robot_ip:=<value> controller:=<dx200>
+-->
+<launch>
+	<arg name="robot_ip" />
+
+  <!-- controller: Controller name (dx200) -->
+  <arg name="controller" />
+
+        <rosparam command="load" file="$(find motoman_mh50_support)/config/joint_names_mh50.yaml" />
+
+	<include file="$(find motoman_driver)/launch/robot_state_$(arg controller).launch">
+		<arg name="robot_ip"   value="$(arg robot_ip)" />
+	</include>
+
+	<node name="robot_state_publisher" pkg="robot_state_publisher" 
+		type="robot_state_publisher" />
+
+	<include file="$(find motoman_mh50_support)/launch/load_mh50.launch" />
+
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
+</launch>
