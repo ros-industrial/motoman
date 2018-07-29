@@ -1,8 +1,7 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
-	<property name="pi" value="3.141592654" />
-	<property name="deg" value="0.017453293" /> <!--degrees to radians-->
+	<xacro:property name="deg" value="0.017453293" /> <!--degrees to radians-->
 	
 	<xacro:macro name="motoman_sia5d" params="prefix">
 
