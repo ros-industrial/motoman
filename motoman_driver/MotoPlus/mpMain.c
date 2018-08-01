@@ -63,7 +63,9 @@ void mpUsrRoot(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int a
 	//prototype will accept them.
 	RosInitTaskID = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, (FUNCPTR)RosInitTask,
 						arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-									
+	if (RosInitTaskID == ERROR)
+		mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 1);
+
 	//Ends the initialization task.
 	mpExitUsrRoot;
 }
@@ -83,6 +85,9 @@ void RosInitTask()
 	ros_controller.tidConnectionSrv = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
 						(FUNCPTR)Ros_Controller_ConnectionServer_Start,
 						(int)&ros_controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	
+	if(ros_controller.tidConnectionSrv == ERROR)
+		mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 2);
 		
 #ifdef DX100
 	// DX100 need to execute a SKILLSEND command prior to the WAIT in order for the 
