@@ -283,9 +283,6 @@ private:
 
   bool withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
                              const trajectory_msgs::JointTrajectory & traj, int robot_id);
-
-  bool withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
-                             const motoman_msgs::DynamicJointTrajectory & traj);
 };
 
 }  // namespace joint_trajectory_action
