@@ -48,7 +48,11 @@
 	     high-level robot control
 	-->
 	<node if="$(arg version0)" name="joint_trajectory_action"
-		pkg="industrial_robot_client" type="joint_trajectory_action" />
+		  pkg="industrial_robot_client" type="joint_trajectory_action">
+      <param name="constraints/goal_threshold" type="double" value="5e-4"/>
+    </node>
 	<node unless="$(arg version0)" name="joint_trajectory_action"
-		pkg="motoman_driver" type="motoman_driver_joint_trajectory_action" />
+		  pkg="motoman_driver" type="motoman_driver_joint_trajectory_action">
+      <param name="constraints/goal_threshold" value="5e-4" type="double" />
+    </node>
 </launch>
