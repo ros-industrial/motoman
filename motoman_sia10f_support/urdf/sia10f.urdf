@@ -182,9 +182,9 @@
     <limit effort="100" lower="-3.1415" upper="3.1415" velocity="6.9813" />
   </joint>
   <link name="base"/>
-  <joint name="link_l-base" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="link_l"/>
+  <joint name="base_link-base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.360"/>
+    <parent link="base_link"/>
     <child link="base"/>
   </joint>
 </robot>
