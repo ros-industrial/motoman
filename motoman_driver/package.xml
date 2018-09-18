@@ -25,6 +25,7 @@
   <depend>industrial_msgs</depend>
   <depend>industrial_robot_client</depend>
   <depend>industrial_utils</depend>
+  <depend>libxmlrpc-c++</depend>
   <depend>motoman_msgs</depend>
   <depend>roscpp</depend>
   <depend>sensor_msgs</depend>
