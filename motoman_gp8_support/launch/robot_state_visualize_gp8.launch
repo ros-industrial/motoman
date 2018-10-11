@@ -1,0 +1,29 @@
+
+<!--
+  Manipulator specific version of the state visualizer.
+
+  Defaults provided for gp8:
+   - 6 joints
+
+  Usage:
+    robot_state_visualize_gp8.launch robot_ip:=<value> controller:=<yrc1000>
+-->
+<launch>
+	<arg name="robot_ip" />
+
+  <!-- controller: Controller name (yrc1000) -->
+  <arg name="controller" />
+
+        <rosparam command="load" file="$(find motoman_gp8_support)/config/joint_names_gp8.yaml" />
+
+	<include file="$(find motoman_driver)/launch/robot_state_$(arg controller).launch">
+		<arg name="robot_ip"   value="$(arg robot_ip)" />
+	</include>
+
+	<node name="robot_state_publisher" pkg="robot_state_publisher" 
+		type="robot_state_publisher" />
+
+	<include file="$(find motoman_gp8_support)/launch/load_gp8.launch" />
+
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
+</launch>

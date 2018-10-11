@@ -174,11 +174,11 @@
     <parent link="link_t"/>
     <child link="tool0"/>
   </joint>
-  <!-- ROS base_link (via link_l) to Motoman Robot (not Base) Frame transform -->
+  <!-- ROS base_link (via base_link) to Motoman Robot (not Base) Frame transform -->
   <link name="base"/>
-  <joint name="link_l-base" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="link_l"/>
+  <joint name="base_link-base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.310"/>
+    <parent link="base_link"/>
     <child link="base"/>
   </joint>
 </robot>

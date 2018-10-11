@@ -97,6 +97,7 @@ void Ros_IoServer_StartNewConnection(Controller* controller, int sd)
 			controller->sdIoConnections[connectionIndex] = INVALID_SOCKET;
 			controller->tidIoConnections[connectionIndex] = INVALID_TASK;
 			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+			mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 7);
 			return;
 		}
 	}

@@ -350,16 +350,33 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 	MP_GRP_AXES_T dst_vel;
 	LONG status;
 
-	if (ctrlGroup->groupNo >= MOT_MAX_GR)
+	if (ctrlGroup->groupNo >= MAX_CONTROLLABLE_GROUPS)
 		return FALSE;
 	
-	status = mpSvsGetVelTrqFb(dst_vel, NULL);
+	memset(&dst_vel, 0x00, sizeof(MP_GRP_AXES_T));
+
+	status = mpSvsGetVelTrqFb(dst_vel, NULL); //units are 0.1 pulse/sec
 	if (status != OK)
 		return FALSE;
 
 	for (i = 0; i < MAX_PULSE_AXES; i += 1)
 	{
-		pulseSpeed[i] = dst_vel[ctrlGroup->groupNo][i];
+		pulseSpeed[i] = dst_vel[ctrlGroup->groupNo][i] * 0.1;
+	}
+
+	// Apply correction to account for cross-axis coupling.
+	// Note: This is only required for feedback.
+	// Controller handles this correction internally when 
+	// dealing with command positon.
+	for (i = 0; i< MAX_PULSE_AXES; ++i)
+	{
+		FB_AXIS_CORRECTION *corr = &ctrlGroup->correctionData.correction[i];
+		if (corr->bValid)
+		{
+			int src_axis = corr->ulSourceAxis;
+			int dest_axis = corr->ulCorrectionAxis;
+			pulseSpeed[dest_axis] -= (int)(pulseSpeed[src_axis] * corr->fCorrectionRatio);
+		}
 	}
 
 #else //DX200 and newer supports the M-register analog feedback (higher precision feedback)
@@ -412,21 +429,6 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 	}
 #endif
 
-	// Apply correction to account for cross-axis coupling.
-	// Note: This is only required for feedback.
-	// Controller handles this correction internally when 
-	// dealing with command positon.
-	for (i = 0; i<  MAX_PULSE_AXES; ++i)
-	{
-		FB_AXIS_CORRECTION *corr = &ctrlGroup->correctionData.correction[i];
-		if (corr->bValid)
-		{
-			int src_axis = corr->ulSourceAxis;
-			int dest_axis = corr->ulCorrectionAxis;
-			pulseSpeed[dest_axis] -= (int)(pulseSpeed[src_axis] * corr->fCorrectionRatio);
-		}
-	}
-
 #else //dummy-servo mode for testing
 	MP_CTRL_GRP_SEND_DATA sData;
 	MP_SERVO_SPEED_RSP_DATA pulse_data;
@@ -454,6 +456,8 @@ BOOL Ros_CtrlGroup_GetTorque(CtrlGroup* ctrlGroup, double torqueValues[MAX_PULSE
 	memset(torqueValues, 0, sizeof(torqueValues)); // clear result, in case of error
 	memset(dst_trq.data, 0, sizeof(MP_TRQCTL_DATA));
 	dst_trq.unit = TRQ_NEWTON_METER; //request data in Nm
+
+	memset(&dst_vel, 0x00, sizeof(MP_GRP_AXES_T));
 
 	status = mpSvsGetVelTrqFb(dst_vel, &dst_trq);
 	if (status != OK)

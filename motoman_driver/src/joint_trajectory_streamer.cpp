@@ -86,9 +86,9 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
     motion_ctrl_map_[robot_id] = motion_ctrl;
   }
 
-  disabler_ = node_.advertiseService("/robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
+  disabler_ = node_.advertiseService("robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
 
-  enabler_ = node_.advertiseService("/robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
+  enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
 
   return rtn;
 }
@@ -109,9 +109,9 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   rtn &= motion_ctrl_.init(connection, robot_id_);
 
-  disabler_ = node_.advertiseService("/robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
+  disabler_ = node_.advertiseService("robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
 
-  enabler_ = node_.advertiseService("/robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
+  enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
 
   return rtn;
 }
@@ -369,7 +369,7 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
 bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
   if (!motion_ctrl_.controllerReady())
-    ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion, so trajectory ABORTED.\n If safe, call /robot_enable service to (re-)enable Motoplus motion.");
+    ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion, trajectory execution ABORTED. If safe, call the 'robot_enable' service to (re-)enable Motoplus motion and retry.");
 
   return JointTrajectoryStreamer::send_to_robot(messages);
 }

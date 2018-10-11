@@ -1,7 +1,7 @@
-﻿  ------ Now building project: MotoRosDX100------
+﻿  ------ Now building project: MotoRosDX1_------
   Compiling Controller.c
 Controller.c : warning : In function `Db_Print'
-Controller.c(959): warning : unused parameter `msgFormat'
+Controller.c(973): warning : unused parameter `msgFormat'
   Compiling CtrlGroup.c
 CtrlGroup.c : warning : In function `Ros_CtrlGroup_IsRobot'
 CtrlGroup.c(632): warning : comparison of unsigned expression >= 0 is always true
@@ -10,6 +10,6 @@ CtrlGroup.c(632): warning : comparison of unsigned expression >= 0 is always tru
   Compiling mpMain.c
   Compiling SimpleMessage.c
   Compiling StateServer.c
-  Building MotoRosDX100.out
-  Build Successful!  Check 'DX100\MotoRosDX100' folder for MotoRosDX100.out
+  Building MotoRosDX1_.out
+  Build Successful!  Check 'DX100\MotoRosDX1_' folder for MotoRosDX1_.out
   ------
