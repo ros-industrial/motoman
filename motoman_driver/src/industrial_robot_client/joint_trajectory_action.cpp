@@ -629,38 +629,6 @@ bool JointTrajectoryAction::withinGoalConstraints(
   return rtn;
 }
 
-bool JointTrajectoryAction::withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
-    const motoman_msgs::DynamicJointTrajectory & traj)
-{
-  bool rtn = false;
-  if (traj.points.empty())
-  {
-    ROS_WARN("Empty joint trajectory passed to check goal constraints, return false");
-    rtn = false;
-  }
-  else
-  {
-    int last_point = traj.points.size() - 1;
-
-    const motoman_msgs::DynamicJointsGroup &pt = traj.points[last_point].groups[3];
-
-    int group_number = pt.group_number;
-
-    if (industrial_robot_client::utils::isWithinRange(
-          last_trajectory_state_map_[group_number]->joint_names,
-          last_trajectory_state_map_[group_number]->actual.positions, traj.joint_names,
-          traj.points[last_point].groups[3].positions, goal_threshold_))
-    {
-      rtn = true;
-    }
-    else
-    {
-      rtn = false;
-    }
-  }
-  return rtn;
-}
-
 bool JointTrajectoryAction::withinGoalConstraints(
   const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
   const trajectory_msgs::JointTrajectory & traj, int robot_id)
