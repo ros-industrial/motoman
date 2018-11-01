@@ -27,32 +27,32 @@
   testing multpile launch files
 -->
 <launch>
-	<arg name="req_arg" value="default"/>
+  <arg name="req_arg" value="default"/>
   <arg name="yrc1000" value="yrc1000"/>
   
   <group ns="load_mini">
-	  <include file="$(find motoman_mini_support)/launch/load_mini.launch"/>
+    <include file="$(find motoman_mini_support)/launch/load_mini.launch"/>
   </group>
 
   <group ns="test_mini">
-	  <include file="$(find motoman_mini_support)/launch/test_mini.launch"/>
+    <include file="$(find motoman_mini_support)/launch/test_mini.launch"/>
   </group>
 
   <group ns="robot_interface_streaming_mini">
     <group ns="yrc1000" >
-	    <include file="$(find motoman_mini_support)/launch/robot_interface_streaming_mini.launch">
-		    <arg name="robot_ip"   value="$(arg req_arg)" />
+      <include file="$(find motoman_mini_support)/launch/robot_interface_streaming_mini.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg yrc1000)"/>
-	    </include>
+      </include>
     </group>
   </group>
 
   <group ns="robot_state_visualize_mini">
     <group ns="yrc1000" >
-	    <include file="$(find motoman_mini_support)/launch/robot_state_visualize_mini.launch">
-		    <arg name="robot_ip"   value="$(arg req_arg)" />
+      <include file="$(find motoman_mini_support)/launch/robot_state_visualize_mini.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg yrc1000)"/>
-	    </include>
+      </include>
     </group>
   </group>
 
