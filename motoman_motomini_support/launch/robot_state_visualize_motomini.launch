@@ -6,7 +6,7 @@
    - 6 joints
 
   Usage:
-    robot_state_visualize_mini.launch robot_ip:=<value> controller:=<yrc1000>
+    robot_state_visualize_motomini.launch robot_ip:=<value> controller:=<yrc1000>
 -->
 <launch>
   <arg name="robot_ip" />
@@ -14,7 +14,7 @@
   <!-- controller: Controller name (yrc1000) -->
   <arg name="controller" />
 
-  <rosparam command="load" file="$(find motoman_mini_support)/config/joint_names_mini.yaml" />
+  <rosparam command="load" file="$(find motoman_motomini_support)/config/joint_names_motomini.yaml" />
 
   <include file="$(find motoman_driver)/launch/robot_state_$(arg controller).launch">
     <arg name="robot_ip"   value="$(arg robot_ip)" />
@@ -23,7 +23,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" 
     type="robot_state_publisher" />
 
-  <include file="$(find motoman_mini_support)/launch/load_mini.launch" />
+  <include file="$(find motoman_motomini_support)/launch/load_motomini.launch" />
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
 </launch>

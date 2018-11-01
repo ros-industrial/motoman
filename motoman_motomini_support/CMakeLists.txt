@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(motoman_mini_support)
+project(motoman_motomini_support)
 
 find_package(catkin REQUIRED)
 

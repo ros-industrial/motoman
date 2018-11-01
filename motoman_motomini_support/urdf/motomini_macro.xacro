@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-<xacro:macro name="motoman_mini" params="prefix">
+<xacro:macro name="motoman_motomini" params="prefix">
 
   <!-- Properties -->
   <material name="yaskawa_blue">
@@ -11,91 +11,91 @@
   <link name="${prefix}base_link">
     <visual>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/visual/base_link.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/visual/base_link.stl"/>
       </geometry>
       <material name="yaskawa_blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/collision/base_link.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/collision/base_link.stl"/>
       </geometry>
     </collision>
   </link>
   <link name="${prefix}link_1_s">
     <visual>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/visual/link_1_s.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/visual/link_1_s.stl"/>
       </geometry>
       <material name="yaskawa_blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/collision/link_1_s.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/collision/link_1_s.stl"/>
       </geometry>
     </collision>
   </link>
   <link name="${prefix}link_2_l">
     <visual>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/visual/link_2_l.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/visual/link_2_l.stl"/>
       </geometry>
       <material name="yaskawa_blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/collision/link_2_l.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/collision/link_2_l.stl"/>
       </geometry>
     </collision>
   </link>
   <link name="${prefix}link_3_u">
     <visual>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/visual/link_3_u.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/visual/link_3_u.stl"/>
       </geometry>
       <material name="yaskawa_blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/collision/link_3_u.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/collision/link_3_u.stl"/>
       </geometry>
     </collision>
   </link>
   <link name="${prefix}link_4_r">
     <visual>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/visual/link_4_r.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/visual/link_4_r.stl"/>
       </geometry>
       <material name="yaskawa_blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/collision/link_4_r.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/collision/link_4_r.stl"/>
       </geometry>
     </collision>
   </link>
   <link name="${prefix}link_5_b">
     <visual>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/visual/link_5_b.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/visual/link_5_b.stl"/>
       </geometry>
       <material name="yaskawa_blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/collision/link_5_b.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/collision/link_5_b.stl"/>
       </geometry>
     </collision>
   </link>
   <link name="${prefix}link_6_t">
     <visual>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/visual/link_6_t.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/visual/link_6_t.stl"/>
       </geometry>
       <material name="yaskawa_blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_mini_support/meshes/mini/collision/link_6_t.stl"/>
+        <mesh filename="package://motoman_motomini_support/meshes/motomini/collision/link_6_t.stl"/>
       </geometry>
     </collision>
   </link>

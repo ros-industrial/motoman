@@ -30,26 +30,26 @@
   <arg name="req_arg" value="default"/>
   <arg name="yrc1000" value="yrc1000"/>
   
-  <group ns="load_mini">
-    <include file="$(find motoman_mini_support)/launch/load_mini.launch"/>
+  <group ns="load_motomini">
+    <include file="$(find motoman_motomini_support)/launch/load_motomini.launch"/>
   </group>
 
-  <group ns="test_mini">
-    <include file="$(find motoman_mini_support)/launch/test_mini.launch"/>
+  <group ns="test_motomini">
+    <include file="$(find motoman_motomini_support)/launch/test_motomini.launch"/>
   </group>
 
-  <group ns="robot_interface_streaming_mini">
+  <group ns="robot_interface_streaming_motomini">
     <group ns="yrc1000" >
-      <include file="$(find motoman_mini_support)/launch/robot_interface_streaming_mini.launch">
+      <include file="$(find motoman_motomini_support)/launch/robot_interface_streaming_motomini.launch">
         <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg yrc1000)"/>
       </include>
     </group>
   </group>
 
-  <group ns="robot_state_visualize_mini">
+  <group ns="robot_state_visualize_motomini">
     <group ns="yrc1000" >
-      <include file="$(find motoman_mini_support)/launch/robot_state_visualize_mini.launch">
+      <include file="$(find motoman_motomini_support)/launch/robot_state_visualize_motomini.launch">
         <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg yrc1000)"/>
       </include>

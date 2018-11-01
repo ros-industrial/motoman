@@ -6,7 +6,7 @@
    - 6 joints
 
   Usage:
-    robot_interface_streaming_mini.launch robot_ip:=<value> controller:=<yrc1000>
+    robot_interface_streaming_motomini.launch robot_ip:=<value> controller:=<yrc1000>
 -->
 <launch>
   <arg name="robot_ip" />
@@ -14,7 +14,7 @@
   <!-- controller: Controller name (yrc1000) -->
   <arg name="controller"/>
 
-  <rosparam command="load" file="$(find motoman_mini_support)/config/joint_names_mini.yaml" />
+  <rosparam command="load" file="$(find motoman_motomini_support)/config/joint_names_motomini.yaml" />
 
   <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
     <arg name="robot_ip"   value="$(arg robot_ip)" />
