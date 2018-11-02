@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
-<package>
+<package format="2">
  <name>motoman_gp8_support</name>
  <version>0.1.0</version>
  <description>
@@ -37,11 +37,11 @@
  <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
  <url type="repository">https://github.com/ros-industrial/motoman</url>
  <buildtool_depend>catkin</buildtool_depend>
- <build_depend>roslaunch</build_depend>
- <run_depend>motoman_driver</run_depend>
- <run_depend>robot_state_publisher</run_depend>
- <run_depend>rviz</run_depend>
- <run_depend>joint_state_publisher</run_depend>
+ <test_depend>roslaunch</test_depend>
+ <exec_depend>motoman_driver</exec_depend>
+ <exec_depend>robot_state_publisher</exec_depend>
+ <exec_depend>rviz</exec_depend>
+ <exec_depend>joint_state_publisher</exec_depend>
  <export>
   <architecture_independent/>
  </export>
