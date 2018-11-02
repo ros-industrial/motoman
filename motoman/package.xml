@@ -4,10 +4,11 @@
   <name>motoman</name>
   <version>0.3.5</version>
   <description>The motoman stack constains libraries, configuration files, and ROS nodes for controlling a Motoman robot from ROS-Industrial</description>
-  <maintainer email="sedwards@swri.org">Shaun Edwards</maintainer>
+  <author>Shaun Edwards</author>
+  <maintainer email="shaun.edwards@gmail.com">Shaun Edwards</maintainer>
+  <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
   <license>BSD</license>
   <url type="website">http://wiki.ros.org/motoman</url>
-  <author email="sedwards@swri.org">Shaun Edwards</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 

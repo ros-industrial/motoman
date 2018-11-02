@@ -31,7 +31,8 @@
     </p>
  </description>
  <author>Eric Marcil</author>
- <maintainer email="shaun.edwards@gmail.com"/>
+ <maintainer email="shaun.edwards@gmail.com">Shaun Edwards</maintainer>
+ <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
  <license>BSD</license>
  <url type="website">http://ros.org/wiki/motoman_gp8_support</url>
  <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
