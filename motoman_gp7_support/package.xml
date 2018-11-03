@@ -32,15 +32,20 @@
   <maintainer email="shaun.edwards@gmail.com">Shaun Edwards</maintainer>
   <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
   <license>BSD</license>
+
   <url type="website">http://wiki.ros.org/motoman_gp7_support</url>
   <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
   <url type="repository">https://github.com/ros-industrial/motoman</url>
+
   <buildtool_depend>catkin</buildtool_depend>
+
   <test_depend>roslaunch</test_depend>
+
   <exec_depend>motoman_driver</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>rviz</exec_depend>
   <exec_depend>joint_state_publisher</exec_depend>
+
   <export>
     <architecture_independent/>
   </export>
