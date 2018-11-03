@@ -13,7 +13,13 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <exec_depend>motoman_driver</exec_depend>
+  <exec_depend>motoman_gp12_support</exec_depend>
+  <exec_depend>motoman_gp7_support</exec_depend>
+  <exec_depend>motoman_gp8_support</exec_depend>
+  <exec_depend>motoman_mh12_support</exec_depend>
+  <exec_depend>motoman_mh50_support</exec_depend>
   <exec_depend>motoman_mh5_support</exec_depend>
+  <exec_depend>motoman_motomini_support</exec_depend>
   <exec_depend>motoman_msgs</exec_depend>
   <exec_depend>motoman_sda10f_moveit_config</exec_depend>
   <exec_depend>motoman_sda10f_support</exec_depend>
