@@ -71,7 +71,9 @@ typedef enum
 	ROS_MSG_MOTO_IOCTRL_REPLY = 2011,
 
 	ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016,
-	ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017
+	ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017,
+
+	ROS_MSG_MOTO_GET_DH_PARAMETERS = 2020
 } SmMsgType;
 
 
@@ -134,7 +136,8 @@ typedef enum
 	ROS_RESULT_INVALID_DATA_POSITION,
 	ROS_RESULT_INVALID_DATA_SPEED,
 	ROS_RESULT_INVALID_DATA_ACCEL,
-	ROS_RESULT_INVALID_DATA_INSUFFICIENT
+	ROS_RESULT_INVALID_DATA_INSUFFICIENT,
+	ROS_RESULT_INVALID_DATA_TIME
 } SmInvalidSubCode;
 
 
@@ -321,6 +324,12 @@ struct _SmBodyMotoIoCtrlReply	// ROS_MSG_MOTO_IOCTRL_REPLY = 2011
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoIoCtrlReply SmBodyMotoIoCtrlReply;
 
+struct _SmBodyMotoGetDhParameters
+{
+	DH_PARAMETERS dhParameters[MOT_MAX_GR];
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoGetDhParameters SmBodyMotoGetDhParameters;
+
 //--------------
 // Body Union
 //--------------
@@ -343,6 +352,7 @@ typedef union
 	SmBodyMotoWriteIOGroup writeIOGroup;
 	SmBodyMotoWriteIOGroupReply writeIOGroupReply;
 	SmBodyMotoIoCtrlReply ioCtrlReply;
+	SmBodyMotoGetDhParameters dhParameters;
 } SmBody;
 
 //-------------------

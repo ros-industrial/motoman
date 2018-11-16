@@ -53,6 +53,7 @@ int Ros_MotionServer_InitTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPt
 int Ros_MotionServer_AddTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFull* jointTrajData);
 int Ros_MotionServer_AddTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence);
 int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg);
 
 // AddToIncQueue Task:
 void Ros_MotionServer_AddToIncQueueProcess(Controller* controller, int groupNo);
@@ -452,6 +453,11 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	//-----------------------
 	case ROS_MSG_MOTO_WRITE_IO_GROUP:
 		ret = Ros_IoServer_WriteIOGroup(receiveMsg, replyMsg);
+		break;
+
+	//-----------------------
+	case ROS_MSG_MOTO_GET_DH_PARAMETERS:
+		ret = Ros_MotionServer_GetDhParameters(controller, replyMsg);
 		break;
 
 	//-----------------------
@@ -1071,6 +1077,15 @@ int Ros_MotionServer_JointTrajDataProcess(Controller* controller, SimpleMsg* rec
 	{
 		printf("ERROR: Validfields = %d\r\n", trajData->validFields);
 		Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_DATA_INSUFFICIENT, replyMsg, receiveMsg->body.jointTrajData.groupNo);
+		return 0;
+	}
+
+	//Due to data loss when converting from double (ROS PC) to float (Simple Message serialization), we cannot accept
+	//a single trjectory that lasts more than 4 hours.
+	if (trajData->time >= MAX_TRAJECTORY_TIME_LENGTH)
+	{
+		printf("ERROR: Trajectory time (%.4f) > MAX_TRAJECTORY_TIME_LENGTH (%.4f)\r\n", trajData->time, MAX_TRAJECTORY_TIME_LENGTH);
+		Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_DATA_TIME, replyMsg, receiveMsg->body.jointTrajData.groupNo);
 		return 0;
 	}
 
@@ -1822,4 +1837,36 @@ STATUS Ros_MotionServer_DisableEcoMode(Controller* controller)
 		return OK;
 	else
 		return NG;
+}
+
+int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg)
+{
+	int i; 
+	STATUS apiRet = OK;
+
+	//initialize memory
+	memset(replyMsg, 0x00, sizeof(SimpleMsg));
+
+	// set prefix: length of message excluding the prefix
+	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoGetDhParameters);
+
+	// set header information of the reply
+	replyMsg->header.msgType = ROS_MSG_MOTO_GET_DH_PARAMETERS;
+	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+	replyMsg->header.replyType = ROS_REPLY_SUCCESS;
+
+	for (i = 0; i < controller->numGroup; i += 1)
+	{
+		if (controller->ctrlGroups[i] != NULL && replyMsg->header.replyType == ROS_REPLY_SUCCESS)
+		{
+			apiRet = GP_getDhParameters(i, &replyMsg->body.dhParameters.dhParameters[i]);
+
+			if (apiRet == OK)
+				replyMsg->header.replyType = ROS_REPLY_SUCCESS;
+			else
+				replyMsg->header.replyType = ROS_REPLY_FAILURE;
+		}
+	}
+
+	return apiRet;
 }
