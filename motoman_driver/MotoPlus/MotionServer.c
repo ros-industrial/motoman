@@ -283,6 +283,9 @@ int Ros_MotionServer_GetExpectedByteSizeForMessageType(SimpleMsg* receiveMsg, in
 	case ROS_MSG_MOTO_WRITE_IO_GROUP:
 		expectedSize = minSize + sizeof(SmBodyMotoWriteIOGroup);
 		break;
+	case ROS_MSG_MOTO_GET_DH_PARAMETERS:
+		expectedSize = minSize; //no additional data on the request
+		break;
 	default: //invalid message type
 		return -1;
 	}

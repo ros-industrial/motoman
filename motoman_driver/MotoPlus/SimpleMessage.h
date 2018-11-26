@@ -324,6 +324,10 @@ struct _SmBodyMotoIoCtrlReply	// ROS_MSG_MOTO_IOCTRL_REPLY = 2011
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoIoCtrlReply SmBodyMotoIoCtrlReply;
 
+//--------------
+// DH Parameters
+//--------------
+
 struct _SmBodyMotoGetDhParameters
 {
 	DH_PARAMETERS dhParameters[MOT_MAX_GR];
