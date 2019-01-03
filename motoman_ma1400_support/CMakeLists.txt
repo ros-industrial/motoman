@@ -12,7 +12,7 @@ if (CATKIN_ENABLE_TESTING)
   roslaunch_add_file_check(test/launch_test.xml)
 endif()
 
-foreach(dir config launch meshes urdf)
+foreach(dir config launch)
    install(DIRECTORY ${dir}/
       DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach()
