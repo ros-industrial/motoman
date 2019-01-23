@@ -452,6 +452,32 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           break;  // silently retry sending this point
         else
         {
+          ROS_ERROR_STREAM("\motoman\motoman_driver\src\joint_trajectory_streamer.cpp line 456:\n"
+                         "this->current_point_ -> "                             << this->current_point_ << "\n"
+                      << "this->current_traj_[this->current_point_].header -> " << this->current_traj_[this->current_point_].header << "\n"
+                      << "this->current_traj_[this->current_point_].joint_names: ");
+
+          for (auto joint_name : this->current_traj_[this->current_point_].joint_names)
+          {
+            ROS_ERROR_STREAM(joint_name " : ");
+          }
+
+          ROS_ERROR_STREAM("\n");
+          ROS_ERROR_STREAM("this->current_traj_[this->current_point_].points:\n");
+
+          int i = 0;
+          for (auto &point : this->current_traj_[this->current_point_].points)
+          {
+            ROS_ERROR_STREAM("positions[" << i << "] - ");
+            for (auto &data : point.positions)
+            {
+              ROS_ERROR_STREAM(data << ", ");
+            }
+
+            ROS_ERROR_STREAM(" time_from_start ->" << data.time_from_start << "\n");
+            i++;
+          }
+
           ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point"
                            << " (#" << this->current_point_ << "): "
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
