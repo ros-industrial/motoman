@@ -274,9 +274,12 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh)
       }
 
       // Generating message for groups that were not present in the trajectory message
+      // Assume that joints from these groups will mantain its current position.
+      // Velocity, acceleration and effort are zero out. 
       else
       {
-        std::vector<double> positions(num_joints, 0.0);
+        ROS_DEBUG("Group %s not present in trajectory plan, using its last received joint positions as goal", robot_groups_[group_number].get_name().c_str());
+        std::vector<double> positions = last_trajectory_state_map_[group_number]->actual.positions;
         std::vector<double> velocities(num_joints, 0.0);
         std::vector<double> accelerations(num_joints, 0.0);
         std::vector<double> effort(num_joints, 0.0);
