@@ -128,6 +128,7 @@ public:
   bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
 protected:
+  static const size_t max_ptstreaming_queue_elements = 20;
   void trajectoryStop();
 
   boost::thread* streaming_thread_;
@@ -138,6 +139,7 @@ protected:
   ros::Time streaming_start_;
   int min_buffer_size_;
 
+  ros::Duration ptstreaming_last_time_from_start_;   // last valid point streaming point time from start
   int ptstreaming_seq_count_; // sequence count for point streaming (--> JointTrajPtFull::sequence_)
   std::queue<SimpleMessage> ptstreaming_queue_; // message queue for point streaming
 };

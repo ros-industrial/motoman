@@ -491,7 +491,6 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
                ReplyTypes::INVALID, tmpMsg.getData());
 
-      ROS_INFO("Sending joint trajectory point");
       if (this->connection_->sendAndReceiveMsg(msg, reply, false))
       {
         MotionReplyMessage reply_status;
@@ -503,11 +502,10 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         }
         if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
         {
-          ROS_DEBUG("Point[%d] sent to controller", this->current_point_);
-          this->current_point_++;
           this->dt_ptstreaming_points_ = 0.0;
           this->time_ptstreaming_last_point_ = ros::Time::now().toSec();
           this->ptstreaming_queue_.pop();
+          ROS_DEBUG("Point sent to controller, remaining points in queue [%lu]", this->ptstreaming_queue_.size());
         }
         else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
         {
