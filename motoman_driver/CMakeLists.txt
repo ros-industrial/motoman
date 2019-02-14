@@ -170,8 +170,8 @@ set_target_properties(motoman_motion_streaming_interface_bswap
   PREFIX "")
 
 add_executable(${PROJECT_NAME}_joint_trajectory_action
-  src/joint_trajectory_action_node.cpp
-  src/industrial_robot_client/joint_trajectory_action.cpp)
+  src/industrial_robot_client/joint_trajectory_action.cpp
+  src/joint_trajectory_action_node.cpp)
 target_link_libraries(${PROJECT_NAME}_joint_trajectory_action
   industrial_robot_client
   motoman_industrial_robot_client
