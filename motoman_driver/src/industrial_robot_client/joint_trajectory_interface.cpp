@@ -665,7 +665,7 @@ bool JointTrajectoryInterface::stopMotionCB(
 
 bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &traj)
 {
-  for (int i = 0; i < traj.points.size(); ++i)
+  for (size_t i = 0; i < traj.points.size(); ++i)
   {
     const trajectory_msgs::JointTrajectoryPoint &pt = traj.points[i];
 
@@ -674,7 +674,7 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
       ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
 
     // check for joint velocity limits
-    for (int j = 0; j < pt.velocities.size(); ++j)
+    for (size_t j = 0; j < pt.velocities.size(); ++j)
     {
       std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
       if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
@@ -694,7 +694,7 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
 
 bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajectory &traj)
 {
-  for (int i = 0; i < traj.points.size(); ++i)
+  for (size_t i = 0; i < traj.points.size(); ++i)
   {
     for (int gr = 0; gr < traj.points[i].num_groups; gr++)
     {
@@ -704,7 +704,7 @@ bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajecto
       if (pt.positions.empty())
         ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
       // check for joint velocity limits
-      for (int j = 0; j < pt.velocities.size(); ++j)
+      for (size_t j = 0; j < pt.velocities.size(); ++j)
       {
         std::map<std::string, double>::iterator max_vel = joint_vel_limits_.find(traj.joint_names[j]);
         if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined

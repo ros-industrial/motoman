@@ -114,7 +114,7 @@ bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
     return false;
   }
 
-  for (int i = 0; i < joint_trajectory_points_.size(); i++)
+  for (size_t i = 0; i < joint_trajectory_points_.size(); i++)
   {
     JointTrajPtFull traj_full = joint_trajectory_points_[i];
 
@@ -206,7 +206,7 @@ bool JointTrajPtFullEx::unload(industrial::byte_array::ByteArray *buffer)
 {
   LOG_COMM("Executing joint traj. pt. unload");
 
-  for (int i = 0; i < joint_trajectory_points_.size(); i++)
+  for (size_t i = 0; i < joint_trajectory_points_.size(); i++)
   {
     if (!buffer->unload(joint_trajectory_points_[i]))
     {
