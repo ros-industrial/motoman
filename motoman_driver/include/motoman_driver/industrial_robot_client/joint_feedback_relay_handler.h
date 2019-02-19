@@ -145,7 +145,7 @@ private:
 };  // class JointFeedbackRelayHandler
 
 }  // namespace joint_feedback_relay_handler
-}  // namespace industrial_robot_cliet
+}  // namespace industrial_robot_client
 
 
 #endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_RELAY_HANDLER_H

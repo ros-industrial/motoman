@@ -69,7 +69,7 @@ enum MotionReplyResult
   NOT_READY  = 5,
   MP_FAILURE = 6
 };
-}
+}  // namespace MotionReplyResults
 typedef MotionReplyResults::MotionReplyResult MotionReplyResult;
 
 /*
@@ -114,7 +114,7 @@ enum NotReadyCode
   SKILLSEND
 };
 }  // namespace NotReady
-}  // MotionReplySubcodes
+}  // namespace MotionReplySubcodes
 
 /**
  * \brief Class encapsulated motion control reply data.  These messages are sent
