@@ -174,7 +174,8 @@ bool JointFeedbackRelayHandler::JointDataToVector(const JointData &joints,
   return true;
 }
 
-bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id)
+bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointsGroup* joint_state,
+                                                int robot_id)
 {
   JointData values;
   int num_jnts = robot_groups_[robot_id].get_joint_names().size();
@@ -275,10 +276,10 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Jo
   return true;
 }
 
-bool JointFeedbackRelayHandler::select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
+bool JointFeedbackRelayHandler::select(const DynamicJointsGroup& all_joint_state,
+                                       const std::vector<std::string>& all_joint_names,
                                        DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names)
 {
-
   ROS_ASSERT(all_joint_state.positions.size() == all_joint_names.size());
 
   *pub_joint_state = DynamicJointsGroup();  // start with a "clean" message

@@ -66,7 +66,7 @@ WriteSingleIOReply::~WriteSingleIOReply(void)
 
 void WriteSingleIOReply::init()
 {
-  // TODO: is success a good initial value?
+  // TODO( ): is success a good initial value?
   this->init(WriteSingleIOReplyResults::SUCCESS);
 }
 

@@ -130,7 +130,6 @@ public:
   virtual void streamingThread();
 
 protected:
-
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
 
@@ -170,8 +169,6 @@ protected:
    */
   bool enableRobotCB(std_srvs::Trigger::Request &req,
                      std_srvs::Trigger::Response &res);
-
-
 };
 
 }  // namespace joint_trajectory_streamer

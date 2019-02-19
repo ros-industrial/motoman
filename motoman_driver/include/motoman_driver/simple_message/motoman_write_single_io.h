@@ -171,7 +171,6 @@ private:
    * \brief Value of IO element.
    */
   industrial::shared_types::shared_int value_;
-
 };
 }  // namespace io_ctrl
 }  // namespace simple_message

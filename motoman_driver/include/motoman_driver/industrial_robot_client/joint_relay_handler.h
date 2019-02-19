@@ -64,7 +64,6 @@ using motoman_msgs::DynamicJointsGroup;
 class JointRelayHandler : public industrial::message_handler::MessageHandler
 {
 public:
-
   /**
   * \brief Constructor
   */
@@ -81,7 +80,8 @@ public:
    *
    * \return true on success, false otherwise (an invalid message type)
    */
-  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::map<int, RobotGroup> &robot_groups)
+  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection,
+                    std::map<int, RobotGroup>& robot_groups)
   {
     return init(connection, static_cast<int>(industrial::simple_message::StandardMsgTypes::JOINT), robot_groups);
   }
@@ -96,7 +96,8 @@ public:
    *
    * \return true on success, false otherwise (an invalid message type)
    */
-  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::vector<std::string> &joint_names)
+  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection,
+                    std::vector<std::string>& joint_names)
   {
     return init(connection, static_cast<int>(industrial::simple_message::StandardMsgTypes::JOINT), joint_names);
   }
@@ -253,7 +254,6 @@ private:
    * \param[out] joint_state JointTrajectoryPt message for intermediate processing
    */
   bool convert_message(JointMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id);
-
 };  // class JointRelayHandler
 
 }  // namespace joint_relay_handler

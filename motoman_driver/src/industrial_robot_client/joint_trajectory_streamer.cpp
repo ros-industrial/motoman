@@ -175,7 +175,8 @@ bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& me
   return true;
 }
 
-bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs)
+bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj,
+                                                 std::vector<SimpleMessage>* msgs)
 {
   // use base function to transform points
   if (!JointTrajectoryInterface::trajectory_to_msgs(traj, msgs))
@@ -192,7 +193,8 @@ bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTra
   return true;
 }
 
-bool JointTrajectoryStreamer::trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs)
+bool JointTrajectoryStreamer::trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr& traj,
+                                                 std::vector<SimpleMessage>* msgs)
 {
   // use base function to transform points
   if (!JointTrajectoryInterface::trajectory_to_msgs(traj, msgs))

@@ -143,8 +143,9 @@ public:
   bool unload(industrial::byte_array::ByteArray *buffer);
   unsigned int byteLength()
   {
-    return sizeof(industrial::shared_types::shared_int) + MAX_NUM_GROUPS * (2 * sizeof(industrial::shared_types::shared_int) + sizeof(industrial::shared_types::shared_real)
-           + 3 * (this->positions_.byteLength()));
+    return sizeof(industrial::shared_types::shared_int) +
+           MAX_NUM_GROUPS * (2 * sizeof(industrial::shared_types::shared_int) +
+                             sizeof(industrial::shared_types::shared_real) + 3 * (this->positions_.byteLength()));
   }
 
 private:

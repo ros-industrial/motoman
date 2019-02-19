@@ -60,8 +60,8 @@ enum MotomanMsgType
   MOTOMAN_READ_SINGLE_IO_REPLY = 2004,
   MOTOMAN_WRITE_SINGLE_IO = 2005,
   MOTOMAN_WRITE_SINGLE_IO_REPLY = 2006,
-  ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016, // This is similar to the "Dynamic Joint Point" in REP I0001
-  ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017, //Similar to Dynamic Joint State on the REP I0001
+  ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016,  // This is similar to the "Dynamic Joint Point" in REP I0001
+  ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017,      // Similar to Dynamic Joint State on the REP I0001
 };
 }  // namespace MotomanMsgTypes
 typedef MotomanMsgTypes::MotomanMsgType MotomanMsgType;
