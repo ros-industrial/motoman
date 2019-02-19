@@ -75,7 +75,7 @@ public:
    *
    * \param robot_id robot group # on this controller (for multi-group systems)
    */
-  MotomanJointTrajectoryStreamer(int robot_id = -1) : JointTrajectoryStreamer(1),
+  explicit MotomanJointTrajectoryStreamer(int robot_id = -1) : JointTrajectoryStreamer(1),
     robot_id_(robot_id) {}
 
   ~MotomanJointTrajectoryStreamer();

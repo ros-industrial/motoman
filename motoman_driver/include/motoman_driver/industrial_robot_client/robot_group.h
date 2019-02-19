@@ -40,7 +40,7 @@
 class RobotGroup
 {
 public:
-  RobotGroup() {};
+  RobotGroup() {}
 
   std::vector<std::string> get_joint_names()
   {

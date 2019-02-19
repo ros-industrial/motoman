@@ -71,7 +71,7 @@ public:
   /**
   * \brief Constructor
   */
-  JointFeedbackExRelayHandler(int groups_number = -1) : groups_number_(groups_number) {};
+  explicit JointFeedbackExRelayHandler(int groups_number = -1) : groups_number_(groups_number) {}
 
 
   /**
