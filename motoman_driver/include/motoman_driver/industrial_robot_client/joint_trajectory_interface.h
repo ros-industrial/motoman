@@ -73,7 +73,7 @@ public:
   /**
    * \brief Default constructor.
    */
-  JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0) {};
+  JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0) {}
   typedef std::map<int, RobotGroup>::iterator it_type;
 
   /**

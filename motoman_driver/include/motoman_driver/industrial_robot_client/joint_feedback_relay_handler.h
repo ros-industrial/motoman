@@ -64,7 +64,7 @@ public:
   /**
   * \brief Constructor
   */
-  JointFeedbackRelayHandler(int robot_id = -1) : robot_id_(robot_id) {};
+  explicit JointFeedbackRelayHandler(int robot_id = -1) : robot_id_(robot_id) {}
 
 
   /**

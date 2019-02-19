@@ -68,7 +68,7 @@ public:
   /**
   * \brief Constructor
   */
-  JointRelayHandler() {};
+  JointRelayHandler() {}
 
   typedef std::map<int, RobotGroup>::iterator it_type;
   /**
