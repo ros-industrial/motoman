@@ -1,10 +1,3 @@
-#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_EX_RELAY_HANDLER_H
-#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_EX_RELAY_HANDLER_H
-
-#include <vector>
-#include <map>
-#include <string>
-#include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
 /*
  * Software License Agreement (BSD License)
  *
@@ -38,6 +31,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_EX_RELAY_HANDLER_H
+#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_EX_RELAY_HANDLER_H
+
+#include <vector>
+#include <map>
+#include <string>
+#include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
 #include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "motoman_driver/simple_message/messages/joint_feedback_ex_message.h"
 #include "motoman_msgs/DynamicJointsGroup.h"
