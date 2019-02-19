@@ -42,11 +42,11 @@
 #include "simple_message/joint_feedback.h"
 #include "simple_message/messages/joint_feedback_message.h"
 #else
-#include "joint_data.h"
-#include "simple_message.h"
-#include "simple_serialize.h"
-#include "shared_types.h"
-#include "joint_feedback.h"
+#include "joint_data.h"        // NOLINT(build/include)
+#include "simple_message.h"    // NOLINT(build/include)
+#include "simple_serialize.h"  // NOLINT(build/include)
+#include "shared_types.h"      // NOLINT(build/include)
+#include "joint_feedback.h"    // NOLINT(build/include)
 #include "messages/joint_feedback_message.h"
 #endif
 

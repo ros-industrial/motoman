@@ -43,10 +43,10 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "typed_message.h"
-#include "shared_types.h"
-#include "motoman_simple_message.h"
-#include "motoman_read_single_io_reply.h"
+#include "typed_message.h"                 // NOLINT(build/include)
+#include "shared_types.h"                  // NOLINT(build/include)
+#include "motoman_simple_message.h"        // NOLINT(build/include)
+#include "motoman_read_single_io_reply.h"  // NOLINT(build/include)
 
 #endif
 

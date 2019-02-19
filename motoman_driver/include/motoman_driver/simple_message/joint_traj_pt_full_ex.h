@@ -41,10 +41,10 @@
 #include "simple_message/shared_types.h"
 #include "simple_message/joint_traj_pt_full.h"
 #else
-#include "joint_data.h"
-#include "simple_message.h"
-#include "simple_serialize.h"
-#include "shared_types.h"
+#include "joint_data.h"        // NOLINT(build/include)
+#include "simple_message.h"    // NOLINT(build/include)
+#include "simple_serialize.h"  // NOLINT(build/include)
+#include "shared_types.h"      // NOLINT(build/include)
 #endif
 
 #include<vector>

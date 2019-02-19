@@ -38,9 +38,9 @@
 #include "simple_message/shared_types.h"
 #include "simple_message/log_wrapper.h"
 #else
-#include "joint_feedback_ex.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "joint_feedback_ex.h"  // NOLINT(build/include)
+#include "shared_types.h"       // NOLINT(build/include)
+#include "log_wrapper.h"        // NOLINT(build/include)
 #endif
 
 using industrial::joint_feedback_message::JointFeedbackMessage;

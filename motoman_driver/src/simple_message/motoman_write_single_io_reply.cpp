@@ -40,10 +40,10 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "motoman_write_single_io.h"
-#include "motoman_write_single_io_reply.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "motoman_write_single_io.h"        // NOLINT(build/include)
+#include "motoman_write_single_io_reply.h"  // NOLINT(build/include)
+#include "shared_types.h"                   // NOLINT(build/include)
+#include "log_wrapper.h"                    // NOLINT(build/include)
 #endif
 
 using industrial::shared_types::shared_int;
