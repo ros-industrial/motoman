@@ -63,9 +63,9 @@ enum MotomanMsgType
   ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016, // This is similar to the "Dynamic Joint Point" in REP I0001
   ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017, //Similar to Dynamic Joint State on the REP I0001
 };
-}
+}  // namespace MotomanMsgTypes
 typedef MotomanMsgTypes::MotomanMsgType MotomanMsgType;
 }  // namespace simple_message
-}  // namespace industrial
+}  // namespace motoman
 
 #endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_SIMPLE_MESSAGE_H

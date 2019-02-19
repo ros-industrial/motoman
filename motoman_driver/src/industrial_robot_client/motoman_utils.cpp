@@ -118,6 +118,6 @@ bool getJointGroups(const std::string topic_param, std::map<int, RobotGroup> & r
   }
 }
 
-} //motoman_utils
-} //industrial_robot_client
+}  // namespace motoman_utils
+}  // namespace industrial_robot_client
 
