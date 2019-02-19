@@ -56,4 +56,4 @@ bool getJointGroups(const std::string topic_param, std::map<int, RobotGroup> & r
 }//motoman_utils
 }//industrial_robot_client
 
-#endif /* MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_MOTOMAN_UTILS_H */
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_MOTOMAN_UTILS_H

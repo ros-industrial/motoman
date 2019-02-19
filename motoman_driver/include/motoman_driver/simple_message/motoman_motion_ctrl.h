@@ -279,4 +279,4 @@ private:
 }  // namespace simple_message
 }  // namespace motoman
 
-#endif /* MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_H */
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_H

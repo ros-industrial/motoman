@@ -139,4 +139,4 @@ protected:
 }  // namespace joint_trajectory_streamer
 }  // namespace industrial_robot_client
 
-#endif /* MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_STREAMER_H */
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_STREAMER_H

@@ -289,5 +289,5 @@ private:
 }  // namespace joint_trajectory_action
 }  // namespace industrial_robot_client
 
-#endif /* MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H */
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H
 

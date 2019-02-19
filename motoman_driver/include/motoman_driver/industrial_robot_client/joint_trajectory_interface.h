@@ -383,4 +383,4 @@ private:
 }  // namespace joint_trajectory_interface
 } //industrial_robot_client
 
-#endif // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_INTERFACE_H
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_INTERFACE_H
