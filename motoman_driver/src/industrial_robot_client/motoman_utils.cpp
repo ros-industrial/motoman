@@ -33,6 +33,9 @@
 
 #include "motoman_driver/industrial_robot_client/motoman_utils.h"
 #include "ros/ros.h"
+#include <map>
+#include <string>
+#include <vector>
 
 namespace industrial_robot_client
 {

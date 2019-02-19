@@ -31,6 +31,7 @@
 
 #include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "simple_message/log_wrapper.h"
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>

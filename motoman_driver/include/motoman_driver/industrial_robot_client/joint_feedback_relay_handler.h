@@ -32,6 +32,7 @@
 #ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_RELAY_HANDLER_H
 #define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_RELAY_HANDLER_H
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
