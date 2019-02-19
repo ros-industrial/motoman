@@ -671,7 +671,7 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
 
     // check for non-empty positions
     if (pt.positions.empty())
-      ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
+      ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %lu", i);
 
     // check for joint velocity limits
     for (size_t j = 0; j < pt.velocities.size(); ++j)
@@ -680,13 +680,13 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
       if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
 
       if (std::abs(pt.velocities[j]) > max_vel->second)
-        ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i,
+        ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %lu, joint '%s'", i,
                          traj.joint_names[j].c_str());
     }
 
     // check for valid timestamp
     if ((i > 0) && (pt.time_from_start.toSec() == 0))
-      ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
+      ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %lu", i);
   }
 
   return true;
@@ -702,7 +702,7 @@ bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajecto
 
       // check for non-empty positions
       if (pt.positions.empty())
-        ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %d", i);
+        ROS_ERROR_RETURN(false, "Validation failed: Missing position data for trajectory pt %lu", i);
       // check for joint velocity limits
       for (size_t j = 0; j < pt.velocities.size(); ++j)
       {
@@ -710,13 +710,13 @@ bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajecto
         if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
 
         if (std::abs(pt.velocities[j]) > max_vel->second)
-          ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i,
+          ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %lu, joint '%s'", i,
                            traj.joint_names[j].c_str());
       }
 
       // check for valid timestamp
       if ((i > 0) && (pt.time_from_start.toSec() == 0))
-        ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
+        ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %lu", i);
     }
   }
   return true;
