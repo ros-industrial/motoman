@@ -150,4 +150,4 @@ private:
 }  // namespace simple_message
 }  // namespace motoman
 
-#endif /* MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_READ_SINGLE_IO_H */
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_READ_SINGLE_IO_H
