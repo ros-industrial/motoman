@@ -61,7 +61,7 @@ bool getJointGroups(const std::string topic_param, std::map<int, RobotGroup> & r
     }
 
 
-    for (int i = 0; i < topics_list.size(); i++)
+    for (size_t i = 0; i < topics_list.size(); i++)
     {
       ROS_INFO_STREAM("Loading group: " << topics_list[i]);
       RobotGroup rg;

@@ -284,7 +284,7 @@ bool JointFeedbackRelayHandler::select(const DynamicJointsGroup& all_joint_state
   pub_joint_names->clear();
 
   // skip over "blank" joint names
-  for (int i = 0; i < all_joint_names.size(); ++i)
+  for (size_t i = 0; i < all_joint_names.size(); ++i)
   {
     if (all_joint_names[i].empty())
       continue;

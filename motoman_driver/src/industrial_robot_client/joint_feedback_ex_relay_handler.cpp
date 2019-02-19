@@ -89,7 +89,7 @@ bool JointFeedbackExRelayHandler::create_messages(SimpleMessage& msg_in,
   tmp_msg.init(msg_in);
   motoman_msgs::DynamicJointTrajectoryFeedback dynamic_control_state;
 
-  for (int i = 0; i < tmp_msg.getJointMessages().size(); i++)
+  for (size_t i = 0; i < tmp_msg.getJointMessages().size(); i++)
   {
     int group_number = tmp_msg.getJointMessages()[i].getRobotID();
 

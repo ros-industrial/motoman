@@ -76,7 +76,7 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
   rtn &= JointTrajectoryStreamer::init(connection, robot_groups, velocity_limits);
 
   motion_ctrl_.init(connection, 0);
-  for (int i = 0; i < robot_groups_.size(); i++)
+  for (size_t i = 0; i < robot_groups_.size(); i++)
   {
     MotomanMotionCtrl motion_ctrl;
 
@@ -358,7 +358,7 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
                      (int)vec.size(), joints.getMaxNumJoints());
 
   joints.init();
-  for (int i = 0; i < vec.size(); ++i)
+  for (size_t i = 0; i < vec.size(); ++i)
   {
     joints.setJoint(i, vec[i]);
   }
@@ -483,7 +483,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
   if (!JointTrajectoryInterface::is_valid(traj))
     return false;
 
-  for (int i = 0; i < traj.points.size(); ++i)
+  for (size_t i = 0; i < traj.points.size(); ++i)
   {
     const trajectory_msgs::JointTrajectoryPoint &pt = traj.points[i];
 
@@ -512,7 +512,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
     return false;
   ros::Time time_stamp;
   int group_number;
-  for (int i = 0; i < traj.points.size(); ++i)
+  for (size_t i = 0; i < traj.points.size(); ++i)
   {
     for (int gr = 0; gr < traj.points[i].num_groups; gr++)
     {

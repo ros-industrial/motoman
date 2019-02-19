@@ -62,7 +62,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
   std::map<int, RobotGroup> robot_groups;
   getJointGroups("topic_list", robot_groups);
 
-  for (int i = 0; i < robot_groups.size(); i++)
+  for (size_t i = 0; i < robot_groups.size(); i++)
   {
 
     std::string joint_path_action_name = robot_groups[i].get_ns() + "/" + robot_groups[i].get_name();
@@ -201,11 +201,11 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh)
 
   motoman_msgs::DynamicJointTrajectory dyn_traj;
 
-  for (int i = 0; i < gh.getGoal()->trajectory.points.size(); i++)
+  for (size_t i = 0; i < gh.getGoal()->trajectory.points.size(); i++)
   {
     motoman_msgs::DynamicJointPoint dpoint;
 
-    for (int rbt_idx = 0; rbt_idx < robot_groups_.size(); rbt_idx++)
+    for (size_t rbt_idx = 0; rbt_idx < robot_groups_.size(); rbt_idx++)
     {
       size_t ros_idx = std::find(
                          gh.getGoal()->trajectory.joint_names.begin(),
@@ -349,7 +349,7 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh, int
 
         motoman_msgs::DynamicJointTrajectory dyn_traj;
 
-        for (int i = 0; i < current_traj_map_[group_number].points.size(); ++i)
+        for (size_t i = 0; i < current_traj_map_[group_number].points.size(); ++i)
         {
           motoman_msgs::DynamicJointsGroup dyn_group;
           motoman_msgs::DynamicJointPoint dyn_point;
