@@ -85,7 +85,7 @@ bool RobotStateInterface::init(std::string default_ip, int default_port, bool ve
 bool RobotStateInterface::init(SmplMsgConnection* connection)
 {
   std::map<int, RobotGroup> robot_groups;
-  if(getJointGroups("topic_list", robot_groups))
+  if (getJointGroups("topic_list", robot_groups))
   {
     this->version_0_ = false;
     return init(connection, robot_groups);

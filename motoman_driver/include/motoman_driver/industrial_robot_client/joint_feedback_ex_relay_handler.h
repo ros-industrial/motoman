@@ -119,7 +119,6 @@ protected:
                        sensor_msgs::JointState* sensor_state, int robot_id);
 
 private:
-
   static bool JointDataToVector(const industrial::joint_data::JointData &joints,
                                 std::vector<double> &vec, int len);
 

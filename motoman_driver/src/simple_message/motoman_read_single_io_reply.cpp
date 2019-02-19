@@ -66,7 +66,7 @@ ReadSingleIOReply::~ReadSingleIOReply(void)
 
 void ReadSingleIOReply::init()
 {
-  // TODO: is '0' a good initial value?
+  // TODO( ): is '0' a good initial value?
   this->init(0/*value*/, ReadSingleIOReplyResultCodes::SUCCESS);
 }
 

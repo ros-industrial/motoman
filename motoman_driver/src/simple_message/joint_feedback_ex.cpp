@@ -139,7 +139,7 @@ bool JointFeedbackEx::unload(industrial::byte_array::ByteArray *buffer)
 
     // every msg gets deserialised, but we only keep those with valid data.
     //
-    // TODO: is a message with just 'TIME' also valid? For now it is not (not
+    // TODO( ): is a message with just 'TIME' also valid? For now it is not (not
     // sure how that would work anyway, as Jointfeedback msgs are assumed to
     // contain joint feedback. Time alone would not seem to fit in that
     // category).

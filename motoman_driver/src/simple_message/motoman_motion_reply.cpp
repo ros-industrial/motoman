@@ -227,7 +227,8 @@ bool MotionReply::load(industrial::byte_array::ByteArray *buffer)
     shared_real value = this->getData(i);
     if (!buffer->load(value))
     {
-      LOG_ERROR("Failed to load MotionReply data element %d from data[%d]", static_cast<int>(i), buffer->getBufferSize());
+      LOG_ERROR("Failed to load MotionReply data element %d from data[%d]", static_cast<int>(i),
+                buffer->getBufferSize());
       return false;
     }
   }
@@ -245,7 +246,8 @@ bool MotionReply::unload(industrial::byte_array::ByteArray *buffer)
     shared_real value;
     if (!buffer->unload(value))
     {
-      LOG_ERROR("Failed to unload message data element: %d from data[%d]", static_cast<int>(i), buffer->getBufferSize());
+      LOG_ERROR("Failed to unload message data element: %d from data[%d]", static_cast<int>(i),
+                buffer->getBufferSize());
       return false;
     }
     this->setData(i, value);

@@ -44,7 +44,7 @@ namespace motoman_utils
 
 bool getJointGroups(const std::string topic_param, std::map<int, RobotGroup> & robot_groups)
 {
-  if(ros::param::has(topic_param))
+  if (ros::param::has(topic_param))
   {
     XmlRpc::XmlRpcValue topics_list_rpc;
     ros::param::get(topic_param, topics_list_rpc);
@@ -97,12 +97,12 @@ bool getJointGroups(const std::string topic_param, std::map<int, RobotGroup> & r
 
       ns_string = static_cast<std::string>(ns);
 
-      ROS_DEBUG_STREAM("Setting group: " );
-      ROS_DEBUG_STREAM("  group number: " << group_number  );
-      ROS_DEBUG_STREAM("  group number(int): " << group_number_int  );
-      ROS_DEBUG_STREAM("  joints_names(size): " << rg_joint_names.size()  );
-      ROS_DEBUG_STREAM("  name: " << name_string  );
-      ROS_DEBUG_STREAM("  ns: " << ns_string );
+      ROS_DEBUG_STREAM("Setting group: ");
+      ROS_DEBUG_STREAM("  group number: " << group_number);
+      ROS_DEBUG_STREAM("  group number(int): " << group_number_int);
+      ROS_DEBUG_STREAM("  joints_names(size): " << rg_joint_names.size());
+      ROS_DEBUG_STREAM("  name: " << name_string);
+      ROS_DEBUG_STREAM("  ns: " << ns_string);
       rg.set_group_id(group_number_int);
       rg.set_joint_names(rg_joint_names);
       rg.set_name(name_string);

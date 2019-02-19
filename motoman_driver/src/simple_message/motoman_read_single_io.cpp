@@ -61,7 +61,7 @@ ReadSingleIO::~ReadSingleIO(void)
 
 void ReadSingleIO::init()
 {
-  // TODO: is '0' a good initial value?
+  // TODO( ): is '0' a good initial value?
   this->init(0);
 }
 

@@ -116,9 +116,11 @@ public:
 
   virtual void jointTrajectoryCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg);
 
-  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
+  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj,
+                                  std::vector<SimpleMessage>* msgs);
 
-  virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
+  virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr& traj,
+                                  std::vector<SimpleMessage>* msgs);
 
   virtual void streamingThread();
 

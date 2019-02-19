@@ -144,7 +144,6 @@ private:
    * \brief Address of IO element.
    */
   industrial::shared_types::shared_int address_;
-
 };
 }  // namespace io_ctrl
 }  // namespace simple_message
