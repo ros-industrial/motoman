@@ -226,4 +226,5 @@ install(PROGRAMS src/move_to_joint.py
 if(CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
   roslint_cpp()
+  roslint_add_test()
 endif()
