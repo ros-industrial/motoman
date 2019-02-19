@@ -37,7 +37,7 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "simple_message.h"
+#include "simple_message.h"  // NOLINT(build/include)
 #endif
 
 
