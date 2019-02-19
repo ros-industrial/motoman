@@ -489,7 +489,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
 
     // FS100 requires valid velocity data
     if (pt.velocities.empty())
-      ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
+      ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %lu", i);
   }
 
   if ((cur_joint_pos_.header.stamp - ros::Time::now()).toSec() > pos_stale_time_)
@@ -522,7 +522,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
       group_number = pt.group_number;
       // FS100 requires valid velocity data
       if (pt.velocities.empty())
-        ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
+        ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %lu", i);
 
       // FS100 requires trajectory start at current position
       namespace IRC_utils = industrial_robot_client::utils;
