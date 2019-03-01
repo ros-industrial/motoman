@@ -7,11 +7,11 @@
         <xacro:torso name="${prefix}torso" prefix="${prefix}torso_"/>
 
 
-        <xacro:motoman_arm name="${prefix}arm_left" prefix="${prefix}arm_left_" parent="${prefix}torso_link_b1" reflect="1" joint_limited="false">
+        <xacro:motoman_arm name="${prefix}arm_left" prefix="${prefix}arm_left_" parent="${prefix}torso_link_b1" reflect="1">
             <origin xyz="0.100 0.0275 0.3114" rpy="1.57 0 0" />
         </xacro:motoman_arm>
 
-        <xacro:motoman_arm name="${prefix}arm_right" prefix="${prefix}arm_right_" parent="${prefix}torso_link_b1" reflect="-1" joint_limited="false">
+        <xacro:motoman_arm name="${prefix}arm_right" prefix="${prefix}arm_right_" parent="${prefix}torso_link_b1" reflect="-1">
             <origin xyz="0.100 -0.0275 0.3114" rpy="1.57 0 0" />
         </xacro:motoman_arm>
      </xacro:macro>
