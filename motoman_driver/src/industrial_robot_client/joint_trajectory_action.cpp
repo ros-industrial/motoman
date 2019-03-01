@@ -100,10 +100,16 @@ JointTrajectoryAction::JointTrajectoryAction() :
     this->watchdog_timer_map_[group_number_int] = node_.createTimer(
           ros::Duration(WATCHD0G_PERIOD_), boost::bind(
             &JointTrajectoryAction::watchdog, this, _1, group_number_int));
+    // Multigroup trajectories sub-group active map initialization
+    multi_group_active_goals_map_[group_number_int] = false;
   }
 
   pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
                               "joint_path_command", 1);
+  // Set watchdog timer for entire robot state.
+  this->watchdog_timer_ = node_.createTimer(
+          ros::Duration(WATCHD0G_PERIOD_), boost::bind(
+            &JointTrajectoryAction::watchdog, this, _1));
 
   this->robot_groups_ = robot_groups;
 
@@ -129,7 +135,15 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
   }
   if (!trajectory_state_recvd_)
   {
-    ROS_DEBUG("Trajectory state not received since last watchdog");
+    ROS_DEBUG("Trajectory state of the entire robot not received since last watchdog");
+    for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+    {
+      if (!trajectory_state_recvd_map_[group_number])
+      {
+        ROS_DEBUG("Group [%s] state not received since last watchdog", 
+          robot_groups_[group_number].get_name().c_str());
+      }
+    }
   }
 
   // Aborts the active goal if the controller does not appear to be active.
@@ -153,6 +167,8 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
 
   // Reset the trajectory state received flag
   trajectory_state_recvd_ = false;
+  for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+    trajectory_state_recvd_map_[group_number] = false;
 }
 
 void JointTrajectoryAction::watchdog(const ros::TimerEvent &e, int group_number)
@@ -164,7 +180,8 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e, int group_number)
   }
   if (!trajectory_state_recvd_map_[group_number])
   {
-    ROS_DEBUG("Trajectory state not received since last watchdog");
+    ROS_DEBUG("Trajectory state of group [%s] not received since last watchdog", 
+      robot_groups_[group_number].get_name().c_str());
   }
 
   // Aborts the active goal if the controller does not appear to be active.
@@ -175,7 +192,8 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e, int group_number)
       // last_trajectory_state_ is null if the subscriber never makes a connection
       if (!last_trajectory_state_map_[group_number])
       {
-        ROS_WARN("Aborting goal because we have never heard a controller state message.");
+        ROS_WARN("Aborting goal because we have never heard a controller state message for group [%s].",
+          robot_groups_[group_number].get_name().c_str());
       }
       else
       {
@@ -185,134 +203,205 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e, int group_number)
       abortGoal(group_number);
     }
   }
-  // Reset the trajectory state received flag
-  trajectory_state_recvd_ = false;
 }
 
 void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh)
 {
-  gh.setAccepted();
+  ROS_DEBUG("Multi-group trajectory execution request received");
 
-  int group_number;
-
-// TODO(thiagodefreitas): change for getting the id from the group instead of a sequential checking on the map
-
-  ros::Duration last_time_from_start(0.0);
-
-  motoman_msgs::DynamicJointTrajectory dyn_traj;
-
-  for (int i = 0; i < gh.getGoal()->trajectory.points.size(); i++)
+  if (!gh.getGoal()->trajectory.points.empty())
   {
-    motoman_msgs::DynamicJointPoint dpoint;
-
-    for (int rbt_idx = 0; rbt_idx < robot_groups_.size(); rbt_idx++)
+    std::map<int, size_t> group_joints_start_idx;
+    ros::Duration last_time_from_start(0.0);
+    
+    if (has_active_goal_)  // Cancels the currently active goal.
+    {
+      ROS_WARN("Received new goal, canceling current goal");
+      abortGoal();
+    }
+    // Detect which robot groups are active in the current motion trajectory
+    for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
     {
       size_t ros_idx = std::find(
-                         gh.getGoal()->trajectory.joint_names.begin(),
-                         gh.getGoal()->trajectory.joint_names.end(),
-                         robot_groups_[rbt_idx].get_joint_names()[0])
-                       - gh.getGoal()->trajectory.joint_names.begin();
+                        gh.getGoal()->trajectory.joint_names.begin(),
+                        gh.getGoal()->trajectory.joint_names.end(),
+                        robot_groups_[group_number].get_joint_names()[0])
+                      - gh.getGoal()->trajectory.joint_names.begin();
 
       bool is_found = ros_idx < gh.getGoal()->trajectory.joint_names.size();
-
-      group_number = rbt_idx;
-      motoman_msgs::DynamicJointsGroup dyn_group;
-
-      int num_joints = robot_groups_[group_number].get_joint_names().size();
-
       if (is_found)
       {
-        if (gh.getGoal()->trajectory.points[i].positions.empty())
-        {
-          std::vector<double> positions(num_joints, 0.0);
-          dyn_group.positions = positions;
-        }
-        else
-          dyn_group.positions.insert(
-            dyn_group.positions.begin(),
-            gh.getGoal()->trajectory.points[i].positions.begin() + ros_idx,
-            gh.getGoal()->trajectory.points[i].positions.begin() + ros_idx
-            + robot_groups_[rbt_idx].get_joint_names().size());
-
-        if (gh.getGoal()->trajectory.points[i].velocities.empty())
-        {
-          std::vector<double> velocities(num_joints, 0.0);
-          dyn_group.velocities = velocities;
-        }
-        else
-          dyn_group.velocities.insert(
-            dyn_group.velocities.begin(),
-            gh.getGoal()->trajectory.points[i].velocities.begin()
-            + ros_idx, gh.getGoal()->trajectory.points[i].velocities.begin()
-            + ros_idx + robot_groups_[rbt_idx].get_joint_names().size());
-
-        if (gh.getGoal()->trajectory.points[i].accelerations.empty())
-        {
-          std::vector<double> accelerations(num_joints, 0.0);
-          dyn_group.accelerations = accelerations;
-        }
-        else
-          dyn_group.accelerations.insert(
-            dyn_group.accelerations.begin(),
-            gh.getGoal()->trajectory.points[i].accelerations.begin()
-            + ros_idx, gh.getGoal()->trajectory.points[i].accelerations.begin()
-            + ros_idx + robot_groups_[rbt_idx].get_joint_names().size());
-        if (gh.getGoal()->trajectory.points[i].effort.empty())
-        {
-          std::vector<double> effort(num_joints, 0.0);
-          dyn_group.effort = effort;
-        }
-        else
-          dyn_group.effort.insert(
-            dyn_group.effort.begin(),
-            gh.getGoal()->trajectory.points[i].effort.begin()
-            + ros_idx, gh.getGoal()->trajectory.points[i].effort.begin()
-            + ros_idx + robot_groups_[rbt_idx].get_joint_names().size());
-        dyn_group.time_from_start = gh.getGoal()->trajectory.points[i].time_from_start;
-        dyn_group.group_number = group_number;
-        dyn_group.num_joints = dyn_group.positions.size();
+        multi_group_active_goals_map_[group_number] = true;
+        group_joints_start_idx.insert(std::pair<int, size_t>(group_number, ros_idx));
+        ROS_DEBUG("Group [%s] is active in trajectory plan", robot_groups_[group_number].get_name().c_str());
       }
-
-      // Generating message for groups that were not present in the trajectory message
-      // Assume that joints from these groups will mantain its current position.
-      // Velocity, acceleration and effort are zero out. 
       else
       {
-        ROS_DEBUG("Group %s not present in trajectory plan, using its last received joint positions as goal", robot_groups_[group_number].get_name().c_str());
-        std::vector<double> positions = last_trajectory_state_map_[group_number]->actual.positions;
-        std::vector<double> velocities(num_joints, 0.0);
-        std::vector<double> accelerations(num_joints, 0.0);
-        std::vector<double> effort(num_joints, 0.0);
-
-        dyn_group.positions = positions;
-        dyn_group.velocities = velocities;
-        dyn_group.accelerations = accelerations;
-        dyn_group.effort = effort;
-
-        dyn_group.time_from_start = gh.getGoal()->trajectory.points[i].time_from_start;
-        dyn_group.group_number = group_number;
-        dyn_group.num_joints = num_joints;
+        multi_group_active_goals_map_[group_number] = false;
+        ROS_DEBUG("Group [%s] not present in trajectory plan, using its last received joint positions as goal", 
+                                                                robot_groups_[group_number].get_name().c_str());
       }
-
-      dpoint.groups.push_back(dyn_group);
     }
-    dpoint.num_groups = dpoint.groups.size();
-    dyn_traj.points.push_back(dpoint);
-  }
-  dyn_traj.header = gh.getGoal()->trajectory.header;
-  dyn_traj.header.stamp = ros::Time::now();
-  // Publishing the joint names for the 4 groups
-  dyn_traj.joint_names = all_joint_names_;
+    // Check if active robot groups are already in goal position
+    if (withinGoalConstraints(last_trajectory_state_, gh.getGoal()->trajectory))
+    {
+      ROS_INFO("Already within goal constraints, setting goal succeeded");
+      gh.setAccepted();
+      gh.setSucceeded();
+      has_active_goal_ = false;
+      // Set robot groups active goals flags to false
+      for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+        multi_group_active_goals_map_[group_number] = false;
+    }
+    else  // Sends the trajectory along to the controller 
+    {
+      gh.setAccepted();
+      active_goal_ = gh;
+      has_active_goal_ = true;
+      motoman_msgs::DynamicJointTrajectory dyn_traj;
 
-  this->pub_trajectory_command_.publish(dyn_traj);
+      ROS_DEBUG("Publishing trajectory");
+  
+      int group_number;
+      current_traj_ = active_goal_.getGoal()->trajectory;
+
+      for (int i = 0; i < gh.getGoal()->trajectory.points.size(); i++)
+      {
+        motoman_msgs::DynamicJointPoint dpoint;
+
+        for (int rbt_idx = 0; rbt_idx < robot_groups_.size(); rbt_idx++)
+        {
+          group_number = rbt_idx;
+          motoman_msgs::DynamicJointsGroup dyn_group;
+
+          int num_joints = robot_groups_[group_number].get_joint_names().size();
+
+          if (multi_group_active_goals_map_[group_number])  // If group is active on current goal
+          { 
+            if (gh.getGoal()->trajectory.points[i].positions.empty())
+            {
+              std::vector<double> positions(num_joints, 0.0);
+              dyn_group.positions = positions;
+            }
+            else
+              dyn_group.positions.insert(
+                dyn_group.positions.begin(),
+                gh.getGoal()->trajectory.points[i].positions.begin() + group_joints_start_idx[rbt_idx],
+                gh.getGoal()->trajectory.points[i].positions.begin() + group_joints_start_idx[rbt_idx]
+                + robot_groups_[rbt_idx].get_joint_names().size());
+
+            if (gh.getGoal()->trajectory.points[i].velocities.empty())
+            {
+              std::vector<double> velocities(num_joints, 0.0);
+              dyn_group.velocities = velocities;
+            }
+            else
+              dyn_group.velocities.insert(
+                dyn_group.velocities.begin(),
+                gh.getGoal()->trajectory.points[i].velocities.begin()
+                + group_joints_start_idx[rbt_idx], gh.getGoal()->trajectory.points[i].velocities.begin()
+                + group_joints_start_idx[rbt_idx] + robot_groups_[rbt_idx].get_joint_names().size());
+
+            if (gh.getGoal()->trajectory.points[i].accelerations.empty())
+            {
+              std::vector<double> accelerations(num_joints, 0.0);
+              dyn_group.accelerations = accelerations;
+            }
+            else
+              dyn_group.accelerations.insert(
+                dyn_group.accelerations.begin(),
+                gh.getGoal()->trajectory.points[i].accelerations.begin()
+                + group_joints_start_idx[rbt_idx], gh.getGoal()->trajectory.points[i].accelerations.begin()
+                + group_joints_start_idx[rbt_idx] + robot_groups_[rbt_idx].get_joint_names().size());
+            if (gh.getGoal()->trajectory.points[i].effort.empty())
+            {
+              std::vector<double> effort(num_joints, 0.0);
+              dyn_group.effort = effort;
+            }
+            else
+              dyn_group.effort.insert(
+                dyn_group.effort.begin(),
+                gh.getGoal()->trajectory.points[i].effort.begin()
+                + group_joints_start_idx[rbt_idx], gh.getGoal()->trajectory.points[i].effort.begin()
+                + group_joints_start_idx[rbt_idx] + robot_groups_[rbt_idx].get_joint_names().size());
+            dyn_group.time_from_start = gh.getGoal()->trajectory.points[i].time_from_start;
+            dyn_group.group_number = group_number;
+            dyn_group.num_joints = dyn_group.positions.size();
+          }
+
+          // Generating message for groups that were not present in the trajectory message
+          // Assume that joints from these groups will mantain its current position.
+          // Velocity, acceleration and effort are zero out. 
+          else
+          {
+            std::vector<double> positions = last_trajectory_state_map_[group_number]->actual.positions;
+            std::vector<double> velocities(num_joints, 0.0);
+            std::vector<double> accelerations(num_joints, 0.0);
+            std::vector<double> effort(num_joints, 0.0);
+
+            dyn_group.positions = positions;
+            dyn_group.velocities = velocities;
+            dyn_group.accelerations = accelerations;
+            dyn_group.effort = effort;
+
+            dyn_group.time_from_start = gh.getGoal()->trajectory.points[i].time_from_start;
+            dyn_group.group_number = group_number;
+            dyn_group.num_joints = num_joints;
+          }
+          dpoint.groups.push_back(dyn_group);
+        }
+        dpoint.num_groups = dpoint.groups.size();
+        dyn_traj.points.push_back(dpoint);
+      }
+      dyn_traj.header = gh.getGoal()->trajectory.header;
+      dyn_traj.header.stamp = ros::Time::now();
+      // Publishing the joint names for the 4 groups
+      dyn_traj.joint_names = all_joint_names_;
+
+      this->pub_trajectory_command_.publish(dyn_traj);
+    }
+  }
+  else
+  {
+    ROS_ERROR("Multi-group joint trajectory action failed on empty trajectory");
+    control_msgs::FollowJointTrajectoryResult rslt;
+    rslt.error_code = control_msgs::FollowJointTrajectoryResult::INVALID_GOAL;
+    gh.setRejected(rslt, "Empty trajectory");
+  }
+
+  // Adding some informational log messages to indicate unsupported goal constraints
+  if (!gh.getGoal()->goal_tolerance.empty())
+  {
+    ROS_WARN_STREAM(
+      "Ignoring goal tolerance in action, using paramater tolerance of " << goal_threshold_ << " instead");
+  }
+  if (!gh.getGoal()->path_tolerance.empty())
+  {
+    ROS_WARN_STREAM("Ignoring goal path tolerance, option not supported by ROS-Industrial drivers");
+  }
 }
 
 void JointTrajectoryAction::cancelCB(JointTractoryActionServer::GoalHandle gh)
 {
-  // The interface is provided, but it is recommended to use
-  //  void JointTrajectoryAction::cancelCB(JointTractoryActionServer::GoalHandle & gh, int group_number)
-
   ROS_DEBUG("Received action cancel request");
+  if (active_goal_ == gh)
+  {
+    // Stops the controller.
+    motoman_msgs::DynamicJointTrajectory empty;
+    empty.joint_names = all_joint_names_;
+    this->pub_trajectory_command_.publish(empty);
+
+    // Marks the current goal as canceled.
+    active_goal_.setCanceled();
+    has_active_goal_ = false;
+    // Set robot groups active goals flags to false
+    for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+      multi_group_active_goals_map_[group_number] = false;
+  }
+  else
+  {
+    ROS_WARN("Active goal and goal cancel do not match, ignoring cancel request");
+  }
 }
 
 void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh, int group_number)
@@ -458,10 +547,16 @@ void JointTrajectoryAction::controllerStateCB(
   ROS_DEBUG("Checking controller state feedback");
   last_trajectory_state_map_[robot_id] = msg;
   trajectory_state_recvd_map_[robot_id] = true;
-
-  if (!has_active_goal_map_[robot_id])
+  
+  // If a multi-group goal is active, process feedback as multi-group feedback.
+  if (has_active_goal_)   
   {
-    ROS_DEBUG("No active goal, ignoring feedback");
+    controllerStateCB(msg);
+    return;
+  }
+  else if (!has_active_goal_map_[robot_id]) 
+  {
+    ROS_DEBUG("No active goal for group [%s], ignoring feedback", robot_groups_[robot_id].get_name().c_str());
     return;
   }
 
@@ -523,10 +618,18 @@ void JointTrajectoryAction::controllerStateCB(
   ROS_DEBUG("Checking controller state feedback");
   last_trajectory_state_ = msg;
   trajectory_state_recvd_ = true;
-
+  // Full robot state is marked as received if all robot groups states have been received.
+  for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+    trajectory_state_recvd_ = trajectory_state_recvd_ && trajectory_state_recvd_map_[group_number];
+  
+  if (!trajectory_state_recvd_)
+  {
+    ROS_DEBUG("Waiting for all robot groups feedback states before processing multi-group feedback");
+    return;
+  }
   if (!has_active_goal_)
   {
-    ROS_DEBUG("No active goal, ignoring feedback");
+    ROS_DEBUG("No active multi-group goal, ignoring feedback");
     return;
   }
   if (current_traj_.points.empty())
@@ -535,11 +638,6 @@ void JointTrajectoryAction::controllerStateCB(
     return;
   }
 
-  if (!industrial_utils::isSimilar(all_joint_names_, msg->joint_names))
-  {
-    ROS_ERROR("Joint names from the controller don't match our joint names.");
-    return;
-  }
 
   // Checking for goal constraints
   // Checks that we have ended inside the goal constraints and has motion stopped
@@ -558,6 +656,9 @@ void JointTrajectoryAction::controllerStateCB(
         ROS_INFO("Inside goal constraints, stopped moving, return success for action");
         active_goal_.setSucceeded();
         has_active_goal_ = false;
+        // Set robot groups active goals flags to false
+        for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+          multi_group_active_goals_map_[group_number] = false;
       }
       else if (last_robot_status_->in_motion.val == industrial_msgs::TriState::UNKNOWN)
       {
@@ -565,6 +666,9 @@ void JointTrajectoryAction::controllerStateCB(
         ROS_WARN("Robot status in motion unknown, the robot driver node and controller code should be updated");
         active_goal_.setSucceeded();
         has_active_goal_ = false;
+        // Set robot groups active goals flags to false
+        for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+          multi_group_active_goals_map_[group_number] = false;
       }
       else
       {
@@ -577,6 +681,9 @@ void JointTrajectoryAction::controllerStateCB(
       ROS_WARN("Robot status is not being published the robot driver node and controller code should be updated");
       active_goal_.setSucceeded();
       has_active_goal_ = false;
+      // Set robot groups active goals flags to false
+      for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+          multi_group_active_goals_map_[group_number] = false;
     }
   }
 }
@@ -584,12 +691,15 @@ void JointTrajectoryAction::controllerStateCB(
 void JointTrajectoryAction::abortGoal()
 {
   // Stops the controller.
-  trajectory_msgs::JointTrajectory empty;
+  motoman_msgs::DynamicJointTrajectory empty;
   pub_trajectory_command_.publish(empty);
 
   // Marks the current goal as aborted.
   active_goal_.setAborted();
   has_active_goal_ = false;
+  // Set robot groups active goals flags to false
+  for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+    multi_group_active_goals_map_[group_number] = false;
 }
 
 void JointTrajectoryAction::abortGoal(int robot_id)
@@ -615,19 +725,64 @@ bool JointTrajectoryAction::withinGoalConstraints(
   }
   else
   {
+    // Asume true, and proof wrong by checking each robot group that is active in current goal
+    std::map<int, bool> groups_at_goal_state_map;
     int last_point = traj.points.size() - 1;
-
-    if (industrial_robot_client::utils::isWithinRange(
-          last_trajectory_state_->joint_names,
-          last_trajectory_state_->actual.positions, traj.joint_names,
-          traj.points[last_point].positions, goal_threshold_))
-    {
-      rtn = true;
+    
+    for (int group_number = 0; group_number < robot_groups_.size(); group_number++)
+    { 
+      
+      // Check if robot group is active in current multi-group trajectory goal.
+      if (multi_group_active_goals_map_[group_number])
+      {
+        ROS_DEBUG("Checking if group [%s] has reached its goal", robot_groups_[group_number].get_name().c_str());
+        // Asume group is not at goal position
+        groups_at_goal_state_map[group_number] = false;
+        
+        size_t group_joints_start_idx = std::find(
+                        traj.joint_names.begin(),
+                        traj.joint_names.end(),
+                        robot_groups_[group_number].get_joint_names()[0])
+                      - traj.joint_names.begin();
+        // Get an ordered map of the robot group last feedback state.
+        std::map<std::string, double> robot_group_last_state_map;
+        industrial_robot_client::utils::toMap(robot_groups_[group_number].get_joint_names(), 
+                                              last_trajectory_state_map_[group_number]->actual.positions, 
+                                              robot_group_last_state_map);
+        // Get an ordered map of the robot group goal state.
+        std::vector<double> group_goal_positions( 
+                traj.points[last_point].positions.begin() + group_joints_start_idx,
+                traj.points[last_point].positions.begin() + group_joints_start_idx
+                  + robot_groups_[group_number].get_joint_names().size());
+        std::map<std::string, double> group_traj_last_point_map;    
+        industrial_robot_client::utils::toMap(robot_groups_[group_number].get_joint_names(), 
+                                              group_goal_positions, 
+                                              group_traj_last_point_map);
+        // Check if group is already at goal position 
+        if ( !industrial_robot_client::utils::isWithinRange(robot_groups_[group_number].get_joint_names(),
+                                                          group_traj_last_point_map,
+                                                          robot_group_last_state_map, 
+                                                          goal_threshold_) )
+        {
+          // Current Robot Group is not in goal position yet
+          groups_at_goal_state_map[group_number] = false;
+          return false;        // Stop checking other sub-groups 
+        }
+        else  
+          groups_at_goal_state_map[group_number] = true;
+      }
+      else  // Group is not active -> should not be checked.
+      {
+        continue;
+      }
     }
-    else
+    if (groups_at_goal_state_map.empty()) 
     {
-      rtn = false;
+      ROS_ERROR("Multi-group goal has not a single active group");
+      return false;
     }
+    // If this point is reached, all active groups are at goal position
+    return true;
   }
   return rtn;
 }
