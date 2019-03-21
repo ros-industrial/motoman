@@ -21,7 +21,8 @@
 	</include>
 
     <node pkg="motoman_ma1400_support" type="actuation_angle_offsets.py" name="actuation_angle_offsets" output="screen" >
-      <param name="comp_side_ns" type="string" value="$(arg joint_ns)" />
+      <param name="robot_side_ns" type="string" value="$(arg joint_ns)" />
+      <param name="comp_side_ns" type="string" value="" />
     </node>
 
 	<include file="$(find ma1400_sim)/launch/dead_robot_complete.gazebo.launch">
