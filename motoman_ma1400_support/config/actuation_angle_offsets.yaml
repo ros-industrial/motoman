@@ -1,0 +1,8 @@
+actuation_angle_offsets:
+  joint_s: 0.0
+  joint_l: -0.00800224108
+  joint_u: 0.00263460647
+  joint_r: 0.00109136354
+  joint_b: -0.00000146136315
+  joint_t: 0.0
+  joint_x: 0.0
