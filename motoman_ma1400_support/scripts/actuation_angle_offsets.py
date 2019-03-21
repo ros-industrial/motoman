@@ -2,9 +2,9 @@
 import rospy
 import rospkg
 
-from control_msgs.msg import FollowJointTrajectoryFeedback
 from sensor_msgs.msg import JointState
-
+from control_msgs.msg import FollowJointTrajectoryFeedback
+from motoman_msgs.msg import DynamicJointTrajectoryFeedback
 import yaml
 
 class actuation_angle_offsets(object):
@@ -21,25 +21,29 @@ class actuation_angle_offsets(object):
       comp_side_ns = comp_side_ns + "/"
 
     # Subscribe to joint_states from robot/simulator
-    rospy.Subscriber(robot_side_ns + 'joint_states',
-                     JointState, self.joint_state_cb)
     rospy.Subscriber(robot_side_ns + 'dx200/dx200_r1_controller/joint_states',
-                     JointState, self.r1_joint_state_cb)
+                     JointState, self.r1_joint_states_cb)
     rospy.Subscriber(robot_side_ns + 'dx200/dx200_s1_controller/joint_states',
-                     JointState, self.s1_joint_state_cb)
+                     JointState, self.s1_joint_states_cb)
 
     rospy.Subscriber(robot_side_ns + 'feedback_states',
-                     JointState, self.feedback_state_cb)
+                     FollowJointTrajectoryFeedback, self.feedback_states_cb)
     rospy.Subscriber(robot_side_ns +'dx200/dx200_r1_controller/feedback_states',
-                     JointState, self.r1_feedback_state_cb)
+                     FollowJointTrajectoryFeedback, self.r1_feedback_states_cb)
     rospy.Subscriber(robot_side_ns +'dx200/dx200_s1_controller/feedback_states',
-                     JointState, self.s1_feedback_state_cb)
+                     FollowJointTrajectoryFeedback, self.s1_feedback_states_cb)
     rospy.Subscriber(robot_side_ns + 'dynamic_feedback_states',
-                     JointState, self.feedback_state_cb)
+                     DynamicJointTrajectoryFeedback,
+                     self.dynamic_feedback_states_cb)
 
     # Publish joint_states to rest of system
-    self.joint_states_r1_pub = rospy.Publisher(comp_side_ns + 'dx200/dx200_r1_controller/joint_states', JointState, queue_size=1)
-    self.joint_states_s1_pub = rospy.Publisher(comp_side_ns + 'dx200/dx200_s1_controller/joint_states', JointState, queue_size=1)
+    self.r1_joint_states_pub = rospy.Publisher(comp_side_ns + 'dx200/dx200_r1_controller/joint_states', JointState, queue_size=1)
+    self.s1_joint_states_pub = rospy.Publisher(comp_side_ns + 'dx200/dx200_s1_controller/joint_states', JointState, queue_size=1)
+
+    self.feedback_states_pub = rospy.Publisher(comp_side_ns + 'feedback_states', FollowJointTrajectoryFeedback, queue_size=1)
+    self.r1_feedback_states_pub = rospy.Publisher(comp_side_ns + 'dx200/dx200_r1_controller/feedback_states', FollowJointTrajectoryFeedback, queue_size=1)
+    self.s1_feedback_states_pub = rospy.Publisher(comp_side_ns + 'dx200/dx200_s1_controller/feedback_states', FollowJointTrajectoryFeedback, queue_size=1)
+    self.dynamic_feedback_states_pub = rospy.Publisher(comp_side_ns + 'dynamic_feedback_states', DynamicJointTrajectoryFeedback, queue_size=1)
 
     self.angle_offsets_list = self.read_actuation_angle_offsets()
     rospy.loginfo("angle_offsets_list")
@@ -64,7 +68,7 @@ class actuation_angle_offsets(object):
         print(j + " not found in yaml file.")
     return angle_offsets_list
 
-  def r1_joint_state_cb(self,msg):
+  def r1_joint_states_cb(self,msg):
     try:
       position = (msg.position[0] - self.angle_offsets_list[0],
                   msg.position[1] - self.angle_offsets_list[1],
@@ -73,23 +77,92 @@ class actuation_angle_offsets(object):
                   msg.position[4] - self.angle_offsets_list[4],
                   msg.position[5] - self.angle_offsets_list[5])
       msg.position = position
-      try:
-        self.joint_states_r1_pub.publish(msg)
-      except rospy.ROSException, e:
-        rospy.logdebug(str(e))
-    except AttributeError:
-      rospy.logdebug("Class not initialized yet")
+      self.r1_joint_states_pub.publish(msg)
+    except rospy.ROSException, e:
+      rospy.logdebug(str(e))
+    except AttributeError, e:
+      rospy.logdebug(str(e))
 
-  def s1_joint_state_cb(self,msg):
+  def s1_joint_states_cb(self,msg):
     try:
       position = (msg.position[0] - self.angle_offsets_list[6], )
       msg.position = position
-      try:
-        self.joint_states_s1_pub.publish(msg)
-      except rospy.ROSException, e:
-        rospy.logdebug(str(e))
+      self.s1_joint_states_pub.publish(msg)
+    except rospy.ROSException, e:
+      rospy.logdebug(str(e))
+    except AttributeError, e:
+      rospy.logdebug(str(e))
+
+  def feedback_states_cb(self,msg):
+    try:
+      num_joints = len(msg.actual.positions)
+      if num_joints == 6:
+        positions = (msg.actual.positions[0] - self.angle_offsets_list[0],
+                     msg.actual.positions[1] - self.angle_offsets_list[1],
+                     msg.actual.positions[2] - self.angle_offsets_list[2],
+                     msg.actual.positions[3] - self.angle_offsets_list[3],
+                     msg.actual.positions[4] - self.angle_offsets_list[4],
+                     msg.actual.positions[5] - self.angle_offsets_list[5])
+        msg.actual.positions = positions
+      elif num_joints == 1:
+        positions = (msg.actual.positions[0] - self.angle_offsets_list[6], )
+        msg.actual.positions = positions
+      else:
+        rospy.logdebug("Unexpected number of joints: " + str(num_joints))
+      self.feedback_states_pub.publish(msg)
+    except rospy.ROSException, e:
+      rospy.logdebug(str(e))
+    except AttributeError, e:
+      rospy.logdebug(str(e))
+
+  def r1_feedback_states_cb(self,msg):
+    try:
+      positions = (msg.actual.positions[0] - self.angle_offsets_list[0],
+                   msg.actual.positions[1] - self.angle_offsets_list[1],
+                   msg.actual.positions[2] - self.angle_offsets_list[2],
+                   msg.actual.positions[3] - self.angle_offsets_list[3],
+                   msg.actual.positions[4] - self.angle_offsets_list[4],
+                   msg.actual.positions[5] - self.angle_offsets_list[5])
+      msg.actual.positions = positions
+      self.r1_feedback_states_pub.publish(msg)
+    except rospy.ROSException, e:
+      rospy.logdebug(str(e))
+    except AttributeError, e:
+      rospy.loginfo(str(e))
+
+  def s1_feedback_states_cb(self,msg):
+    try:
+      positions = (msg.actual.positions[0] - self.angle_offsets_list[6], )
+      msg.actual.positions = positions
+      self.s1_feedback_states_pub.publish(msg)
+    except rospy.ROSException, e:
+      rospy.logdebug(str(e))
     except AttributeError:
       rospy.logdebug("Class not initialized yet")
+
+  def dynamic_feedback_states_cb(self,msg):
+    try:
+      for i, fb in enumerate(msg.joint_feedbacks):
+        if fb.group_number == 0:
+          positions = (fb.positions[0] - self.angle_offsets_list[0],
+                       fb.positions[1] - self.angle_offsets_list[1],
+                       fb.positions[2] - self.angle_offsets_list[2],
+                       fb.positions[3] - self.angle_offsets_list[3],
+                       fb.positions[4] - self.angle_offsets_list[4],
+                       fb.positions[5] - self.angle_offsets_list[5])
+          msg.joint_feedbacks[i].positions = positions
+        elif fb.group_number == 1:
+          positions = (fb.positions[0] - self.angle_offsets_list[6], )
+          msg.joint_feedbacks[i].positions = positions
+        else:
+          rospy.logdebug("group number " + str(fb.group_number) + " not recognized.")
+      self.dynamic_feedback_states_pub.publish(msg)
+    except rospy.ROSException, e:
+      rospy.logdebug(str(e))
+    except AttributeError, e:
+      rospy.logdebug(str(e))
+    except Exception, e:
+      rospy.loginfo(str(e))
 
   def spin(self):
     rospy.spin()
