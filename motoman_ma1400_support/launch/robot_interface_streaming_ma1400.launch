@@ -11,11 +11,20 @@
 	<arg name="use_sim_time" default="false"/>
 	<param name="use_sim_time" type="bool" value="$(arg use_sim_time)"/>
 
+    <arg name="joint_ns" default="offset"/>
+    <arg name="comp_side_ns" default=""/>
+
 	<rosparam command="load" file="$(find motoman_ma1400_support)/config/ma1400_motion_interface.yaml" />
 	
-	<include file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch">
+	<include file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch" >
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
+		<arg name="joint_ns"  value="$(arg joint_ns)" />
 	</include>
+
+    <node pkg="motoman_ma1400_support" type="actuation_angle_offsets.py" name="actuation_angle_offsets" output="screen" unless="$(eval joint_ns == comp_side_ns)">
+      <param name="robot_side_ns" type="string" value="$(arg joint_ns)" />
+      <param name="comp_side_ns" type="string" value="$(arg comp_side_ns)" />
+    </node>
 
 	<include file="$(find ma1400_sim)/launch/dead_robot_complete.gazebo.launch">
 		<arg name="use_sim_time" value="$(arg use_sim_time)"/>

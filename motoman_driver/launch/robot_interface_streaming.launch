@@ -24,6 +24,8 @@
 	<!-- Load the byte-swapping versions of Fanuc nodes if required -->
 	<arg name="use_bswap" />
 
+    <arg name="joint_ns" default = ""/>
+
 	<!-- copy the specified parameters to the Parameter Server, for 
 	     use by nodes below -->
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
@@ -34,6 +36,7 @@
 	<include file="$(find motoman_driver)/launch/robot_state.launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
+        <arg name="joint_ns" value="$(arg joint_ns)" />
 	</include>
 
 	<!-- motion_streaming_interface: sends robot motion commands by 
@@ -42,13 +45,18 @@
   <include file="$(find motoman_driver)/launch/motion_streaming_interface.launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
+        <arg name="joint_ns" value="$(arg joint_ns)" />
 	</include>
 
 	<!-- joint_trajectory_action: provides actionlib interface for 
 	     high-level robot control
 	-->
 	<node if="$(arg version0)" name="joint_trajectory_action"
-		pkg="industrial_robot_client" type="joint_trajectory_action" />
+		  pkg="industrial_robot_client" type="joint_trajectory_action">
+      <param name="constraints/goal_threshold" type="double" value="5e-4"/>
+    </node>
 	<node unless="$(arg version0)" name="joint_trajectory_action"
-		pkg="motoman_driver" type="motoman_driver_joint_trajectory_action" />
+		  pkg="motoman_driver" type="motoman_driver_joint_trajectory_action">
+      <param name="constraints/goal_threshold" value="5e-4" type="double" />
+    </node>
 </launch>

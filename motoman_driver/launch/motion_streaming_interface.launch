@@ -8,12 +8,26 @@
 	<!-- Load the byte-swapping version of robot_state if required -->
 	<arg name="use_bswap" />
 
+    <arg name="joint_ns" default = ""/>
+
 	<!-- put them on the parameter server -->
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
 
 	<!-- load the correct version of the motion streaming node -->
 	<node if="$(arg use_bswap)" name="motion_streaming_interface"
-		pkg="motoman_driver" type="motion_streaming_interface_bswap" />
+		  pkg="motoman_driver" type="motion_streaming_interface_bswap">
+      <remap from="dx200/dx200_r1_controller/joint_states" to="$(arg joint_ns)/dx200/dx200_r1_controller/joint_states" if="$(eval joint_ns != '')" />
+      <remap from="dx200/dx200_s1_controller/joint_states" to="$(arg joint_ns)/dx200/dx200_s1_controller/joint_states" if="$(eval joint_ns != '')"/>
+      <remap from="joint_path_command" to="$(arg joint_ns)/joint_path_command" if="$(eval joint_ns != '')" />
+      <remap from="dx200/dx200_r1_controller/joint_path_command" to="$(arg joint_ns)/dx200/dx200_r1_controller/joint_path_command" if="$(eval joint_ns != '')" />
+      <remap from="dx200/dx200_s1_controller/joint_path_command" to="$(arg joint_ns)/dx200/dx200_s1_controller/joint_path_command" if="$(eval joint_ns != '')"/>
+    </node>
 	<node unless="$(arg use_bswap)" name="motion_streaming_interface"
-		pkg="motoman_driver" type="motion_streaming_interface" />
+		  pkg="motoman_driver" type="motion_streaming_interface">
+      <remap from="dx200/dx200_r1_controller/joint_states" to="$(arg joint_ns)/dx200/dx200_r1_controller/joint_states" if="$(eval joint_ns != '')" />
+      <remap from="dx200/dx200_s1_controller/joint_states" to="$(arg joint_ns)/dx200/dx200_s1_controller/joint_states" if="$(eval joint_ns != '')"/>
+      <remap from="joint_path_command" to="$(arg joint_ns)/joint_path_command" if="$(eval joint_ns != '')" />
+      <remap from="dx200/dx200_r1_controller/joint_path_command" to="$(arg joint_ns)/dx200/dx200_r1_controller/joint_path_command" if="$(eval joint_ns != '')" />
+      <remap from="dx200/dx200_s1_controller/joint_path_command" to="$(arg joint_ns)/dx200/dx200_s1_controller/joint_path_command" if="$(eval joint_ns != '')"/>
+    </node>
 </launch>
