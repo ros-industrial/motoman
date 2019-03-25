@@ -45,6 +45,7 @@
   <include file="$(find motoman_driver)/launch/motion_streaming_interface.launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
+        <arg name="joint_ns" value="$(arg joint_ns)" />
 	</include>
 
 	<!-- joint_trajectory_action: provides actionlib interface for 
