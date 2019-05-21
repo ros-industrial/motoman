@@ -1,29 +1,35 @@
-<package>
-
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
   <name>motoman_sda10f_moveit_config</name>
   <version>0.3.5</version>
   <description>
-     An automatically generated package with all the configuration and launch files for using the motoman_sda10f with the MoveIt Motion Planning Framework
+    <p>MoveIt package for the Motoman SDA10F.</p>
+    <p>
+      An automatically generated package with all the configuration and launch files for using the Motoman SDA10F with the MoveIt Motion Planning Framework.
+    </p>
   </description>
-  <author email="tdf@ipa.fhg.de">Thiago de Freitas</author>
-  <maintainer email="tdf@ipa.fhg.de">Thiago de Freitas</maintainer>
-
+  <author>Thiago de Freitas</author>
+  <maintainer email="shaun.edwards@gmail.com">Shaun Edwards</maintainer>
+  <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
   <license>BSD</license>
 
-  <url type="website">http://moveit.ros.org/</url>
-  <url type="bugtracker">https://github.com/ros-planning/moveit_setup_assistant/issues</url>
-  <url type="repository">https://github.com/ros-planning/moveit_setup_assistant</url>
-
-  <run_depend>moveit_ros_move_group</run_depend>
-  <run_depend>moveit_planners_ompl</run_depend>
-  <run_depend>moveit_ros_visualization</run_depend>
-  <run_depend>joint_state_publisher</run_depend>
-  <run_depend>robot_state_publisher</run_depend>
-  <run_depend>xacro</run_depend>
-  <build_depend>motoman_sda10f_support</build_depend>
-  <run_depend>motoman_sda10f_support</run_depend>
-
+  <url type="website">http://wiki.ros.org/motoman_sda10f_moveit_config</url>
+  <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
+  <url type="repository">https://github.com/ros-industrial/motoman</url>
 
   <buildtool_depend>catkin</buildtool_depend>
-  
+
+  <exec_depend>industrial_robot_simulator</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>motoman_sda10f_support</exec_depend>
+  <exec_depend>moveit_planners_ompl</exec_depend>
+  <exec_depend>moveit_ros_move_group</exec_depend>
+  <exec_depend>moveit_ros_visualization</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <export>
+    <architecture_independent/>
+  </export>
 </package>

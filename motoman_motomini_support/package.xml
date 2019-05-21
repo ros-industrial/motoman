@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>motoman_motomini_support</name>
+  <version>0.3.5</version>
+  <description>
+    <p>ROS-Industrial support for the Motoman MotoMini (and variants).</p>
+    <p>
+      This package contains configuration data, 3D models and launch files
+      for Motoman MotoMini manipulators.
+    </p>
+    <p>
+      <b>Specifications</b>
+    </p>
+    <ul>
+      <li>MotoMini - Default</li>
+    </ul>
+    <p>
+      Joint limits and maximum joint velocities are based on the information 
+      found in the online 
+      https://www.motoman.com/hubfs/Robots/MotoMini.pdf
+      All urdfs are based on the default motion and joint velocity limits, 
+      unless noted otherwise.
+    </p>
+    <p>
+      Before using any of the configuration files and / or meshes included
+      in this package, be sure to check they are correct for the particular
+      robot model and configuration you intend to use them with.
+    </p>
+  </description>
+  <author>Eric Marcil</author>
+  <maintainer email="eric.marcil@motoman.com">Eric Marcil</maintainer>
+  <maintainer email="shaun.edwards@gmail.com">Shaun Edwards</maintainer>
+  <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
+  <license>BSD</license>
+
+  <url type="website">http://wiki.ros.org/motoman_motomini_support</url>
+  <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
+  <url type="repository">https://github.com/ros-industrial/motoman</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <test_depend>roslaunch</test_depend>
+
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>motoman_driver</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <export>
+    <architecture_independent/>
+  </export>
+</package>

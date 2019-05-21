@@ -32,14 +32,9 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "MotoPlus.h"
-#include "CtrlGroup.h"
-#include "SimpleMessage.h"
-
-#define APPLICATION_VERSION					"1.5.0"
-
 #define TCP_PORT_MOTION						50240
 #define TCP_PORT_STATE						50241
+#define TCP_PORT_IO							50242
 
 #define IO_FEEDBACK_WAITING_MP_INCMOVE		11120  //output# 889 
 #define IO_FEEDBACK_MP_INCMOVE_DONE			11121  //output# 890 
@@ -47,7 +42,7 @@
 #define IO_FEEDBACK_CONNECTSERVERRUNNING	11123  //output# 892 
 #define IO_FEEDBACK_MOTIONSERVERCONNECTED	11124  //output# 893 
 #define IO_FEEDBACK_STATESERVERCONNECTED	11125  //output# 894 
-#define IO_FEEDBACK_RESERVED_0				11126  //output# 895 
+#define IO_FEEDBACK_IOSERVERCONNECTED		11126  //output# 895 
 #define IO_FEEDBACK_FAILURE					11127  //output# 896
 
 #define IO_FEEDBACK_RESERVED_1				11130  //output# 897 
@@ -59,8 +54,15 @@
 #define IO_FEEDBACK_RESERVED_7				11136  //output# 903
 #define IO_FEEDBACK_RESERVED_8				11137  //output# 904 
 
+#define MAX_IO_CONNECTIONS	1
 #define MAX_MOTION_CONNECTIONS	1
 #define MAX_STATE_CONNECTIONS	4
+
+#if (DX100)
+	#define MAX_CONTROLLABLE_GROUPS	3
+#else
+	#define MAX_CONTROLLABLE_GROUPS	4
+#endif
 
 #define INVALID_SOCKET -1
 #define INVALID_TASK -1
@@ -71,7 +73,7 @@
 
 #define ERROR_MSG_MAX_SIZE 64
 
-#define START_MAX_PULSE_DEVIATION 10
+#define START_MAX_PULSE_DEVIATION 30
 
 #define CONTROLLER_STATUS_UPDATE_PERIOD 10
 
@@ -117,6 +119,10 @@ typedef struct
 	// Connection Server
 	int tidConnectionSrv;
 
+	// Io Server Connection
+	int	sdIoConnections[MAX_IO_CONNECTIONS];				// Socket Descriptor array for Io Server
+	int	tidIoConnections[MAX_IO_CONNECTIONS];				// ThreadId array for Io Server
+
 	// State Server Connection
 	int tidStateSendState;  								// ThreadId of thread sending the controller state
 	int	sdStateConnections[MAX_STATE_CONNECTIONS];			// Socket Descriptor array for State Server
@@ -129,6 +135,7 @@ typedef struct
 #ifdef DX100
 	BOOL bSkillMotionReady[2];								// Boolean indicating that the SKILL command required for DX100 is active
 	int RosListenForSkillID[2];								// ThreadId for listening to SkillSend command
+	BOOL bIsDx100Sda;										// Special case to control the waist axis (axis 15)
 #endif
 
 } Controller;
@@ -168,6 +175,8 @@ typedef enum
 	SUBCODE_INVALID_AXIS_TYPE
 } ROS_ASSERTION_CODE;
 extern void motoRosAssert(BOOL mustBeTrue, ROS_ASSERTION_CODE subCodeIfFalse, char* msgFmtIfFalse, ...);
+
+extern void Db_Print(char* msgFormat, ...);
 
 extern void Ros_Sleep(float milliseconds);
 

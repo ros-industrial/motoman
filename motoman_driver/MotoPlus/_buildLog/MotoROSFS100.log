@@ -1,10 +1,11 @@
-﻿  ------ Now building project: MotoRosFS100------
+﻿  ------ Now building project: MotoRosFS_------
   Compiling Controller.c
   Compiling CtrlGroup.c
+  Compiling IoServer.c
   Compiling MotionServer.c
   Compiling mpMain.c
   Compiling SimpleMessage.c
   Compiling StateServer.c
-  Building MotoRosFS100.out
-  Build Successful!  Check 'FS100\MotoRosFS100' folder for MotoRosFS100.out
+  Building MotoRosFS_.out
+  Build Successful!  Check 'FS100\MotoRosFS_' folder for MotoRosFS_.out
   ------

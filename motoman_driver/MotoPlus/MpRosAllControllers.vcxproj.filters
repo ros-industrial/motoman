@@ -67,6 +67,18 @@
     <None Include="ParameterExtraction.yrcLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
+    <None Include="ParameterExtraction.yrcmlib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
+    <None Include="YRC1000uCompilerArguments.mps">
+      <Filter>Compile Settings</Filter>
+    </None>
+    <None Include="YRC1000uLinkerArguments.mps">
+      <Filter>Compile Settings</Filter>
+    </None>
+    <None Include="RosSetupValidation.yrcmlib">
+      <Filter>MotoPlus Libraries</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.c">
@@ -85,6 +97,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StateServer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IoServer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -111,6 +126,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RosSetupValidation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IoServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MotoROS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

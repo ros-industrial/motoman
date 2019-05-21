@@ -178,6 +178,56 @@ extern STATUS 	GP_getPulseToMeter(int ctrlGrp, PULSE_TO_METER* PulseToMeter);
 /******************************************************************************/
 extern STATUS 	GP_isBaxisSlave(int ctrlGrp, BOOL* bBaxisIsSlave);
 
+/******************************************************************************/
+/* << 21 >>                                                              	  */
+/* Function name : STATUS GP_getFeedbackSpeedMRegisterAddresses()			  */
+/* Functionality : Obtains the MRegister CIO addresses that contain the 	  */
+/*				   feedback speed for each axis. Optionally enables this      */
+/*				   feature if not already enabled.						      */
+/* Parameter	 : int ctrlGrp - Robot control group (zero based index) [IN]  */
+/*				   BOOL bActivateIfNotEnabled - TRUE to enable feature [IN]   */
+/*				   BOOL bForceRebootAfterActivation - TRUE to force the user  */
+/*				   to reboot if this feature gets activated. Set to FALSE if  */
+/*				   you plan to enable for additional control groups. [IN]     */
+/*				   JOINT_FEEDBACK_SPEED_ADDRESSES* registerAddresses -		  */
+/*				   Obtains the CIO register address for the feedback data [OUT]*/
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS	GP_getFeedbackSpeedMRegisterAddresses(int ctrlGrp, BOOL bActivateIfNotEnabled, BOOL bForceRebootAfterActivation, JOINT_FEEDBACK_SPEED_ADDRESSES* registerAddresses);
+
+/******************************************************************************/
+/* << 22 >>                                                              	  */
+/* Function name : STATUS GP_isSdaRobot()									  */
+/* Functionality : Determines if the robot is a dual-arm SDA.				  */
+/* Parameter	 : BOOL* bIsSda - TRUE if robot is SDA [OUT]				  */
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_isSdaRobot(BOOL* bIsSda);
+
+/******************************************************************************/
+/* << 23 >>                                                              	  */
+/* Function name : STATUS GP_isSharedBaseAxis()								  */
+/* Functionality : Determines if the robot is an SDA that has a base axis 	  */
+/*					which is shared over multiple control groups.			  */
+/* Parameter	 : BOOL* bIsSharedBaseAxis [OUT]				  */
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_isSharedBaseAxis(BOOL* bIsSharedBaseAxis);
+
+/******************************************************************************/
+/* << 24 >>                                                              	  */
+/* Function name : STATUS GP_getDhParameters()								  */
+/* Functionality : Retrieves DH parameters for a given control group.		  */
+/* Parameter	 : int ctrlGrp - Robot control group (zero based index) [IN]  */
+/*					DH_PARAMETERS* dh - Value of the DH parameters [OUT]      */
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_getDhParameters(int ctrlGrp, DH_PARAMETERS* dh);
+
 #ifdef __cplusplus
 }
 #endif

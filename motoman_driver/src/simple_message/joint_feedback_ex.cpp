@@ -140,11 +140,21 @@ bool JointFeedbackEx::unload(industrial::byte_array::ByteArray *buffer)
       LOG_ERROR("Failed to unload joint feedback groups_number");
       return false;
     }
-    tmp_msg.init(j_feedback);
 
-    this->joint_feedback_messages_.push_back(tmp_msg);
+    // every msg gets deserialised, but we only keep those with valid data.
+    //
+    // TODO: is a message with just 'TIME' also valid? For now it is not (not
+    // sure how that would work anyway, as Jointfeedback msgs are assumed to
+    // contain joint feedback. Time alone would not seem to fit in that
+    // category).
+    if (j_feedback.is_valid(joint_feedback::ValidFieldTypes::POSITION)
+     || j_feedback.is_valid(joint_feedback::ValidFieldTypes::VELOCITY)
+     || j_feedback.is_valid(joint_feedback::ValidFieldTypes::ACCELERATION))
+    {
+      tmp_msg.init(j_feedback);
+      this->joint_feedback_messages_.push_back(tmp_msg);
+    }
   }
-
 
   LOG_COMM("Joint feedback successfully unloaded");
   return true;

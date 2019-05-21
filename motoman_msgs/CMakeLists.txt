@@ -1,26 +1,43 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(motoman_msgs)
 
-find_package(catkin REQUIRED COMPONENTS std_msgs trajectory_msgs industrial_msgs genmsg message_generation)
+find_package(catkin
+  REQUIRED COMPONENTS
+    industrial_msgs
+    message_generation
+    std_msgs
+    trajectory_msgs
+)
 
 add_message_files(
+  DIRECTORY
+    msg
   FILES
-  DynamicJointsGroup.msg
-  DynamicJointPoint.msg
-  DynamicJointTrajectory.msg
-  DynamicJointState.msg
-  DynamicJointTrajectoryFeedback.msg
-  )
+    DynamicJointPoint.msg
+    DynamicJointsGroup.msg
+    DynamicJointState.msg
+    DynamicJointTrajectory.msg
+    DynamicJointTrajectoryFeedback.msg
+)
 
 add_service_files(
+  DIRECTORY
+    srv
   FILES
-  CmdJointTrajectoryEx.srv
-  )
+    CmdJointTrajectoryEx.srv
+)
 
 generate_messages(
-  DEPENDENCIES trajectory_msgs std_msgs industrial_msgs
+  DEPENDENCIES
+    industrial_msgs
+    std_msgs
+    trajectory_msgs
 )
 
 catkin_package(
-    CATKIN_DEPENDS message_runtime std_msgs trajectory_msgs industrial_msgs genmsg
+    CATKIN_DEPENDS
+      industrial_msgs
+      message_runtime
+      std_msgs
+      trajectory_msgs
 )

@@ -191,11 +191,11 @@
     </joint>
 		<!-- end of joint list -->
 
-		<!-- ROS base_link (via link_l) to Motoman Robot (not Base) Frame transform -->
+		<!-- ROS base_link (via base_link) to Motoman Robot (not Base) Frame transform -->
 		<link name="${prefix}base" />
-		<joint name="${prefix}link_l-base" type="fixed">
-			<origin xyz="0 0 0" rpy="0 0 0"/>
-			<parent link="${prefix}link_l"/>
+		<joint name="${prefix}base_link-base" type="fixed">
+			<origin xyz="0 0 0.410" rpy="0 0 0"/>
+			<parent link="${prefix}base_link"/>
 			<child link="${prefix}base"/>
 		</joint>
 	</xacro:macro>
