@@ -1,7 +1,6 @@
-
 cmake_minimum_required(VERSION 2.8.3)
 
-project(motoman_ma1400_support)
+project(motoman_motopos_d500_support)
 
 find_package(catkin REQUIRED)
 
@@ -12,5 +11,5 @@ if (CATKIN_ENABLE_TESTING)
   roslaunch_add_file_check(test/launch_test.xml)
 endif()
 
-install(DIRECTORY config launch
+install(DIRECTORY config launch meshes urdf
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

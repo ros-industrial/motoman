@@ -27,11 +27,8 @@
       <param name="comp_side_ns" type="string" value="$(arg comp_side_ns)" />
     </node>
 
-	<include file="$(find ma1400_sim)/launch/dead_robot_complete.gazebo.launch">
+	<!--<include file="$(find ma1400_sim)/launch/complete.gazebo.launch">
 		<arg name="use_sim_time" value="$(arg use_sim_time)"/>
-	</include>
+	</include> -->
 
-	<node pkg="phidgets_interface_kit" type="interface_kit" name="interface_kit" output="log"/>
-
-	<node pkg="i2c_ros" type="i2c_ros" name="i2c_ros" output="log"/>
 </launch>

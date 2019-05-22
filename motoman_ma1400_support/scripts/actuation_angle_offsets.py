@@ -84,7 +84,7 @@ class actuation_angle_offsets(object):
       print("Error reading path_to_yaml: " + path_to_yaml)
       angle_offsets_dict = {}
 
-    joints = ['joint_s', 'joint_l', 'joint_u', 'joint_r', 'joint_b', 'joint_t', 'joint_x']
+    joints = ['joint_s', 'joint_l', 'joint_u', 'joint_r', 'joint_b', 'joint_t', 'joint_1', 'joint_2']
     angle_offsets_list = []
     for j in joints:
       try:
@@ -324,7 +324,7 @@ class actuation_angle_offsets(object):
     Returns:
     list of doubles: The angle offsets in the order specified by joint_order
     """
-    list_order = ['joint_s', 'joint_l', 'joint_u', 'joint_r', 'joint_b', 'joint_t', 'joint_x']
+    list_order = ['joint_s', 'joint_l', 'joint_u', 'joint_r', 'joint_b', 'joint_t', 'joint_1', 'joint_2']
     ordered_list = []
     for jt in joint_order:
       idx = list_order.index(jt)

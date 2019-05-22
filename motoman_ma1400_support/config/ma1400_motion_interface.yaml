@@ -6,4 +6,4 @@ topic_list:
     - name: dx200_s1_controller
       ns: dx200
       group: 1
-      joints: ['joint_x']
+      joints: ['joint_1', 'joint_2']
