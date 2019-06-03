@@ -115,6 +115,7 @@
             </geometry>
         </collision>
     </link>
+    <!-- corresponds to Yaskawa controller flange coordinate system; Z+ out from the flange, X+ up when robot is in basic position -->
     <link name="${prefix}tool0"/>
     <!-- end of link list -->
 
@@ -162,13 +163,14 @@
         <limit lower="${-DEG2RAD * 360}" upper="${DEG2RAD * 360}" effort="520" velocity="${DEG2RAD * 265}"/>
     </joint>
     <joint name="${prefix}joint_6_t-tool0" type="fixed">
-        <origin xyz="-0.0255 0 0" rpy="${DEG2RAD * 180} ${-DEG2RAD * 180} 0"/>
+        <origin xyz="-0.0255 0 0" rpy="0 ${-DEG2RAD * 90} 0"/>
         <parent link="${prefix}link_6_t"/>
         <child link="${prefix}tool0"/>
     </joint>
     <!-- end of joint list -->
 
     <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
+    <!-- corresponds to Yaskawa controller robot coordinate system -->
     <link name="${prefix}base" />
     <joint name="${prefix}base_link-base" type="fixed">
         <origin xyz="0 0 0.317" rpy="0 0 0"/>
