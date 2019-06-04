@@ -4,112 +4,99 @@
 
     <!-- Properties -->
     <material name="yaskawa_blue">
-          <color rgba="0.12941 0.14902 0.74902 1" />
+<!--          <color rgba="0.12941 0.14902 0.74902 1" />-->
+        <color rgba="0 0.35546875 0.671875 1" />
     </material>
 
     <!-- link list -->
     <link name="${prefix}base_link">
         <visual>
-            <origin rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/base_link.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/base_link.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/base_link.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/base_link.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_1_s">
         <visual>
-            <origin xyz="0 0 -0.317" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_1_s.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_1_s.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="0 0 -0.317" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_1_s.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_1_s.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_2_l">
         <visual>
-            <origin xyz="0.325 0.07 -0.650" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_2_l.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_2_l.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="0.325 0.07 -0.650" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_2_l.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_2_l.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_3_u">
         <visual>
-            <origin xyz="0.325 0.0415 -1.800" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_3_u.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_3_u.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="0.325 0.0415 -1.800" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_3_u.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_3_u.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_4_r">
         <visual>
-            <origin xyz="1.723 0 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_4_r.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_4_r.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="1.723 0 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_4_r.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_4_r.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_5_b">
         <visual>
-            <origin xyz="1.915 -0.082 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_5_b.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_5_b.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="1.915 -0.082 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_5_b.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_5_b.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_6_t">
         <visual>
-            <origin xyz="2.1145 0 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_6_t.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/link_6_t.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="2.1145 0 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
-                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_6_t.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/link_6_t.stl"/>
             </geometry>
         </collision>
     </link>
