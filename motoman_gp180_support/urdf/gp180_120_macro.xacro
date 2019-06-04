@@ -7,19 +7,17 @@
           <color rgba="0.12941 0.14902 0.74902 1" />
     </material>
 
-    <property name="DEG2RAD" value="0.017453292519943295" />
-
     <!-- link list -->
     <link name="${prefix}base_link">
         <visual>
-            <origin rpy="${DEG2RAD * 90} 0 0" />
+            <origin rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/base_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin rpy="${DEG2RAD * 90} 0 0" />
+            <origin rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/base_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
@@ -27,14 +25,14 @@
     </link>
     <link name="${prefix}link_1_s">
         <visual>
-            <origin xyz="0 0 -0.317" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="0 0 -0.317" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/s_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="0 0 -0.317" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="0 0 -0.317" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/s_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
@@ -42,14 +40,14 @@
     </link>
     <link name="${prefix}link_2_l">
         <visual>
-            <origin xyz="0.325 0.07 -0.650" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="0.325 0.07 -0.650" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/l_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="0.325 0.07 -0.650" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="0.325 0.07 -0.650" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/l_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
@@ -57,14 +55,14 @@
     </link>
     <link name="${prefix}link_3_u">
         <visual>
-            <origin xyz="0.325 0.0415 -1.800" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="0.325 0.0415 -1.800" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/u_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="0.325 0.0415 -1.800" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="0.325 0.0415 -1.800" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/u_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
@@ -72,14 +70,14 @@
     </link>
     <link name="${prefix}link_4_r">
         <visual>
-            <origin xyz="1.723 0 -2.100" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="1.723 0 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/r_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="1.723 0 -2.100" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="1.723 0 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/r_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
@@ -87,14 +85,14 @@
     </link>
     <link name="${prefix}link_5_b">
         <visual>
-            <origin xyz="1.915 -0.082 -2.100" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="1.915 -0.082 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/b_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="1.915 -0.082 -2.100" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="1.915 -0.082 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/b_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
@@ -102,14 +100,14 @@
     </link>
     <link name="${prefix}link_6_t">
         <visual>
-            <origin xyz="2.1145 0 -2.100" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="2.1145 0 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/visual/t_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
-            <origin xyz="2.1145 0 -2.100" rpy="${DEG2RAD * 90} 0 0" />
+            <origin xyz="2.1145 0 -2.100" rpy="${radians(90)} 0 0" />
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180_120/collision/t_axis.stl" scale="0.001 0.001 0.001"/>
             </geometry>
@@ -125,45 +123,45 @@
         <child link="${prefix}link_1_s"/>
         <origin xyz="0 0 0.317" rpy="0 0 0" />
         <axis xyz="0 0 1" />
-        <limit lower="${-DEG2RAD * 180}" upper="${DEG2RAD * 180}" effort="1300" velocity="${DEG2RAD * 125}"/>
+        <limit lower="${radians(-180)}" upper="${radians(180)}" effort="1300" velocity="${radians(125)}"/>
     </joint>
     <joint name="${prefix}joint_2_l" type="revolute">
         <parent link="${prefix}link_1_s"/>
         <child link="${prefix}link_2_l"/>
         <origin xyz="-0.325 -0.07 0.333" rpy="0 0 0" />
         <axis xyz="0 -1 0" />
-        <limit lower="${-DEG2RAD * 60}" upper="${DEG2RAD * 76}" effort="1100" velocity="${DEG2RAD * 115}"/>
+        <limit lower="${radians(-60)}" upper="${radians(76)}" effort="1100" velocity="${radians(115)}"/>
     </joint>
     <joint name="${prefix}joint_3_u" type="revolute">
         <parent link="${prefix}link_2_l"/>
         <child link="${prefix}link_3_u"/>
         <origin xyz="0 0.0285 1.150" rpy="0 0 0" />
         <axis xyz="0 -1 0" />
-        <limit lower="${-DEG2RAD * 86}" upper="${DEG2RAD * 90}" effort="900" velocity="${DEG2RAD * 125}"/>
+        <limit lower="${radians(-86)}" upper="${radians(90)}" effort="900" velocity="${radians(125)}"/>
     </joint>
     <joint name="${prefix}joint_4_r" type="revolute">
         <parent link="${prefix}link_3_u"/>
         <child link="${prefix}link_4_r"/>
         <origin xyz="-1.398 0.0415 0.300" rpy="0 0 0" />
         <axis xyz="-1 0 0" />
-        <limit lower="${-DEG2RAD * 360}" upper="${DEG2RAD * 360}" effort="883" velocity="${DEG2RAD * 182}"/>
+        <limit lower="${radians(-360)}" upper="${radians(360)}" effort="883" velocity="${radians(182)}"/>
     </joint>
     <joint name="${prefix}joint_5_b" type="revolute">
         <parent link="${prefix}link_4_r"/>
         <child link="${prefix}link_5_b"/>
         <origin xyz="-0.192 0.082 0" rpy="0 0 0" />
         <axis xyz="0 -1 0" />
-        <limit lower="${-DEG2RAD * 130}" upper="${DEG2RAD * 130}" effort="883" velocity="${DEG2RAD * 175}"/>
+        <limit lower="${radians(-130)}" upper="${radians(130)}" effort="883" velocity="${radians(175)}"/>
     </joint>
     <joint name="${prefix}joint_6_t" type="revolute">
         <parent link="${prefix}link_5_b"/>
         <child link="${prefix}link_6_t"/>
         <origin xyz="-0.1995 -0.082 0" rpy="0 0 0" />
         <axis xyz="-1 0 0" />
-        <limit lower="${-DEG2RAD * 360}" upper="${DEG2RAD * 360}" effort="520" velocity="${DEG2RAD * 265}"/>
+        <limit lower="${radians(-360)}" upper="${radians(360)}" effort="520" velocity="${radians(265)}"/>
     </joint>
     <joint name="${prefix}joint_6_t-tool0" type="fixed">
-        <origin xyz="-0.0255 0 0" rpy="0 ${-DEG2RAD * 90} 0"/>
+        <origin xyz="-0.0255 0 0" rpy="0 ${radians(-90)} 0"/>
         <parent link="${prefix}link_6_t"/>
         <child link="${prefix}tool0"/>
     </joint>
