@@ -11,7 +11,7 @@
   <!-- controller: Controller name (yrc1000) -->
   <arg name="controller" />
 
-  <rosparam command="load" file="$(find motoman_gp180_120_support)/config/joint_names_gp180_120.yaml" />
+  <rosparam command="load" file="$(find motoman_gp180_support)/config/joint_names_gp180_120.yaml" />
 
   <include file="$(find motoman_driver)/launch/robot_state_$(arg controller).launch">
     <arg name="robot_ip" value="$(arg robot_ip)" />
@@ -19,7 +19,7 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-  <include file="$(find motoman_gp180_120_support)/launch/load_gp180_120.launch" />
+  <include file="$(find motoman_gp180_support)/launch/load_gp180_120.launch" />
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
 </launch>

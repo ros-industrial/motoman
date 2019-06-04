@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
-  <name>motoman_gp180_120_support</name>
+  <name>motoman_gp180_support</name>
   <version>0.1.0</version>
   <description>
-    <p>ROS-Industrial support for the Motoman GP180-120 (and variants).</p>
+    <p>ROS-Industrial support for the Motoman GP180 (and variants).</p>
     <p>
       This package contains configuration data, 3D models and launch files
-      for Motoman GP180-120 manipulators.
+      for Motoman GP180 series of manipulators.
     </p>
     <p>
       <b>Specifications</b>
@@ -33,7 +33,7 @@
   <maintainer email="jakub@km-robotics.cz">Jakub Marsik (KM Robotics)</maintainer>
   <license>BSD</license>
 
-  <url type="website">http://wiki.ros.org/motoman_gp180_120_support</url>
+  <url type="website">http://wiki.ros.org/motoman_gp180_support</url>
   <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
   <url type="repository">https://github.com/ros-industrial/motoman</url>
 

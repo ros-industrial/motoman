@@ -1,5 +1,5 @@
 <launch>
-    <include file="$(find motoman_gp180_120_support)/launch/load_gp180_120.launch" />
+    <include file="$(find motoman_gp180_support)/launch/load_gp180_120.launch" />
 
     <param name="use_gui" value="true" />
 
