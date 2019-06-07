@@ -12,8 +12,7 @@ meshlabserver -i tmp/0.stl -o output_collision/link_1_s.stl -s ../meshlab_03_no_
 read
 
 meshlabserver -i output_visual/link_2_l.stl -o tmp/0.stl -s ../meshlab_01_convexhull.mlx
-meshlabserver -i tmp/0.stl -o tmp/1.stl -s ../meshlab_02_invert_faces.mlx
-meshlabserver -i tmp/1.stl -o output_collision/link_2_l.stl -s ../meshlab_03_no_offset_300t.mlx
+meshlabserver -i tmp/0.stl -o output_collision/link_2_l.stl -s ../meshlab_03_no_offset_300t.mlx
 
 read
 
@@ -30,7 +29,8 @@ meshlabserver -i tmp/1.stl -o output_collision/link_4_r.stl -s ../meshlab_03_no_
 read
 
 meshlabserver -i output_visual/link_5_b.stl -o tmp/0.stl -s ../meshlab_01_convexhull.mlx
-meshlabserver -i tmp/0.stl -o output_collision/link_5_b.stl -s ../meshlab_03_no_offset_300t.mlx
+meshlabserver -i tmp/0.stl -o tmp/1.stl -s ../meshlab_02_invert_faces.mlx
+meshlabserver -i tmp/1.stl -o output_collision/link_5_b.stl -s ../meshlab_03_no_offset_300t.mlx
 
 read
 

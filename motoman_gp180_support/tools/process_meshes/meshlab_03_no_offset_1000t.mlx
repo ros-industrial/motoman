@@ -1,5 +1,6 @@
 <!DOCTYPE FilterScript>
 <FilterScript>
+ <filter name="Remove Duplicate Vertices"/>
  <filter name="Simplification: Quadric Edge Collapse Decimation">
   <Param value="1000" type="RichInt" name="TargetFaceNum" description="Target number of faces" tooltip="The desired final number of faces."/>
   <Param value="0" type="RichFloat" name="TargetPerc" description="Percentage reduction (0..1)" tooltip="If non zero, this parameter specifies the desired final size of the mesh as a percentage of the initial size."/>

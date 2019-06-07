@@ -4,9 +4,10 @@
 
 You can use the tool `stl_cmd` (install from https://github.com/AllwineDesigns/stl_cmd) to process
 original meshes saved from Yaskawa 3D model files (STEP file) as individual STL files named after
-corresponding STEP file parts.
+corresponding STEP file parts. You can prepare those individual STL files by opening the STEP file
+in Fusion 360 and saving each component as an STL (right click on the component and choose Save as STL).
 
-Just save those files in the subdirectory `input` of the directory named after specific robot manipulator
+Save those files in the subdirectory `input` of the directory named after specific robot manipulator
 variant:
 
 * BASE_AXIS.stl
@@ -17,12 +18,15 @@ variant:
 * B_AXIS.stl
 * T_AXIS.stl
 
-And run `./process1.sh` script. It will do following things with all meshes:
+And run `./process1a-stlcmd.sh` script. It will do following things with all meshes:
 
 # scale the mesh so that the units are "meters"
-# rotate the mesh so that the Z+ axis points up
+# rotate the mesh so that the Z+ axis points up and X+ axis points in the correct direction
 # translate the origin point so that it's in the point of connection of the link to the previous link
 # save the file with proper file name used in the URDF to `output` subdirectory
+
+Then run `./process1b-simplify.sh` script to simplify visual meshes to 50% of faces. It uses MeshLab, see
+comments about it below in section about collision meshes.
 
 After processing just copy files from `output_visual` subdirectory to the subdirectory named after specific
 robot manipulator variant of the `meshes` directory of this package. Use correct subdirectory `visual`.

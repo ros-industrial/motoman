@@ -1,5 +1,6 @@
 <!DOCTYPE FilterScript>
 <FilterScript>
+ <filter name="Remove Duplicate Vertices"/>
  <filter name="Uniform Mesh Resampling">
   <Param value="0.01202" max="1.20199" type="RichAbsPerc" name="CellSize" description="Precision" min="0" tooltip="Size of the cell, the default is 1/50 of the box diag. Smaller cells give better precision at a higher computational cost. Remember that halving the cell size means that you build a volume 8 times larger."/>
   <Param value="0.05" max="0.240398" type="RichAbsPerc" name="Offset" description="Offset" min="-0.240398" tooltip="Offset of the created surface (i.e. distance of the created surface from the original one).&lt;br>If offset is zero, the created surface passes on the original mesh itself. Values greater than zero mean an external surface, and lower than zero mean an internal surface.&lt;br> In practice this value is the threshold passed to the Marching Cube algorithm to extract the isosurface from the distance field representation."/>
