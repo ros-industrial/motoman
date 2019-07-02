@@ -1,6 +1,8 @@
 # Motoman
 
 [![Build Status](http://build.ros.org/job/Idev__motoman__ubuntu_trusty_amd64/badge/icon)](http://build.ros.org/job/Idev__motoman__ubuntu_trusty_amd64)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 [![support level: consortium / vendor](https://img.shields.io/badge/support%20level-consortium%20/%20vendor-brightgreen.png)](http://rosindustrial.org/news/2016/10/7/better-supporting-a-growing-ros-industrial-software-platform)
 
