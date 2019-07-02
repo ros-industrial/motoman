@@ -73,6 +73,8 @@ void Ros_StateServer_StartNewConnection(Controller* controller, int sd)
 				//set feedback signal
 				if(controller->tidStateSendState != INVALID_TASK)
 					Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, TRUE);
+				else
+					mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 3);
 			}
 			
 			break;

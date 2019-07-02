@@ -53,6 +53,7 @@ int Ros_MotionServer_InitTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPt
 int Ros_MotionServer_AddTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFull* jointTrajData);
 int Ros_MotionServer_AddTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence);
 int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg);
 
 // AddToIncQueue Task:
 void Ros_MotionServer_AddToIncQueueProcess(Controller* controller, int groupNo);
@@ -122,6 +123,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 			mpClose(sd);
 			controller->tidIncMoveThread = INVALID_TASK;
 			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+			mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 4);
+
 			return;
 		}
 	}
@@ -142,6 +145,7 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 				mpClose(sd);
 				controller->ctrlGroups[groupNo]->tidAddToIncQueue = INVALID_TASK;
 				Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+				mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 5);
 				return;
 			}
 		}
@@ -169,6 +173,7 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 			controller->sdMotionConnections[connectionIndex] = INVALID_SOCKET;
 			controller->tidMotionConnections[connectionIndex] = INVALID_TASK;
 			Ros_Controller_SetIOState(IO_FEEDBACK_FAILURE, TRUE);
+			mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 6);
 			return;
 		}
 	}
@@ -277,6 +282,9 @@ int Ros_MotionServer_GetExpectedByteSizeForMessageType(SimpleMsg* receiveMsg, in
 		break;
 	case ROS_MSG_MOTO_WRITE_IO_GROUP:
 		expectedSize = minSize + sizeof(SmBodyMotoWriteIOGroup);
+		break;
+	case ROS_MSG_MOTO_GET_DH_PARAMETERS:
+		expectedSize = minSize; //no additional data on the request
 		break;
 	default: //invalid message type
 		return -1;
@@ -448,6 +456,11 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	//-----------------------
 	case ROS_MSG_MOTO_WRITE_IO_GROUP:
 		ret = Ros_IoServer_WriteIOGroup(receiveMsg, replyMsg);
+		break;
+
+	//-----------------------
+	case ROS_MSG_MOTO_GET_DH_PARAMETERS:
+		ret = Ros_MotionServer_GetDhParameters(controller, replyMsg);
 		break;
 
 	//-----------------------
@@ -1070,6 +1083,15 @@ int Ros_MotionServer_JointTrajDataProcess(Controller* controller, SimpleMsg* rec
 		return 0;
 	}
 
+	//Due to data loss when converting from double (ROS PC) to float (Simple Message serialization), we cannot accept
+	//a single trjectory that lasts more than 4 hours.
+	if (trajData->time >= MAX_TRAJECTORY_TIME_LENGTH)
+	{
+		printf("ERROR: Trajectory time (%.4f) > MAX_TRAJECTORY_TIME_LENGTH (%.4f)\r\n", trajData->time, MAX_TRAJECTORY_TIME_LENGTH);
+		Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_DATA_TIME, replyMsg, receiveMsg->body.jointTrajData.groupNo);
+		return 0;
+	}
+
 	// Check the trajectory sequence code
 	if(trajData->sequence == 0) // First trajectory point
 	{
@@ -1552,7 +1574,7 @@ int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo)
 	}
 		
 	printf("ERROR: Unable to access queue count.  Queue is locked up!\r\n");
-	return -1;
+	return ERROR;
 }
 
 
@@ -1563,11 +1585,15 @@ int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo)
 BOOL Ros_MotionServer_HasDataInQueue(Controller* controller)
 {
 	int groupNo;
+	int qCnt;
 	
 	for(groupNo=0; groupNo<controller->numGroup; groupNo++)
 	{
-		if(Ros_MotionServer_GetQueueCnt(controller, groupNo) > 0)
+		qCnt = Ros_MotionServer_GetQueueCnt(controller, groupNo);
+		if (qCnt > 0)
 			return TRUE;
+		else if (qCnt == ERROR)
+			return ERROR;
 	}
 		
 	return FALSE;
@@ -1691,7 +1717,10 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 
 #if DX100
 			// first robot
-			moveData.ctrl_grp = 1;
+			if (controller->bIsDx100Sda)
+				moveData.ctrl_grp = 1 | (1 << 2); //R1 + B1
+			else
+				moveData.ctrl_grp = 1; //R1 only
 			ret = mpMeiIncrementMove(MP_SL_ID1, &moveData);
 			if(ret != 0)
 			{
@@ -1700,8 +1729,8 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 				else
 					printf("mpMeiIncrementMove returned: %d\r\n", ret);
 			}
-			// if second robot  // This is not tested but was introduce to help future development
-			moveData.ctrl_grp = 2;
+			// if second robot
+			moveData.ctrl_grp = 2; //R2 only
 			if(controller->numRobot > 1)
 			{
 				ret = mpMeiIncrementMove(MP_SL_ID2, &moveData);
@@ -1811,4 +1840,36 @@ STATUS Ros_MotionServer_DisableEcoMode(Controller* controller)
 		return OK;
 	else
 		return NG;
+}
+
+int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg)
+{
+	int i; 
+	STATUS apiRet = OK;
+
+	//initialize memory
+	memset(replyMsg, 0x00, sizeof(SimpleMsg));
+
+	// set prefix: length of message excluding the prefix
+	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoGetDhParameters);
+
+	// set header information of the reply
+	replyMsg->header.msgType = ROS_MSG_MOTO_GET_DH_PARAMETERS;
+	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+	replyMsg->header.replyType = ROS_REPLY_SUCCESS;
+
+	for (i = 0; i < controller->numGroup; i += 1)
+	{
+		if (controller->ctrlGroups[i] != NULL && replyMsg->header.replyType == ROS_REPLY_SUCCESS)
+		{
+			apiRet = GP_getDhParameters(i, &replyMsg->body.dhParameters.dhParameters[i]);
+
+			if (apiRet == OK)
+				replyMsg->header.replyType = ROS_REPLY_SUCCESS;
+			else
+				replyMsg->header.replyType = ROS_REPLY_FAILURE;
+		}
+	}
+
+	return apiRet;
 }

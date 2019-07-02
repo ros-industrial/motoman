@@ -102,7 +102,7 @@
     <origin rpy="0 0 0" xyz="0.085 0 0"/>
     <parent link="link_e"/>
     <child link="link_u"/>
-    <axis xyz="0 1 0"/>
+    <axis xyz="0 -1 0"/>
     <limit effort="0" lower="-1.57079637" upper="2.007128695" velocity="3.4906586"/>
   </joint>
   <link name="link_r">
@@ -144,7 +144,7 @@
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="link_r"/>
     <child link="link_b"/>
-    <axis xyz="0 1 0"/>
+    <axis xyz="0 -1 0"/>
     <limit effort="0" lower="-1.91986223" upper="1.91986223" velocity="4.01425739"/>
   </joint>
   <link name="link_t">
@@ -174,11 +174,11 @@
     <parent link="link_t"/>
     <child link="tool0"/>
   </joint>
+  <!-- ROS base_link (via base_link) to Motoman Robot (not Base) Frame transform -->
   <link name="base"/>
-  <joint name="link_l-base" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="link_l"/>
+  <joint name="base_link-base" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.310"/>
+    <parent link="base_link"/>
     <child link="base"/>
   </joint>
 </robot>
-
