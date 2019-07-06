@@ -3,13 +3,6 @@
   <!-- Constants for robot dimensions -->
   <xacro:property name="M_PI" value="3.1415926535897931"/>
 
-<!--  <joint name="joint_cam_mount" type="fixed">-->
-<!--    <origin xyz="0 0 -0.0735" rpy="${M_PI} 0 ${M_PI/2}" />-->
-<!--    <parent link="t_link" />-->
-<!--    <child link="cam_mount_link" />-->
-<!--    <axis xyz="0 0 0" />-->
-<!--  </joint>-->
-
   <link name="cam_mount_link">
     <visual>
       <origin

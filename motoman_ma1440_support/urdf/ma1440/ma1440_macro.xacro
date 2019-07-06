@@ -252,10 +252,10 @@
 
         <!-- end of link list -->
         <!-- joint list -->
-        <joint name="world-base" type="fixed">
+        <joint name="${prefix}world-base" type="fixed">
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <parent link="world" />
-            <child link="base_link"/>
+            <child link="${prefix}base_link"/>
         </joint>
         <joint name="${prefix}joint_s" type="revolute">
             <parent link="${prefix}base_link"/>

@@ -28,15 +28,13 @@
 -->
 <launch>
     <arg name="req_arg" value="default"/>
-    <arg name="dx100" value="dx100"/>
-    <arg name="fs100" value="fs100" />
 
 <!--    <group ns="">-->
-        <include file="$(find motoman_ma1440_support)/launch/load_ma1440.launch"/>
+    <include file="$(find motoman_ma1440_support)/launch/load_ma1440.launch">
+    </include>
 <!--    </group>-->
 
     <rosparam command="load" file="$(find motoman_ma1440_support)/config/joint_names_ma1440.yaml" />
-    <rosparam command="load" file="$(find motoman_ma1440_support)/config/ma1440_motion_interface.yaml" />
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />

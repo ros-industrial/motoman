@@ -46,6 +46,11 @@
   <!-- end of link list -->
 
   <!-- joint list -->
+  <joint name="${prefix}world-base" type="fixed">
+      <origin xyz="1 0 0" rpy="0 0 0"/>
+      <parent link="world" />
+      <child link="${prefix}base_link"/>
+  </joint>  
   <joint name="joint_1" type="revolute">
     <parent link="${prefix}base_link"/>
     <child link="${prefix}link_1"/>
@@ -71,7 +76,7 @@
 
   <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
   <link name="${prefix}base" />
-  <joint name="base_link-base" type="fixed">
+  <joint name="${prefix}base_link-base" type="fixed">
     <origin xyz="0 0 0.380" rpy="0 0 0"/>
     <parent link="${prefix}base_link"/>
     <child link="${prefix}base"/>

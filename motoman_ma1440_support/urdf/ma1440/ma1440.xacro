@@ -2,7 +2,7 @@
 
 <robot name="motoman_ma1440" xmlns:xacro="http://ros.org/wiki/xacro">
 
-    <xacro:arg name="cam_mount" default="true"/>
+    <xacro:arg name="cam_mount" default="false"/>
 
     <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440_macro.xacro" />
     <xacro:motoman_ma1440 prefix=""/>

@@ -24,36 +24,42 @@
   in roslaunch auto-complete.
 
   2. Group tags with namespaces are used to avoid node name collisions when
-  testing multiple launch files
+  testing multpile launch files
 -->
 <launch>
-  <arg name="req_arg" value="default"/>
+	<arg name="req_arg" value="default"/>
   <arg name="dx200" value="dx200"/>
-<!--   
-  <group ns="load_motopos_d500">
-    <include file="$(find motoman_motopos_d500_support)/launch/load_motopos_d500.launch"/>
+
+  <!-- <group ns="load_ma1440_d500">
+	  <include file="$(find motoman_ma1440_d500_support)/launch/load_ma1440_d500.launch"/>
   </group> -->
 
-  <group ns="test_motopos_d500">
-    <include file="$(find motoman_motopos_d500_support)/launch/test_motopos_d500.launch"/>
+  <group ns="test_ma1440_d500">
+	  <include file="$(find motoman_ma1440_d500_support)/launch/test_ma1440_d500.launch"/>
+  </group>
+  
+  
+  <group ns="urdf_ma1440_d500">
+	  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find motoman_ma1440_d500_support)/test/ma1440_d500_test.xacro'" />
   </group>
 
-  <!-- <group ns="robot_interface_streaming_motopos_d500">
+
+  <!-- <group ns="robot_interface_streaming_ma1440_d500">
     <group ns="dx200" >
-      <include file="$(find motoman_motopos_d500_support)/launch/robot_interface_streaming_motopos_d500.launch">
-        <arg name="robot_ip"   value="$(arg req_arg)" />
+	    <include file="$(find motoman_ma1440_d500_support)/launch/robot_interface_streaming_ma1440_d500.launch">
+		    <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg dx200)"/>
-      </include>
+	    </include>
     </group>
   </group> -->
-
-  <group ns="robot_state_visualize_motopos_d500">
+<!-- 
+  <group ns="robot_state_visualize_ma1440_d500">
     <group ns="dx200" >
-      <include file="$(find motoman_motopos_d500_support)/launch/robot_state_visualize_motopos_d500.launch">
-        <arg name="robot_ip"   value="$(arg req_arg)" />
+	    <include file="$(find motoman_ma1440_d500_support)/launch/robot_state_visualize_ma1440_d500.launch">
+		    <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg dx200)"/>
-      </include>
+	    </include>
     </group>
-  </group>
+  </group> -->
 
 </launch>
