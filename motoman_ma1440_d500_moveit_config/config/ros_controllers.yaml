@@ -24,44 +24,14 @@ joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50
 controller_list:
-  []
-arm_controller:
-  type: position_controllers/JointPositionController
-  joints:
-    - joint_s
-    - joint_l
-    - joint_u
-    - joint_r
-    - joint_b
-    - joint_t
-  gains:
-    joint_s:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    joint_l:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    joint_u:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    joint_r:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    joint_b:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    joint_t:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
+  - name: arm
+    action_ns: follow_joint_trajectory
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - joint_s
+      - joint_l
+      - joint_u
+      - joint_r
+      - joint_b
+      - joint_t

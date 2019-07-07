@@ -33,3 +33,14 @@ joint_t_controller:
   type: "position_controllers/JointPositionController"
   joint: joint_t
   pid: {p: 100.0, i: 0.5, d: 10.0}
+
+joint_1_controller:
+  type: "position_controllers/JointPositionController"
+  joint: joint_1
+  pid: {p: 100.0, i: 0.5, d: 10.0}
+
+joint_2_controller:
+  type: "position_controllers/JointPositionController"
+  joint: joint_2
+  pid: {p: 100.0, i: 0.5, d: 10.0}
+
