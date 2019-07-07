@@ -105,7 +105,6 @@
 
         <link name="${prefix}link_u">
             <visual>
-<!--                <origin rpy="1.57 -3.1415 0" xyz="0 0 0"/>-->
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
                     <mesh filename="package://motoman_ma1440_support/meshes/ma1440/visual/u_link.stl"/>
@@ -113,7 +112,6 @@
                 <material name="blue"/>
             </visual>
             <collision>
-<!--                <origin rpy="1.57 -3.1415 0" xyz="0 0 0"/>-->
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
                     <mesh filename="package://motoman_ma1440_support/meshes/ma1440/collision/u_link_collision.stl" />
@@ -264,6 +262,7 @@
             <axis xyz="0 0 1" />
             <limit lower="-3.1415" upper="3.1415" effort="100" velocity="2.9670" />
         </joint>
+        <xacro:transmission_macro name="s"/>
         <joint name="${prefix}joint_l" type="revolute">
             <parent link="${prefix}link_s"/>
             <child link="${prefix}link_l"/>
@@ -271,6 +270,7 @@
             <axis xyz="0 0 1" />
             <limit lower="-1.9198" upper="1.9198" effort="100" velocity="2.9670" />
         </joint>
+        <xacro:transmission_macro name="l"/>
         <joint name="${prefix}joint_u" type="revolute">
             <parent link="${prefix}link_l"/>
             <child link="${prefix}link_u"/>
@@ -278,6 +278,7 @@
             <axis xyz="0 0 -1" />
             <limit lower="-2.3561" upper="2.3561" effort="100" velocity="2.9670" />
         </joint>
+        <xacro:transmission_macro name="u"/>
         <joint name="${prefix}joint_r" type="revolute">
             <parent link="${prefix}link_u"/>
             <child link="${prefix}link_r"/>
@@ -285,6 +286,7 @@
             <axis xyz="0 0 1" />
             <limit lower="-3.1415" upper="3.1415" effort="100" velocity="3.4906" />
         </joint>
+        <xacro:transmission_macro name="r"/>
         <joint name="${prefix}joint_b" type="revolute">
             <parent link="${prefix}link_r"/>
             <child link="${prefix}link_b"/>
@@ -292,6 +294,7 @@
             <axis xyz="0 0 1" />
             <limit lower="-1.9198" upper="1.9198" effort="100" velocity="3.4906" />
         </joint>
+        <xacro:transmission_macro name="b"/>
         <joint name="${prefix}joint_t" type="revolute">
             <parent link="${prefix}link_b"/>
             <child link="${prefix}link_t"/>
@@ -299,6 +302,7 @@
             <axis xyz="0 0 1" />
             <limit lower="-3.1415" upper="3.1415" effort="100" velocity="6.9813" />
         </joint>
+        <xacro:transmission_macro name="t"/>
         <joint name="${prefix}joint_tip" type="fixed">
             <parent link="${prefix}link_t"/>
             <child link="${prefix}link_tip"/>

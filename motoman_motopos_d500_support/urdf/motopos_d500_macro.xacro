@@ -60,14 +60,14 @@
   </joint>
   <xacro:transmission_macro name="1"/>
   <joint name="joint_2" type="revolute">
-    <parent link="${prefix}base_link"/>
+    <parent link="${prefix}link_1"/>
     <child link="${prefix}link_2"/>
     <origin xyz="0 0 0" rpy="0 0 0" />
     <axis xyz="0 0 1" />
     <limit lower="-3.4906" upper="3.4906" effort="392" velocity="2.7925"/>
   </joint>
   <xacro:transmission_macro name="2"/>
-  <joint name="joint_2-tool0" type="fixed">
+  <joint name="$joint_2-tool0" type="fixed">
     <origin xyz="0 0 0.150 " rpy="0 0 0"/>
     <parent link="${prefix}link_2"/>
     <child link="${prefix}tool0"/>

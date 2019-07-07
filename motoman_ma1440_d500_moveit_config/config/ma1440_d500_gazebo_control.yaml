@@ -1,0 +1,35 @@
+# this sets up the PID controllers for the gazebo_ros_control package
+# see http://gazebosim.org/tutorials/?tut=ros_control
+joint_state_controller:
+  type: "joint_state_controller/JointStateController"
+  publish_rate: 50
+
+joint_s_controller:
+  type: "position_controllers/JointPositionController"
+  joint: joint_s
+  pid: {p: 100.0, i: 0.5, d: 10.0}
+
+joint_l_controller:
+  type: "position_controllers/JointPositionController"
+  joint: joint_l
+  pid: {p: 100.0, i: 0.5, d: 10.0}
+
+joint_u_controller:
+  type: "position_controllers/JointPositionController"
+  joint: joint_u
+  pid: {p: 100.0, i: 0.5, d: 10.0}
+
+joint_r_controller:
+  type: "position_controllers/JointPositionController"
+  joint: joint_r
+  pid: {p: 100.0, i: 0.5, d: 10.0}
+
+joint_b_controller:
+  type: "position_controllers/JointPositionController"
+  joint: joint_b
+  pid: {p: 100.0, i: 0.5, d: 10.0}
+
+joint_t_controller:
+  type: "position_controllers/JointPositionController"
+  joint: joint_t
+  pid: {p: 100.0, i: 0.5, d: 10.0}

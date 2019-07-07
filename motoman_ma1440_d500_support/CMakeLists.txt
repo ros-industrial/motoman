@@ -4,10 +4,7 @@ project(motoman_ma1440_d500_support)
 
 find_package(catkin REQUIRED)
 
-catkin_package(catkin REQUIRED COMPONENTS
-  motoman_ma1440_suppport
-  motoman_motopos_d500_suppport
-)
+catkin_package()
 
 if (CATKIN_ENABLE_TESTING)
   find_package(roslaunch REQUIRED)
