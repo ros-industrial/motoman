@@ -106,13 +106,19 @@ class dynamic_trajectory_converter(object):
         joint_states.header.stamp = self.r1_joint_states.header.stamp
       else:
         joint_states.header.stamp = self.s1_joint_states.header.stamp
-      name = ['joint_s','joint_l','joint_u','joint_r','joint_b','joint_t','joint_1','joint_2']
+      name = ['joint_s','joint_l','joint_u','joint_r','joint_b','joint_t']
 
-      position = self.r1_joint_states.position + (self.s1_joint_states.position[0], 0.0)
+      # position = self.r1_joint_states.position + (self.s1_joint_states.position[0], )
+      # if (len(self.s1_joint_states.velocity) < 1) :
+      #   velocity = self.r1_joint_states.velocity + (0.0,)
+      # else:
+      #   velocity = self.r1_joint_states.velocity + (self.s1_joint_states.velocity[0], )
+
+      position = self.r1_joint_states.position
       if (len(self.s1_joint_states.velocity) < 1) :
-        velocity = self.r1_joint_states.velocity + (0.0,)
+        velocity = self.r1_joint_states.velocity
       else:
-        velocity = self.r1_joint_states.velocity + (self.s1_joint_states.velocity[0], 0.0)
+        velocity = self.r1_joint_states.velocity        
       joint_states.name = name
       joint_states.position = position
       joint_states.velocity = velocity
@@ -199,7 +205,7 @@ class dynamic_trajectory_converter(object):
     # rospy.loginfo(points)
     dyn_traj = DynamicJointTrajectory()
     dyn_traj.header = msg.header
-    joint_names = ['joint_s','joint_l','joint_u','joint_r','joint_b','joint_t','joint_1','joint_2']
+    joint_names = ['joint_s','joint_l','joint_u','joint_r','joint_b','joint_t', 'joint_1', 'joint_2']
     dyn_traj.joint_names = joint_names
     dyn_traj.points = points
     # and publish
