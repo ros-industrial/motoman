@@ -14,7 +14,7 @@
   <!-- controller: Controller name (fs100 or dx100) -->
   <arg name="controller" doc="Series of the controller (dx100, dx200, fs100 or yrc1000)" />
 
-  <rosparam command="load" file="$(find motoman_sda10f_support)/config/sda10f_motion_interface.yaml" />
+  <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/ma1440_d500_motion_interface.yaml" />
 
   <include file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_$(arg controller).launch">
     <arg name="robot_ip"   value="$(arg robot_ip)" />

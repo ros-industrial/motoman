@@ -9,8 +9,6 @@ generic_hw_control_loop:
 # Settings for ros_control hardware interface
 hardware_interface:
   joints:
-    - joint_1
-    - joint_2
     - joint_s
     - joint_l
     - joint_u
@@ -24,7 +22,7 @@ joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50
 controller_list:
-  - name: ma1440_d500
+  - name: arm_controller
     action_ns: follow_joint_trajectory
     default: True
     type: FollowJointTrajectory
@@ -35,5 +33,3 @@ controller_list:
       - joint_r
       - joint_b
       - joint_t
-      - joint_1
-      - joint_2
