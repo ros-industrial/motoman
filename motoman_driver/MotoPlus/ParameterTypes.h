@@ -112,6 +112,19 @@ typedef struct
 	ULONG cioAddressForAxis[MAX_PULSE_AXES][2];
 } JOINT_FEEDBACK_SPEED_ADDRESSES;
 
+typedef struct
+{
+	float theta;
+	float d;
+	float a;
+	float alpha;
+} DH_LINK;
+
+typedef struct
+{
+	DH_LINK link[MAX_PULSE_AXES];
+} DH_PARAMETERS;
+
 #ifdef __cplusplus
 }
 #endif

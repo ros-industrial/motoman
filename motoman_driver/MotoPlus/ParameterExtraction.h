@@ -217,6 +217,17 @@ extern STATUS 	GP_isSdaRobot(BOOL* bIsSda);
 /******************************************************************************/
 extern STATUS 	GP_isSharedBaseAxis(BOOL* bIsSharedBaseAxis);
 
+/******************************************************************************/
+/* << 24 >>                                                              	  */
+/* Function name : STATUS GP_getDhParameters()								  */
+/* Functionality : Retrieves DH parameters for a given control group.		  */
+/* Parameter	 : int ctrlGrp - Robot control group (zero based index) [IN]  */
+/*					DH_PARAMETERS* dh - Value of the DH parameters [OUT]      */
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS 	GP_getDhParameters(int ctrlGrp, DH_PARAMETERS* dh);
+
 #ifdef __cplusplus
 }
 #endif
