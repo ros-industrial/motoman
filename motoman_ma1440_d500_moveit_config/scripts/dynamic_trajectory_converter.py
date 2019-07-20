@@ -28,26 +28,43 @@ class dynamic_trajectory_converter(object):
     self.time_tol = rospy.get_param('~time_tol',0.001)
 
     # Get namespaces from the parameter server
-    moto_ns = rospy.get_param('~moto_ns','dx200')
+    moto_ns = rospy.get_param('~controller_ns','dx200')
     if moto_ns: # If the namspace isn't empty, add a '/'
       moto_ns = moto_ns + "/"
-    dof_ns = rospy.get_param('~7dof_ns','ma1440_d500')
+    dof_ns = rospy.get_param('~robot_ns','robot')
     if dof_ns: # If the namspace isn't empty, add a '/'
       dof_ns = dof_ns + "/"
 
-    # Subscribe to joint_states from robot/simulator
-    rospy.Subscriber(moto_ns + 'dx200_r1_controller/joint_states',
+    motoman_topic_list = rospy.get_param('/topic_list')
+
+    rospy.logwarn_once(motoman_topic_list)
+    rospy.logwarn_once(len(motoman_topic_list))
+
+    for topic in motoman_topic_list:
+      rospy.logwarn(topic["group"])
+      rospy.logwarn(topic["ns"])
+      rospy.logwarn(topic["name"])
+      rospy.logwarn(topic["joints"])
+
+      # Subscribe to joint_states from robot/simulator
+      # rospy.Subscriber(topic["ns"] + topic["name"] + '/joint_states', JointState, self.r1_joint_state_cb)  
+    
+
+    rospy.Subscriber(moto_ns + 'arm_controller/joint_states',
                      JointState, self.r1_joint_state_cb)
-    rospy.Subscriber(moto_ns + 'dx200_s1_controller/joint_states',
+    rospy.Subscriber(moto_ns + 'positioner_controller/joint_states',
                      JointState, self.s1_joint_state_cb)
     # Publish joint_states to rest of system
+
     self.joint_states_pub = rospy.Publisher(dof_ns+'joint_states', JointState,
                                            queue_size=1)
+
     # Subscribe to feedback_states from robot/simulator
-    rospy.Subscriber(moto_ns + 'dx200_r1_controller/feedback_states',
+    rospy.Subscriber(moto_ns + 'arm_controller/feedback_states',
                      FollowJointTrajectoryFeedback, self.r1_feedback_state_cb)
-    rospy.Subscriber(moto_ns + 'dx200_s1_controller/feedback_states',
+    rospy.Subscriber(moto_ns + 'positioner_controller/feedback_states',
                      FollowJointTrajectoryFeedback, self.s1_feedback_state_cb)
+
     # Subscribe to the robot status
     rospy.Subscriber('robot_status', RobotStatus, self.robot_status_cb)
     # Publish robot staus on a new topic
@@ -69,10 +86,10 @@ class dynamic_trajectory_converter(object):
     self.feedback_states_lock = threading.Lock()
 
     # Subscribe to joint_path_command from system
-    rospy.Subscriber(dof_ns + 'joint_path_command', JointTrajectory,
-                     self.joint_path_command_cb) # looking at this in rostopic echo /dx200_7d0f/joint_path_command, the matrix goes [b,l,r,s,t,u,x]...
+    # rospy.Subscriber('joint_path_command', JointTrajectory,
+    #                  self.joint_path_command_cb) # looking at this in rostopic echo /dx200_7d0f/joint_path_command, the matrix goes [b,l,r,s,t,u,x]...
     # Publish joint_path_command to robot/simulator
-    self.joint_path_command_pub = rospy.Publisher('/joint_path_command',
+    self.joint_path_command_pub = rospy.Publisher('/motoman/joint_path_command',
                                                   DynamicJointTrajectory,
                                                   queue_size=1)
 

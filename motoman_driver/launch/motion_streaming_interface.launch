@@ -12,9 +12,19 @@
 	<!-- put them on the parameter server -->
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
 
+	<!-- motoman advertises a DynamicJointTrajectory message type on the /joint_path_command topic and service,
+	rather than the standard JointTrajectory message used by MoveIt and literally everything else. This parameter
+	pushes specifically the top level /joint_path_command topics and services into the below namespace, clearing up the
+	top level /joint_path_command topic and service to just implement the standard JointTrajectory msg type. There are
+	several places where this is changed in the base motoman_driver package:
+	1. joint_trajectory_action.cpp -> in init
+	2. joint_trajectory_interface.cpp -> in init, two places
+	3. move_to_joint.py -> in move_to_joint() and parse_args() methods -->
+	<param name="motoman_joint_path_command_ns" type="str" value="motoman" />
+
 	<!-- load the correct version of the motion streaming node -->
 	<node if="$(arg use_bswap)" name="motion_streaming_interface"
-		pkg="motoman_driver" type="motion_streaming_interface_bswap" />
+		pkg="motoman_driver" type="motion_streaming_interface_bswap" output="screen"/>
 	<node unless="$(arg use_bswap)" name="motion_streaming_interface"
-		pkg="motoman_driver" type="motion_streaming_interface" />
+		pkg="motoman_driver" type="motion_streaming_interface" output="screen"/>
 </launch>

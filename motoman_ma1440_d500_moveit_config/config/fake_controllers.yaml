@@ -7,3 +7,7 @@ controller_list:
       - joint_r
       - joint_b
       - joint_t
+  - name: fake_positioner_controller
+    joints:
+      - joint_1
+      - joint_2

@@ -27,20 +27,18 @@
   
 
   <!-- We do not have a robot connected, so publish fake joint states -->
-  <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="use_gui" value="$(arg use_gui)"/>
-    <rosparam param="source_list">[ma1440_d500/joint_states]</rosparam>
-  </node> -->
+    <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>
+  </node>
 
   <!-- Given the published joint states, publish tf for the robot links -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen">
-    <remap from="joint_states" to="ma1440_d500/joint_states" />
-  </node>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
 
   <!-- Run the main MoveIt! executable without trajectory execution (we do not have controllers configured by default) -->
   <include file="$(find motoman_ma1440_d500_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
-    <arg name="fake_execution" value="false"/>
+    <arg name="fake_execution" value="true"/>
     <arg name="info" value="true"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>
@@ -51,25 +49,9 @@
     <arg name="debug" value="$(arg debug)"/>
   </include>
 
-  <rosparam file="$(find motoman_ma1440_d500_support)/config/ma1440_d500_motion_interface.yaml"/>
-
-  <group ns="ma1440_d500" >
-    <!-- Set joints for joint_trajectory_action. -->
-    <rosparam file="$(find motoman_ma1440_d500_moveit_config)/config/joint_names.yaml"/>
-
-    <node pkg="industrial_robot_client" name="joint_trajectory_action" type="joint_trajectory_action" output="log">
-      <!-- Set the goal_threshold in radians for each joint. Not sure what this value should be. -->
-      <param name="constraints/goal_threshold" type="double" value="5e-4"/>
-    </node>
-  </group>  
-
-  <rosparam param="moto_ns">'dx200'</rosparam>
-  <rosparam param="7dof_ns">'ma1440_d500'</rosparam>
-
-  <node pkg="motoman_ma1440_d500_moveit_config" name="dynamic_trajectory_converter" type="dynamic_trajectory_converter.py" output="screen" />
-
-  <include file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch">
-    <arg name="robot_ip" value="192.168.1.31"/>
+  <!-- If database loading was enabled, start mongodb as well -->
+  <include file="$(find motoman_ma1440_d500_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)">
+    <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
   </include>
 
 </launch>
