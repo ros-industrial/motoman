@@ -5,7 +5,7 @@ joint_limits:
   # tilt axis
   joint_1:
     max_position: 2.35619 # 135 degrees
-    min_position: 2.35619 # -135 degrees  
+    min_position: -2.35619 # -135 degrees  
     has_velocity_limits: true
     max_velocity: 1.3962
     has_acceleration_limits: false
@@ -41,7 +41,7 @@ joint_limits:
     max_acceleration: 0
   joint_r:
     max_position: 2.61799 # 150 degrees
-    min_position: 2.61799 # -150 degrees  
+    min_position: -2.61799 # -150 degrees  
     has_velocity_limits: true
     max_velocity: 7.50491578358
     has_acceleration_limits: false
@@ -57,7 +57,7 @@ joint_limits:
     max_acceleration: 0
   joint_t:
     max_position: 3.66519 # 210 degrees
-    min_position: 3.66519 # -210 degrees    
+    min_position: -3.66519 # -210 degrees    
     has_velocity_limits: true
     max_velocity: 10.9955742876
     has_acceleration_limits: false
