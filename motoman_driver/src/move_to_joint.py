@@ -68,10 +68,9 @@ def move_to_joint(end_pos, duration):
 
   traj = build_traj(get_cur_pos(), end_pos, duration)
 
-  moto_ns = rospy.get_param('~motoman_joint_path_command_ns', '')
-
+  # @attention joint-path-command-namespacing
   # wait for subscribers to connect
-  pub = rospy.Publisher(moto_ns + '/' if moto_ns != '' else '' + 'joint_path_command', JointTrajectory, queue_size=1)
+  pub = rospy.Publisher('joint_path_command', JointTrajectory, queue_size=1)
   if not wait_for_subs(pub, 1, 0.5, 2.0):
     rospy.logwarn('Timeout while waiting for subscribers.  Publishing trajectory anyway.')
 
@@ -109,11 +108,10 @@ def parse_args(args):
     print_usage()
     raise ValueError("Illegal number of arguments")
 
-  moto_ns = rospy.get_param('~motoman_joint_path_command_ns', '')
-
+  # @attention joint-path-command-namespacing
   # check if first argument is bag-file, otherwise assume array of joint-positions
   try:
-    end_pos = get_pos_from_bag(args[0], moto_ns + '/' if moto_ns != '' else '' + 'joint_path_command')
+    end_pos = get_pos_from_bag(args[0], 'joint_path_command')
   except:
     pos = yaml.load(args[0])
     names = get_joint_names(len(pos))

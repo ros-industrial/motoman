@@ -116,20 +116,13 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ve
       && !industrial_utils::param::getJointVelocityLimits("robot_description", joint_vel_limits_))
     ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
 
-
-  std::string moto_ns = "", joint_path_command_prefix = "";
-  this->node_.getParam("motoman_joint_path_command_ns", moto_ns);
-
-  ROS_WARN_STREAM(std::endl << std::endl << "motoman_joint_path_command_ns -> " << moto_ns << std::endl << std::endl);
-  
-  joint_path_command_prefix = moto_ns + (moto_ns == "" ? "" : "/");
-
+  // @attention joint-path-command-namespacing
   this->srv_stop_motion_ = this->node_.advertiseService(
                              "stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
   this->srv_joint_trajectory_ = this->node_.advertiseService(
-                                  joint_path_command_prefix + "joint_path_command", &JointTrajectoryInterface::jointTrajectoryCB, this);
+                                  "joint_path_command", &JointTrajectoryInterface::jointTrajectoryCB, this);
   this->sub_joint_trajectory_ = this->node_.subscribe(
-                                  joint_path_command_prefix + "joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryCB, this);
+                                  "joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryCB, this);
   this->sub_cur_pos_ = this->node_.subscribe(
                          "joint_states", 1, &JointTrajectoryInterface::jointStateCB, this);
 
@@ -149,20 +142,14 @@ bool JointTrajectoryInterface::init(
   if (joint_vel_limits_.empty()
       && !industrial_utils::param::getJointVelocityLimits(
         "robot_description", joint_vel_limits_))
-    ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
+    ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled."); 
 
-  std::string moto_ns = "", joint_path_command_prefix = "";
-  this->node_.getParam("motoman_joint_path_command_ns", moto_ns);
-
-  ROS_WARN_STREAM(std::endl << std::endl << "motoman_joint_path_command_ns -> " << moto_ns << std::endl << std::endl);
-  
-  joint_path_command_prefix = moto_ns + (moto_ns == "" ? "" : "/");    
-
+  // @attention joint-path-command-namespacing
   // General server and subscriber for compounded trajectories
   this->srv_joint_trajectory_ = this->node_.advertiseService(
-                                  joint_path_command_prefix + "joint_path_command", &JointTrajectoryInterface::jointTrajectoryExCB, this);
+                                  "joint_path_command", &JointTrajectoryInterface::jointTrajectoryExCB, this);
   this->sub_joint_trajectory_ = this->node_.subscribe(
-                                  joint_path_command_prefix + "joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryExCB, this);
+                                  "joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryExCB, this);
   this->srv_stop_motion_ = this->node_.advertiseService(
                              "stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
 

@@ -53,9 +53,9 @@
 
 	<rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/ma1440_d500_motion_interface.yaml" />
 	
+  <!-- dynamic trajectory converter node is now launched in (find motoman_driver)/launch/motion_streaming_interface.launch -->
 	<include file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch" >
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 	</include>
 
-  <node pkg="motoman_ma1440_d500_moveit_config" name="dynamic_trajectory_converter" type="dynamic_trajectory_converter.py" output="screen" />
 </launch>

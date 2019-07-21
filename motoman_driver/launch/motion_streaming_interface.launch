@@ -12,15 +12,26 @@
 	<!-- put them on the parameter server -->
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
 
-	<!-- motoman advertises a DynamicJointTrajectory message type on the /joint_path_command topic and service,
+	<!--
+	Note: Decided against pushing the base motoman stuff into its own namespace since MoveIt! already operates within
+	its own robot namespace defined in the controllers. Read below for how to reimplement if we decide at a later
+	date it's worth doing
+
+	motoman advertises a DynamicJointTrajectory message type on the /joint_path_command topic and service,
 	rather than the standard JointTrajectory message used by MoveIt and literally everything else. This parameter
 	pushes specifically the top level /joint_path_command topics and services into the below namespace, clearing up the
 	top level /joint_path_command topic and service to just implement the standard JointTrajectory msg type. There are
 	several places where this is changed in the base motoman_driver package:
 	1. joint_trajectory_action.cpp -> in init
 	2. joint_trajectory_interface.cpp -> in init, two places
-	3. move_to_joint.py -> in move_to_joint() and parse_args() methods -->
-	<param name="motoman_joint_path_command_ns" type="str" value="motoman" />
+	3. move_to_joint.py -> in move_to_joint() and parse_args() methods
+
+	CTRL+F for '@attention joint-path-command-namespacing' for places that need changed
+	-->
+	<!-- <param name="motoman_joint_path_command_ns" type="str" value="motoman" /> -->
+
+	<!-- this handles the conversion between MotoMans messaging structure and what MoveIt! expects -->
+	<node pkg="motoman_driver" name="dynamic_trajectory_converter" type="dynamic_trajectory_converter.py" output="log" />
 
 	<!-- load the correct version of the motion streaming node -->
 	<node if="$(arg use_bswap)" name="motion_streaming_interface"

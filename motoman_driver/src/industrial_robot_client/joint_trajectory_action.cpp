@@ -103,14 +103,9 @@ JointTrajectoryAction::JointTrajectoryAction() :
             &JointTrajectoryAction::watchdog, this, _1, group_number_int));
   }
 
-  std::string moto_ns = "", joint_path_command_prefix = "";
-  this->node_.getParam("motoman_joint_path_command_ns", moto_ns);
-
-  ROS_WARN_STREAM("joint_trajectory_action command prefix -> " << moto_ns);
-  
-  joint_path_command_prefix = moto_ns + (moto_ns == "" ? "" : "/");
+  // @attention joint-path-command-namespacing
   pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
-                              joint_path_command_prefix + "joint_path_command", 1);
+                              "joint_path_command", 1);
 
   this->robot_groups_ = robot_groups;
 
