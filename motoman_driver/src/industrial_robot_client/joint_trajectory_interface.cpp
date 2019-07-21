@@ -142,7 +142,7 @@ bool JointTrajectoryInterface::init(
   if (joint_vel_limits_.empty()
       && !industrial_utils::param::getJointVelocityLimits(
         "robot_description", joint_vel_limits_))
-    ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled."); 
+    ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
 
   // @attention joint-path-command-namespacing
   // General server and subscriber for compounded trajectories

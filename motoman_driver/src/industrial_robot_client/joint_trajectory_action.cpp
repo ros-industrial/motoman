@@ -464,18 +464,6 @@ void JointTrajectoryAction::controllerStateCB(
 
   if (!industrial_utils::isSimilar(robot_groups_[robot_id].get_joint_names(), msg->joint_names))
   {
-    ROS_ERROR_STREAM("robot joint names");
-    for (const auto &name : robot_groups_[robot_id].get_joint_names())
-    {
-      ROS_ERROR_STREAM(name);
-    }
-
-    ROS_ERROR_STREAM("msg joint names");
-    for (const auto &name : msg->joint_names)
-    {
-      ROS_ERROR_STREAM(name);
-    }    
-
     ROS_ERROR("Joint names from the controller don't match our joint names.");
     return;
   }
@@ -540,18 +528,6 @@ void JointTrajectoryAction::controllerStateCB(
 
   if (!industrial_utils::isSimilar(all_joint_names_, msg->joint_names))
   {
-    ROS_ERROR_STREAM("all joint names");
-    for (const auto &name : all_joint_names_)
-    {
-      ROS_ERROR_STREAM(name);
-    }
-
-    ROS_ERROR_STREAM("msg joint names");
-    for (const auto &name : msg->joint_names)
-    {
-      ROS_ERROR_STREAM(name);
-    }    
-
     ROS_ERROR("Joint names from the controller don't match our joint names.");
     return;
   }
