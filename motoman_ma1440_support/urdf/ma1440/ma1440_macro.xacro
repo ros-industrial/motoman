@@ -42,7 +42,6 @@
 
         <link name="${prefix}link_s">
             <visual>
-<!--                <origin rpy="0 0 0" xyz="0.026522 0.0082618 0.12436"/>-->
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
                     <mesh filename="package://motoman_ma1440_support/meshes/ma1440/visual/s_link.stl"/>
@@ -52,7 +51,6 @@
                 </material>
             </visual>
             <collision>
-<!--                <origin rpy="0 0 0" xyz="0.026522 0.0082618 0.12436"/>-->
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
                     <mesh filename="package://motoman_ma1440_support/meshes/ma1440/collision/s_link_collision.stl" />
@@ -63,7 +61,6 @@
                 <mass value="112.57" />
                 <inertia ixx="2.1336" ixy="0.197" ixz="0.8995" iyy="2.8341" iyz="0.2799" izz="2.49"/>
                 <origin rpy="0 0 0" xyz="0 0 0"/>
-<!--                <origin rpy="0 0 0" xyz="0.026522 0.0082618 0.12436"/>-->
             </inertial>
         </link>
 
@@ -75,7 +72,6 @@
 
         <link name="${prefix}link_l">
             <visual>
-<!--                <origin rpy="1.57 3.1416 0" xyz="0 0 0"/>-->
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
                     <mesh filename="package://motoman_ma1440_support/meshes/ma1440/visual/l_link.stl"/>
@@ -83,7 +79,6 @@
                 <material name="blue"/>
             </visual>
             <collision>
-<!--                <origin rpy="1.57 3.1416 0" xyz="0 0 0"/>-->
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
                     <mesh filename="package://motoman_ma1440_support/meshes/ma1440/collision/l_link_collision.stl" />
@@ -93,7 +88,6 @@
             <inertial>
                 <mass value="45.143" />
                 <inertia ixx="0.1565" ixy="-0.0239" ixz="-0.0981" iyy="2.4306" iyz="0.0329" izz="2.4493"/>
-<!--                <origin xyz="0.11422130 0.0 0.018935113" rpy="0.0 0.0 0.0"/>-->
                 <origin rpy="0 0 0" xyz="0 0 0"/>
             </inertial>
         </link>
@@ -122,7 +116,6 @@
             <inertial>
                 <mass value="77.767" />
                 <inertia ixx="1.1285" ixy="-0.4562" ixz="-0.1754" iyy="0.965" iyz="0.2365" izz="1.2844"/>
-<!--                <origin xyz="0.0 -0.015659426 0.13525753" rpy="0.0 0.0 0.0"/>-->
                 <origin rpy="0 0 0" xyz="0 0 0"/>
             </inertial>
         </link>
@@ -261,7 +254,7 @@
             <child link="${prefix}link_s"/>
             <origin xyz="0 0 0.165" rpy="0 0 0"/>
             <axis xyz="0 0 1" />
-            <limit lower="-3.1415" upper="3.1415" effort="100" velocity="2.9670" />
+            <limit lower="-2.96706" upper="2.96706" effort="100" velocity="4.01425727959" />
         </joint>
         <xacro:transmission_macro name="s"/>
         <joint name="${prefix}joint_l" type="revolute">
@@ -269,7 +262,7 @@
             <child link="${prefix}link_l"/>
             <origin xyz="0.155 -0.0425 0.285" rpy="${M_PI/2} ${-M_PI/2} ${M_PI}"/>
             <axis xyz="0 0 1" />
-            <limit lower="-1.9198" upper="1.9198" effort="100" velocity="2.9670" />
+            <limit lower="-1.5708" upper="2.70526" effort="100" velocity="3.49066" />
         </joint>
         <xacro:transmission_macro name="l"/>
         <joint name="${prefix}joint_u" type="revolute">
@@ -277,7 +270,7 @@
             <child link="${prefix}link_u"/>
             <origin xyz="0.614 0 -0.07" rpy="0 0 ${M_PI/2}"/>
             <axis xyz="0 0 -1" />
-            <limit lower="-2.3561" upper="2.3561" effort="100" velocity="2.9670" />
+            <limit lower="-3.05433" upper="4.18879" effort="100" velocity="4.01425727959" />
         </joint>
         <xacro:transmission_macro name="u"/>
         <joint name="${prefix}joint_r" type="revolute">
@@ -285,7 +278,7 @@
             <child link="${prefix}link_r"/>
             <origin xyz="0.265 -0.2 0.049" rpy="${M_PI/2} 0 ${-M_PI/2}"/>
             <axis xyz="0 0 1" />
-            <limit lower="-3.1415" upper="3.1415" effort="100" velocity="3.4906" />
+            <limit lower="-2.61799" upper="2.61799" effort="100" velocity="7.50492" />
         </joint>
         <xacro:transmission_macro name="r"/>
         <joint name="${prefix}joint_b" type="revolute">
@@ -293,7 +286,9 @@
             <child link="${prefix}link_b"/>
             <origin xyz="0 -0.062 -0.375" rpy="${M_PI/2} ${M_PI/2} 0"/>
             <axis xyz="0 0 1" />
-            <limit lower="-1.9198" upper="1.9198" effort="100" velocity="3.4906" />
+            <!-- Note that the joint range here is for the A00 version,
+            the A10 version is -135/+90 degrees             -->
+            <limit lower="-2.35619" upper="1.5078" effort="100" velocity="7.50492" />
         </joint>
         <xacro:transmission_macro name="b"/>
         <joint name="${prefix}joint_t" type="revolute">
@@ -301,7 +296,7 @@
             <child link="${prefix}link_t"/>
             <origin xyz="0.0875 0 -0.062" rpy="${-M_PI/2} 0 ${M_PI/2}"/>
             <axis xyz="0 0 1" />
-            <limit lower="-3.1415" upper="3.1415" effort="100" velocity="6.9813" />
+            <limit lower="-3.66519" upper="3.66519" effort="100" velocity="10.9956" />
         </joint>
         <xacro:transmission_macro name="t"/>
         <joint name="${prefix}joint_tip" type="fixed">

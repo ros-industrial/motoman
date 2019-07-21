@@ -2,47 +2,63 @@
 # Specific joint properties can be changed with the keys [max_position, min_position, max_velocity, max_acceleration]
 # Joint limits can be turned off with [has_velocity_limits, has_acceleration_limits]
 joint_limits:
+  # tilt axis
   joint_1:
+    max_position: 2.35619 # 135 degrees
+    min_position: 2.35619 # -135 degrees  
     has_velocity_limits: true
     max_velocity: 1.3962
     has_acceleration_limits: false
     max_acceleration: 0
+  # rotational axis
   joint_2:
+    max_position: 3.49066 # 200 degrees
+    min_position: -3.49066 # -200 degrees  
     has_velocity_limits: true
     max_velocity: 2.7925
     has_acceleration_limits: false
     max_acceleration: 0
-  joint_b:
+  joint_s:
+    max_position: 2.96706 # 170 degrees
+    min_position: -2.96706 # -170 degrees
     has_velocity_limits: true
-    max_velocity: 7.50491578358
+    max_velocity: 4.01425727959
     has_acceleration_limits: false
     max_acceleration: 0
   joint_l:
+    max_position: 2.70526 # 155 degrees
+    min_position: -1.5708 # -90 degrees
     has_velocity_limits: true
     max_velocity: 3.49065850399
     has_acceleration_limits: false
     max_acceleration: 0
+  joint_u:
+    max_position: 4.18879 # 240 degrees
+    min_position: -3.05433 # -175 degrees
+    has_velocity_limits: true
+    max_velocity: 4.01425727959
+    has_acceleration_limits: false
+    max_acceleration: 0
   joint_r:
+    max_position: 2.61799 # 150 degrees
+    min_position: 2.61799 # -150 degrees  
     has_velocity_limits: true
     max_velocity: 7.50491578358
     has_acceleration_limits: false
     max_acceleration: 0
-  joint_s:
-    max_position: 2.35619 # 135 degrees
-    min_position: -2.35619 # -135 degrees
+  joint_b:
+    # Note that the joint range here is for the A00 version,
+    # the A10 version is -135/+90 degrees
+    max_position: 1.5078 # 90 degrees
+    min_position: -2.35619 # -135 degrees    
     has_velocity_limits: true
-    max_velocity: 4.01425727959
+    max_velocity: 7.50491578358
     has_acceleration_limits: false
     max_acceleration: 0
   joint_t:
+    max_position: 3.66519 # 210 degrees
+    min_position: 3.66519 # -210 degrees    
     has_velocity_limits: true
     max_velocity: 10.9955742876
-    has_acceleration_limits: false
-    max_acceleration: 0
-  joint_u:
-    max_position: 1.5708 # 90 degrees
-    min_position: -1.466 # -84 degrees
-    has_velocity_limits: true
-    max_velocity: 4.01425727959
     has_acceleration_limits: false
     max_acceleration: 0
