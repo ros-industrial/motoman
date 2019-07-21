@@ -28,7 +28,6 @@
     <remap from="joint_states" to="$(arg robot_ns)/joint_states" />
   </node>
 
-  
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
   <include file="$(find motoman_ma1440_d500_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
@@ -43,7 +42,7 @@
     <arg name="config" value="true"/>
   </include>
 
-  <!-- this sets up the joint_trajectory_action server for the combined control group in MoveIt!, defined in /config/controllers.yaml -->
+  <!-- this sets up the joint_trajectory_action server for the top level control group in MoveIt!, defined in /config/controllers.yaml -->
   <group ns="$(arg robot_ns)" >
     <!-- Set joints for joint_trajectory_action. -->
     <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/joint_names_ma1440_d500.yaml" />
@@ -56,7 +55,6 @@
 	
 	<include file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch" >
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
-    <!-- <arg name="robot_ns"   value="$(arg robot_ns)" /> -->
 	</include>
 
   <node pkg="motoman_ma1440_d500_moveit_config" name="dynamic_trajectory_converter" type="dynamic_trajectory_converter.py" output="screen" />

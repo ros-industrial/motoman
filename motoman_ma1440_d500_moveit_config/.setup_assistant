@@ -8,4 +8,4 @@ moveit_setup_assistant_config:
   CONFIG:
     author_name: Ben Kent
     author_email: ben@path-robotics.com
-    generated_timestamp: 1563652961
+    generated_timestamp: 1563730813
