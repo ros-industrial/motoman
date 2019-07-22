@@ -49,7 +49,7 @@ class dynamic_trajectory_converter(object):
         # Get message arrival tolerance to combine separate messages (seconds)
         self.time_tol = rospy.get_param('~time_tol', 0.001)
 
-        robot_ns = rospy.get_param('~robot_ns', 'robot')
+        robot_ns = rospy.get_param('~robot_ns')
         if robot_ns:  # If the namspace isn't empty, add a '/'
             robot_ns = robot_ns + "/"
 
