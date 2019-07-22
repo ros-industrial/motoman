@@ -46,18 +46,21 @@ number ranges from 0-3
 
 class dynamic_trajectory_converter(object):
     def __init__(self):
-        # Get message arrival tolerance to combine separate messages (seconds)
-        self.time_tol = rospy.get_param('~time_tol', 0.001)
-
-        robot_ns = rospy.get_param('~robot_ns', 'robot')
+        # this is the namespace the robot operates in within MoveIt!, this param
+        # is required
+        robot_ns = rospy.get_param('robot_ns', '')
         if robot_ns:  # If the namspace isn't empty, add a '/'
             robot_ns = robot_ns + "/"
+        else:
+            rospy.FATAL('param \'robot_ns\' is not defined!')
 
         # motoman sets up a separate FollowJointTrajectory action server for
         # each group in '/topic_list'
         self.motoman_topic_list = rospy.get_param('/topic_list')
         self.num_control_groups = len(self.motoman_topic_list)
 
+        # the DX200 can support up to four control groups (see motoman_driver/MotoPlus/Controller.h),
+        # set up a group in the dict for each
         group_joint_state_cb_dict = {
             0: self.group0_joint_state_cb,
             1: self.group1_joint_state_cb,
@@ -152,8 +155,11 @@ class dynamic_trajectory_converter(object):
         self.pub_joint_states()
         self.joint_states_lock.release()
 
+    # aggregate the joint_state messages from the individual Motoman topics
+    # and publish them as a combined single message to MoveIt! and whatever
+    # else in they system within the <robot_ns> namespace
     def pub_joint_states(self):
-        # Check to see if two joint state share the same sequence number
+        # Check to see if two joint states share the same sequence number
         # Should protect against running before all messages have been received
         if self.check_callback_sequences_match(self.group_joint_states):
             # Combine into a higher dof message
@@ -204,8 +210,11 @@ class dynamic_trajectory_converter(object):
         self.pub_feedback_states()
         self.feedback_states_lock.release()
 
+    # aggregate the feedback_state messages from the individual Motoman topics
+    # and publish them as a combined single message to MoveIt! and whatever
+    # else in they system within the <robot_ns> namespace
     def pub_feedback_states(self):
-        # Check to see if two joint state share the same sequence number
+        # Check to see if two feedback states share the same sequence number
         # Should protect against running before both messages have been
         # received
         if self.check_callback_sequences_match(self.group_feedback_states):
@@ -238,7 +247,6 @@ class dynamic_trajectory_converter(object):
 
             point = DynamicJointPoint()
             groups = []
-            ind = 0
 
             # loop through each control group to form a DynamicJointsGroup.msg
             for ctrl_group in self.motoman_topic_list:
@@ -285,16 +293,19 @@ class dynamic_trajectory_converter(object):
         # and publish
         self.joint_path_command_pub.publish(dyn_traj)
 
+    # this subscribes to the top-level /robot_status topic published to by
+    # the actual motoman robot and publishes it back out to MoveIt! and the
+    # rest of the system on the <robot_ns> namespace
     def robot_status_cb(self, msg):
         self.robot_status_pub.publish(msg)
 
-    # check that header sequences of each joint_state callback match up before
-    # re-publishing everything back out on aggregated topics
-    def check_callback_sequences_match(self, dict):
+    # check that header sequences of each joint_state or feedback_state callback
+    #  match up before re-publishing everything back out on aggregated topics
+    def check_callback_sequences_match(self, state_dict):
         all_seq_match = True
 
         for i in range(0, self.num_control_groups - 1):
-            if dict[i].header.seq != dict[i + 1].header.seq:
+            if state_dict[i].header.seq != state_dict[i + 1].header.seq:
                 all_seq_match = False
                 break
 
@@ -302,12 +313,12 @@ class dynamic_trajectory_converter(object):
 
     # get the minimum timestamp between the control groups to send back out on
     # the aggregrated messages
-    def get_min_header_timestamp(self, dict):
-        min_stamp = dict[0].header.stamp
+    def get_min_header_timestamp(self, ctrl_groups_dict):
+        min_stamp = ctrl_groups_dict[0].header.stamp
 
         for i in range(1, self.num_control_groups):
-            if dict[i].header.stamp < min_stamp:
-                min_stamp = dict[i].header.stamp
+            if ctrl_groups_dict[i].header.stamp < min_stamp:
+                min_stamp = ctrl_groups_dict[i].header.stamp
 
         return min_stamp
 
