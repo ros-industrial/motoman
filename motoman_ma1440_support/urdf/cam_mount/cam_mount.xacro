@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<robot name="cam_mount" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+
+  <link name="cam_mount_link">
+    <visual>
+      <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+      <geometry>
+        <mesh
+            filename="package://motoman_ma1440_support/meshes/cam_mount/visual/cam_mount_link.stl" />
+      </geometry>
+      <material
+          name="">
+        <color
+            rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://motoman_ma1440_support/meshes/cam_mount/collision/cam_mount_link_collision.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin
+              xyz="-0.006942 -0.097138 0.034574"
+              rpy="0 0 0" />
+      <mass
+              value="4.0478" />
+      <inertia
+              ixx="0.00014683"
+              ixy="0.0000294"
+              ixz="-0.00002926"
+              iyy="0.000084784"
+              iyz="0.000073415"
+              izz="0.000085483" />
+    </inertial>
+  </link>
+</robot>

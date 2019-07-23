@@ -103,6 +103,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
             &JointTrajectoryAction::watchdog, this, _1, group_number_int));
   }
 
+  // @attention joint-path-command-namespacing
   pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
                               "joint_path_command", 1);
 

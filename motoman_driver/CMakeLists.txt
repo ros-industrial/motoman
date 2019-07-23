@@ -215,7 +215,9 @@ install(DIRECTORY
     MotoPlus
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(PROGRAMS src/move_to_joint.py
+install(PROGRAMS
+  src/move_to_joint.py
+  scripts/dynamic_trajectory_converter.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 

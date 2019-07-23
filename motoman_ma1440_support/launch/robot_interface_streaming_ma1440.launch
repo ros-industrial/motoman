@@ -1,0 +1,25 @@
+<!--
+  Multigroup, contoller specific version of 'robot_interface.launch'.
+
+
+  Usage:
+    robot_interface_streaming_ma1440.launch robot_ip:=<value>
+-->
+<launch>
+	<arg name="robot_ip" default="192.168.1.31"/>
+
+	<arg name="use_sim_time" default="false"/>
+	<param name="use_sim_time" type="bool" value="$(arg use_sim_time)"/>
+
+    <!-- Change joint_ns to anything to activate offsets. -->
+    <arg name="joint_ns" default=""/>
+    <arg name="comp_side_ns" default=""/>
+
+	<rosparam command="load" file="$(find motoman_ma1440_support)/config/ma1440_motion_interface.yaml" />
+	
+	<include file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch" >
+		<arg name="robot_ip"   value="$(arg robot_ip)" />
+		<arg name="joint_ns"  value="$(arg joint_ns)" />
+	</include>
+
+</launch>

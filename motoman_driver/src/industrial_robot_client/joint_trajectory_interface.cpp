@@ -116,7 +116,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ve
       && !industrial_utils::param::getJointVelocityLimits("robot_description", joint_vel_limits_))
     ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
 
-
+  // @attention joint-path-command-namespacing
   this->srv_stop_motion_ = this->node_.advertiseService(
                              "stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
   this->srv_joint_trajectory_ = this->node_.advertiseService(
@@ -144,6 +144,7 @@ bool JointTrajectoryInterface::init(
         "robot_description", joint_vel_limits_))
     ROS_WARN("Unable to read velocity limits from 'robot_description' param.  Velocity validation disabled.");
 
+  // @attention joint-path-command-namespacing
   // General server and subscriber for compounded trajectories
   this->srv_joint_trajectory_ = this->node_.advertiseService(
                                   "joint_path_command", &JointTrajectoryInterface::jointTrajectoryExCB, this);

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<robot name="motoman_ma1440_d500" xmlns:xacro="http://ros.org/wiki/xacro">
+     <xacro:macro name="motoman_ma1440_d500" params="prefix">	
+        <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440.xacro" prefix="ma1440_"/>
+        <xacro:include filename="$(find motoman_motopos_d500_support)/urdf/motopos_d500.xacro" prefix="d500_"/>
+
+        
+        <!-- <xacro:motoman_ma1440 prefix="${prefix}">
+        </xacro:motoman_ma1440>       -->
+        
+        <!-- <xacro:motoman_motopos_d500 prefix="${prefix}">
+        </xacro:motoman_motopos_d500> -->
+     </xacro:macro>
+
+</robot>

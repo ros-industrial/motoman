@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: motoman_ma1440_d500_support
+    relative_path: urdf/ma1440_d500.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/motoman_ma1440_d500.srdf
+  CONFIG:
+    author_name: Ben Kent
+    author_email: ben@path-robotics.com
+    generated_timestamp: 1563730813

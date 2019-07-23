@@ -1,0 +1,23 @@
+controller_list:
+  - name: fake_arm_controller
+    joints:
+      - joint_s
+      - joint_l
+      - joint_u
+      - joint_r
+      - joint_b
+      - joint_t
+  - name: fake_positioner_controller
+    joints:
+      - joint_1
+      - joint_2
+  - name: fake_combined_controller
+    joints:
+      - joint_1
+      - joint_2
+      - joint_s
+      - joint_l
+      - joint_u
+      - joint_r
+      - joint_b
+      - joint_t

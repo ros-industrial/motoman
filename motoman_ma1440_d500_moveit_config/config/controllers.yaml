@@ -1,0 +1,37 @@
+# NOTE: The name: on the last /dx200/arm_controller and /dx200/positioner_controller controllers here are derived from
+# the 'topic_list' parameter. The motoman implementation
+# of the joint_trajectory_action node of the industrial_robot_client constructs the FollowJointTrajectory action servers
+# based on the 'topic_list' parameter that is defined in the 'ma1440_d500_support/config/ma1440_d500_motion_interface.yaml'
+# file. see motoman_driver/src/industrial_robot_client/joint_trajectory_action.cpp
+controller_list:
+  - name: robot
+    action_ns: joint_trajectory_action
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - joint_s
+      - joint_l
+      - joint_u
+      - joint_r
+      - joint_b
+      - joint_t
+      - joint_1
+      - joint_2
+  - name: /dx200/arm_controller
+    action_ns: joint_trajectory_action
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - joint_s
+      - joint_l
+      - joint_u
+      - joint_r
+      - joint_b
+      - joint_t
+  - name: /dx200/positioner_controller
+    action_ns: joint_trajectory_action
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - joint_1
+      - joint_2
