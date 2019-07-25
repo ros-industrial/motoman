@@ -23,7 +23,12 @@
   <arg name="capabilities" default=""/>
   <arg name="disable_capabilities" default=""/>
 
+  <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
+  <arg name="sim"  default="true" />
+  
+  <!-- for a real robot, the namespace of the combined controller MoveIt! is operating in -->
   <arg name="robot_ns"  default="robot" />
+
   <!-- load these non-default MoveGroup capabilities (space seperated) -->
   <!--
   <arg name="capabilities" value="
@@ -60,7 +65,7 @@
   <!-- Start the actual move_group node/action server -->
   <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="$(arg command_args)">
     
-    <remap from="joint_states" to="$(arg robot_ns)/joint_states" />
+    <remap unless="$(arg sim)" from="joint_states" to="$(arg robot_ns)/joint_states" />
     <!-- Set the display variable, in case OpenGL code is used internally -->
     <env name="DISPLAY" value="$(optenv DISPLAY :0)" />
 
@@ -69,7 +74,6 @@
     <param name="jiggle_fraction" value="$(arg jiggle_fraction)" />
     <param name="capabilities" value="$(arg capabilities)"/>
     <param name="disable_capabilities" value="$(arg disable_capabilities)"/>
-
 
     <!-- Publish the planning scene of the physical robot so that rviz plugin can know actual robot -->
     <param name="planning_scene_monitor/publish_planning_scene" value="$(arg publish_monitored_planning_scene)" />
