@@ -123,7 +123,7 @@ class dynamic_trajectory_converter(object):
         self.feedback_states_lock = threading.Lock()
 
         # Subscribe to joint_path_command from system
-        rospy.Subscriber(robot_ns + '/joint_path_command', JointTrajectory,
+        rospy.Subscriber(robot_ns + 'joint_path_command', JointTrajectory,
                          self.joint_path_command_cb)
         # Publish joint_path_command to robot/simulator
         self.joint_path_command_pub = rospy.Publisher('joint_path_command',

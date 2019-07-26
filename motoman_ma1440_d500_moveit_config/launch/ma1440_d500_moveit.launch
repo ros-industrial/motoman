@@ -2,10 +2,15 @@
   <!-- toggle use of rviz from command line -->
   <arg name="use_rviz" default="true" />
 
-  <arg name="robot_ip"  default="192.168.1.31" />
+  <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
+  <!--  - if sim=false, a robot_ip argument is required -->
+  <arg name="sim" default="true" />
+
+  <!-- IP address of the robot to connect to, if connecting to a real robot -->
+  <arg name="robot_ip" unless="$(arg sim)" />  
 
   <!-- this 'robot_ns' argument corresponds to the robot name of the MoveIt controller group for both the arm and the
-  positioner. this must be equivalent to the name of the controller group with all the joints in the system in 
+  positioner. this must be equivalent to the name of the controller group with all the joints in the system in
   /config/controllers.yaml. we manually set up a joint_trajectory_action server under this same namespace
   later in this file. also worth noting, the joints in the combined controller_list must line up with the
   joint names defined in ma1440_d500_support/config/joint_names_ma1440_d500.yaml config file -->
@@ -18,6 +23,11 @@
   <param name="robot_ns" value="$(arg robot_ns)"/>
   <param name="controller_ns" value="$(arg controller_ns)"/>
 
+    <!-- if we aren't connected to a real robot, publish fake joint states -->
+  <node if="$(arg sim)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>
+  </node>
+
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
   <include file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_context.launch">
     <arg name="load_robot_description" value="true"/>
@@ -25,14 +35,15 @@
 
   <!-- Given the published joint states, publish tf for the robot links -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" >
-    <remap from="joint_states" to="$(arg robot_ns)/joint_states" />
+    <remap unless="$(arg sim)" from="joint_states" to="$(arg robot_ns)/joint_states" />
   </node>
 
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
   <include file="$(find motoman_ma1440_d500_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
-    <arg name="fake_execution" value="false"/>
+    <arg name="fake_execution" value="$(arg sim)"/>
     <arg name="info" value="true"/>
+    <arg name="sim" value="$(arg sim)" />
     <arg name="robot_ns" value="$(arg robot_ns)" />
   </include>
 
@@ -43,7 +54,7 @@
   </include>
 
   <!-- this sets up the joint_trajectory_action server for the top level control group in MoveIt!, defined in /config/controllers.yaml -->
-  <group ns="$(arg robot_ns)" >
+  <group unless="$(arg sim)" ns="$(arg robot_ns)" >
     <!-- Set joints for joint_trajectory_action. -->
     <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/joint_names_ma1440_d500.yaml" />
     <node pkg="industrial_robot_client" name="joint_trajectory_action" type="joint_trajectory_action" output="log">
@@ -52,9 +63,9 @@
   </group>
 
 	<rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/ma1440_d500_motion_interface.yaml" />
-	
+
   <!-- dynamic trajectory converter node is now launched in (find motoman_driver)/launch/motion_streaming_interface.launch -->
-	<include file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch" >
+	<include unless="$(arg sim)" file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch" >
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 	</include>
 
