@@ -2,5 +2,5 @@
 
  <robot name="motoman_ma1440_d500" xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:include filename="$(find motoman_ma1440_d500_support)/urdf/ma1440_d500_macro.xacro" />
-	<xacro:motoman_ma1440_d500 prefix=""/>
+	<xacro:motoman_ma1440_d500/>
 </robot>

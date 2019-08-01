@@ -1,15 +1,20 @@
 <?xml version="1.0" ?>
 <robot name="motoman_ma1440_d500" xmlns:xacro="http://ros.org/wiki/xacro">
-     <xacro:macro name="motoman_ma1440_d500" params="prefix">	
-        <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440.xacro" prefix="ma1440_"/>
-        <xacro:include filename="$(find motoman_motopos_d500_support)/urdf/motopos_d500.xacro" prefix="d500_"/>
+  <!--  Default values for the world positions of the robots.
+  It has to be done like this, as you can't specify initial values that contain spaces in the macro line.-->
+  <xacro:property name="_ma1440_xyz" value="1 0 0"/>
+  <xacro:property name="_ma1440_rpy" value="0 0 0"/>
+  <xacro:property name="_d500_xyz" value="1 0 0"/>
+  <xacro:property name="_d500_rpy" value="0 0 0"/>
 
-        
-        <!-- <xacro:motoman_ma1440 prefix="${prefix}">
-        </xacro:motoman_ma1440>       -->
-        
-        <!-- <xacro:motoman_motopos_d500 prefix="${prefix}">
-        </xacro:motoman_motopos_d500> -->
-     </xacro:macro>
 
+  <xacro:macro name="motoman_ma1440_d500"
+               params="ma1440_xyz:=${_ma1440_xyz} ma1440_rpy:=${_ma1440_rpy} d500_xyz:=${_d500_xyz} d500_rpy=${_d500_rpy}">
+
+    <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440.xacro"/>
+    <xacro:load_motoman_ma1440 world_base_xyz="${_ma1440_xyz}" world_base_rpy="${_ma1440_rpy}"/>
+
+    <xacro:include filename="$(find motoman_motopos_d500_support)/urdf/motopos_d500.xacro"/>
+    <xacro:load_motoman_motopos_d500 world_base_xyz="${d500_xyz}" world_base_rpy="${d500_rpy}"/>
+  </xacro:macro>
 </robot>

@@ -1,6 +1,8 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-<xacro:macro name="motoman_motopos_d500" params="prefix">
+<xacro:property name="world_base_xyz" value="0 0 0"/>
+<xacro:property name="world_base_rpy" value="0 0 0"/>
+<xacro:macro name="motoman_motopos_d500" params="prefix world_base_xyz:=^ world_base_rpy:=^">
 
   <!-- link list -->
   <link name="${prefix}base_link">
@@ -47,11 +49,11 @@
 
   <!-- joint list -->
   <joint name="${prefix}world-base" type="fixed">
-      <origin xyz="1 0 0" rpy="0 0 0"/>
+      <origin xyz="${world_base_xyz}" rpy="${world_base_rpy}"/>
       <parent link="world" />
       <child link="${prefix}base_link"/>
-  </joint>  
-  <joint name="joint_1" type="revolute">
+  </joint>
+  <joint name="${prefix}joint_1" type="revolute">
     <parent link="${prefix}base_link"/>
     <child link="${prefix}link_1"/>
     <origin xyz="0 0 0.380" rpy="0 0 0" />
@@ -59,7 +61,7 @@
     <limit lower="-2.3561" upper="2.3561" effort="1274" velocity="1.3962"/>
   </joint>
   <xacro:transmission_macro name="1"/>
-  <joint name="joint_2" type="revolute">
+  <joint name="${prefix}joint_2" type="revolute">
     <parent link="${prefix}link_1"/>
     <child link="${prefix}link_2"/>
     <origin xyz="0 0 0" rpy="0 0 0" />
@@ -67,7 +69,7 @@
     <limit lower="-3.4906" upper="3.4906" effort="392" velocity="2.7925"/>
   </joint>
   <xacro:transmission_macro name="2"/>
-  <joint name="joint_2-tool0" type="fixed">
+  <joint name="${prefix}joint_2-tool0" type="fixed">
     <origin xyz="0 0 0.150 " rpy="0 0 0"/>
     <parent link="${prefix}link_2"/>
     <child link="${prefix}tool0"/>
