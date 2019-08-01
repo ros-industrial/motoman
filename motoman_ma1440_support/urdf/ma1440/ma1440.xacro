@@ -10,7 +10,6 @@
     </xacro:macro>
 
     <!-- optionally add the cam mount to the end of the arm, this is the laserscanner enclosure used on the Corsa system -->
-<!--    <xacro:if value="$(arg cam_mount)">-->
     <xacro:if value="$(arg cam_mount)">
         <xacro:include filename="$(find motoman_ma1440_support)/urdf/cam_mount/cam_mount.xacro" />
         <joint name="joint_cam_mount" type="fixed">
