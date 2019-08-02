@@ -6,8 +6,17 @@
   <!--  - if sim=false, a robot_ip argument is required -->
   <arg name="sim" default="true" />
 
+  <!-- The starting world positions/rotations for the ma1440 and d500 -->
+  <arg name="ma1440_xyz" default=""/>
+  <arg name="ma1440_rpy" default=""/>
+  <arg name="d500_xyz" default=""/>
+  <arg name="d500_rpy" default=""/>
+
+  <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
+  <arg name="using_cam_mount" default=""/>
+
   <!-- IP address of the robot to connect to, if connecting to a real robot -->
-  <arg name="robot_ip" unless="$(arg sim)" />  
+  <arg name="robot_ip" unless="$(arg sim)" />
 
   <!-- this 'robot_ns' argument corresponds to the robot name of the MoveIt controller group for both the arm and the
   positioner. this must be equivalent to the name of the controller group with all the joints in the system in
@@ -28,9 +37,17 @@
     <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>
   </node>
 
+  <!-- Load the cell parameters associated with this setup -->
+  <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/cell_parameters.yaml" />
+
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
   <include file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_context.launch">
     <arg name="load_robot_description" value="true"/>
+    <arg name="ma1440_xyz" value="$(arg ma1440_xyz)"/>
+    <arg name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
+    <arg name="d500_xyz" value="$(arg d500_xyz)"/>
+    <arg name="d500_rpy" value="$(arg d500_rpy)"/>
+    <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
   </include>
 
   <!-- Given the published joint states, publish tf for the robot links -->

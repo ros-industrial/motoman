@@ -5,11 +5,25 @@
   <!-- The name of the parameter under which the URDF is loaded -->
   <arg name="robot_description" default="robot_description"/>
 
+  <arg if="$(arg load_robot_description)" name="using_cam_mount" default="false"/>
+
+  <arg if="$(arg load_robot_description)" name="ma1440_xyz" default=""/>
+  <arg if="$(arg load_robot_description)" name="ma1440_rpy" default=""/>
+  <arg if="$(arg load_robot_description)" name="d500_xyz" default=""/>
+  <arg if="$(arg load_robot_description)" name="d500_rpy" default=""/>
+
   <!-- Load universal robot description format (URDF) -->
-  <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find motoman_ma1440_d500_support)/urdf/ma1440_d500.xacro'"/>
+  <param if="$(arg load_robot_description)" name="$(arg robot_description)"
+         command="xacro  $(find motoman_ma1440_d500_support)/urdf/ma1440_d500.xacro
+         ma1440_xyz:='$(arg ma1440_xyz)'
+         ma1440_rpy:='$(arg ma1440_rpy)'
+         d500_xyz:='$(arg d500_xyz)'
+         d500_rpy:='$(arg d500_rpy)'
+         cam_mount:=$(arg using_cam_mount)"/>
 
   <!-- The semantic description that corresponds to the URDF -->
-  <param name="$(arg robot_description)_semantic" textfile="$(find motoman_ma1440_d500_moveit_config)/config/motoman_ma1440_d500.srdf" />
+  <param name="$(arg robot_description)_semantic"
+         textfile="$(find motoman_ma1440_d500_moveit_config)/config/motoman_ma1440_d500.srdf"/>
 
   <!-- Load updated joint limits (override information from URDF) -->
   <group ns="$(arg robot_description)_planning">
