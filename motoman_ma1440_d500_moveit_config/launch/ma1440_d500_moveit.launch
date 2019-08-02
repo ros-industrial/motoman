@@ -23,7 +23,7 @@
   /config/controllers.yaml. we manually set up a joint_trajectory_action server under this same namespace
   later in this file. also worth noting, the joints in the combined controller_list must line up with the
   joint names defined in ma1440_d500_support/config/joint_names_ma1440_d500.yaml config file -->
-  <arg name="robot_ns"  default="robot" />
+  <arg name="robot_ns"  default="combined" />
 
   <!-- the namespace of the controller box used for the motoman hardware. this value should be equal to the 'ns' value
   for each controller group in the ma1440_d500_motion_interface.yaml -->
