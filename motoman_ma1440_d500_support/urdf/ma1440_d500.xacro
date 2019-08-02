@@ -1,6 +1,12 @@
 <?xml version="1.0" ?>
 
  <robot name="motoman_ma1440_d500" xmlns:xacro="http://ros.org/wiki/xacro">
+
+	<xacro:property name="ma1440_xyz" value="$(arg ma1440_xyz)"/>
+	<xacro:property name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
+	<xacro:property name="d500_xyz" value="$(arg d500_xyz)"/>
+	<xacro:property name="d500_rpy" value="$(arg d500_rpy)"/>
+
 	<xacro:include filename="$(find motoman_ma1440_d500_support)/urdf/ma1440_d500_macro.xacro" />
-	<xacro:motoman_ma1440_d500 prefix=""/>
+	<xacro:motoman_ma1440_d500/>
 </robot>

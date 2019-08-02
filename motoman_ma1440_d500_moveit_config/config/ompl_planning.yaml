@@ -146,7 +146,7 @@ arm:
     - LazyPRMstar
     - SPARS
     - SPARStwo
-  projection_evaluator: joints(joint_s,joint_l)
+  projection_evaluator: joints(ma1440_joint_s,ma1440_joint_l)
   longest_valid_segment_fraction: 0.005
 positioner:
   default_planner_config: RRT
@@ -174,7 +174,7 @@ positioner:
     - LazyPRMstar
     - SPARS
     - SPARStwo
-  projection_evaluator: joints(joint_1,joint_2)
+  projection_evaluator: joints(d500_joint_1,d500_joint_2)
   longest_valid_segment_fraction: 0.005
 combined:
   default_planner_config: ""
@@ -202,5 +202,5 @@ combined:
     - LazyPRMstar
     - SPARS
     - SPARStwo
-  projection_evaluator: joints(joint_1,joint_2)
+  projection_evaluator: joints(d500_joint_1,d500_joint_2)
   longest_valid_segment_fraction: 0.005

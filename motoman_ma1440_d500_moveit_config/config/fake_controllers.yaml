@@ -1,23 +1,23 @@
 controller_list:
   - name: fake_arm_controller
     joints:
-      - joint_s
-      - joint_l
-      - joint_u
-      - joint_r
-      - joint_b
-      - joint_t
+      - ma1440_joint_s
+      - ma1440_joint_l
+      - ma1440_joint_u
+      - ma1440_joint_r
+      - ma1440_joint_b
+      - ma1440_joint_t
   - name: fake_positioner_controller
     joints:
-      - joint_1
-      - joint_2
+      - d500_joint_1
+      - d500_joint_2
   - name: fake_combined_controller
     joints:
-      - joint_1
-      - joint_2
-      - joint_s
-      - joint_l
-      - joint_u
-      - joint_r
-      - joint_b
-      - joint_t
+      - d500_joint_1
+      - d500_joint_2
+      - ma1440_joint_s
+      - ma1440_joint_l
+      - ma1440_joint_u
+      - ma1440_joint_r
+      - ma1440_joint_b
+      - ma1440_joint_t

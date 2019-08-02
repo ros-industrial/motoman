@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:property name="world_base_xyz" value="0 0 0"/>
+    <xacro:property name="world_base_rpy" value="0 0 0"/>
     <xacro:property name="M_PI" value="3.1415926535897931"/>
     <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440.transmission.xacro" />
 
-    <xacro:macro name="motoman_ma1440" params="prefix">
+    <xacro:macro name="motoman_ma1440" params="prefix world_base_xyz:=^ world_base_rpy:=^">
         <!-- link list -->
         <link name="world">
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -245,7 +247,7 @@
         <!-- end of link list -->
         <!-- joint list -->
         <joint name="${prefix}world-base" type="fixed">
-            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <origin xyz="${world_base_xyz}" rpy="${world_base_rpy}"/>
             <parent link="world" />
             <child link="${prefix}base_link"/>
         </joint>

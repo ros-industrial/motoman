@@ -1,1 +1,1 @@
-controller_joint_names: ['joint_1', 'joint_2']
+controller_joint_names: ['d500_joint_1', 'd500_joint_2']

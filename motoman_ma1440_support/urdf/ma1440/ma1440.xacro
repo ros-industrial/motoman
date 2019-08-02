@@ -5,7 +5,9 @@
     <xacro:arg name="cam_mount" default="false"/>
 
     <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440_macro.xacro" />
-    <xacro:motoman_ma1440 prefix=""/>
+    <xacro:macro name="load_motoman_ma1440" params="prefix:=ma1440_ world_base_xyz world_base_rpy">
+        <xacro:motoman_ma1440 prefix="${prefix}" world_base_xyz="${world_base_xyz}" world_base_rpy="${world_base_rpy}"/>
+    </xacro:macro>
 
     <!-- optionally add the cam mount to the end of the arm, this is the laserscanner enclosure used on the Corsa system -->
     <xacro:if value="$(arg cam_mount)">

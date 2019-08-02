@@ -27,7 +27,7 @@
   <arg name="sim"  default="true" />
   
   <!-- for a real robot, the namespace of the combined controller MoveIt! is operating in -->
-  <arg name="robot_ns"  default="robot" />
+  <arg name="robot_ns"  default="combined" />
 
   <!-- load these non-default MoveGroup capabilities (space seperated) -->
   <!--
