@@ -59,6 +59,11 @@ class dynamic_trajectory_converter(object):
         self.motoman_topic_list = rospy.get_param('/topic_list')
         self.num_control_groups = len(self.motoman_topic_list)
 
+        # Locks to prevent pub_joint_states and pub_feedback_states from
+        # running multiple instances at the same time.
+        self.joint_states_lock = threading.Lock()
+        self.feedback_states_lock = threading.Lock()        
+
         # the DX200 can support up to four control groups (see motoman_driver/MotoPlus/Controller.h),
         # set up a group in the dict for each
         group_joint_state_cb_dict = {
@@ -91,7 +96,7 @@ class dynamic_trajectory_converter(object):
 
         # Publish robot staus and joint states on a new topic scoped
         # to /<robot_ns> namespace
-        self.joint_states_pub = rospy.Publisher(
+        self.robot_joint_states_pub = rospy.Publisher(
             robot_ns + 'joint_states', JointState, queue_size=1)
 
         self.robot_status_pub = rospy.Publisher(
@@ -117,11 +122,6 @@ class dynamic_trajectory_converter(object):
             3: FollowJointTrajectoryFeedback()
         }
 
-        # Locks to prevent pub_joint_states and pub_feedback_states from
-        # running multiple instances at the same time.
-        self.joint_states_lock = threading.Lock()
-        self.feedback_states_lock = threading.Lock()
-
         # Subscribe to joint_path_command from system
         rospy.Subscriber(robot_ns + 'joint_path_command', JointTrajectory,
                          self.joint_path_command_cb)
@@ -129,6 +129,11 @@ class dynamic_trajectory_converter(object):
         self.joint_path_command_pub = rospy.Publisher('joint_path_command',
                                                       DynamicJointTrajectory,
                                                       queue_size=1)
+
+        # Publish joint states on top level /joint_states topic as well, needed
+        # within moveit core to get current robot state
+        self.joint_states_pub = rospy.Publisher(
+            'joint_states', JointState, queue_size=1)                                                      
 
     # Store the joint state in memory and publish if they are close, temporally
     def group0_joint_state_cb(self, msg):
@@ -184,6 +189,7 @@ class dynamic_trajectory_converter(object):
             joint_states.velocity = velocities
             # And publish to a new topic
             self.joint_states_pub.publish(joint_states)
+            self.robot_joint_states_pub.publish(joint_states)
 
     # Store the feedback state in memory and publish if they are close
     def group0_feedback_state_cb(self, msg):
