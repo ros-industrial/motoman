@@ -52,6 +52,14 @@
         <joint name="ma1440_joint_t" value="0" />
         <joint name="ma1440_joint_u" value="-0.7871" />
     </group_state>
+    <group_state name="home_pose" group="positioner">
+        <joint name="d500_joint_1" value="0" />
+        <joint name="d500_joint_2" value="0" />
+    </group_state>
+    <group_state name="zero_pose" group="positioner">
+        <joint name="d500_joint_1" value="0" />
+        <joint name="d500_joint_2" value="0" />
+    </group_state>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="d500_base_link" link2="d500_link_1" reason="Adjacent" />
     <disable_collisions link1="d500_base_link" link2="d500_link_2" reason="Default" />
