@@ -1,4 +1,18 @@
 
 <launch>
-	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find motoman_ma1440_d500_support)/urdf/ma1440_d500.xacro'" />
+	<arg name="using_cam_mount" value="false"/>
+	<arg name="ma1440_xyz" value="0 0 0"/>
+	<arg name="ma1440_rpy" value="0 0 0"/>
+	<arg name="d500_xyz" value="1 0 0"/>
+	<arg name="d500_rpy" value="0 0 0"/>
+	<arg name="table_thickness" value="0"/>
+
+    <param name="robot_description"
+         command="xacro $(find motoman_ma1440_d500_support)/urdf/ma1440_d500.xacro
+         ma1440_xyz:='$(arg ma1440_xyz)'
+         ma1440_rpy:='$(arg ma1440_rpy)'
+         d500_xyz:='$(arg d500_xyz)'
+         d500_rpy:='$(arg d500_rpy)' 
+         table_thickness:=$(arg table_thickness)
+         cam_mount:=$(arg using_cam_mount)"/>
 </launch>
