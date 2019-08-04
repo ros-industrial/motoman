@@ -37,29 +37,4 @@
   <group ns="test_ma1440_d500">
 	  <include file="$(find motoman_ma1440_d500_support)/launch/test_ma1440_d500.launch"/>
   </group>
-  
-  
-  <group ns="urdf_ma1440_d500">
-	  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find motoman_ma1440_d500_support)/test/ma1440_d500_test.xacro'" />
-  </group>
-
-
-  <!-- <group ns="robot_interface_streaming_ma1440_d500">
-    <group ns="dx200" >
-	    <include file="$(find motoman_ma1440_d500_support)/launch/robot_interface_streaming_ma1440_d500.launch">
-		    <arg name="robot_ip"   value="$(arg req_arg)" />
-        <arg name="controller" value="$(arg dx200)"/>
-	    </include>
-    </group>
-  </group> -->
-<!-- 
-  <group ns="robot_state_visualize_ma1440_d500">
-    <group ns="dx200" >
-	    <include file="$(find motoman_ma1440_d500_support)/launch/robot_state_visualize_ma1440_d500.launch">
-		    <arg name="robot_ip"   value="$(arg req_arg)" />
-        <arg name="controller" value="$(arg dx200)"/>
-	    </include>
-    </group>
-  </group> -->
-
 </launch>
