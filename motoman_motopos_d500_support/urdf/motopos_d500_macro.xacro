@@ -47,8 +47,11 @@
     </collision>
   </link>
   <link name="${prefix}tool0"/>
-  <!-- this is here to set a base link in the URDF to link the positioner/base frame to for scanning -->
+  <!-- this is here to set a base link in the URDF to link the "positioner/base" frame to for scanning -->
   <link name="positioner_base_dummy_link"/>
+  <!-- this is here to set a base link in the URDF to link the "positioner/center" frame to for scanning. this is equivalent to the tool frame
+  in this case, but we define this so that the naming is consistent across positioner setups -->
+  <link name="positioner_center_dummy_link"/>  
   <!-- end of link list -->
 
   <!-- joint list -->
@@ -83,7 +86,12 @@
     <origin xyz="0 0 ${0.150 + table_thickness}" rpy="0 0 0"/>
     <parent link="${prefix}link_1"/>
     <child link="positioner_base_dummy_link"/>
-  </joint>  
+  </joint>
+  <joint name="positioner_center_dummy_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="${prefix}tool0"/>
+    <child link="positioner_center_dummy_link"/>
+  </joint>    
   <!-- end of joint list -->
 
   <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->

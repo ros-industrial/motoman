@@ -11,6 +11,7 @@
   <arg name="ma1440_rpy" default=""/>
   <arg name="d500_xyz" default=""/>
   <arg name="d500_rpy" default=""/>
+  <!-- The thickness of the tabletop mounted on top of the last link of the D500 -->
   <arg name="table_thickness" default=""/>
 
   <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
@@ -51,6 +52,10 @@
     <arg name="table_thickness" value="$(arg table_thickness)"/>
     <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
   </include>
+
+  <!-- These connect the 'positioner/base' and 'positioner/center' frame to the tf tree -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="postioner_base_broadcaster" args="0 0 0 0 0 0 1 positioner_base_dummy_link positioner/base" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="postioner_center_broadcaster" args="0 0 0 0 0 0 1 positioner_center_dummy_link positioner/center" />
 
   <!-- Given the published joint states, publish tf for the robot links -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" >
