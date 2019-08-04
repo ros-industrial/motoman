@@ -80,17 +80,6 @@ class dynamic_trajectory_converter(object):
             3: self.group3_feedback_state_cb
         }
 
-        # set up subscribers to joint/feedback_states based on group #
-        for topic in self.motoman_topic_list:
-            rospy.Subscriber('/' + topic["ns"] + '/' + topic["name"] +
-                             '/joint_states',
-                             JointState,
-                             group_joint_state_cb_dict[topic["group"]])
-            rospy.Subscriber('/' + topic["ns"] + '/' + topic["name"] +
-                             '/feedback_states',
-                             FollowJointTrajectoryFeedback,
-                             group_feedback_state_cb_dict[topic["group"]])
-
         # Subscribe to the robot status
         rospy.Subscriber('robot_status', RobotStatus, self.robot_status_cb)
 
@@ -133,7 +122,20 @@ class dynamic_trajectory_converter(object):
         # Publish joint states on top level /joint_states topic as well, needed
         # within moveit core to get current robot state
         self.joint_states_pub = rospy.Publisher(
-            'joint_states', JointState, queue_size=1)                                                      
+            'joint_states', JointState, queue_size=1)
+
+        # set up subscribers to joint/feedback_states based on group #
+        # do this last to prevent incoming messages from triggering 
+        # callbacks and throwing intermittent errors based on timing
+        for topic in self.motoman_topic_list:
+            rospy.Subscriber('/' + topic["ns"] + '/' + topic["name"] +
+                             '/joint_states',
+                             JointState,
+                             group_joint_state_cb_dict[topic["group"]])
+            rospy.Subscriber('/' + topic["ns"] + '/' + topic["name"] +
+                             '/feedback_states',
+                             FollowJointTrajectoryFeedback,
+                             group_feedback_state_cb_dict[topic["group"]])            
 
     # Store the joint state in memory and publish if they are close, temporally
     def group0_joint_state_cb(self, msg):
