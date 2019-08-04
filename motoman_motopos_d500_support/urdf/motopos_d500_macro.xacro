@@ -2,7 +2,9 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 <xacro:property name="world_base_xyz" value="0 0 0"/>
 <xacro:property name="world_base_rpy" value="0 0 0"/>
-<xacro:macro name="motoman_motopos_d500" params="prefix world_base_xyz:=^ world_base_rpy:=^">
+<!-- offsets tool and positioner base/center frames to account for added tabletop -->
+<xacro:property name="table_thickness" default="0"/>
+<xacro:macro name="motoman_motopos_d500" params="prefix world_base_xyz:=^ world_base_rpy:=^ table_thickness:=^">
 
   <!-- link list -->
   <link name="${prefix}base_link">
@@ -45,6 +47,8 @@
     </collision>
   </link>
   <link name="${prefix}tool0"/>
+  <!-- this is here to set a base link in the URDF to link the positioner/base frame to for scanning -->
+  <link name="positioner_base_dummy_link"/>
   <!-- end of link list -->
 
   <!-- joint list -->
@@ -70,10 +74,16 @@
   </joint>
   <xacro:transmission_macro name="2"/>
   <joint name="${prefix}joint_2-tool0" type="fixed">
-    <origin xyz="0 0 0.150 " rpy="0 0 0"/>
+    <origin xyz="0 0 ${0.150 + table_thickness}" rpy="0 0 0"/>
     <parent link="${prefix}link_2"/>
     <child link="${prefix}tool0"/>
   </joint>
+  <xacro:transmission_macro name="2"/>
+  <joint name="positioner_base_dummy_joint" type="fixed">
+    <origin xyz="0 0 ${0.150 + table_thickness}" rpy="0 0 0"/>
+    <parent link="${prefix}link_1"/>
+    <child link="positioner_base_dummy_link"/>
+  </joint>  
   <!-- end of joint list -->
 
   <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->

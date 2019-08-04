@@ -11,6 +11,7 @@
   <arg name="ma1440_rpy" default=""/>
   <arg name="d500_xyz" default=""/>
   <arg name="d500_rpy" default=""/>
+  <arg name="table_thickness" default=""/>
 
   <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
   <arg name="using_cam_mount" default=""/>
@@ -47,6 +48,7 @@
     <arg name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
     <arg name="d500_xyz" value="$(arg d500_xyz)"/>
     <arg name="d500_rpy" value="$(arg d500_rpy)"/>
+    <arg name="table_thickness" value="$(arg table_thickness)"/>
     <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
   </include>
 
