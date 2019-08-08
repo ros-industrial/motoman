@@ -87,7 +87,8 @@ typedef struct
 	FB_PULSE_CORRECTION_DATA correctionData;	// compensation for axes coupling
 	MAX_INCREMENT_INFO maxInc;					// maximum increment per interpolation cycle
 	float maxSpeed[MP_GRP_AXES_NUM];			// maximum joint speed in radian/sec (rotational) or meter/sec (linear)
-	
+	int tool;									// selected tool for the motion				
+
 	Incremental_q inc_q;						// incremental queue
 	long q_time;								// time to which the queue has been processed
 	

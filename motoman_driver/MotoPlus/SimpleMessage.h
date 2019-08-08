@@ -72,6 +72,7 @@ typedef enum
 
 	ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016,
 	ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017,
+	ROS_MSG_MOTO_SELECT_TOOL = 2018,
 
 	ROS_MSG_MOTO_GET_DH_PARAMETERS = 2020
 } SmMsgType;
@@ -137,7 +138,8 @@ typedef enum
 	ROS_RESULT_INVALID_DATA_SPEED,
 	ROS_RESULT_INVALID_DATA_ACCEL,
 	ROS_RESULT_INVALID_DATA_INSUFFICIENT,
-	ROS_RESULT_INVALID_DATA_TIME
+	ROS_RESULT_INVALID_DATA_TIME,
+	ROS_RESULT_INVALID_DATA_TOOLNO
 } SmInvalidSubCode;
 
 
@@ -153,7 +155,8 @@ typedef enum
 	ROS_RESULT_NOT_READY_HOLD,
 	ROS_RESULT_NOT_READY_NOT_STARTED,
 	ROS_RESULT_NOT_READY_WAITING_ROS,
-	ROS_RESULT_NOT_READY_SKILLSEND
+	ROS_RESULT_NOT_READY_SKILLSEND,
+	ROS_RESULT_NOT_READY_PFL_ACTIVE
 } SmNotReadySubcode;
 
 
@@ -261,6 +264,13 @@ struct _SmBodyJointFeedbackEx
 } __attribute__((__packed__));
 typedef struct _SmBodyJointFeedbackEx SmBodyJointFeedbackEx;
 
+struct _SmBodySelectTool
+{
+	int groupNo;  				// Robot/group ID;  0 = 1st robot 
+	int tool;					// Tool no for the selected group
+} __attribute__((__packed__));
+typedef struct _SmBodySelectTool SmBodySelectTool;
+
 //--------------
 // IO Commands
 //--------------
@@ -347,6 +357,7 @@ typedef union
 	SmBodyMotoMotionReply motionReply;
 	SmBodyJointTrajPtFullEx jointTrajDataEx;
 	SmBodyJointFeedbackEx jointFeedbackEx;
+	SmBodySelectTool selectTool;
 	SmBodyMotoReadIOBit readIOBit;
 	SmBodyMotoReadIOBitReply readIOBitReply;
 	SmBodyMotoWriteIOBit writeIOBit;
