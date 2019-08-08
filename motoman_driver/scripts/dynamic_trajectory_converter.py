@@ -274,7 +274,9 @@ class dynamic_trajectory_converter(object):
 
                     positions.append(dyn_point.positions[joint_ind])
                     velocities.append(dyn_point.velocities[joint_ind])
-                    accelerations.append(dyn_point.accelerations[joint_ind])
+                    # @todo:full-system-demo fix. both velocity and acceleration
+                    # vectors can possibly be empty, need to check for that
+                    # accelerations.append(dyn_point.accelerations[joint_ind])
 
                 group.group_number = ctrl_group['group']
                 group.num_joints = num_joints_in_group
