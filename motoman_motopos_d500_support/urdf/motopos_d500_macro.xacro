@@ -46,7 +46,22 @@
       </geometry>
     </collision>
   </link>
-  <link name="${prefix}tool0"/>
+  <link name="${prefix}tool0">
+    <visual>
+      <geometry>
+          <cylinder length="${table_thickness}" radius="0.5" />
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0 " />
+      <material name="Cast Carbon Steel">
+        <color rgba="0.52941 0.54902 0.54902 1" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${table_thickness}" radius="0.5" />
+      </geometry>
+    </collision>  
+  </link>
   <!-- this is here to set a base link in the URDF to link the "positioner/base" frame to for scanning -->
   <link name="positioner_base_dummy_link"/>
   <!-- this is here to set a base link in the URDF to link the "positioner/center" frame to for scanning. this is equivalent to the tool frame
@@ -77,13 +92,13 @@
   </joint>
   <xacro:transmission_macro name="2"/>
   <joint name="${prefix}joint_2-tool0" type="fixed">
-    <origin xyz="0 0 ${0.150 + table_thickness}" rpy="0 0 0"/>
+    <origin xyz="0 0 ${0.165}" rpy="0 0 0"/>
     <parent link="${prefix}link_2"/>
     <child link="${prefix}tool0"/>
   </joint>
   <xacro:transmission_macro name="2"/>
   <joint name="positioner_base_dummy_joint" type="fixed">
-    <origin xyz="0 0 ${0.150 + table_thickness}" rpy="0 0 0"/>
+    <origin xyz="0 0 ${0.165 + table_thickness}" rpy="0 0 0"/>
     <parent link="${prefix}link_1"/>
     <child link="positioner_base_dummy_link"/>
   </joint>
