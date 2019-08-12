@@ -84,4 +84,5 @@
     <disable_collisions link1="ma1440_link_t" link2="ma1440_link_tip" reason="Adjacent" />
     <disable_collisions link1="ma1440_link_t" link2="ma1440_link_u" reason="Never" />
     <disable_collisions link1="ma1440_link_tip" link2="ma1440_link_u" reason="Never" />
+    <disable_collisions link1="d500_tool0" link2="d500_link_2" reason="Never" />
 </robot>

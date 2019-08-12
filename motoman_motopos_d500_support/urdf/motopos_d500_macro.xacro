@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:property name="M_PI" value="3.1415926535897931"/>
 <xacro:property name="world_base_xyz" value="0 0 0"/>
 <xacro:property name="world_base_rpy" value="0 0 0"/>
 <!-- offsets tool and positioner base/center frames to account for added tabletop -->
@@ -103,7 +104,7 @@
     <child link="positioner_base_dummy_link"/>
   </joint>
   <joint name="positioner_center_dummy_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 ${table_thickness}" rpy="0 0 0"/>
     <parent link="${prefix}tool0"/>
     <child link="positioner_center_dummy_link"/>
   </joint>    
