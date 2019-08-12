@@ -92,68 +92,6 @@ void reportVersionInfoToController()
 #endif
 }
 
-// Verify most of the setup parameters of the robot controller.
-// Please note that some parameters cannot be checked, such as
-// the parameter(s) which enable this task to run.
-// Returns FALSE if a critical parameter is not set such that it
-// will prevent intialization.
-BOOL Ros_Controller_CheckSetup()
-{
-	int parameterValidationCode;
-
-	parameterValidationCode = ValidateMotoRosSetupParameters();
-	switch (parameterValidationCode)
-	{
-	case MOTOROS_SETUP_OK: return TRUE;
-
-	case MOTOROS_SETUP_RS0: 
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set RS000=2", parameterValidationCode);
-		return TRUE;
-
-	case MOTOROS_SETUP_S2C541:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C541=0", parameterValidationCode);
-		return TRUE;
-
-	case MOTOROS_SETUP_S2C542:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C542=0", parameterValidationCode);
-		return TRUE;
-
-	case MOTOROS_SETUP_S2C1100:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1100=1", parameterValidationCode);
-		return FALSE;
-
-	case MOTOROS_SETUP_S2C1103:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1103=2", parameterValidationCode);
-		return FALSE;
-
-	case MOTOROS_SETUP_S2C1117:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1117=1", parameterValidationCode);
-		return FALSE;
-
-	case MOTOROS_SETUP_S2C1119:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS Cfg: Set S2C1119=0 or 2", parameterValidationCode);
-		return TRUE;
-
-	case MOTOROS_SETUP_NotCompatibleWithPFL:
-	case MOTOROS_SETUP_NotCompatibleHCrobot:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS not compatible with HC10", parameterValidationCode);
-		return FALSE;
-
-#if (DX100)
-	case MOTOROS_SETUP_InvalidSdaConfiguration:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS: Reconfigure waist axis", parameterValidationCode);
-		return FALSE;
-#endif
-
-	//For all other error codes, please contact Yaskawa Motoman
-	//to have the MotoROS Runtime functionality enabled on your
-	//robot controller.
-	default:
-		mpSetAlarm(MOTOROS_SETUPERROR_ALARMCODE, "MotoROS: Controller cfg invalid", parameterValidationCode);
-		return FALSE;
-	}
-}
-
 //-------------------------------------------------------------------
 // Initialize the controller structure
 // This should be done before the controller is used for anything
@@ -197,13 +135,6 @@ BOOL Ros_Controller_Init(Controller* controller)
 	Ros_Controller_StatusRead(controller, controller->ioStatus);
 	
 	// wait for controller to be ready for reading parameter
-	Ros_Controller_WaitInitReady(controller);
-	
-	bInitOk = Ros_Controller_CheckSetup();
-	if (!bInitOk)
-		return FALSE; //Don't allow initialization to continue
-
-	// Wait for alarms to clear, in case Ros_Controller_CheckSetup raised an alarm
 	Ros_Controller_WaitInitReady(controller);
 
 #if (DX100)
@@ -515,6 +446,8 @@ void Ros_Controller_StatusInit(Controller* controller)
 	controller->ioStatusAddr[IO_ROBOTSTATUS_ESTOP_CTRL].ulAddr = 80027;   		// Controller E-Stop
 	controller->ioStatusAddr[IO_ROBOTSTATUS_WAITING_ROS].ulAddr = IO_FEEDBACK_WAITING_MP_INCMOVE; // Job input signaling ready for external motion
 	controller->ioStatusAddr[IO_ROBOTSTATUS_INECOMODE].ulAddr = 50727;			// Energy Saving Mode
+	controller->ioStatusAddr[IO_ROBOTSTATUS_PFL_STOP].ulAddr = 81702;			// PFL function stopped the motion
+	controller->ioStatusAddr[IO_ROBOTSTATUS_PFL_ESCAPE].ulAddr = 81703;			// PFL function escape from clamping motion
 	controller->alarmCode = 0;
 }
 
@@ -593,6 +526,13 @@ BOOL Ros_Controller_IsMotionReady(Controller* controller)
 #endif
 }
 
+
+BOOL Ros_Controller_IsPflActive(Controller* controller)
+{
+	return ((controller->ioStatus[IO_ROBOTSTATUS_PFL_STOP] | controller->ioStatus[IO_ROBOTSTATUS_PFL_ESCAPE]) != 0);
+}
+
+
 int Ros_Controller_GetNotReadySubcode(Controller* controller)
 {
 	// Check alarm
@@ -624,6 +564,10 @@ int Ros_Controller_GetNotReadySubcode(Controller* controller)
 	// Check hold
 	if(Ros_Controller_IsHold(controller))
 		return ROS_RESULT_NOT_READY_HOLD;
+
+	// Check PFL active
+	if (Ros_Controller_IsPflActive(controller))
+		return ROS_RESULT_NOT_READY_PFL_ACTIVE;
 
 	// Check operating
 	if(!Ros_Controller_IsOperating(controller))
@@ -788,6 +732,18 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 								if(Ros_Controller_IsMotionReady(controller))
 									printf("Robot job is ready for ROS commands.\r\n");
 							}
+						}
+						break;
+					}
+					case IO_ROBOTSTATUS_PFL_STOP: // PFL Stop
+					case IO_ROBOTSTATUS_PFL_ESCAPE: //  PFL Escaping
+					{
+						if (ioStatus[i] == 1)  // signal turned ON
+						{
+							// Job execution stopped take action
+							controller->bRobotJobReady = FALSE;
+							controller->bRobotJobReadyRaised = FALSE;
+							Ros_MotionServer_ClearQ_All(controller);
 						}
 						break;
 					}

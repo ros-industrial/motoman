@@ -98,6 +98,8 @@ typedef enum
 	IO_ROBOTSTATUS_ESTOP_CTRL,
 	IO_ROBOTSTATUS_WAITING_ROS,
 	IO_ROBOTSTATUS_INECOMODE,
+	IO_ROBOTSTATUS_PFL_STOP,
+	IO_ROBOTSTATUS_PFL_ESCAPE,
 	IO_ROBOTSTATUS_MAX
 } IoStatusIndex;
  
@@ -159,6 +161,7 @@ extern BOOL Ros_Controller_IsEcoMode(Controller* controller);
 extern BOOL Ros_Controller_IsEStop(Controller* controller);
 extern BOOL Ros_Controller_IsWaitingRos(Controller* controller);
 extern BOOL Ros_Controller_IsMotionReady(Controller* controller);
+extern BOOL Ros_Controller_IsPflActive(Controller* controller);
 extern int Ros_Controller_GetNotReadySubcode(Controller* controller);
 extern int Ros_Controller_StatusToMsg(Controller* controller, SimpleMsg* sendMsg);
 

@@ -151,6 +151,12 @@ int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, Si
 		replyMsg->body.motionReply.sequence = receiveMsg->body.jointTrajDataEx.sequence;
 		replyMsg->body.motionReply.command = ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX;
 	}
+	if (receiveMsg->header.msgType == ROS_MSG_MOTO_SELECT_TOOL)
+	{
+		replyMsg->body.motionReply.groupNo = ctrlGrp;
+		replyMsg->body.motionReply.sequence = -1;
+		replyMsg->body.motionReply.command = receiveMsg->header.msgType;
+	}
 	else
 	{
 		replyMsg->body.motionReply.groupNo = -1;
