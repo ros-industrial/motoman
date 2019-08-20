@@ -39,6 +39,9 @@
 
 #define MAX_TRAJECTORY_TIME_LENGTH	14400.0f //seconds (4 hours)
 
+#define MIN_VALID_TOOL_INDEX		0
+#define MAX_VALID_TOOL_INDEX		63
+
 extern void Ros_MotionServer_StartNewConnection(Controller* controller, int sd);
 extern BOOL Ros_MotionServer_HasDataInQueue(Controller* controller);
 extern BOOL Ros_MotionServer_ClearQ_All(Controller* controller);

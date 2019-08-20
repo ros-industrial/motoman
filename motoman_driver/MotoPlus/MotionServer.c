@@ -1885,7 +1885,7 @@ int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveM
 
 	if (groupNo >= 0 && groupNo < controller->numRobot)
 	{	
-		if (tool >= 0 && tool < 64)
+		if (tool >= MIN_VALID_TOOL_INDEX && tool <= MAX_VALID_TOOL_INDEX)
 		{
 			controller->ctrlGroups[receiveMsg->body.selectTool.groupNo]->tool = tool;
 			Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_SUCCESS, 0, replyMsg, groupNo);

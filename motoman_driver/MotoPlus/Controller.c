@@ -692,22 +692,16 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 					case IO_ROBOTSTATUS_ALARM_SYSTEM: // alarm
 					case IO_ROBOTSTATUS_ALARM_USER: // alarm
 					{
-						if(ioStatus[i] == 0)
+						if(ioStatus[IO_ROBOTSTATUS_ALARM_USER] == 0)
 							controller->alarmCode = 0;
 						else
 							controller->alarmCode = Ros_Controller_GetAlarmCode();
 					}
-					//case IO_ROBOTSTATUS_ERROR: // error
-					//		if(ioStatus[i] != 0)
-					//		{
-					//			// Take action for alarm/error handling
-					//		}
-					//	break;
 					case IO_ROBOTSTATUS_REMOTE: // remote
 					case IO_ROBOTSTATUS_OPERATING: // operating
 					case IO_ROBOTSTATUS_WAITING_ROS: // Job input signaling ready for external motion
 					{
-						if(ioStatus[i] == 0)  // signal turned OFF
+						if(ioStatus[IO_ROBOTSTATUS_WAITING_ROS] == 0)  // signal turned OFF
 						{
 							// Job execution stopped take action
 							controller->bRobotJobReady = FALSE;
@@ -716,7 +710,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 						}
 						else // signal turned ON
 						{
-							if(i==IO_ROBOTSTATUS_WAITING_ROS)
+							if(IO_ROBOTSTATUS_WAITING_ROS ==IO_ROBOTSTATUS_WAITING_ROS)
 								controller->bRobotJobReadyRaised = TRUE;
 							
 #ifndef DUMMY_SERVO_MODE	
@@ -738,7 +732,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 					case IO_ROBOTSTATUS_PFL_STOP: // PFL Stop
 					case IO_ROBOTSTATUS_PFL_ESCAPE: //  PFL Escaping
 					{
-						if (ioStatus[i] == 1)  // signal turned ON
+						if (ioStatus[IO_ROBOTSTATUS_PFL_ESCAPE] == ON)  // signal turned ON
 						{
 							// Job execution stopped take action
 							controller->bRobotJobReady = FALSE;
