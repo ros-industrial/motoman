@@ -2,22 +2,22 @@
 
 <robot name="motoman_ma1440" xmlns:xacro="http://ros.org/wiki/xacro">
 
-    <xacro:arg name="cam_mount" default="false"/>
+    <xacro:arg name="using_cam_mount" default="false"/>
 
     <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440_macro.xacro" />
-    <xacro:macro name="load_motoman_ma1440" params="prefix:=ma1440_ world_base_xyz world_base_rpy">
+    <xacro:macro name="load_motoman_ma1440" params="prefix:=ma1440_ world_base_xyz world_base_rpy using_cam_mount:=false">
         <xacro:motoman_ma1440 prefix="${prefix}" world_base_xyz="${world_base_xyz}" world_base_rpy="${world_base_rpy}"/>
+        <!-- optionally add the cam mount to the end of the arm, this is the laserscanner enclosure used on the Corsa system -->
+        <xacro:if value="$(arg using_cam_mount)">
+            <xacro:include filename="$(find motoman_ma1440_support)/urdf/cam_mount/cam_mount.xacro" />
+            <xacro:cam_mount_load prefix="${prefix}"/>
+            <joint name="joint_cam_mount" type="fixed">
+                <origin xyz="0 0 -0.0735" rpy="${M_PI} 0 ${M_PI/2}" />
+                <parent link="${prefix}link_t" />
+                <child link="${prefix}cam_mount_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
     </xacro:macro>
-
-    <!-- optionally add the cam mount to the end of the arm, this is the laserscanner enclosure used on the Corsa system -->
-    <xacro:if value="$(arg cam_mount)">
-        <xacro:include filename="$(find motoman_ma1440_support)/urdf/cam_mount/cam_mount.xacro" />
-        <joint name="joint_cam_mount" type="fixed">
-            <origin xyz="0 0 -0.0735" rpy="${M_PI} 0 ${M_PI/2}" />
-            <parent link="link_t" />
-            <child link="cam_mount_link" />
-            <axis xyz="0 0 0" />
-        </joint>
-    </xacro:if>
 
 </robot>
