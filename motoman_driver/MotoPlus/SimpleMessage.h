@@ -268,6 +268,7 @@ struct _SmBodySelectTool
 {
 	int groupNo;  				// Robot/group ID;  0 = 1st robot 
 	int tool;					// Tool no for the selected group
+	int sequence;				// Optional message tracking number that will be echoed back in the response.
 } __attribute__((__packed__));
 typedef struct _SmBodySelectTool SmBodySelectTool;
 
