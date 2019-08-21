@@ -35,9 +35,9 @@
   <param name="controller_ns" value="$(arg controller_ns)"/>
 
     <!-- if we aren't connected to a real robot, publish fake joint states -->
-  <node if="$(arg sim)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>
-  </node>
+<!--  <node if="$(arg sim)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">-->
+<!--    <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>-->
+<!--  </node>-->
 
   <!-- Load the cell parameters associated with this setup -->
   <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/cell_parameters.yaml" />
@@ -59,15 +59,15 @@
 
   <!-- Given the published joint states, publish tf for the robot links -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" >
-    <remap unless="$(arg sim)" from="joint_states" to="$(arg robot_ns)/joint_states" />
+    <remap  from="joint_states" to="$(arg robot_ns)/joint_states" />
   </node>
 
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
   <include file="$(find motoman_ma1440_d500_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
-    <arg name="fake_execution" value="$(arg sim)"/>
+    <arg name="fake_execution" value="false"/>
     <arg name="info" value="true"/>
-    <arg name="sim" value="$(arg sim)" />
+    <arg name="sim" value="false" />
     <arg name="robot_ns" value="$(arg robot_ns)" />
   </include>
 
@@ -78,7 +78,7 @@
   </include>
 
   <!-- this sets up the joint_trajectory_action server for the top level control group in MoveIt!, defined in /config/controllers.yaml -->
-  <group unless="$(arg sim)" ns="$(arg robot_ns)" >
+  <group ns="$(arg robot_ns)" >
     <!-- Set joints for joint_trajectory_action. -->
     <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/joint_names_ma1440_d500.yaml" />
     <node pkg="industrial_robot_client" name="joint_trajectory_action" type="joint_trajectory_action" output="log">
@@ -86,11 +86,19 @@
     </node>
   </group>
 
-	<rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/ma1440_d500_motion_interface.yaml" />
+  <group if="$(arg sim)">
+    <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/joint_names_ma1440_d500.yaml" />
+    <node name="foo_joint_trajectory_action" pkg="motoman_driver" type="motoman_driver_joint_trajectory_action" output="screen"/>
+
+    <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/ma1440_d500_motion_interface.yaml" />
+    <node pkg="motoman_driver" type="industrial_robot_simulator" name="motoman_industrial_robot_simulator" output="screen"/>
+
+    <node pkg="motoman_driver" name="dynamic_trajectory_converter" type="dynamic_trajectory_converter.py" output="screen"/>
+  </group>
 
   <!-- dynamic trajectory converter node is now launched in (find motoman_driver)/launch/motion_streaming_interface.launch -->
-	<include unless="$(arg sim)" file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch" >
-		<arg name="robot_ip"   value="$(arg robot_ip)" />
-	</include>
+<!--	<include unless="$(arg sim)" file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_dx200.launch" >-->
+<!--		<arg name="robot_ip"   value="$(arg robot_ip)" />-->
+<!--	</include>-->
 
 </launch>
