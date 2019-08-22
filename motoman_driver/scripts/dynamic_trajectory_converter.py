@@ -134,15 +134,6 @@ class dynamic_trajectory_converter(object):
                                                       DynamicJointTrajectory,
                                                       queue_size=1)
 
-        # Break up high DOF DynamicJointTrajectory msg into low DOF DynamicJointTrajectory
-        # and publish to motoman topics
-        self.joint_path_command_low_dof_pubs = []
-        for topic in self.motoman_topic_list:
-            self.joint_path_command_low_dof_pubs.append(rospy.Publisher('/' + topic["ns"] + '/' + topic["name"] +
-                                                                        '/joint_path_command',
-                                                                        DynamicJointTrajectory,
-                                                                        queue_size=1))
-
         # Publish joint states on top level /joint_states topic as well, needed
         # within moveit core to get current robot state
         self.joint_states_pub = rospy.Publisher(
@@ -210,9 +201,9 @@ class dynamic_trajectory_converter(object):
             # for group in self.group_joint_states:
             for i in range(0, self.num_control_groups):
                 positions = positions + \
-                            list(self.group_joint_states[i].position)
+                    list(self.group_joint_states[i].position)
                 velocities = velocities + \
-                             list(self.group_joint_states[i].velocity)
+                    list(self.group_joint_states[i].velocity)
 
             joint_states.name = joint_names
             joint_states.position = positions
@@ -382,8 +373,6 @@ class dynamic_trajectory_converter(object):
         dyn_traj.points = points
         # and publish
         self.joint_path_command_pub.publish(dyn_traj)
-        for pub in self.joint_path_command_low_dof_pubs:
-            pub.publish(dyn_traj)
 
     # this subscribes to the top-level /robot_status topic published to by
     # the actual motoman robot and publishes it back out to MoveIt! and the

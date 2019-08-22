@@ -52,6 +52,8 @@ from control_msgs.msg import FollowJointTrajectoryFeedback
 from industrial_msgs.msg import RobotStatus
 
 # Subscribe
+from motoman_msgs.msg import DynamicJointTrajectoryFeedback
+from motoman_msgs.msg import DynamicJointState
 from motoman_msgs.msg import DynamicJointTrajectory
 from motoman_msgs.msg import DynamicJointPoint
 from motoman_msgs.msg import DynamicJointsGroup
@@ -218,7 +220,7 @@ class MotionControllerSimulator():
                 last_goal_point = copy.deepcopy(current_goal_point)
 
             except Exception as e:
-                rospy.logerr('Unexpected exception: %s', e)
+                rospy.logerr('Unexpected exception in motion worker: %s', e)
 
         rospy.logdebug("Shutting down motion controller")
 
@@ -245,7 +247,9 @@ class IndustrialRobotSimulatorNode():
     """
     Constructor of industrial robot simulator
     """
-    def __init__(self, robot_group):
+    def __init__(self, robot_group, feedback_buffer):
+        self.feedback_buffer = feedback_buffer
+        self.group_num = robot_group['group']
         self.joint_path_action_name = robot_group['ns'] + '/' + robot_group['name']
 
         # Class lock
@@ -265,27 +269,28 @@ class IndustrialRobotSimulatorNode():
         num_joints = len(self.joint_names)
         initial_joint_state = rospy.get_param('initial_joint_state', [0]*num_joints)
         same_len = len(initial_joint_state) == num_joints
-        all_num  = all(type(x) is int or type(x) is float for x in initial_joint_state)
+        all_num = all(type(x) is int or type(x) is float for x in initial_joint_state)
         if not same_len or not all_num:
             initial_joint_state = [0]*num_joints
-            rospy.logwarn("Invalid initial_joint_state parameter, defaulting to all-zeros "
-                "(len: %s, types: %s).", same_len, all_num)
+            rospy.logwarn("Invalid initial_joint_state parameter, defaulting to all-zeros (len: %s, types: %s).", same_len, all_num)
         rospy.loginfo("Using initial joint state: %s", str(initial_joint_state))
 
         # retrieve update rate
-        motion_update_rate = rospy.get_param('motion_update_rate', 100.);  #set param to 0 to ignore interpolated motion
+        motion_update_rate = rospy.get_param('motion_update_rate', 100.)  #set param to 0 to ignore interpolated motion
         self.motion_ctrl = MotionControllerSimulator(num_joints, initial_joint_state, update_rate=motion_update_rate)
 
         # Published to joint states
         rospy.logdebug("Creating joint state publisher")
         self.joint_state_pub = rospy.Publisher(self.joint_path_action_name + '/joint_states', JointState, queue_size=1)
 
-        # Published to joint feedback
+        # Published to joint feedback to both the scoped topic and the top level one
         rospy.logdebug("Creating joint feedback publisher")
-        self.joint_feedback_pub = rospy.Publisher(self.joint_path_action_name + '/feedback_states', FollowJointTrajectoryFeedback, queue_size=1)
+        self.joint_feedback_pub = rospy.Publisher('feedback_states', FollowJointTrajectoryFeedback, queue_size=1)
+        self.joint_feedback_pub_ns = rospy.Publisher(self.joint_path_action_name + '/feedback_states', FollowJointTrajectoryFeedback, queue_size=1)
 
         rospy.logdebug("Creating robot status publisher")
-        self.robot_status_pub = rospy.Publisher(self.joint_path_action_name + '/robot_status', RobotStatus, queue_size=1)
+        self.robot_status_pub = rospy.Publisher('robot_status', RobotStatus, queue_size=1)
+        self.robot_status_pub_ns = rospy.Publisher(self.joint_path_action_name + '/robot_status', RobotStatus, queue_size=1)
 
         # Subscribe to a joint trajectory
         rospy.logdebug("Creating joint trajectory subscriber")
@@ -345,6 +350,8 @@ class IndustrialRobotSimulatorNode():
                 joint_fb_msg.actual.positions = self.motion_ctrl.get_joint_positions()
 
                 self.joint_feedback_pub.publish(joint_fb_msg)
+                self.joint_feedback_pub_ns.publish(joint_fb_msg)
+                self.feedback_buffer[self.group_num] = joint_fb_msg
 
         except Exception as e:
             rospy.logerr('Unexpected exception in joint state publisher: %s', e)
@@ -375,9 +382,10 @@ class IndustrialRobotSimulatorNode():
             msg.in_error.val        = TriState.FALSE
             msg.error_code          = 0
             self.robot_status_pub.publish(msg)
+            self.robot_status_pub_ns.publish(msg)
 
         except Exception as e:
-            rospy.logerr('Unexpected exception: %s', e)
+            rospy.logerr('Unexpected exception in status publisher: %s', e)
 
 
     """
@@ -405,7 +413,7 @@ class IndustrialRobotSimulatorNode():
                         self.motion_ctrl.add_motion_waypoint(group)
 
         except Exception as e:
-            rospy.logerr('Unexpected exception: %s', e)
+            rospy.logerr('Unexpected exception traj callback: %s', e)
 
         rospy.logdebug('Exiting trajectory callback')
 
@@ -487,14 +495,105 @@ class IndustrialRobotSimulatorNode():
         return resp
 
 
+class RobotGroupDivider:
+    def __init__(self, topic_list, controllers):
+        self.topic_list = topic_list
+        self.controllers = controllers
+
+        # Subscribe to top level joint trajectory
+        rospy.logdebug("Creating top level joint trajectory subscriber")
+        self.joint_path_sub = rospy.Subscriber('joint_path_command', DynamicJointTrajectory, self.trajectory_callback)
+
+    def trajectory_callback(self, msg_in):
+        try:
+            rospy.logdebug('Received trajectory with %s points, executing callback', str(len(msg_in.points)))
+
+            # split the msg into individual msgs for each control group
+            split_msgs = [DynamicJointTrajectory() for i in range(len(self.controllers))]
+            for point in msg_in.points:
+                for group in point.groups:
+                    point_i = DynamicJointPoint()
+                    point_i.groups.append(group)
+                    split_msgs[group.group_number].points.append(point_i)
+
+            # send the new messages to the controllers
+            for msg in split_msgs:
+                if len(msg.points) > 0:
+                    ctrl_group = msg.points[0].groups[0].group_number
+                    msg.header = msg_in.header
+                    msg.joint_names = get_joints(msg_in.joint_names, controllers[ctrl_group].joint_names)
+                    controllers[ctrl_group].trajectory_callback(msg)
+
+        except Exception as e:
+            rospy.logerr('Unexpected exception in combined traj callback: %s', e)
+
+        rospy.logdebug('Exiting trajectory callback')
+
+
+# get joints from subset in the order they appear in joint_names
+def get_joints(joint_names, subset):
+    sublist = []
+    for j in joint_names:
+        if j in subset:
+            sublist.append(j)
+    return sublist
+
+
+class DynamicFeedbackPublisher:
+    def __init__(self, feedback_buffer):
+        self.feedback_buffer = feedback_buffer
+        self.dynamic_joint_feedback_pub = rospy.Publisher('dynamic_feedback_states', DynamicJointTrajectoryFeedback, queue_size=1)
+        self.num_groups = len(feedback_buffer)
+
+    def spin(self):
+        r = rospy.Rate(rospy.get_param('motion_update_rate', 100.))
+        while not rospy.is_shutdown():
+            self.publish_dynamic_feedback()
+            r.sleep()
+
+    def publish_dynamic_feedback(self):
+        dynamic_feedback = DynamicJointTrajectoryFeedback()
+        dynamic_feedback.num_groups = self.num_groups
+        group_num = 0
+        for feedback in self.feedback_buffer:
+            joint_feedback = DynamicJointState()
+            joint_feedback.group_number = group_num
+            joint_feedback.num_joints = len(feedback.joint_names)
+            joint_feedback.positions = feedback.actual.positions
+            joint_feedback.velocities = feedback.actual.velocities
+            joint_feedback.accelerations = feedback.actual.accelerations
+            joint_feedback.positions_desired = feedback.desired.positions
+            joint_feedback.velocities_desired = feedback.desired.velocities
+            joint_feedback.accelerations_desired = feedback.desired.accelerations
+            joint_feedback.positions_errors = feedback.error.positions
+            joint_feedback.velocities_errors = feedback.error.velocities
+            joint_feedback.accelerations_errors = feedback.error.accelerations
+            dynamic_feedback.joint_feedbacks.append(joint_feedback)
+            group_num += 1
+
+        if len(dynamic_feedback.joint_feedbacks):
+            self.dynamic_joint_feedback_pub.publish(dynamic_feedback)
+
+
 if __name__ == '__main__':
     try:
         rospy.loginfo('Starting joint_controller_simulator')
         rospy.init_node('industrial_robot_simulator')
 
+        topic_list = sorted(rospy.get_param("topic_list"), key=lambda i: i['group'])
+
+        dynamic_feedback_buffer = [FollowJointTrajectoryFeedback()]*len(topic_list)
         controllers = []
-        for group in sorted(rospy.get_param("topic_list"), key=lambda i: i['group']):
-            controllers.append(IndustrialRobotSimulatorNode(group))
+        # setup a robot controller for each robot group in topic_list
+        for group in topic_list:
+            controllers.append(IndustrialRobotSimulatorNode(group, dynamic_feedback_buffer))
+
+        # setup a subscriber for the top level higher DOF joint path command topic
+        # split trajectory groups by robot controller and forward to individual controller
+        group_divider = RobotGroupDivider(topic_list, controllers)
+
+        dyn_feedback_pub = DynamicFeedbackPublisher(dynamic_feedback_buffer)
+        dyn_feedback_pub.spin()
 
         rospy.spin()
     except rospy.ROSInterruptException:
