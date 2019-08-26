@@ -59,6 +59,13 @@
                 </geometry>
                 <material name="yellow"/>
             </collision>
+            <!--      TODO: Remove this once the collision model is updated to include the little bump      -->
+            <collision>
+                <origin rpy="0 0 0" xyz="0.11 -0.02 0.38"/>
+                <geometry>
+                    <box size="0.1 0.05 0.1"/>
+                </geometry>
+            </collision>
             <inertial>
                 <mass value="112.57" />
                 <inertia ixx="2.1336" ixy="0.197" ixz="0.8995" iyy="2.8341" iyz="0.2799" izz="2.49"/>
