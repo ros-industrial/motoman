@@ -62,7 +62,8 @@ class dynamic_trajectory_converter(object):
         # Locks to prevent pub_joint_states and pub_feedback_states from
         # running multiple instances at the same time.
         self.joint_states_lock = threading.Lock()
-        self.feedback_states_lock = threading.Lock()        
+        self.feedback_states_lock = threading.Lock()
+        self.robot_status_lock = threading.Lock()
 
         # the DX200 can support up to four control groups (see motoman_driver/MotoPlus/Controller.h),
         # set up a group in the dict for each
@@ -78,6 +79,13 @@ class dynamic_trajectory_converter(object):
             1: self.group1_feedback_state_cb,
             2: self.group2_feedback_state_cb,
             3: self.group3_feedback_state_cb
+        }
+
+        group_robot_status_cb_dict = {
+            0: self.group0_robot_status_cb,
+            1: self.group1_robot_status_cb,
+            2: self.group2_robot_status_cb,
+            3: self.group3_robot_status_cb
         }
 
         # Subscribe to the robot status
@@ -111,6 +119,13 @@ class dynamic_trajectory_converter(object):
             3: FollowJointTrajectoryFeedback()
         }
 
+        self.group_robot_status = {
+            0: RobotStatus(),
+            1: RobotStatus(),
+            2: RobotStatus(),
+            3: RobotStatus()
+        }
+
         # Subscribe to joint_path_command from system
         rospy.Subscriber(robot_ns + 'joint_path_command', JointTrajectory,
                          self.joint_path_command_cb)
@@ -135,7 +150,11 @@ class dynamic_trajectory_converter(object):
             rospy.Subscriber('/' + topic["ns"] + '/' + topic["name"] +
                              '/feedback_states',
                              FollowJointTrajectoryFeedback,
-                             group_feedback_state_cb_dict[topic["group"]])            
+                             group_feedback_state_cb_dict[topic["group"]])
+            rospy.Subscriber('/' + topic["ns"] + '/' + topic["name"] +
+                             '/robot_status',
+                             RobotStatus,
+                             group_robot_status_cb_dict[topic["group"]])
 
     # Store the joint state in memory and publish if they are close, temporally
     def group0_joint_state_cb(self, msg):
@@ -247,6 +266,55 @@ class dynamic_trajectory_converter(object):
             feedback_states.actual.velocities = velocities
             # And publish to a new topic
             self.feedback_states_pub.publish(feedback_states)
+
+    # Store the feedback state in memory and publish if they are close
+    def group0_robot_status_cb(self, msg):
+        self.robot_status_lock.acquire()
+        self.group_robot_status[0] = msg
+        self.pub_robot_status()
+        self.robot_status_lock.release()
+
+    def group1_robot_status_cb(self, msg):
+        self.robot_status_lock.acquire()
+        self.group_robot_status[1] = msg
+        self.pub_robot_status()
+        self.robot_status_lock.release()
+
+    def group2_robot_status_cb(self, msg):
+        self.robot_status_lock.acquire()
+        self.group_robot_status[2] = msg
+        self.pub_robot_status()
+        self.robot_status_lock.release()
+
+    def group3_robot_status_cb(self, msg):
+        self.robot_status_lock.acquire()
+        self.group_robot_status[3] = msg
+        self.pub_robot_status()
+        self.robot_status_lock.release()
+
+    # aggregate the robot_status messages from the individual Motoman topics
+    # and publish them as a combined single message to MoveIt! and whatever
+    # else in they system within the <robot_ns> namespace
+    def pub_robot_status(self):
+        # Check to see if two feedback states share the same sequence number
+        # Should protect against running before both messages have been
+        # received
+        if self.check_callback_sequences_match(self.group_robot_status):
+            robot_status = RobotStatus()
+
+            robot_status.header.stamp = self.get_min_header_timestamp(
+                self.group_robot_status)
+
+            robot_status.e_stopped.val = 1 if any(x.e_stopped.val == 1 for x in self.group_robot_status.values()) else 0
+            robot_status.drives_powered.val = 1 if any(
+                x.drives_powered.val == 1 for x in self.group_robot_status.values()) else 0
+            robot_status.motion_possible.val = 1 if any(
+                x.motion_possible.val == 1 for x in self.group_robot_status.values()) else 0
+            robot_status.in_motion.val = 1 if any(x.in_motion.val == 1 for x in self.group_robot_status.values()) else 0
+            robot_status.in_error.val = 1 if any(x.in_error.val == 1 for x in self.group_robot_status.values()) else 0
+
+            # And publish to a new topic
+            self.robot_status_pub.publish(robot_status)
 
     def joint_path_command_cb(self, msg):
         # Divide the higher dof message into separate groups
