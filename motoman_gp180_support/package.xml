@@ -31,6 +31,7 @@
   </description>
   <author>Jakub Marsik</author>
   <maintainer email="jakub@km-robotics.cz">Jakub Marsik (KM Robotics)</maintainer>
+  <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
   <license>BSD</license>
 
   <url type="website">http://wiki.ros.org/motoman_gp180_support</url>
