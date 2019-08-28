@@ -52,6 +52,14 @@
         <joint name="ma1440_joint_t" value="0" />
         <joint name="ma1440_joint_u" value="-0.7871" />
     </group_state>
+    <group_state name="calibration_board_home_pose" group="arm">
+        <joint name="ma1440_joint_b" value="-0.7163895964622498" />
+        <joint name="ma1440_joint_l" value="-1.511757254600525" />
+        <joint name="ma1440_joint_r" value="0.0" />
+        <joint name="ma1440_joint_s" value="0.5792713761329651" />
+        <joint name="ma1440_joint_t" value="0.0" />
+        <joint name="ma1440_joint_u" value="-0.9896507859230042" />
+    </group_state>
     <group_state name="home_pose" group="positioner">
         <joint name="d500_joint_1" value="0" />
         <joint name="d500_joint_2" value="0" />
@@ -59,6 +67,36 @@
     <group_state name="zero_pose" group="positioner">
         <joint name="d500_joint_1" value="0" />
         <joint name="d500_joint_2" value="0" />
+    </group_state>
+    <group_state name="zero_pose" group="combined">
+        <joint name="d500_joint_1" value="0" />
+        <joint name="d500_joint_2" value="0" />
+        <joint name="ma1440_joint_b" value="0" />
+        <joint name="ma1440_joint_l" value="0" />
+        <joint name="ma1440_joint_r" value="0" />
+        <joint name="ma1440_joint_s" value="0.5" />
+        <joint name="ma1440_joint_t" value="0" />
+        <joint name="ma1440_joint_u" value="0" />
+    </group_state>
+    <group_state name="home_pose" group="combined">
+        <joint name="d500_joint_1" value="0" />
+        <joint name="d500_joint_2" value="0" />
+        <joint name="ma1440_joint_b" value="-0.7871" />
+        <joint name="ma1440_joint_l" value="-1.5069" />
+        <joint name="ma1440_joint_r" value="0" />
+        <joint name="ma1440_joint_s" value="0" />
+        <joint name="ma1440_joint_t" value="0" />
+        <joint name="ma1440_joint_u" value="-0.7871" />
+    </group_state>
+    <group_state name="calibration_board_home_pose" group="combined">
+        <joint name="d500_joint_1" value="0" />
+        <joint name="d500_joint_2" value="0" />
+        <joint name="ma1440_joint_b" value="-0.7163895964622498" />
+        <joint name="ma1440_joint_l" value="-1.511757254600525" />
+        <joint name="ma1440_joint_r" value="0.0" />
+        <joint name="ma1440_joint_s" value="0.5792713761329651" />
+        <joint name="ma1440_joint_t" value="0.0" />
+        <joint name="ma1440_joint_u" value="-0.9896507859230042" />
     </group_state>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="d500_base_link" link2="d500_link_1" reason="Adjacent" />
@@ -84,5 +122,7 @@
     <disable_collisions link1="ma1440_link_t" link2="ma1440_link_tip" reason="Adjacent" />
     <disable_collisions link1="ma1440_link_t" link2="ma1440_link_u" reason="Never" />
     <disable_collisions link1="ma1440_link_tip" link2="ma1440_link_u" reason="Never" />
+    <disable_collisions link1="ma1440_cam_mount_link" link2="ma1440_link_t" reason="Adjacent" />
+    <disable_collisions link1="ma1440_cam_mount_link" link2="ma1440_link_tip" reason="Adjacent" />
     <disable_collisions link1="d500_tool0" link2="d500_link_2" reason="Never" />
 </robot>
