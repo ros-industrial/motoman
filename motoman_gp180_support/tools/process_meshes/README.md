@@ -20,10 +20,10 @@ variant:
 
 And run `./process1a-stlcmd.sh` script. It will do following things with all meshes:
 
-# scale the mesh so that the units are "meters"
-# rotate the mesh so that the Z+ axis points up and X+ axis points in the correct direction
-# translate the origin point so that it's in the point of connection of the link to the previous link
-# save the file with proper file name used in the URDF to `output` subdirectory
+* scale the mesh so that the units are "meters"
+* rotate the mesh so that the Z+ axis points up and X+ axis points in the correct direction
+* translate the origin point so that it's in the point of connection of the link to the previous link
+* save the file with proper file name used in the URDF to `output` subdirectory
 
 Then run `./process1b-simplify.sh` script to simplify visual meshes to 50% of faces. It uses MeshLab, see
 comments about it below in section about collision meshes.
