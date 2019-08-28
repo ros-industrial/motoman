@@ -141,12 +141,12 @@
     <joint name="${prefix}joint_6_t" type="revolute">
         <parent link="${prefix}link_5_b"/>
         <child link="${prefix}link_6_t"/>
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <origin xyz="0.225 0 0" rpy="0 0 0" />
         <axis xyz="-1 0 0" />
         <limit lower="${radians(-360)}" upper="${radians(360)}" effort="926.73" velocity="${radians(265)}"/>
     </joint>
     <joint name="${prefix}joint_6_t-tool0" type="fixed">
-        <origin xyz="0.225 0 0" rpy="${radians(180)} ${radians(-90)} 0"/>
+        <origin xyz="0 0 0" rpy="${radians(180)} ${radians(-90)} 0"/>
         <parent link="${prefix}link_6_t"/>
         <child link="${prefix}tool0"/>
     </joint>
