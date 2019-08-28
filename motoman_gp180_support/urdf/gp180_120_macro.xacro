@@ -99,7 +99,6 @@
             </geometry>
         </collision>
     </link>
-    <!-- corresponds to Yaskawa controller flange coordinate system; Z+ out from the flange, X+ up when robot is in basic position -->
     <link name="${prefix}tool0"/>
     <!-- end of link list -->
 
@@ -154,7 +153,6 @@
     <!-- end of joint list -->
 
     <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
-    <!-- corresponds to Yaskawa controller robot coordinate system -->
     <link name="${prefix}base" />
     <joint name="${prefix}base_link-base" type="fixed">
         <origin xyz="0 0 0.650" rpy="0 0 0"/>
