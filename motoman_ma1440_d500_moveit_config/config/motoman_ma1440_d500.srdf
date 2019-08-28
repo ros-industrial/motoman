@@ -40,7 +40,7 @@
         <joint name="ma1440_joint_b" value="0" />
         <joint name="ma1440_joint_l" value="0" />
         <joint name="ma1440_joint_r" value="0" />
-        <joint name="ma1440_joint_s" value="0.5" />
+        <joint name="ma1440_joint_s" value="0.523599" />
         <joint name="ma1440_joint_t" value="0" />
         <joint name="ma1440_joint_u" value="0" />
     </group_state>
@@ -48,7 +48,7 @@
         <joint name="ma1440_joint_b" value="-0.7871" />
         <joint name="ma1440_joint_l" value="-1.5069" />
         <joint name="ma1440_joint_r" value="0" />
-        <joint name="ma1440_joint_s" value="0" />
+        <joint name="ma1440_joint_s" value="0.523599" />
         <joint name="ma1440_joint_t" value="0" />
         <joint name="ma1440_joint_u" value="-0.7871" />
     </group_state>
@@ -59,7 +59,7 @@
         <joint name="ma1440_joint_s" value="0.5792713761329651" />
         <joint name="ma1440_joint_t" value="0.0" />
         <joint name="ma1440_joint_u" value="-0.9896507859230042" />
-    </group_state>    
+    </group_state>
     <group_state name="home_pose" group="positioner">
         <joint name="d500_joint_1" value="0" />
         <joint name="d500_joint_2" value="0" />
