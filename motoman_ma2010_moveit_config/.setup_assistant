@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: motoman_ma2010_support
+    relative_path: urdf/ma2010.xacro
+    xacro_args: "--inorder "
+  SRDF:
+    relative_path: config/motoman_ma2010.srdf
+  CONFIG:
+    author_name: Thomas Lehmann
+    author_email: lehmann@ualberta.ca
+    generated_timestamp: 1544030713
