@@ -2,7 +2,7 @@
 <package format="2">
   <name>motoman_motopos_mh185_vertical_support</name>
   <version>0.0.0</version>
-  <description>The motoman_motopos_mh185_table_support package</description>
+  <description>The motoman_motopos_mh185_vertical_support package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

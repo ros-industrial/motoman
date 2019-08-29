@@ -3,52 +3,34 @@
 <xacro:property name="M_PI" value="3.1415926535897931"/>
 <xacro:property name="world_base_xyz" value="0 0 0"/>
 <xacro:property name="world_base_rpy" value="0 0 0"/>
-<!-- offsets tool and positioner base/center frames to account for added tabletop -->
-<xacro:property name="table_thickness" default="0"/>
 <xacro:macro name="motoman_motopos_mh185_vertical" params="prefix world_base_xyz:=^ world_base_rpy:=^">
 
   <!-- link list -->
+  <link name="world">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </link>
   <link name="${prefix}base_link">
     <visual>
+      <origin xyz="-0.083 -0.0245 -.32" rpy="0 ${-90*M_PI/180} 0 " />
       <geometry>
-        <mesh filename="package://motoman_motopos_mh185_vertical/meshes/mh185_vertical/visual/Full_Assembly.stl"/>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/mh185_vertical/visual/Full_Assembly.stl"/>
       </geometry>
       <material name="yaskawa_blue"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_motopos_mh185_vertical/meshes/mh185_vertical/collision/Full_Assembly.stl"/>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/mh185_vertical/collision/Full_Assembly.stl"/>
       </geometry>
     </collision>
+    <inertial>
+      <mass value="400" /> 	<!-- Arbitrarily large value, to simulate bolting down in case of absence of fixed joint -->
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </inertial>
   </link>
   <link name="${prefix}link_1">
-    <visual>
-      <geometry>
-        <mesh filename="package://motoman_motopos_mh185_vertical/meshes/mh185_vertical/visual/Vertical_Table_Top.stl"/>
-      </geometry>
-      <material name="yaskawa_blue"/>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://motoman_motopos_mh185_vertical/meshes/mh185_vertical/collision/Vertical_Table_Top.stl"/>
-      </geometry>
-    </collision>
   </link>
   <link name="${prefix}tool0">
-    <visual>
-      <geometry>
-          <cylinder length="${table_thickness}" radius="0.5" />
-      </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0 " />
-      <material name="Cast Carbon Steel">
-        <color rgba="0.52941 0.54902 0.54902 1" />
-      </material>
-    </visual>
-    <collision>
-      <geometry>
-        <cylinder length="${table_thickness}" radius="0.5" />
-      </geometry>
-    </collision>  
   </link>
   <!-- this is here to set a base link in the URDF to link the "positioner/base" frame to for scanning -->
   <link name="positioner_base_dummy_link"/>
@@ -66,32 +48,48 @@
   <joint name="${prefix}joint_1" type="revolute">
     <parent link="${prefix}base_link"/>
     <child link="${prefix}link_1"/>
-    <origin xyz="0 0 0.380" rpy="0 0 0" />
+    <origin xyz="0 0 0.5045" rpy="0 0 0" />
+<!--    <origin xyz="0 0 0.380" rpy="0 0 0" />-->
     <axis xyz="0 -1 0" />
     <limit lower="-2.3561" upper="2.3561" effort="1274" velocity="1.3962"/>
   </joint>
   <xacro:transmission_macro name="1"/>
-  <joint name="${prefix}joint_2" type="revolute">
+  <joint name="${prefix}link_1-tool0" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="${prefix}link_1"/>
-    <child link="${prefix}link_2"/>
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    <axis xyz="0 0 -1" />
-    <limit lower="-3.4906" upper="3.4906" effort="392" velocity="2.7925"/>
-  </joint>
-  <xacro:transmission_macro name="2"/>
-  <joint name="${prefix}joint_2-tool0" type="fixed">
-    <origin xyz="0 0 ${0.165}" rpy="0 0 0"/>
-    <parent link="${prefix}link_2"/>
     <child link="${prefix}tool0"/>
   </joint>
-  <xacro:transmission_macro name="2"/>
+
+  <link name="${prefix}table">
+    <visual>
+      <geometry>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/mh185_vertical/visual/Vertical_Table_Top.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0 " />
+      <material name="Cast Carbon Steel">
+        <color rgba="0.52941 0.54902 0.54902 1" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/mh185_vertical/collision/Vertical_Table_Top.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="${prefix}tool0-table" type="fixed">
+    <origin xyz="0 0 0.025" rpy="0 0 0"/>
+    <parent link="${prefix}tool0"/>
+    <child link="${prefix}table"/>
+  </joint>
+
+  <!--  TODO: Not sure what these are-->
   <joint name="positioner_base_dummy_joint" type="fixed">
-    <origin xyz="0 0 ${0.165 + table_thickness}" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="${prefix}link_1"/>
     <child link="positioner_base_dummy_link"/>
   </joint>
   <joint name="positioner_center_dummy_joint" type="fixed">
-    <origin xyz="0 0 ${table_thickness}" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="${prefix}tool0"/>
     <child link="positioner_center_dummy_link"/>
   </joint>    
@@ -100,7 +98,7 @@
   <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
   <link name="${prefix}base" />
   <joint name="${prefix}base_link-base" type="fixed">
-    <origin xyz="0 0 0.380" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="${prefix}base_link"/>
     <child link="${prefix}base"/>
   </joint>
