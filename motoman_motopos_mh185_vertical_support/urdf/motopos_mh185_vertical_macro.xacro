@@ -18,6 +18,7 @@
       <material name="yaskawa_blue"/>
     </visual>
     <collision>
+      <origin xyz="-0.083 -0.0245 -.32" rpy="0 ${-90*M_PI/180} 0 " />
       <geometry>
         <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/mh185_vertical/collision/Full_Assembly.stl"/>
       </geometry>
@@ -33,10 +34,10 @@
   <link name="${prefix}tool0">
   </link>
   <!-- this is here to set a base link in the URDF to link the "positioner/base" frame to for scanning -->
-  <link name="positioner_base_dummy_link"/>
+<!--  <link name="positioner_base_dummy_link"/>-->
   <!-- this is here to set a base link in the URDF to link the "positioner/center" frame to for scanning. this is equivalent to the tool frame
   in this case, but we define this so that the naming is consistent across positioner setups -->
-  <link name="positioner_center_dummy_link"/>  
+<!--  <link name="positioner_center_dummy_link"/>  -->
   <!-- end of link list -->
 
   <!-- joint list -->
@@ -63,7 +64,7 @@
   <link name="${prefix}table">
     <visual>
       <geometry>
-        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/mh185_vertical/visual/Vertical_Table_Top.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/table_top/visual/table_top.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <origin xyz="0 0 0" rpy="0 0 0 " />
       <material name="Cast Carbon Steel">
@@ -72,7 +73,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/mh185_vertical/collision/Vertical_Table_Top.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/table_top/collision/table_top.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
@@ -83,16 +84,16 @@
   </joint>
 
   <!--  TODO: Not sure what these are-->
-  <joint name="positioner_base_dummy_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <parent link="${prefix}link_1"/>
-    <child link="positioner_base_dummy_link"/>
-  </joint>
-  <joint name="positioner_center_dummy_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <parent link="${prefix}tool0"/>
-    <child link="positioner_center_dummy_link"/>
-  </joint>    
+<!--  <joint name="positioner_base_dummy_joint" type="fixed">-->
+<!--    <origin xyz="0 0 0" rpy="0 0 0"/>-->
+<!--    <parent link="${prefix}link_1"/>-->
+<!--    <child link="positioner_base_dummy_link"/>-->
+<!--  </joint>-->
+<!--  <joint name="positioner_center_dummy_joint" type="fixed">-->
+<!--    <origin xyz="0 0 0" rpy="0 0 0"/>-->
+<!--    <parent link="${prefix}tool0"/>-->
+<!--    <child link="positioner_center_dummy_link"/>-->
+<!--  </joint>    -->
   <!-- end of joint list -->
 
   <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
