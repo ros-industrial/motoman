@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: motoman_ma1440_mh185_vertical_support
+    relative_path: urdf/ma1440_mh185_vertical.xacro
+    xacro_args: ma1440_xyz:='0 0 0' ma1440_rpy:='0 0 0' mh185_vertical_xyz:='1 0 0' mh185_vertical_rpy:='0 0 1.57079632695' using_cam_mount:=true
+  SRDF:
+    relative_path: config/motoman_ma1440_mh185_vertical.srdf
+  CONFIG:
+    author_name: Alec Tiefenthal
+    author_email: alec@path-robotics.com
+    generated_timestamp: 1567548892

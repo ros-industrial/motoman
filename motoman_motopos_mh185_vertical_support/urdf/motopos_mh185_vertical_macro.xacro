@@ -48,11 +48,11 @@
     <child link="${prefix}link_1"/>
     <origin xyz="0 0 0.5045" rpy="0 0 0" />
 <!--    <origin xyz="0 0 0.380" rpy="0 0 0" />-->
-    <axis xyz="0 -1 0" />
-    <limit lower="-2.3561" upper="2.3561" effort="1274" velocity="1.3962"/>
+    <axis xyz="0 0 1" />
+    <limit lower="${-1*M_PI}" upper="${M_PI}" effort="1274" velocity="1.15"/>
   </joint>
   <xacro:transmission_macro name="1"/>
-  <joint name="${prefix}link_1-tool0" type="fixed">
+  <joint name="${prefix}joint_1-tool0" type="fixed">
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="${prefix}link_1"/>
     <child link="${prefix}tool0"/>
