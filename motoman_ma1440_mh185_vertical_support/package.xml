@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>motoman_ma1440_mh185_vertical_support</name>
+  <version>1.0.0</version>
+  <description>
+    <p>ROS-Industrial support for the Motoman MA1440 arm with a MotoPos MH185 positioner (our vertical version).</p>
+    <p>
+      This package takes the MA1440 arm and the vertical MH185 positioner and combines them into one xacro.
+    </p>
+  </description>
+  <author>Alec Tiefenthal</author>
+  <maintainer email="alec@path-robotics.com">Alec Tiefenthal</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <test_depend>roslaunch</test_depend>
+
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>motoman_driver</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <exec_depend>motoman_ma1440_suppport</exec_depend>
+  <exec_depend>motoman_motopos_mh185_vertical_suppport</exec_depend>
+
+  <export>
+    <architecture_independent/>
+  </export>
+</package>

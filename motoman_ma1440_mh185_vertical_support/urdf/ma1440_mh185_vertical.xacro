@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+
+ <robot name="motoman_ma1440_mh185_vertical" xmlns:xacro="http://ros.org/wiki/xacro">
+
+	<xacro:property name="ma1440_xyz" value="$(arg ma1440_xyz)"/>
+	<xacro:property name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
+	<xacro:property name="mh185_vertical_xyz" value="$(arg mh185_vertical_xyz)"/>
+	<xacro:property name="mh185_vertical_rpy" value="$(arg mh185_vertical_rpy)"/>
+	<xacro:property name="using_cam_mount" value="$(arg using_cam_mount)"/>
+
+	<xacro:include filename="$(find motoman_ma1440_d500_support)/urdf/ma1440_mh185_vertical_macro.xacro" />
+	<xacro:motoman_ma1440_mh185_vertical/>
+</robot>

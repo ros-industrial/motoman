@@ -1,0 +1,1 @@
+controller_joint_names: ['ma1440_joint_s', 'ma1440_joint_l', 'ma1440_joint_u', 'ma1440_joint_r', 'ma1440_joint_b', 'ma1440_joint_t', 'mh185_vertical_joint_1', 'mh185_vertical_joint_2']
