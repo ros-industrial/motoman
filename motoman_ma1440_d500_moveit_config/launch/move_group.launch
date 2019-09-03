@@ -20,7 +20,7 @@
   <arg name="jiggle_fraction" default="0.05" />
   <arg name="publish_monitored_planning_scene" default="true"/>
 
-  <arg name="capabilities" default=""/>
+  <arg name="capabilities" value="forge_moveit_plugins/KinematicsService"/>
   <arg name="disable_capabilities" default=""/>
 
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
