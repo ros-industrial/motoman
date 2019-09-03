@@ -39,7 +39,7 @@ controller_list:
     default: True
     type: FollowJointTrajectory
     joints:
-      []
+      mh185_vertical_joint_1
   - name: combined_controller
     action_ns: follow_joint_trajectory
     default: True

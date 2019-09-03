@@ -8,4 +8,4 @@ moveit_setup_assistant_config:
   CONFIG:
     author_name: Alec Tiefenthal
     author_email: alec@path-robotics.com
-    generated_timestamp: 1567548892
+    generated_timestamp: 1567550023
