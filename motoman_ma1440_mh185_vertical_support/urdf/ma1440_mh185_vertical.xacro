@@ -8,6 +8,6 @@
 	<xacro:property name="mh185_vertical_rpy" value="$(arg mh185_vertical_rpy)"/>
 	<xacro:property name="using_cam_mount" value="$(arg using_cam_mount)"/>
 
-	<xacro:include filename="$(find motoman_ma1440_d500_support)/urdf/ma1440_mh185_vertical_macro.xacro" />
+	<xacro:include filename="$(find motoman_ma1440_mh185_vertical_support)/urdf/ma1440_mh185_vertical_macro.xacro" />
 	<xacro:motoman_ma1440_mh185_vertical/>
 </robot>
