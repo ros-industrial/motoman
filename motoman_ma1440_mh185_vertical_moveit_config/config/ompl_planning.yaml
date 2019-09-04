@@ -175,7 +175,7 @@ positioner:
     - SPARS
     - SPARStwo
 combined:
-  default_planner_config: RRT
+  default_planner_config: ""
   planner_configs:
     - SBL
     - EST

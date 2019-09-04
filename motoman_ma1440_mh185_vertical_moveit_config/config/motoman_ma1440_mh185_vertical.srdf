@@ -17,7 +17,6 @@
         <joint name="ma1440_joint_b" />
         <joint name="ma1440_joint_t" />
         <joint name="ma1440_joint_tip" />
-        <joint name="joint_cam_mount" />
     </group>
     <group name="positioner">
         <joint name="mh185_vertical_joint_1" />

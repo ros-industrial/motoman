@@ -39,7 +39,9 @@ controller_list:
     default: True
     type: FollowJointTrajectory
     joints:
-      mh185_vertical_joint_1
+#      - Moveit setup assistant will save this without a -, then the next time it will save it without the joint at all.
+#      -  Be sure to re add the - manually.
+      - mh185_vertical_joint_1
   - name: combined_controller
     action_ns: follow_joint_trajectory
     default: True
