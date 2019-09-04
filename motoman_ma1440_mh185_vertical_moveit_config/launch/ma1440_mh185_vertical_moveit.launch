@@ -85,7 +85,6 @@
   <group if="$(arg sim)">
     <node name="joint_trajectory_action" pkg="motoman_driver" type="motoman_driver_joint_trajectory_action" output="screen"/>
     <!-- Set the initial pose for the robot arm - the positioner will ignore these values because the num of joints doesn't match -->
-<!--    <param name="initial_joint_state" value="[0.523599, 0, 0, 0, 0, 0]" type="yaml"/>-->
     <param name="initial_joint_state" value="[0, 0, 0, 0, 0, 0]" type="yaml"/>
     <node pkg="motoman_driver" type="industrial_robot_simulator" name="motoman_industrial_robot_simulator" output="screen"/>
     <node pkg="motoman_driver" name="dynamic_trajectory_converter" type="dynamic_trajectory_converter.py" output="screen"/>
