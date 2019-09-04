@@ -10,7 +10,7 @@
          command="xacro $(find motoman_ma1440_mh185_vertical)/urdf/ma1440_mh185_vertical.xacro
          ma1440_xyz:='$(arg ma1440_xyz)'
          ma1440_rpy:='$(arg ma1440_rpy)'
-         mh185_vertical_xyz:='$(arg d500_xyz)'
-         mh185_vertical_rpy:='$(arg d500_rpy)'
+         mh185_vertical_xyz:='$(arg mh185_vertical_xyz)'
+         mh185_vertical_rpy:='$(arg mh185_vertical_rpy)'
          using_cam_mount:='$(arg using_cam_mount)'"/>
 </launch>

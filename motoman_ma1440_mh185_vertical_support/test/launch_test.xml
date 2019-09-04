@@ -30,8 +30,8 @@
 	<arg name="req_arg" value="default"/>
   <arg name="dx200" value="dx200"/>
 
-  <!-- <group ns="load_ma1440_d500">
-	  <include file="$(find motoman_ma1440_d500_support)/launch/load_ma1440_d500.launch"/>
+  <!-- <group ns="load_ma1440_mh185_vertical">
+	  <include file="$(find motoman_ma1440_d500_support)/launch/load_ma1440_mh185_vertical.launch"/>
   </group> -->
 
   <group ns="test_ma1440_mh185_vertical">

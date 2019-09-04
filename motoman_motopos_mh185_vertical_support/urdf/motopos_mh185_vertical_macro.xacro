@@ -31,10 +31,10 @@
   <link name="${prefix}tool0">
   </link>
   <!-- this is here to set a base link in the URDF to link the "positioner/base" frame to for scanning -->
-<!--  <link name="positioner_base_dummy_link"/>-->
+  <link name="positioner/base_link"/>
   <!-- this is here to set a base link in the URDF to link the "positioner/center" frame to for scanning. this is equivalent to the tool frame
   in this case, but we define this so that the naming is consistent across positioner setups -->
-<!--  <link name="positioner_center_dummy_link"/>  -->
+  <link name="positioner/center_link"/>
   <!-- end of link list -->
 
   <!-- joint list -->
@@ -80,17 +80,17 @@
     <child link="${prefix}table"/>
   </joint>
 
-  <!--  TODO: Not sure what these are-->
-<!--  <joint name="positioner_base_dummy_joint" type="fixed">-->
-<!--    <origin xyz="0 0 0" rpy="0 0 0"/>-->
-<!--    <parent link="${prefix}link_1"/>-->
-<!--    <child link="positioner_base_dummy_link"/>-->
-<!--  </joint>-->
-<!--  <joint name="positioner_center_dummy_joint" type="fixed">-->
-<!--    <origin xyz="0 0 0" rpy="0 0 0"/>-->
-<!--    <parent link="${prefix}tool0"/>-->
-<!--    <child link="positioner_center_dummy_link"/>-->
-<!--  </joint>    -->
+  <joint name="positioner/center" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="${prefix}table"/>
+    <child link="positioner/base_link"/>
+  </joint>
+<!--  TODO: Make this offset more dynamic. Two args added together maybe? -->
+  <joint name="positioner/base" type="fixed">
+    <origin xyz="0 0 0.5295" rpy="0 0 0"/>
+    <parent link="${prefix}base_link"/>
+    <child link="positioner/center_link"/>
+  </joint>
   <!-- end of joint list -->
 
   <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->

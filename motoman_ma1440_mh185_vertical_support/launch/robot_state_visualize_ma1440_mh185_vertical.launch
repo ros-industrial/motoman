@@ -2,7 +2,7 @@
 <!--
    Manipulator specific version of the state visualizer.
 
-  Defaults provided for ma1440_d500:
+  Defaults provided for ma1440_mh185_vertical:
    - 7 joints
 
   Usage:

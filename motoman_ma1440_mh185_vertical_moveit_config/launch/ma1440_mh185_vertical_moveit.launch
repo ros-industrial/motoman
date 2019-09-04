@@ -6,7 +6,7 @@
   <!--  - if sim=false, a robot_ip argument is required -->
   <arg name="sim" default="true" />
 
-  <!-- The starting world positions/rotations for the ma1440 and d500 -->
+  <!-- The starting world positions/rotations for the ma1440 and mh185 vertical -->
   <arg name="ma1440_xyz" default=""/>
   <arg name="ma1440_rpy" default=""/>
   <arg name="mh185_vertical_xyz" default=""/>
@@ -50,10 +50,6 @@
     <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
   </include>
 
-  <!-- These connect the 'positioner/base' and 'positioner/center' frame to the tf tree -->
-  <node pkg="tf2_ros" type="static_transform_publisher" name="postioner_base_broadcaster" args="0 0 0 0 0 0 1 positioner_base_dummy_link positioner/base" />
-  <node pkg="tf2_ros" type="static_transform_publisher" name="postioner_center_broadcaster" args="0 0 0 0 0 0 1 positioner_center_dummy_link positioner/center" />
-
   <!-- Given the published joint states, publish tf for the robot links -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" >
     <remap unless="$(arg sim)" from="joint_states" to="$(arg robot_ns)/joint_states" />
@@ -89,7 +85,8 @@
   <group if="$(arg sim)">
     <node name="joint_trajectory_action" pkg="motoman_driver" type="motoman_driver_joint_trajectory_action" output="screen"/>
     <!-- Set the initial pose for the robot arm - the positioner will ignore these values because the num of joints doesn't match -->
-    <param name="initial_joint_state" value="[0.523599, 0, 0, 0, 0, 0]" type="yaml"/>
+<!--    <param name="initial_joint_state" value="[0.523599, 0, 0, 0, 0, 0]" type="yaml"/>-->
+    <param name="initial_joint_state" value="[0, 0, 0, 0, 0, 0]" type="yaml"/>
     <node pkg="motoman_driver" type="industrial_robot_simulator" name="motoman_industrial_robot_simulator" output="screen"/>
     <node pkg="motoman_driver" name="dynamic_trajectory_converter" type="dynamic_trajectory_converter.py" output="screen"/>
   </group>
