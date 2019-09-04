@@ -3,6 +3,12 @@
 <xacro:property name="M_PI" value="3.1415926535897931"/>
 <xacro:property name="world_base_xyz" value="0 0 0"/>
 <xacro:property name="world_base_rpy" value="0 0 0"/>
+
+<!--  Should only be changed if the model for the table is changed. -->
+<xacro:property name="table_thickness" value="0.025"/>
+<!--  Height from the floor to the top of the positioner plate (not the top of the table)  -->
+<xacro:property name="positioner_height" value="0.5045"/>
+
 <xacro:macro name="motoman_motopos_mh185_vertical" params="prefix world_base_xyz:=^ world_base_rpy:=^">
 
   <!-- link list -->
@@ -46,7 +52,7 @@
   <joint name="${prefix}joint_1" type="revolute">
     <parent link="${prefix}base_link"/>
     <child link="${prefix}link_1"/>
-    <origin xyz="0 0 0.5045" rpy="0 0 0" />
+    <origin xyz="0 0 ${positioner_height}" rpy="0 0 0" />
 <!--    <origin xyz="0 0 0.380" rpy="0 0 0" />-->
     <axis xyz="0 0 1" />
     <limit lower="${-1*M_PI}" upper="${M_PI}" effort="1274" velocity="1.15"/>
@@ -75,7 +81,7 @@
     </collision>
   </link>
   <joint name="${prefix}tool0-table" type="fixed">
-    <origin xyz="0 0 0.025" rpy="0 0 0"/>
+    <origin xyz="0 0 ${table_thickness}" rpy="0 0 0"/>
     <parent link="${prefix}tool0"/>
     <child link="${prefix}table"/>
   </joint>
@@ -83,13 +89,13 @@
   <joint name="positioner/center" type="fixed">
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="${prefix}table"/>
-    <child link="positioner/base_link"/>
-  </joint>
-<!--  TODO: Make this offset more dynamic. Two args added together maybe? -->
-  <joint name="positioner/base" type="fixed">
-    <origin xyz="0 0 0.5295" rpy="0 0 0"/>
-    <parent link="${prefix}base_link"/>
     <child link="positioner/center_link"/>
+  </joint>
+
+  <joint name="positioner/base" type="fixed">
+    <origin xyz="0 0 ${positioner_height + table_thickness}" rpy="0 0 0"/>
+    <parent link="${prefix}base_link"/>
+    <child link="positioner/base_link"/>
   </joint>
   <!-- end of joint list -->
 
