@@ -129,7 +129,6 @@ BOOL Ros_Controller_Init(Controller* controller)
 	// Init variables and controller status
 	bInitOk = TRUE;
 	controller->bRobotJobReady = FALSE;
-	controller->bRobotJobReadyRaised = FALSE;
 	controller->bStopMotion = FALSE;
 	Ros_Controller_StatusInit(controller);
 	Ros_Controller_StatusRead(controller, controller->ioStatus);
@@ -514,16 +513,23 @@ BOOL Ros_Controller_IsWaitingRos(Controller* controller)
 
 BOOL Ros_Controller_IsMotionReady(Controller* controller)
 {
+	BOOL bMotionReady;
+	
+#ifndef DUMMY_SERVO_MODE	
+	bMotionReady = controller->bRobotJobReady && Ros_Controller_IsOperating(controller) && Ros_Controller_IsRemote(controller);
+#else
+	bMotionReady = controller->bRobotJobReady && Ros_Controller_IsOperating(controller);
+#endif
+
+
 #ifdef DX100
 	if(controller->numRobot < 2)
-		return (controller->bRobotJobReady && controller->bSkillMotionReady[0]);
+		bMotionReady = bMotionReady && controller->bSkillMotionReady[0];
 	else
-	{
-		return (controller->bRobotJobReady && controller->bSkillMotionReady[0] && controller->bSkillMotionReady[1]);
-	}
-#else
-	return (controller->bRobotJobReady);
+		bMotionReady = bMotionReady && controller->bSkillMotionReady[0] && controller->bSkillMotionReady[1];
 #endif
+
+	return bMotionReady;
 }
 
 
@@ -674,6 +680,9 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 {
 	USHORT ioStatus[IO_ROBOTSTATUS_MAX];
 	int i;
+	BOOL prevReadyStatus;
+
+	prevReadyStatus = Ros_Controller_IsMotionReady(controller);
 	
 	if(Ros_Controller_StatusRead(controller, ioStatus))
 	{
@@ -696,37 +705,21 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 							controller->alarmCode = 0;
 						else
 							controller->alarmCode = Ros_Controller_GetAlarmCode();
+
+						break;
 					}
-					case IO_ROBOTSTATUS_REMOTE: // remote
-					case IO_ROBOTSTATUS_OPERATING: // operating
+
 					case IO_ROBOTSTATUS_WAITING_ROS: // Job input signaling ready for external motion
 					{
 						if(ioStatus[IO_ROBOTSTATUS_WAITING_ROS] == 0)  // signal turned OFF
 						{
 							// Job execution stopped take action
 							controller->bRobotJobReady = FALSE;
-							controller->bRobotJobReadyRaised = FALSE;
 							Ros_MotionServer_ClearQ_All(controller);
 						}
-						else // signal turned ON
-						{
-							if(IO_ROBOTSTATUS_WAITING_ROS ==IO_ROBOTSTATUS_WAITING_ROS)
-								controller->bRobotJobReadyRaised = TRUE;
-							
-#ifndef DUMMY_SERVO_MODE	
-							if(controller->bRobotJobReadyRaised
-								&& (Ros_Controller_IsOperating(controller))
-								&& (Ros_Controller_IsRemote(controller)) )
-#else
-							if(controller->bRobotJobReadyRaised
-								&& Ros_Controller_IsOperating(controller))
-#endif
-							{
-								controller->bRobotJobReady = TRUE;
-								if(Ros_Controller_IsMotionReady(controller))
-									printf("Robot job is ready for ROS commands.\r\n");
-							}
-						}
+						else // signal turned ON (rising edge)
+							controller->bRobotJobReady = TRUE; //job is ready (even if other factors will prevent motion)
+
 						break;
 					}
 					case IO_ROBOTSTATUS_PFL_STOP: // PFL Stop
@@ -735,8 +728,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 						if (ioStatus[IO_ROBOTSTATUS_PFL_ESCAPE] == ON)  // signal turned ON
 						{
 							// Job execution stopped take action
-							controller->bRobotJobReady = FALSE;
-							controller->bRobotJobReadyRaised = FALSE;
+							controller->bRobotJobReady = FALSE; //force job to be restarted with new ROS_CMD_START_TRAJ_MODE command
 							Ros_MotionServer_ClearQ_All(controller);
 						}
 						break;
@@ -744,9 +736,14 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 				}
 			}
 		}
+
+		if (!prevReadyStatus && Ros_Controller_IsMotionReady(controller))
+			printf("Robot job is ready for ROS commands.\r\n");
+
 		return TRUE;
 	}
-	return FALSE;
+	else
+		return FALSE;
 }
 
 

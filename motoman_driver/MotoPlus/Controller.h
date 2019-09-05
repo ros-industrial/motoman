@@ -114,8 +114,7 @@ typedef struct
 	MP_IO_INFO ioStatusAddr[IO_ROBOTSTATUS_MAX];			// Array of Specific Input Address representing the I/O status
 	USHORT ioStatus[IO_ROBOTSTATUS_MAX];					// Array storing the current status of the controller
 	int alarmCode;											// Alarm number currently active
-	BOOL bRobotJobReady;									// Boolean indicating that the controller is ready for increment move
-	BOOL bRobotJobReadyRaised;								// Indicates that the signal was raised since operating was resumed
+	BOOL bRobotJobReady;									// Indicates the robot job is on the WAIT command (ready for motion)
 	BOOL bStopMotion;										// Flag to stop motion
 
 	// Connection Server
