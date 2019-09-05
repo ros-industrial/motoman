@@ -1,4 +1,6 @@
 <launch>
+  <!--  DO NOT OVERWRITE THIS FILE WITH THE MOVEIT WIZARD, CHANGE IT BY HAND-->
+
   <!-- By default we do not overwrite the URDF. Change the following to true to change the default behavior -->
   <arg name="load_robot_description" default="false"/>
 
