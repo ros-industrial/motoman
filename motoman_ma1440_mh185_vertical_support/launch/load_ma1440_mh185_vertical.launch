@@ -7,7 +7,7 @@
 	<arg name="mh185_vertical_rpy" value="0 0 0"/>
 
     <param name="robot_description"
-         command="xacro $(find motoman_ma1440_mh185_vertical)/urdf/ma1440_mh185_vertical.xacro
+         command="xacro $(find motoman_ma1440_mh185_vertical_support)/urdf/ma1440_mh185_vertical.xacro
          ma1440_xyz:='$(arg ma1440_xyz)'
          ma1440_rpy:='$(arg ma1440_rpy)'
          mh185_vertical_xyz:='$(arg mh185_vertical_xyz)'
