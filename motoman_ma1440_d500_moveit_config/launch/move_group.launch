@@ -1,5 +1,7 @@
 <launch>
 
+  <include file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_context.launch" />
+
   <!-- GDB Debug Option -->
   <arg name="debug" default="false" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
@@ -43,12 +45,6 @@
                 move_group/ClearOctomapService
                 " />
   -->
-
-  <arg name="load_robot_description" default="true" />
-  <!-- load URDF, SRDF and joint_limits configuration -->
-  <include file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_context.launch">
-    <arg name="load_robot_description" value="$(arg load_robot_description)" />
-  </include>
 
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_pipeline.launch.xml">
