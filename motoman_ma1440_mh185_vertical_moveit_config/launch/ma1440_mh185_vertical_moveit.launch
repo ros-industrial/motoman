@@ -67,7 +67,7 @@
   <!-- Run Rviz and load the default config to see the state of the move_group node -->
   <include if="$(arg use_rviz)"
            file="$(find motoman_ma1440_mh185_vertical_moveit_config)/launch/moveit_rviz.launch">
-    <arg name="rviz_config" value="true"/>
+    <arg name="rviz_config" value="$(find motoman_ma1440_mh185_vertical_moveit_config)/launch/moveit.rviz"/>
   </include>
 
   <!-- this sets up the joint_trajectory_action server for the top level control group in MoveIt!, defined in /config/controllers.yaml -->

@@ -44,12 +44,6 @@
                 " />
   -->
 
-<!--  <arg name="load_robot_description" default="true" />-->
-<!--  &lt;!&ndash; load URDF, SRDF and joint_limits configuration &ndash;&gt;-->
-<!--  <include file="$(find motoman_ma1440_mh185_vertical_moveit_config)/launch/planning_context.launch">-->
-<!--    <arg name="load_robot_description" value="$(arg load_robot_description)" />-->
-<!--  </include>-->
-
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find motoman_ma1440_mh185_vertical_moveit_config)/launch/planning_pipeline.launch.xml">
     <arg name="pipeline" value="$(arg pipeline)" />

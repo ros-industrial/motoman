@@ -174,7 +174,6 @@ positioner:
     - LazyPRMstar
     - SPARS
     - SPARStwo
-  projection_evaluator: joints(mh185_vertical_joint_1)
 combined:
   default_planner_config: ""
   planner_configs:
