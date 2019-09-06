@@ -107,7 +107,7 @@
     <origin xyz="0 0 ${table_thickness}" rpy="0 0 0"/>
     <parent link="${prefix}tool0"/>
     <child link="positioner_center_dummy_link"/>
-  </joint>    
+  </joint>
   <!-- end of joint list -->
 
   <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
