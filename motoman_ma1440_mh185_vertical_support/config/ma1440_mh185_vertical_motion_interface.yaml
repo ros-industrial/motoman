@@ -1,0 +1,9 @@
+topic_list:
+    - name: arm_controller
+      ns: dx200
+      group: 0
+      joints: ['ma1440_joint_s','ma1440_joint_l','ma1440_joint_u','ma1440_joint_r','ma1440_joint_b','ma1440_joint_t']
+    - name: positioner_controller
+      ns: dx200
+      group: 1
+      joints: ['mh185_vertical_joint_1']

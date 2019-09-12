@@ -20,6 +20,10 @@
   <!-- IP address of the robot to connect to, if connecting to a real robot -->
   <arg name="robot_ip" unless="$(arg sim)" />
 
+  <!-- Should match one-to-one with the 'prefix' value in the _macro.xacro file -->
+  <!--  TODO: Might consider giving this a more descriptive name -->
+  <param name="/robot_joint_prefix" value="ma1440_"/>
+
   <!-- this 'robot_ns' argument corresponds to the robot name of the MoveIt controller group for both the arm and the
   positioner. this must be equivalent to the name of the controller group with all the joints in the system in
   /config/controllers.yaml. we manually set up a joint_trajectory_action server under this same namespace
@@ -70,7 +74,7 @@
   <!-- Run Rviz and load the default config to see the state of the move_group node -->
   <include if="$(arg use_rviz)"
            file="$(find motoman_ma1440_d500_moveit_config)/launch/moveit_rviz.launch">
-    <arg name="config" value="true"/>
+    <arg name="rviz_config" value="$(find motoman_ma1440_d500_moveit_config)/launch/moveit.rviz"/>
   </include>
 
   <!-- this sets up the joint_trajectory_action server for the top level control group in MoveIt!, defined in /config/controllers.yaml -->

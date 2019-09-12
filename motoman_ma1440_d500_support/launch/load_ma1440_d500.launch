@@ -14,5 +14,5 @@
          d500_xyz:='$(arg d500_xyz)'
          d500_rpy:='$(arg d500_rpy)' 
          table_thickness:=$(arg table_thickness)
-         cam_mount:=$(arg using_cam_mount)"/>
+         using_cam_mount:=$(arg using_cam_mount)"/>
 </launch>

@@ -1,4 +1,6 @@
 <launch>
+  <!--  DO NOT OVERWRITE THIS FILE WITH THE MOVEIT WIZARD, CHANGE IT BY HAND-->
+
   <!-- By default we do not overwrite the URDF. Change the following to true to change the default behavior -->
   <arg name="load_robot_description" default="false"/>
 
@@ -19,9 +21,9 @@
          ma1440_xyz:='$(arg ma1440_xyz)'
          ma1440_rpy:='$(arg ma1440_rpy)'
          d500_xyz:='$(arg d500_xyz)'
-         d500_rpy:='$(arg d500_rpy)' 
-         table_thickness:=$(arg table_thickness)
-         cam_mount:=$(arg using_cam_mount)"/>
+         d500_rpy:='$(arg d500_rpy)'
+         table_thickness:='$(arg table_thickness)'
+         using_cam_mount:='$(arg using_cam_mount)'"/>
 
   <!-- The semantic description that corresponds to the URDF -->
   <param name="$(arg robot_description)_semantic"

@@ -1,0 +1,21 @@
+controller_list:
+  - name: fake_arm_controller
+    joints:
+      - ma1440_joint_s
+      - ma1440_joint_l
+      - ma1440_joint_u
+      - ma1440_joint_r
+      - ma1440_joint_b
+      - ma1440_joint_t
+  - name: fake_positioner_controller
+    joints:
+      - mh185_vertical_joint_1
+  - name: fake_combined_controller
+    joints:
+      - ma1440_joint_s
+      - ma1440_joint_l
+      - ma1440_joint_u
+      - ma1440_joint_r
+      - ma1440_joint_b
+      - ma1440_joint_t
+      - mh185_vertical_joint_1

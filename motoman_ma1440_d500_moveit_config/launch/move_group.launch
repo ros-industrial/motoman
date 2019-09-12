@@ -1,7 +1,5 @@
 <launch>
 
-  <include file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_context.launch" />
-
   <!-- GDB Debug Option -->
   <arg name="debug" default="false" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
@@ -14,6 +12,7 @@
   <arg     if="$(arg info)" name="command_args" value="--debug" />
 
   <!-- move_group settings -->
+  <arg name="pipeline" default="ompl" />
   <arg name="allow_trajectory_execution" default="true"/>
   <arg name="fake_execution" default="false"/>
   <arg name="max_safe_path_cost" default="1"/>
@@ -25,7 +24,7 @@
 
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
   <arg name="sim"  default="true" />
-  
+
   <!-- for a real robot, the namespace of the combined controller MoveIt! is operating in -->
   <arg name="robot_ns"  default="combined" />
 
@@ -47,7 +46,7 @@
 
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_pipeline.launch.xml">
-    <arg name="pipeline" value="ompl" />
+    <arg name="pipeline" value="$(arg pipeline)" />
   </include>
 
   <!-- Trajectory Execution Functionality -->
@@ -64,7 +63,7 @@
 
   <!-- Start the actual move_group node/action server -->
   <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="$(arg command_args)">
-    
+
     <remap unless="$(arg sim)" from="joint_states" to="$(arg robot_ns)/joint_states" />
     <!-- Set the display variable, in case OpenGL code is used internally -->
     <env name="DISPLAY" value="$(optenv DISPLAY :0)" />
