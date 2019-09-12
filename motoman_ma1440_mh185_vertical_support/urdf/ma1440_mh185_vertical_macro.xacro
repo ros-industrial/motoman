@@ -20,6 +20,10 @@
     />
 
     <xacro:include filename="$(find motoman_motopos_mh185_vertical_support)/urdf/motopos_mh185_vertical.xacro" />
-    <xacro:load_motoman_motopos_mh185_vertical world_base_xyz="${mh185_vertical_xyz}" world_base_rpy="${mh185_vertical_rpy}"/>
+    <xacro:load_motoman_motopos_mh185_vertical
+        world_base_xyz="${mh185_vertical_xyz}"
+        world_base_rpy="${mh185_vertical_rpy}"
+        offsets_file_path="${offsets_file_path}"
+    />
   </xacro:macro>
 </robot>

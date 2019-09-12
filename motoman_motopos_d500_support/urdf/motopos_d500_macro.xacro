@@ -1,11 +1,15 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-<xacro:property name="M_PI" value="3.1415926535897931"/>
-<xacro:property name="world_base_xyz" value="0 0 0"/>
-<xacro:property name="world_base_rpy" value="0 0 0"/>
-<!-- offsets tool and positioner base/center frames to account for added tabletop -->
-<xacro:property name="table_thickness" default="0"/>
-<xacro:macro name="motoman_motopos_d500" params="prefix world_base_xyz:=^ world_base_rpy:=^ table_thickness:=^">
+<xacro:macro
+    name="motoman_motopos_d500"
+    params="prefix world_base_xyz:='0 0 0'
+    world_base_rpy:='0 0 0'
+    table_thickness:=0
+    offsets_file_path"
+>
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+
+  <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
 
   <!-- link list -->
   <link name="${prefix}base_link">
