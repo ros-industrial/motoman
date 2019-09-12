@@ -2,12 +2,20 @@
 
  <robot name="motoman_ma1440_mh185_vertical" xmlns:xacro="http://ros.org/wiki/xacro">
 
-	<xacro:property name="ma1440_xyz" value="$(arg ma1440_xyz)"/>
-	<xacro:property name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
-	<xacro:property name="mh185_vertical_xyz" value="$(arg mh185_vertical_xyz)"/>
-	<xacro:property name="mh185_vertical_rpy" value="$(arg mh185_vertical_rpy)"/>
-	<xacro:property name="using_cam_mount" value="$(arg using_cam_mount)"/>
+	<xacro:arg name="ma1440_xyz" default=""/>
+	<xacro:arg name="ma1440_rpy" default=""/>
+	<xacro:arg name="mh185_vertical_xyz" default=""/>
+	<xacro:arg name="mh185_vertical_rpy" default=""/>
+	<xacro:arg name="using_cam_mount" default=""/>
+	<xacro:arg name="offsets_file_path" default=""/>
 
 	<xacro:include filename="$(find motoman_ma1440_mh185_vertical_support)/urdf/ma1440_mh185_vertical_macro.xacro" />
-	<xacro:motoman_ma1440_mh185_vertical/>
+	<xacro:motoman_ma1440_mh185_vertical
+			ma1440_xyz="$(arg ma1440_xyz)"
+			ma1440_rpy="$(arg ma1440_rpy)"
+			mh185_vertical_xyz="$(arg mh185_vertical_xyz)"
+			mh185_vertical_rpy="$(arg mh185_vertical_rpy)"
+			using_cam_mount="$(arg using_cam_mount)"
+			offsets_file_path="$(arg offsets_file_path)"
+	/>
 </robot>

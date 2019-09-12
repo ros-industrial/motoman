@@ -13,6 +13,7 @@
   <arg name="d500_rpy" default=""/>
 
   <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
+
   <!-- The thickness of the tabletop mounted on top of the last link of the D500 -->
   <arg name="table_thickness" default=""/>
 

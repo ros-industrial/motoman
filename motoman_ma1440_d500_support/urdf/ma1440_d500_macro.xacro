@@ -9,7 +9,8 @@
           d500_rpy
           table_thickness
           using_cam_mount
-          offsets_file_path">
+          offsets_file_path"
+  >
 
     <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440.xacro"/>
     <xacro:load_motoman_ma1440
