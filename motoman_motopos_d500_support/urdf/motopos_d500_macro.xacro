@@ -68,10 +68,10 @@
     </collision>  
   </link>
   <!-- this is here to set a base link in the URDF to link the "positioner/base" frame to for scanning -->
-  <link name="positioner_base_dummy_link"/>
+  <link name="positioner/base"/>
   <!-- this is here to set a base link in the URDF to link the "positioner/center" frame to for scanning. this is equivalent to the tool frame
   in this case, but we define this so that the naming is consistent across positioner setups -->
-  <link name="positioner_center_dummy_link"/>  
+  <link name="positioner/center"/>
   <!-- end of link list -->
 
   <!-- joint list -->
@@ -102,15 +102,15 @@
     <child link="${prefix}tool0"/>
   </joint>
   <xacro:transmission_macro name="2"/>
-  <joint name="positioner_base_dummy_joint" type="fixed">
+  <joint name="positioner/base" type="fixed">
     <origin xyz="0 0 ${0.165 + table_thickness}" rpy="0 0 0"/>
     <parent link="${prefix}link_1"/>
-    <child link="positioner_base_dummy_link"/>
+    <child link="positioner/base"/>
   </joint>
-  <joint name="positioner_center_dummy_joint" type="fixed">
+  <joint name="positioner/center" type="fixed">
     <origin xyz="0 0 ${table_thickness}" rpy="0 0 0"/>
     <parent link="${prefix}tool0"/>
-    <child link="positioner_center_dummy_link"/>
+    <child link="positioner/center"/>
   </joint>
   <!-- end of joint list -->
 
