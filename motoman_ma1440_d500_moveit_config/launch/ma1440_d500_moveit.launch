@@ -11,6 +11,8 @@
   <arg name="ma1440_rpy" default=""/>
   <arg name="d500_xyz" default=""/>
   <arg name="d500_rpy" default=""/>
+
+  <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
   <!-- The thickness of the tabletop mounted on top of the last link of the D500 -->
   <arg name="table_thickness" default=""/>
 
@@ -51,6 +53,7 @@
     <arg name="d500_rpy" value="$(arg d500_rpy)"/>
     <arg name="table_thickness" value="$(arg table_thickness)"/>
     <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
+    <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>
 
   <!-- These connect the 'positioner/base' and 'positioner/center' frame to the tf tree -->

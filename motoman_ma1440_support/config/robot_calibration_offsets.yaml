@@ -1,6 +1,6 @@
-robot_calibration_offsets:
+ma1440_robot_calibration_offsets:
 
-  joint_s:
+  ma1440_joint_s:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -8,7 +8,7 @@ robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_l:
+  ma1440_joint_l:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -16,7 +16,7 @@ robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_u:
+  ma1440_joint_u:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -24,7 +24,7 @@ robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_r:
+  ma1440_joint_r:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -32,7 +32,7 @@ robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_b:
+  ma1440_joint_b:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -40,7 +40,7 @@ robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_t:
+  ma1440_joint_t:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -48,9 +48,9 @@ robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-zero_robot_calibration_offsets:
+ma1440_zero_robot_calibration_offsets:
 
-  joint_s:
+  ma1440_joint_s:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -58,7 +58,7 @@ zero_robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_l:
+  ma1440_joint_l:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -66,7 +66,7 @@ zero_robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_u:
+  ma1440_joint_u:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -74,7 +74,7 @@ zero_robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_r:
+  ma1440_joint_r:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -82,7 +82,7 @@ zero_robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_b:
+  ma1440_joint_b:
     x: 0.0
     y: 0.0
     z: 0.0
@@ -90,21 +90,10 @@ zero_robot_calibration_offsets:
     pitch: 0.0
     yaw: 0.0
 
-  joint_t:
+  ma1440_joint_t:
     x: 0.0
     y: 0.0
     z: 0.0
     roll: 0.0
     pitch: 0.0
     yaw: 0.0
-
-  joint_camera:
-    translation:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-    rotation:
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 0.0

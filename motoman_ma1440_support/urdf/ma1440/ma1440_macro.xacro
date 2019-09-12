@@ -1,17 +1,18 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-    <xacro:property name="world_base_xyz" value="0 0 0"/>
-    <xacro:property name="world_base_rpy" value="0 0 0"/>
-    <xacro:property name="M_PI" value="3.1415926535897931"/>
-
-    <xacro:property name="offsets_file_path" value="$(find motoman_ma1440_support)/config/robot_calibration_offsets.yaml"/>
-
     <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440.transmission.xacro" />
 
-    <xacro:macro name="motoman_ma1440" params="prefix world_base_xyz:=^ world_base_rpy:=^ offsets_file_path:=^">
-        <xacro:property name="offsets" value="${load_yaml('$(find ma1400_sim)/config/robot_calibration_offsets.yaml')['robot_calibration_offsets']}"/>
+    <xacro:macro
+        name="motoman_ma1440"
+        params="
+                 prefix
+                 world_base_xyz:='0 0 0'
+                 world_base_rpy:='0 0 0'
+                 offsets_file_path"
+    >
+      <xacro:property name="M_PI" value="3.1415926535897931"/>
+      <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
 
-        <!-- link list -->
         <link name="world">
             <origin xyz="0 0 0" rpy="0 0 0"/>
         </link>
@@ -267,8 +268,8 @@
             <parent link="${prefix}base_link"/>
             <child link="${prefix}link_s"/>
             <origin
-                xyz="${offsets['joint_s']['x']} ${offsets['joint_s']['y']} ${0.165 + offsets['joint_s']['z']}"
-                rpy="${offsets['joint_s']['roll']} ${offsets['joint_s']['pitch']} ${offsets['joint_s']['yaw']}"
+                xyz="${offsets[prefix + 'joint_s']['x']} ${offsets[prefix + 'joint_s']['y']} ${0.165 + offsets[prefix + 'joint_s']['z']}"
+                rpy="${offsets[prefix + 'joint_s']['roll']} ${offsets[prefix + 'joint_s']['pitch']} ${offsets[prefix + 'joint_s']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <limit lower="-2.96706" upper="2.96706" effort="100" velocity="4.01425727959" />
@@ -278,8 +279,8 @@
             <parent link="${prefix}link_s"/>
             <child link="${prefix}link_l"/>
             <origin
-                xyz="${0.155 + offsets['joint_l']['x']} ${-0.0425 + offsets['joint_l']['y']} ${0.285 + offsets['joint_l']['z']}"
-                rpy="${M_PI/2 + offsets['joint_l']['roll']} ${-M_PI/2 + offsets['joint_l']['pitch']} ${M_PI + offsets['joint_l']['yaw']}"
+                xyz="${0.155 + offsets[prefix + 'joint_l']['x']} ${-0.0425 + offsets[prefix + 'joint_l']['y']} ${0.285 + offsets[prefix + 'joint_l']['z']}"
+                rpy="${M_PI/2 + offsets[prefix + 'joint_l']['roll']} ${-M_PI/2 + offsets[prefix + 'joint_l']['pitch']} ${M_PI + offsets[prefix + 'joint_l']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <limit lower="-1.5708" upper="2.70526" effort="100" velocity="3.49066" />
@@ -289,8 +290,8 @@
             <parent link="${prefix}link_l"/>
             <child link="${prefix}link_u"/>
             <origin
-                xyz="${0.614 + offsets['joint_u']['x']} ${0.0 + offsets['joint_u']['y']} ${-0.07 + offsets['joint_u']['z']}"
-                rpy="${0 + offsets['joint_u']['roll']} ${0 + offsets['joint_u']['pitch']} ${M_PI/2 + offsets['joint_u']['yaw']}"
+                xyz="${0.614 + offsets[prefix + 'joint_u']['x']} ${0.0 + offsets[prefix + 'joint_u']['y']} ${-0.07 + offsets[prefix + 'joint_u']['z']}"
+                rpy="${0 + offsets[prefix + 'joint_u']['roll']} ${0 + offsets[prefix + 'joint_u']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_u']['yaw']}"
             />
             <axis xyz="0 0 -1" />
 <!--            The commented out line is the specification for this joint, but it allows the robot to hit itself.-->
@@ -302,8 +303,8 @@
             <parent link="${prefix}link_u"/>
             <child link="${prefix}link_r"/>
             <origin
-                xyz="${0.265 + offsets['joint_r']['x']} ${-0.2 + offsets['joint_r']['y']} ${0.049 + offsets['joint_r']['z']}"
-                rpy="${M_PI/2 + offsets['joint_r']['roll']} ${0 + offsets['joint_r']['pitch']} ${-M_PI/2 + offsets['joint_r']['yaw']}"
+                xyz="${0.265 + offsets[prefix + 'joint_r']['x']} ${-0.2 + offsets[prefix + 'joint_r']['y']} ${0.049 + offsets[prefix + 'joint_r']['z']}"
+                rpy="${M_PI/2 + offsets[prefix + 'joint_r']['roll']} ${0 + offsets[prefix + 'joint_r']['pitch']} ${-M_PI/2 + offsets[prefix + 'joint_r']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <limit lower="-2.61799" upper="2.61799" effort="100" velocity="7.50492" />
@@ -313,8 +314,8 @@
             <parent link="${prefix}link_r"/>
             <child link="${prefix}link_b"/>
             <origin
-                xyz="${0.0 + offsets['joint_b']['x']} ${-0.062 + offsets['joint_b']['y']} ${-0.375 + offsets['joint_b']['z']}"
-                rpy="${M_PI/2 + offsets['joint_b']['roll']} ${M_PI/2 + offsets['joint_b']['pitch']} ${0 + offsets['joint_b']['yaw']}"
+                xyz="${0.0 + offsets[prefix + 'joint_b']['x']} ${-0.062 + offsets[prefix + 'joint_b']['y']} ${-0.375 + offsets[prefix + 'joint_b']['z']}"
+                rpy="${M_PI/2 + offsets[prefix + 'joint_b']['roll']} ${M_PI/2 + offsets[prefix + 'joint_b']['pitch']} ${0 + offsets[prefix + 'joint_b']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <!-- Note that the joint range here is for the A00 version,
@@ -326,8 +327,8 @@
             <parent link="${prefix}link_b"/>
             <child link="${prefix}link_t"/>
             <origin
-                xyz="${0.0875 + offsets['joint_t']['x']} ${0.0 + offsets['joint_t']['y']} ${-0.062 + offsets['joint_t']['z']}"
-                rpy="${-M_PI/2 + offsets['joint_t']['roll']} ${0 + offsets['joint_t']['pitch']} ${M_PI/2 + offsets['joint_t']['yaw']}"
+                xyz="${0.0875 + offsets[prefix + 'joint_t']['x']} ${0.0 + offsets[prefix + 'joint_t']['y']} ${-0.062 + offsets[prefix + 'joint_t']['z']}"
+                rpy="${-M_PI/2 + offsets[prefix + 'joint_t']['roll']} ${0 + offsets[prefix + 'joint_t']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_t']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <limit lower="-3.66519" upper="3.66519" effort="100" velocity="10.9956" />
