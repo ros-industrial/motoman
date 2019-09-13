@@ -59,8 +59,14 @@
     <parent link="${prefix}base_link"/>
     <child link="${prefix}link_1"/>
     <origin
-        xyz="${offsets[prefix + 'joint_1']['x']} ${offsets[prefix + 'joint_1']['y']} ${positioner_height + offsets[prefix + 'joint_1']['z']}"
-        rpy="${offsets[prefix + 'joint_1']['roll']} ${offsets[prefix + 'joint_1']['pitch']} ${offsets[prefix + 'joint_1']['yaw']}"
+        xyz=
+            "${offsets[prefix + 'joint_1']['x']}
+             ${offsets[prefix + 'joint_1']['y']}
+             ${offsets[prefix + 'joint_1']['z'] + positioner_height}"
+        rpy=
+            "${offsets[prefix + 'joint_1']['roll']}
+             ${offsets[prefix + 'joint_1']['pitch']}
+             ${offsets[prefix + 'joint_1']['yaw']}"
     />
     <axis xyz="0 0 1" />
     <limit lower="${-1*M_PI}" upper="${M_PI}" effort="1274" velocity="1.15"/>
@@ -101,8 +107,17 @@
   </joint>
 
   <joint name="positioner/base" type="fixed">
-    <origin xyz="0 0 ${table_thickness}" rpy="0 0 0"/>
-    <parent link="${prefix}link_1"/>
+    <origin
+        xyz=
+            "${offsets[prefix + 'joint_1']['x']}
+             ${offsets[prefix + 'joint_1']['y']}
+             ${offsets[prefix + 'joint_1']['z'] + positioner_height + table_thickness}"
+        rpy=
+            "${offsets[prefix + 'joint_1']['roll']}
+             ${offsets[prefix + 'joint_1']['pitch']}
+             ${offsets[prefix + 'joint_1']['yaw']}"
+    />
+    <parent link="${prefix}base_link"/>
     <child link="positioner/base"/>
   </joint>
   <!-- end of joint list -->
