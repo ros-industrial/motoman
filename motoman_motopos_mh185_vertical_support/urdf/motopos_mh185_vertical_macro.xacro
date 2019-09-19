@@ -1,15 +1,21 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-<xacro:property name="M_PI" value="3.1415926535897931"/>
-<xacro:property name="world_base_xyz" value="0 0 0"/>
-<xacro:property name="world_base_rpy" value="0 0 0"/>
+<xacro:macro
+    name="motoman_motopos_mh185_vertical"
+    params=
+        "prefix
+        world_base_xyz:='0 0 0'
+        world_base_rpy:='0 0 0'
+        offsets_file_path"
+>
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
 
-<!--  Should only be changed if the model for the table is changed. -->
-<xacro:property name="table_thickness" value="0.025"/>
-<!--  Height from the floor to the top of the positioner plate (not the top of the table)  -->
-<xacro:property name="positioner_height" value="0.5045"/>
+  <!--  Should only be changed if the model for the table is changed. -->
+  <xacro:property name="table_thickness" value="0.025"/>
+  <!--  Height from the floor to the top of the positioner plate (not the top of the table)  -->
+  <xacro:property name="positioner_height" value="0.5045"/>
 
-<xacro:macro name="motoman_motopos_mh185_vertical" params="prefix world_base_xyz:=^ world_base_rpy:=^">
+  <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
 
   <!-- link list -->
   <link name="${prefix}base_link">
@@ -37,10 +43,10 @@
   <link name="${prefix}tool0">
   </link>
   <!-- this is here to set a base link in the URDF to link the "positioner/base" frame to for scanning -->
-  <link name="positioner/base_link"/>
+  <link name="positioner/base"/>
   <!-- this is here to set a base link in the URDF to link the "positioner/center" frame to for scanning. this is equivalent to the tool frame
   in this case, but we define this so that the naming is consistent across positioner setups -->
-  <link name="positioner/center_link"/>
+  <link name="positioner/center"/>
   <!-- end of link list -->
 
   <!-- joint list -->
@@ -52,8 +58,16 @@
   <joint name="${prefix}joint_1" type="revolute">
     <parent link="${prefix}base_link"/>
     <child link="${prefix}link_1"/>
-    <origin xyz="0 0 ${positioner_height}" rpy="0 0 0" />
-<!--    <origin xyz="0 0 0.380" rpy="0 0 0" />-->
+    <origin
+        xyz=
+            "${offsets[prefix + 'joint_1']['x']}
+             ${offsets[prefix + 'joint_1']['y']}
+             ${offsets[prefix + 'joint_1']['z'] + positioner_height}"
+        rpy=
+            "${offsets[prefix + 'joint_1']['roll']}
+             ${offsets[prefix + 'joint_1']['pitch']}
+             ${offsets[prefix + 'joint_1']['yaw']}"
+    />
     <axis xyz="0 0 1" />
     <limit lower="${-1*M_PI}" upper="${M_PI}" effort="1274" velocity="1.15"/>
   </joint>
@@ -89,13 +103,22 @@
   <joint name="positioner/center" type="fixed">
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="${prefix}table"/>
-    <child link="positioner/center_link"/>
+    <child link="positioner/center"/>
   </joint>
 
   <joint name="positioner/base" type="fixed">
-    <origin xyz="0 0 ${positioner_height + table_thickness}" rpy="0 0 0"/>
+    <origin
+        xyz=
+            "${offsets[prefix + 'joint_1']['x']}
+             ${offsets[prefix + 'joint_1']['y']}
+             ${offsets[prefix + 'joint_1']['z'] + positioner_height + table_thickness}"
+        rpy=
+            "${offsets[prefix + 'joint_1']['roll']}
+             ${offsets[prefix + 'joint_1']['pitch']}
+             ${offsets[prefix + 'joint_1']['yaw']}"
+    />
     <parent link="${prefix}base_link"/>
-    <child link="positioner/base_link"/>
+    <child link="positioner/base"/>
   </joint>
   <!-- end of joint list -->
 

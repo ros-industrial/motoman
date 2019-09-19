@@ -1,19 +1,34 @@
 <?xml version="1.0" ?>
 <robot name="motoman_motopos_mh185_vertical" xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <!-- Properties -->
-<!--  <material name="yaskawa_blue">-->
-<!--      <color rgba="0.12941 0.14902 0.74902 1" />-->
-<!--  </material>-->
-<!--  <xacro:property name="M_PI" value="3.1415926535897931"/>-->
-<!--  <xacro:property name="world_base_xyz" value="0 0 0"/>-->
-<!--  <xacro:property name="world_base_rpy" value="0 0 0"/>-->
   <xacro:include filename="$(find motoman_motopos_mh185_vertical_support)/urdf/motopos_mh185_vertical.transmission.xacro" />
   <xacro:include filename="$(find motoman_motopos_mh185_vertical_support)/urdf/motopos_mh185_vertical_macro.xacro" />
-  <xacro:macro name="load_motoman_motopos_mh185_vertical" params="prefix:=mh185_vertical_ world_base_xyz world_base_rpy">
+  <xacro:macro
+      name="load_motoman_motopos_mh185_vertical"
+      params=
+          "prefix:=mh185_vertical_
+          world_base_xyz
+          world_base_rpy
+          offsets_file_path:='$(find motoman_motopos_mh185_vertical_support)/config/robot_calibration_offsets.yaml'"
+  >
     <material name="yaskawa_blue">
       <color rgba="0.12941 0.14902 0.74902 1" />
     </material>
-    <xacro:motoman_motopos_mh185_vertical prefix="${prefix}" world_base_xyz="${world_base_xyz}" world_base_rpy="${world_base_rpy}"/>
+    <xacro:unless value="${offsets_file_path == ''}">
+      <xacro:motoman_motopos_mh185_vertical
+          prefix="${prefix}"
+          world_base_xyz="${world_base_xyz}"
+          world_base_rpy="${world_base_rpy}"
+          offsets_file_path="${offsets_file_path}"
+      />
+    </xacro:unless>
+    <xacro:if value="${offsets_file_path == ''}">
+      <xacro:motoman_motopos_mh185_vertical
+          prefix="${prefix}"
+          world_base_xyz="${world_base_xyz}"
+          world_base_rpy="${world_base_rpy}"
+          offsets_file_path="'$(find motoman_motopos_mh185_vertical_support)/config/robot_calibration_offsets.yaml'"
+      />
+    </xacro:if>
   </xacro:macro>
 </robot>

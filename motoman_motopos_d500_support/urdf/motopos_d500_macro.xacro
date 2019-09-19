@@ -1,11 +1,15 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-<xacro:property name="M_PI" value="3.1415926535897931"/>
-<xacro:property name="world_base_xyz" value="0 0 0"/>
-<xacro:property name="world_base_rpy" value="0 0 0"/>
-<!-- offsets tool and positioner base/center frames to account for added tabletop -->
-<xacro:property name="table_thickness" default="0"/>
-<xacro:macro name="motoman_motopos_d500" params="prefix world_base_xyz:=^ world_base_rpy:=^ table_thickness:=^">
+<xacro:macro
+    name="motoman_motopos_d500"
+    params="prefix world_base_xyz:='0 0 0'
+    world_base_rpy:='0 0 0'
+    table_thickness:=0
+    offsets_file_path"
+>
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+
+  <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
 
   <!-- link list -->
   <link name="${prefix}base_link">
@@ -64,10 +68,10 @@
     </collision>  
   </link>
   <!-- this is here to set a base link in the URDF to link the "positioner/base" frame to for scanning -->
-  <link name="positioner_base_dummy_link"/>
+  <link name="positioner/base"/>
   <!-- this is here to set a base link in the URDF to link the "positioner/center" frame to for scanning. this is equivalent to the tool frame
   in this case, but we define this so that the naming is consistent across positioner setups -->
-  <link name="positioner_center_dummy_link"/>  
+  <link name="positioner/center"/>
   <!-- end of link list -->
 
   <!-- joint list -->
@@ -87,7 +91,15 @@
   <joint name="${prefix}joint_2" type="revolute">
     <parent link="${prefix}link_1"/>
     <child link="${prefix}link_2"/>
-    <origin xyz="0 0 0" rpy="0 0 0" />
+    <origin
+        xyz=
+            "${offsets[prefix + 'joint_2']['x']}
+             ${offsets[prefix + 'joint_2']['y']}
+             ${offsets[prefix + 'joint_2']['z']}"
+        rpy=
+            "${offsets[prefix + 'joint_2']['roll']}
+             ${offsets[prefix + 'joint_2']['pitch']}
+             ${offsets[prefix + 'joint_2']['yaw']}"/>
     <axis xyz="0 0 -1" />
     <limit lower="-3.4906" upper="3.4906" effort="392" velocity="2.7925"/>
   </joint>
@@ -98,15 +110,23 @@
     <child link="${prefix}tool0"/>
   </joint>
   <xacro:transmission_macro name="2"/>
-  <joint name="positioner_base_dummy_joint" type="fixed">
-    <origin xyz="0 0 ${0.165 + table_thickness}" rpy="0 0 0"/>
+  <joint name="positioner/base" type="fixed">
+    <origin
+        xyz=
+            "${offsets[prefix + 'joint_2']['x']}
+             ${offsets[prefix + 'joint_2']['y']}
+             ${offsets[prefix + 'joint_2']['z'] + 0.165 + table_thickness}"
+        rpy=
+            "${offsets[prefix + 'joint_2']['roll']}
+             ${offsets[prefix + 'joint_2']['pitch']}
+             ${offsets[prefix + 'joint_2']['yaw']}"/>
     <parent link="${prefix}link_1"/>
-    <child link="positioner_base_dummy_link"/>
+    <child link="positioner/base"/>
   </joint>
-  <joint name="positioner_center_dummy_joint" type="fixed">
+  <joint name="positioner/center" type="fixed">
     <origin xyz="0 0 ${table_thickness}" rpy="0 0 0"/>
     <parent link="${prefix}tool0"/>
-    <child link="positioner_center_dummy_link"/>
+    <child link="positioner/center"/>
   </joint>
   <!-- end of joint list -->
 

@@ -11,6 +11,9 @@
   <arg name="ma1440_rpy" default=""/>
   <arg name="d500_xyz" default=""/>
   <arg name="d500_rpy" default=""/>
+
+  <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
+
   <!-- The thickness of the tabletop mounted on top of the last link of the D500 -->
   <arg name="table_thickness" default=""/>
 
@@ -51,11 +54,8 @@
     <arg name="d500_rpy" value="$(arg d500_rpy)"/>
     <arg name="table_thickness" value="$(arg table_thickness)"/>
     <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
+    <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>
-
-  <!-- These connect the 'positioner/base' and 'positioner/center' frame to the tf tree -->
-  <node pkg="tf2_ros" type="static_transform_publisher" name="postioner_base_broadcaster" args="0 0 0 0 0 0 1 positioner_base_dummy_link positioner/base" />
-  <node pkg="tf2_ros" type="static_transform_publisher" name="postioner_center_broadcaster" args="0 0 0 0 0 0 1 positioner_center_dummy_link positioner/center" />
 
   <!-- Given the published joint states, publish tf for the robot links -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" >
