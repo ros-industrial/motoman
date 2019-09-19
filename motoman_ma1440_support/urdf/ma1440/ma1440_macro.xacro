@@ -127,6 +127,13 @@
                 <inertia ixx="1.1285" ixy="-0.4562" ixz="-0.1754" iyy="0.965" iyz="0.2365" izz="1.2844"/>
                 <origin rpy="0 0 0" xyz="0 0 0"/>
             </inertial>
+
+            <collision>
+                <origin rpy="0 0 0" xyz="-0.15 -0.10 0.10"/>
+                <geometry>
+                    <box size="0.55 0.35 0.38"/>
+                </geometry>
+            </collision>
         </link>
 
         <gazebo reference="${prefix}link_u">
