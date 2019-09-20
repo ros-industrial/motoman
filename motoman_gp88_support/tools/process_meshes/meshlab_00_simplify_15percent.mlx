@@ -3,7 +3,7 @@
  <filter name="Remove Duplicate Vertices"/>
  <filter name="Simplification: Quadric Edge Collapse Decimation">
   <Param value="0" type="RichInt" name="TargetFaceNum" description="Target number of faces" tooltip="The desired final number of faces."/>
-  <Param value="0.5" type="RichFloat" name="TargetPerc" description="Percentage reduction (0..1)" tooltip="If non zero, this parameter specifies the desired final size of the mesh as a percentage of the initial size."/>
+  <Param value="0.15" type="RichFloat" name="TargetPerc" description="Percentage reduction (0..1)" tooltip="If non zero, this parameter specifies the desired final size of the mesh as a percentage of the initial size."/>
   <Param value="1" type="RichFloat" name="QualityThr" description="Quality threshold" tooltip="Quality threshold for penalizing bad shaped faces.&lt;br>The value is in the range [0..1]&#xa; 0 accept any kind of face (no penalties),&#xa; 0.5  penalize faces with quality &lt; 0.5, proportionally to their shape&#xa;"/>
   <Param value="true" type="RichBool" name="PreserveBoundary" description="Preserve Boundary of the mesh" tooltip="The simplification process tries to do not affect mesh boundaries during simplification"/>
   <Param value="1" type="RichFloat" name="BoundaryWeight" description="Boundary Preserving Weight" tooltip="The importance of the boundary during simplification. Default (1.0) means that the boundary has the same importance of the rest. Values greater than 1.0 raise boundary importance and has the effect of removing less vertices on the border. Admitted range of values (0,+inf). "/>
