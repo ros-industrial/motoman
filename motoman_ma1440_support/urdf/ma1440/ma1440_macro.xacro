@@ -297,7 +297,7 @@
             <parent link="${prefix}link_l"/>
             <child link="${prefix}link_u"/>
             <origin
-                xyz="${0.614 + offsets[prefix + 'joint_u']['x']} ${0.0 + offsets[prefix + 'joint_u']['y']} ${-0.07 + offsets[prefix + 'joint_u']['z']}"
+                xyz="${0.614 + offsets[prefix + 'joint_u']['x']} ${0.0 + offsets[prefix + 'joint_u']['y']} ${-0.007 + offsets[prefix + 'joint_u']['z']}"
                 rpy="${0 + offsets[prefix + 'joint_u']['roll']} ${0 + offsets[prefix + 'joint_u']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_u']['yaw']}"
             />
             <axis xyz="0 0 -1" />
