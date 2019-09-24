@@ -1,0 +1,134 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:macro
+    name="motoman_motopos_mh185_vertical"
+    params=
+        "prefix
+        world_base_xyz:='0 0 0'
+        world_base_rpy:='0 0 0'
+        offsets_file_path"
+>
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+
+  <!--  Should only be changed if the model for the table is changed. -->
+  <xacro:property name="table_thickness" value="0.025"/>
+  <!--  Height from the floor to the top of the positioner plate (not the top of the table)  -->
+  <xacro:property name="positioner_height" value="0.5045"/>
+
+  <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
+
+  <!-- link list -->
+  <link name="${prefix}base_link">
+    <visual>
+      <origin xyz="-0.083 -0.0245 -.32" rpy="0 ${-90*M_PI/180} 0 " />
+      <geometry>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/mh185_vertical/visual/Full_Assembly.stl"/>
+      </geometry>
+      <material name="yaskawa_blue"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.083 -0.0245 -.32" rpy="0 ${-90*M_PI/180} 0 " />
+      <geometry>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/mh185_vertical/collision/Full_Assembly.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="400" /> 	<!-- Arbitrarily large value, to simulate bolting down in case of absence of fixed joint -->
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </inertial>
+  </link>
+  <link name="${prefix}link_1">
+  </link>
+  <link name="${prefix}tool0">
+  </link>
+  <!-- this is here to set a base link in the URDF to link the "positioner/base" frame to for scanning -->
+  <link name="positioner/base"/>
+  <!-- this is here to set a base link in the URDF to link the "positioner/center" frame to for scanning. this is equivalent to the tool frame
+  in this case, but we define this so that the naming is consistent across positioner setups -->
+  <link name="positioner/center"/>
+  <!-- end of link list -->
+
+  <!-- joint list -->
+  <joint name="${prefix}world-base" type="fixed">
+      <origin xyz="${world_base_xyz}" rpy="${world_base_rpy}"/>
+      <parent link="world" />
+      <child link="${prefix}base_link"/>
+  </joint>
+  <joint name="${prefix}joint_1" type="revolute">
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}link_1"/>
+    <origin
+        xyz=
+            "${offsets[prefix + 'joint_1']['x']}
+             ${offsets[prefix + 'joint_1']['y']}
+             ${offsets[prefix + 'joint_1']['z'] + positioner_height}"
+        rpy=
+            "${offsets[prefix + 'joint_1']['roll']}
+             ${offsets[prefix + 'joint_1']['pitch']}
+             ${offsets[prefix + 'joint_1']['yaw']}"
+    />
+    <axis xyz="0 0 1" />
+    <limit lower="${-1*M_PI}" upper="${M_PI}" effort="1274" velocity="1.15"/>
+  </joint>
+  <xacro:transmission_macro name="1"/>
+  <joint name="${prefix}joint_1-tool0" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="${prefix}link_1"/>
+    <child link="${prefix}tool0"/>
+  </joint>
+
+  <link name="${prefix}table">
+    <visual>
+      <geometry>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/table_top/visual/table_top.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0 " />
+      <material name="Cast Carbon Steel">
+        <color rgba="0.52941 0.54902 0.54902 1" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://motoman_motopos_mh185_vertical_support/meshes/table_top/collision/table_top.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="${prefix}tool0-table" type="fixed">
+    <origin xyz="0 0 ${table_thickness}" rpy="0 0 0"/>
+    <parent link="${prefix}tool0"/>
+    <child link="${prefix}table"/>
+  </joint>
+
+  <joint name="positioner/center" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="${prefix}table"/>
+    <child link="positioner/center"/>
+  </joint>
+
+  <joint name="positioner/base" type="fixed">
+    <origin
+        xyz=
+            "${offsets[prefix + 'joint_1']['x']}
+             ${offsets[prefix + 'joint_1']['y']}
+             ${offsets[prefix + 'joint_1']['z'] + positioner_height + table_thickness}"
+        rpy=
+            "${offsets[prefix + 'joint_1']['roll']}
+             ${offsets[prefix + 'joint_1']['pitch']}
+             ${offsets[prefix + 'joint_1']['yaw']}"
+    />
+    <parent link="${prefix}base_link"/>
+    <child link="positioner/base"/>
+  </joint>
+  <!-- end of joint list -->
+
+  <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
+  <link name="${prefix}base" />
+  <joint name="${prefix}base_link-base" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="${prefix}base_link"/>
+    <child link="${prefix}base"/>
+  </joint>
+
+  </xacro:macro>
+</robot>

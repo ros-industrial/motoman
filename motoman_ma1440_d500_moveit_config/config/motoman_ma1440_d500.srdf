@@ -52,6 +52,14 @@
         <joint name="ma1440_joint_t" value="0" />
         <joint name="ma1440_joint_u" value="-0.989651" />
     </group_state>
+    <group_state name="positioner_center_calibration_pose" group="arm">
+        <joint name="ma1440_joint_b" value="-1.407122" />
+        <joint name="ma1440_joint_l" value="-0.734523" />
+        <joint name="ma1440_joint_r" value="0" />
+        <joint name="ma1440_joint_s" value="0.523799" />
+        <joint name="ma1440_joint_t" value="0" />
+        <joint name="ma1440_joint_u" value="-0.10021" />
+    </group_state>
     <group_state name="home_pose" group="positioner">
         <joint name="d500_joint_1" value="0" />
         <joint name="d500_joint_2" value="0" />

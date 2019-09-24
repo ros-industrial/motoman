@@ -1,7 +1,5 @@
 <launch>
 
-  <include file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_context.launch" />
-
   <!-- GDB Debug Option -->
   <arg name="debug" default="false" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />

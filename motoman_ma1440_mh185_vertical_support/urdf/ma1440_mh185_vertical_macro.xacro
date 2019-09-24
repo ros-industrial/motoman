@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<robot name="motoman_ma1440_mh185_vertical" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro
+      name="motoman_ma1440_mh185_vertical"
+      params=
+          "ma1440_xyz
+          ma1440_rpy
+          mh185_vertical_xyz
+          mh185_vertical_rpy
+          using_cam_mount
+          offsets_file_path"
+  >
+
+    <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440.xacro"/>
+    <xacro:load_motoman_ma1440
+        world_base_xyz="${ma1440_xyz}"
+        world_base_rpy="${ma1440_rpy}"
+        using_cam_mount="${using_cam_mount}"
+        offsets_file_path="${offsets_file_path}"
+    />
+
+    <xacro:include filename="$(find motoman_motopos_mh185_vertical_support)/urdf/motopos_mh185_vertical.xacro" />
+    <xacro:load_motoman_motopos_mh185_vertical
+        world_base_xyz="${mh185_vertical_xyz}"
+        world_base_rpy="${mh185_vertical_rpy}"
+        offsets_file_path="${offsets_file_path}"
+    />
+  </xacro:macro>
+</robot>

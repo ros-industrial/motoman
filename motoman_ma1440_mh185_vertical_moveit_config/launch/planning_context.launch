@@ -1,0 +1,43 @@
+<launch>
+  <!--  DO NOT OVERWRITE THIS FILE WITH THE MOVEIT WIZARD, CHANGE IT BY HAND-->
+  
+  <!-- By default we do not overwrite the URDF. Change the following to true to change the default behavior -->
+  <arg name="load_robot_description" default="false"/>
+
+  <!-- The name of the parameter under which the URDF is loaded -->
+  <arg name="robot_description" default="robot_description"/>
+
+  <arg if="$(arg load_robot_description)" name="using_cam_mount" default="false"/>
+
+  <arg if="$(arg load_robot_description)" name="offsets_file_path" default=""/>
+
+  <arg if="$(arg load_robot_description)" name="ma1440_xyz" default=""/>
+  <arg if="$(arg load_robot_description)" name="ma1440_rpy" default=""/>
+  <arg if="$(arg load_robot_description)" name="mh185_vertical_xyz" default=""/>
+  <arg if="$(arg load_robot_description)" name="mh185_vertical_rpy" default=""/>
+
+
+  <!-- Load universal robot description format (URDF) -->
+  <param if="$(arg load_robot_description)" name="$(arg robot_description)"
+         command="xacro  '$(find motoman_ma1440_mh185_vertical_support)/urdf/ma1440_mh185_vertical.xacro'
+         ma1440_xyz:='$(arg ma1440_xyz)'
+         ma1440_rpy:='$(arg ma1440_rpy)'
+         mh185_vertical_xyz:='$(arg mh185_vertical_xyz)'
+         mh185_vertical_rpy:='$(arg mh185_vertical_rpy)'
+         using_cam_mount:='$(arg using_cam_mount)'
+         offsets_file_path:='$(arg offsets_file_path)'"/>
+
+  <!-- The semantic description that corresponds to the URDF -->
+  <param name="$(arg robot_description)_semantic" textfile="$(find motoman_ma1440_mh185_vertical_moveit_config)/config/motoman_ma1440_mh185_vertical.srdf" />
+
+  <!-- Load updated joint limits (override information from URDF) -->
+  <group ns="$(arg robot_description)_planning">
+    <rosparam command="load" file="$(find motoman_ma1440_mh185_vertical_moveit_config)/config/joint_limits.yaml"/>
+  </group>
+
+  <!-- Load default settings for kinematics; these settings are overridden by settings in a node's namespace -->
+  <group ns="$(arg robot_description)_kinematics">
+    <rosparam command="load" file="$(find motoman_ma1440_mh185_vertical_moveit_config)/config/kinematics.yaml"/>
+  </group>
+
+</launch>
