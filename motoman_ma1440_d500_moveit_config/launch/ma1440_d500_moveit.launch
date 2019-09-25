@@ -69,6 +69,7 @@
     <arg name="info" value="true"/>
     <arg name="sim" value="$(arg sim)" />
     <arg name="robot_ns" value="$(arg robot_ns)" />
+    <arg name="capabilities" value="forge_moveit_plugins/KinematicsService"/>
   </include>
 
   <!-- Run Rviz and load the default config to see the state of the move_group node -->
