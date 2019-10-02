@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<robot name="motoman_motopos_mh185_rotisserie" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  
+  <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/motopos_mh185_rotisserie_macro.xacro" />
+  <xacro:macro
+      name="load_motoman_motopos_mh185_rotisserie"
+      params=
+          "prefix:=mh185_rotisserie_
+          world_base_xyz
+          world_base_rpy
+          offsets_file_path:='$(find motoman_motopos_mh185_rotisserie_support)/config/robot_calibration_offsets.yaml'"
+  >
+    <material name="yaskawa_blue">
+      <color rgba="0.12941 0.14902 0.74902 1" />
+    </material>
+    <xacro:unless value="${offsets_file_path == ''}">
+      <xacro:motoman_motopos_mh185_rotisserie
+          prefix="${prefix}"
+          world_base_xyz="${world_base_xyz}"
+          world_base_rpy="${world_base_rpy}"
+          offsets_file_path="${offsets_file_path}"
+      />
+    </xacro:unless>
+    <xacro:if value="${offsets_file_path == ''}">
+      <xacro:motoman_motopos_mh185_rotisserie
+          prefix="${prefix}"
+          world_base_xyz="${world_base_xyz}"
+          world_base_rpy="${world_base_rpy}"
+          offsets_file_path="'$(find motoman_motopos_mh185_rotisserie_support)/config/robot_calibration_offsets.yaml'"
+      />
+    </xacro:if>
+  </xacro:macro>
+</robot>

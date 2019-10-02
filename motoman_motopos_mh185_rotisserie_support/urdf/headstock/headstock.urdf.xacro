@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<robot name="headstock" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+  <!-- Import trasnmission macro -->
+  <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/headstock/headstock.transmission.xacro" />
+
+  <xacro:property name="hs_prismatic_offset" value="${load_yaml('$(find motoman_motopos_mh185_rotisserie_support)/config/positioner_params.yaml')['positioner_params']['headstock_prismatic_offset']}"/>
+
+  <link
+    name="hs_base_link">
+    <inertial>
+      <origin
+        xyz="-0.30245 -2.3514E-05 0.139"
+        rpy="0 0 0" />
+      <mass
+        value="83.801" />
+      <inertia
+        ixx="0.089907"
+        ixy="-0.0012323"
+        ixz="-0.12263"
+        iyy="7.7723"
+        iyz="0.00031051"
+        izz="7.6922" />
+    </inertial>
+
+    <xacro:if value="$(arg visible)">
+      <visual>
+        <origin
+            xyz="0 0 0"
+            rpy="0 0 0" />
+        <geometry>
+          <mesh
+              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_base_link.stl" />
+        </geometry>
+        <material
+            name="">
+          <color
+              rgba="0.75294 0.75294 0.75294 1" />
+        </material>
+      </visual>
+    </xacro:if>
+
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_base_collision_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint
+    name="joint_x"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="hs_revolute_link" />
+    <child
+      link="hs_base_link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="${-20*M_PI}"
+      upper="${20*M_PI}"
+      effort="10"
+      velocity="${2*M_PI}" />
+  </joint>
+  <xacro:transmission_macro name="x" />
+
+  <link
+    name="hs_revolute_link">
+    <inertial>
+      <origin
+        xyz="-1.4992E-05 0.011691 0.038341"
+        rpy="0 0 0" />
+      <mass
+        value="29.967" />
+      <inertia
+        ixx="0.04204"
+        ixy="-4.5879E-06"
+        ixz="-2.3617E-06"
+        iyy="0.024237"
+        iyz="0.011239"
+        izz="0.037392" />
+    </inertial>
+
+    <xacro:if value="$(arg visible)">
+      <visual>
+        <origin
+            xyz="0 0 0"
+            rpy="0 0 0" />
+        <geometry>
+          <mesh
+              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_revolute_link.stl" />
+        </geometry>
+        <material
+            name="">
+          <color
+              rgba="0.75294 0.75294 0.75294 1" />
+        </material>
+      </visual>
+    </xacro:if>
+
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_revolute_collision_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint
+    name="joint_hs_prismatic"
+    type="fixed">
+    <origin
+      xyz="0 ${hs_prismatic_offset} 0"
+      rpy="0 0 0" />
+    <parent
+      link="hs_revolute_link" />
+    <child
+      link="hs_prismatic_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link
+    name="hs_prismatic_link">
+    <inertial>
+      <origin
+        xyz="-0.0017858 0.00082133 -0.06439"
+        rpy="0 0 0" />
+      <mass
+        value="14.639" />
+      <inertia
+        ixx="0.0071647"
+        ixy="0.00075587"
+        ixz="0.0011323"
+        iyy="0.012356"
+        iyz="-0.0005101"
+        izz="0.0066005" />
+    </inertial>
+
+    <xacro:if value="$(arg visible)">
+      <visual>
+        <origin
+            xyz="0 0 0"
+            rpy="0 0 0" />
+        <geometry>
+          <mesh
+              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_prismatic_link.stl" />
+        </geometry>
+        <material
+            name="">
+          <color
+              rgba="0.75294 0.75294 0.75294 1" />
+        </material>
+      </visual>
+    </xacro:if>
+
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_prismatic_collision_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+</robot>

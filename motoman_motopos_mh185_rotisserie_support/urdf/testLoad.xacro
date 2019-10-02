@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<robot name="motoman_motopos_mh185_rotisserie" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="world_base_xyz" value="0 0 0"/>
+  <xacro:property name="world_base_rpy" value="0 0 0"/>
+
+  <link name="world">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </link>
+
+  <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/motopos_mh185_rotisserie.xacro" />
+  <xacro:load_motoman_motopos_mh185_rotisserie world_base_xyz="${world_base_xyz}" world_base_rpy="${world_base_rpy}"/>
+
+<!--  <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/motopos_mh185_rotisserie.xacro"/>-->
+<!--  <xacro:load_motoman_motopos_mh185_rotisserie world_base_xyz="1 0 0" world_base_rpy="${world_base_rpy}" table_thickness="0"/>-->
+</robot>
