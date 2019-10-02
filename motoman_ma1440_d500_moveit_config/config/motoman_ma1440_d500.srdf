@@ -19,6 +19,7 @@
         <joint name="ma1440_joint_tip" />
     </group>
     <group name="positioner">
+        <joint name="d500_world-base" />
         <joint name="d500_joint_1" />
         <joint name="d500_joint_2" />
         <joint name="d500_joint_2-tool0" />
