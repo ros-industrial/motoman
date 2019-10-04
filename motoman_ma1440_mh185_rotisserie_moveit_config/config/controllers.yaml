@@ -1,0 +1,30 @@
+controller_list:
+  - name: robot
+    action_ns: joint_trajectory_action
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - joint_s
+      - joint_l
+      - joint_u
+      - joint_r
+      - joint_b
+      - joint_t
+      - joint_x
+  - name: /dx200/arm_controller
+    action_ns: joint_trajectory_action
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - joint_s
+      - joint_l
+      - joint_u
+      - joint_r
+      - joint_b
+      - joint_t
+  - name: /dx200/positioner_controller
+    action_ns: joint_trajectory_action
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - joint_x

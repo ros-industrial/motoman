@@ -10,11 +10,20 @@
 >
   <xacro:property name="M_PI" value="3.1415926535897931"/>
 
+  <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
+
+
 <xacro:property name="pos2b_tf" value="${load_yaml('$(find motoman_motopos_mh185_rotisserie_support)/config/positioner_params.yaml')}"/>
   <xacro:property name="pos2b_trans" value="${pos2b_tf['positioner_params']['positioner_to_base_tf']['translation']}" />
   <xacro:property name="pos2b_rot" value="${pos2b_tf['positioner_params']['positioner_to_base_tf']['rotation']}" />
   <xacro:property name="pos2b_xyz" value="${pos2b_trans['x']} ${pos2b_trans['y']} ${pos2b_trans['z']}"/>
   <xacro:property name="pos2b_rpy" value="${pos2b_rot['roll']} ${pos2b_rot['pitch']} ${pos2b_rot['yaw']}"/>
+
+<xacro:property name="world_to_pos_base_tf" value="${load_yaml('$(find motoman_motopos_mh185_rotisserie_support)/config/positioner_params.yaml')}"/>
+  <xacro:property name="world2pos_t" value="${pos2b_tf['positioner_params']['base_to_positioner_tf']['translation']}" />
+  <xacro:property name="world2pos_rot" value="${pos2b_tf['positioner_params']['base_to_positioner_tf']['rotation']}" />
+  <xacro:property name="world2pos_xyz" value="${world2pos_t['x']} ${world2pos_t['y']} ${world2pos_t['z']}"/>
+  <xacro:property name="world2pos_rpy" value="${world2pos_rot['roll']} ${world2pos_rot['pitch']} ${world2pos_rot['yaw']}"/>
 
   <!-- Tailstock offsets. Should be loaded from yaml file created during calibration. -->
   <xacro:property name="ts_base_offset" value="0.06985" />
@@ -35,18 +44,22 @@
 
   <!-- link list -->
   
+
+  
   <!-- Add the headstock - hs_base_link, hs_revolute_link, hs_prismatic_link -->
-  <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/tailstock/tailstock.urdf.xacro" ns="ts" />
   <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/headstock/headstock.urdf.xacro" ns="hs" />
+  <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/tailstock/tailstock.urdf.xacro" ns="ts" />
+
   <!-- And connect positioner_link to base_link -->
   <!-- hs_base - positioner_link->base_link -->
   
+ 
 
-  <xacro:fixed_joint_macro name="hs_base"
-                           origin_xyz="${pos2b_xyz}"
-                           origin_rpy="${pos2b_rpy}"
-                           parent="hs_base_link"
-                           child="world"
+  <xacro:fixed_joint_macro name="world-hsbase"
+                           origin_xyz="${world2pos_xyz}"
+                           origin_rpy="${world2pos_rpy}"
+                           parent="world"
+                           child="hs_base_link"
                            axis_xyz="1 0 0" />
 
   <!-- Connect the tail stock to the headstock -->

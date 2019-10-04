@@ -23,7 +23,7 @@
         iyz="0.00031051"
         izz="7.6922" />
     </inertial>
-
+    <xacro:arg name="visible" default="true"/>
     <xacro:if value="$(arg visible)">
       <visual>
         <origin
@@ -31,7 +31,7 @@
             rpy="0 0 0" />
         <geometry>
           <mesh
-              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_base_link.stl" />
+              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_base_collision_link.stl" />
         </geometry>
         <material
             name="">
@@ -59,9 +59,9 @@
       xyz="0 0 0"
       rpy="0 0 0" />
     <parent
-      link="hs_revolute_link" />
-    <child
       link="hs_base_link" />
+    <child
+      link="hs_revolute_link" />
     <axis
       xyz="0 0 1" />
     <limit
@@ -96,7 +96,7 @@
             rpy="0 0 0" />
         <geometry>
           <mesh
-              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_revolute_link.stl" />
+              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_revolute_collision_link.stl" />
         </geometry>
         <material
             name="">
@@ -155,7 +155,7 @@
             rpy="0 0 0" />
         <geometry>
           <mesh
-              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_prismatic_link.stl" />
+              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/headstock/hs_prismatic_collision_link.stl" />
         </geometry>
         <material
             name="">

@@ -220,44 +220,15 @@
         <selfCollide>true</selfCollide>
         <material>Gazebo/White</material>
     </gazebo>
-    <link name="link_tip">
-        <visual>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <mesh filename="package://motoman_ma1440_support/meshes/ma1440/visual/tip_link.stl" />
-            </geometry>
-            <material name="silver">
-                <color rgba="0.8 0.8 0.8 1" />
-            </material>
-        </visual>
-        <collision>
-            <origin rpy="0 0 0" xyz="0 0 0" />
-            <geometry>
-                <mesh filename="package://motoman_ma1440_support/meshes/ma1440/collision/tip_link_collision.stl" />
-            </geometry>
-            <material name="silver">
-                <color rgba="0.8 0.8 0.8 1" />
-            </material>
-        </collision>
-        
-<inertial>
-            <mass value="4.7615" />
-            <inertia ixx="0.034062" ixy="5.0098E-05" ixz="4.7762E-05" iyy="0.020719" iyz="-0.016082" izz="0.013698" />
-            <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
-        </inertial>
 
-    </link>
-    <gazebo reference="link_t">
-        <turnGravityOff>false</turnGravityOff>
-        <selfCollide>true</selfCollide>
-        <material>Gazebo/White</material>
-    </gazebo>
+
     <!-- end of link list -->
     <!-- joint list -->
-    <joint name="world-base" type="fixed">
+    <joint name="ma1440_world-base" type="fixed">
         <origin rpy="0 0 0" xyz="0 0 0" />
         <parent link="world" />
         <child link="base_link" />
+        <axis xyz = "0 0 0"/>
     </joint>
     <joint name="joint_s" type="revolute">
         <parent link="base_link" />
@@ -301,12 +272,7 @@
         <axis xyz="0 0 1" />
         <limit effort="100" lower="-3.1415" upper="3.1415" velocity="6.9813" />
     </joint>
-    <joint name="joint_tip" type="fixed">
-        <parent link="link_t" />
-        <child link="link_tip" />
-        <origin rpy="-2.35619449019 0 1.57079632679" xyz="-0.09591 0 -0.38772" />
-        <axis xyz="0 0 0" />
-    </joint>
+
     <!-- end of joint list -->
     <!-- ROS base_link (via base_link) to Motoman Robot (not Base) Frame transform -->
     <link name="base" />

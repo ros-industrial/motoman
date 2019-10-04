@@ -5,8 +5,8 @@
       params=
           "ma1440_xyz
           ma1440_rpy
-          mh185_rotisserie_xyz
-          mh185_rotisserie_rpy
+          mh185_xyz
+          mh185_rpy
           using_cam_mount
           offsets_file_path"
   >
@@ -21,8 +21,8 @@
 
     <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/motopos_mh185_rotisserie.xacro" />
     <xacro:load_motoman_motopos_mh185_rotisserie
-        world_base_xyz="${mh185_rotisserie_xyz}"
-        world_base_rpy="${mh185_rotisserie_rpy}"
+        world_base_xyz="${mh185_xyz}"
+        world_base_rpy="${mh185_rpy}"
         offsets_file_path="${offsets_file_path}"
     />
   </xacro:macro>

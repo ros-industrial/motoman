@@ -6,7 +6,7 @@
   <xacro:macro
       name="load_motoman_motopos_mh185_rotisserie"
       params=
-          "prefix:=mh185_rotisserie_
+          "prefix:=mh185_
           world_base_xyz
           world_base_rpy
           offsets_file_path:='$(find motoman_motopos_mh185_rotisserie_support)/config/robot_calibration_offsets.yaml'"
