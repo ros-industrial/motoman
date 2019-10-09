@@ -32,7 +32,7 @@
   /config/controllers.yaml. we manually set up a joint_trajectory_action server under this same namespace
   later in this file. also worth noting, the joints in the combined controller_list must line up with the
   joint names defined in ma1440_d500_support/config/joint_names_ma1440_d500.yaml config file -->
-  <arg name="robot_ns"  default="robot" />
+  <arg name="robot_ns"  default="combined" />
 
   <!-- the namespace of the controller box used for the motoman hardware. this value should be equal to the 'ns' value
   for each controller group in the ma1440_d500_motion_interface.yaml -->
@@ -40,10 +40,7 @@
 
   <param name="robot_ns" value="$(arg robot_ns)"/>
   <param name="controller_ns" value="$(arg controller_ns)"/>
-<!-- if we aren't connected to a real robot, publish fake joint states -->
-  <node if="$(arg sim)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <rosparam param="source_list">[move_group/fake_controller_joint_states]</rosparam>
-  </node>
+
  
 
   <!-- Load the cell parameters associated with this setup -->
