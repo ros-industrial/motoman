@@ -104,6 +104,7 @@
     <disable_collisions link1="d500_base_link" link2="d500_link_2" reason="Default" />
     <disable_collisions link1="d500_base_link" link2="ma1440_base_link" reason="Adjacent" />
     <disable_collisions link1="d500_base_link" link2="ma1440_link_s" reason="Never" />
+    <disable_collisions link1="d500_base_link" link2="d500_tool0" reason="Never" />
     <disable_collisions link1="d500_link_1" link2="d500_link_2" reason="Adjacent" />
     <disable_collisions link1="d500_link_1" link2="ma1440_base_link" reason="Never" />
     <disable_collisions link1="d500_link_1" link2="ma1440_link_s" reason="Never" />
