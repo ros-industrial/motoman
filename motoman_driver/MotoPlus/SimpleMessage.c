@@ -132,24 +132,28 @@ int Ros_SimpleMsg_MotionReply(SimpleMsg* receiveMsg, int result, int subcode, Si
 	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
 	replyMsg->header.replyType = ROS_REPLY_SUCCESS;
 	
+	replyMsg->body.motionReply.groupNo = ctrlGrp;
+	
 	// set reply body
 	if(receiveMsg->header.msgType == ROS_MSG_MOTO_MOTION_CTRL)
 	{
-		replyMsg->body.motionReply.groupNo = ctrlGrp;
 		replyMsg->body.motionReply.sequence = receiveMsg->body.motionCtrl.sequence;
 		replyMsg->body.motionReply.command = receiveMsg->body.motionCtrl.command;
 	}
 	else if(receiveMsg->header.msgType == ROS_MSG_JOINT_TRAJ_PT_FULL)
 	{
-		replyMsg->body.motionReply.groupNo = ctrlGrp;
 		replyMsg->body.motionReply.sequence = receiveMsg->body.jointTrajData.sequence;
 		replyMsg->body.motionReply.command = ROS_MSG_JOINT_TRAJ_PT_FULL;
 	}
 	else if (receiveMsg->header.msgType == ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX)
 	{
-		replyMsg->body.motionReply.groupNo = ctrlGrp;
 		replyMsg->body.motionReply.sequence = receiveMsg->body.jointTrajDataEx.sequence;
 		replyMsg->body.motionReply.command = ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX;
+	}
+	if (receiveMsg->header.msgType == ROS_MSG_MOTO_SELECT_TOOL)
+	{
+		replyMsg->body.motionReply.sequence = receiveMsg->body.selectTool.sequence;
+		replyMsg->body.motionReply.command = receiveMsg->header.msgType;
 	}
 	else
 	{
