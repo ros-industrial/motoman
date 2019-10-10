@@ -95,4 +95,8 @@ Refer to the [tutorials][] for information on installation and configuration of 
 [ROS wiki]: http://wiki.ros.org/motoman
 [motoman_experimental]: https://github.com/ros-industrial/motoman_experimental
 [subversion repository]: https://github.com/ros-industrial/swri-ros-pkg
+[Catkin workspace]: http://wiki.ros.org/catkin/Tutorials/create_a_workspace
+[catkin]: http://wiki.ros.org/catkin
+[catkin_tools]: https://catkin-tools.readthedocs.io/en/latest
+[Working With ROS-Industrial Robot Support Packages]: http://wiki.ros.org/Industrial/Tutorials/WorkingWithRosIndustrialRobotSupportPackages
 [tutorials]: http://wiki.ros.org/motoman_driver/Tutorials
