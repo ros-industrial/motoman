@@ -23,8 +23,8 @@
         iyz="0.00031051"
         izz="7.6922" />
     </inertial>
-    <xacro:arg name="visible" default="true"/>
-    <xacro:if value="$(arg visible)">
+
+
       <visual>
         <origin
             xyz="0 0 0"
@@ -39,7 +39,7 @@
               rgba="0.75294 0.75294 0.75294 1" />
         </material>
       </visual>
-    </xacro:if>
+
 
     <collision>
       <origin
@@ -53,7 +53,7 @@
   </link>
 
   <joint
-    name="joint_x"
+    name="mh185_joint_1"
     type="revolute">
     <origin
       xyz="0 0 0"
@@ -89,7 +89,7 @@
         izz="0.037392" />
     </inertial>
 
-    <xacro:if value="$(arg visible)">
+
       <visual>
         <origin
             xyz="0 0 0"
@@ -104,7 +104,7 @@
               rgba="0.75294 0.75294 0.75294 1" />
         </material>
       </visual>
-    </xacro:if>
+
 
     <collision>
       <origin
@@ -148,7 +148,7 @@
         izz="0.0066005" />
     </inertial>
 
-    <xacro:if value="$(arg visible)">
+
       <visual>
         <origin
             xyz="0 0 0"
@@ -163,7 +163,7 @@
               rgba="0.75294 0.75294 0.75294 1" />
         </material>
       </visual>
-    </xacro:if>
+
 
     <collision>
       <origin
