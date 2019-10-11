@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+
+<robot name="motoman_gp25" xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:include filename="$(find motoman_gp25_support)/urdf/gp25_macro.xacro" />
+	<xacro:motoman_gp25 prefix=""/>
+</robot>
+
+
