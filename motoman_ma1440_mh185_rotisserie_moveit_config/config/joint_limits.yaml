@@ -2,7 +2,7 @@
 # Specific joint properties can be changed with the keys [max_position, min_position, max_velocity, max_acceleration]
 # Joint limits can be turned off with [has_velocity_limits, has_acceleration_limits]
 joint_limits:
-  mh185_joint_1:
+  joint_x:
     has_velocity_limits: true
     max_velocity: 6.28318530718
     has_acceleration_limits: false

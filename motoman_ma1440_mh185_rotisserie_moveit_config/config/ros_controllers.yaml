@@ -9,7 +9,7 @@ generic_hw_control_loop:
 # Settings for ros_control hardware interface
 hardware_interface:
   joints:
-    - mh185_joint_1
+    - joint_x
     - ma1440_joint_s
     - ma1440_joint_l
     - ma1440_joint_u
@@ -39,13 +39,13 @@ controller_list:
     default: True
     type: FollowJointTrajectory
     joints:
-      - mh185_joint_1
+      joint_x
   - name: combined_controller
     action_ns: follow_joint_trajectory
     default: True
     type: FollowJointTrajectory
     joints:
-      - mh185_joint_1
+      - joint_x
       - ma1440_joint_s
       - ma1440_joint_l
       - ma1440_joint_u

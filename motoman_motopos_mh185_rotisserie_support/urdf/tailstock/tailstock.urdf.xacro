@@ -2,7 +2,7 @@
 <robot name="tailstock" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!-- Constants for robot dimensions -->
   <xacro:property name="M_PI" value="3.1415926535897931"/>
-
+  <xacro:arg name="visible" default="true"/>
   <link
     name="ts_base_link">
     <inertial>
@@ -20,7 +20,7 @@
         izz="0.19362" />
     </inertial>
 
-
+    <xacro:if value="$(arg visible)">
       <visual>
         <origin
             xyz="0 0 0"
@@ -35,7 +35,7 @@
               rgba="0.75294 0.75294 0.75294 1" />
         </material>
       </visual>
-
+    </xacro:if>
 
     <collision>
       <origin
@@ -65,7 +65,7 @@
         izz="3.7157" />
     </inertial>
 
-
+    <xacro:if value="$(arg visible)">
       <visual>
         <origin
             xyz="0 0 0"
@@ -80,7 +80,7 @@
               rgba="0.75294 0.75294 0.75294 1" />
         </material>
       </visual>
-
+    </xacro:if>
 
     <collision>
       <origin
@@ -110,7 +110,7 @@
         izz="0.017007" />
     </inertial>
 
-
+    <xacro:if value="$(arg visible)">
       <visual>
         <origin
             xyz="0 0 0"
@@ -125,7 +125,7 @@
               rgba="0.75294 0.75294 0.75294 1" />
         </material>
       </visual>
-
+    </xacro:if>
 
     <collision>
       <origin

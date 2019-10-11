@@ -41,7 +41,11 @@
                 " />
   -->
 
-
+  <arg name="load_robot_description" default="true" />
+  <!-- load URDF, SRDF and joint_limits configuration -->
+  <include file="$(find motoman_ma1440_mh185_rotisserie_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="$(arg load_robot_description)" />
+  </include>
 
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find motoman_ma1440_mh185_rotisserie_moveit_config)/launch/planning_pipeline.launch.xml">
@@ -63,8 +67,6 @@
   <!-- Start the actual move_group node/action server -->
   <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="$(arg command_args)">
     <!-- Set the display variable, in case OpenGL code is used internally -->
-    <remap unless="$(arg sim)" from="joint_states" to="$(arg robot_ns)/joint_states" />
-
     <env name="DISPLAY" value="$(optenv DISPLAY :0)" />
 
     <param name="allow_trajectory_execution" value="$(arg allow_trajectory_execution)"/>

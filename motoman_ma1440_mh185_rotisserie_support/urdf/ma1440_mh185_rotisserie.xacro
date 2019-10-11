@@ -2,11 +2,11 @@
 
  <robot name="motoman_ma1440_mh185_rotisserie" xmlns:xacro="http://ros.org/wiki/xacro">
 
-	<xacro:arg name="ma1440_xyz" default=""/>
-	<xacro:arg name="ma1440_rpy" default=""/>
-	<xacro:arg name="mh185_xyz" default=""/>
-	<xacro:arg name="mh185_rpy" default=""/>
-	<xacro:arg name="using_cam_mount" default=""/>
+	<xacro:arg name="ma1440_xyz" default="0 0 0"/>
+	<xacro:arg name="ma1440_rpy" default="0 0 0 "/>
+	<xacro:arg name="mh185_xyz" default="0 0 0"/>
+	<xacro:arg name="mh185_rpy" default="0 0 0"/>
+	<xacro:arg name="using_cam_mount" default="true"/>
 	<xacro:arg name="offsets_file_path" default=""/>
 
 	<xacro:include filename="$(find motoman_ma1440_mh185_rotisserie_support)/urdf/ma1440_mh185_rotisserie_macro.xacro" />

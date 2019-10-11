@@ -17,3 +17,18 @@ positioner_params:
       roll: 0
       pitch: -1.568056713798056
       yaw: 1.58142523141995
+  positioner_to_base_tf:
+    child_frame_id: base_link
+    parent_frame_id: hs_base_link
+    translation:
+      x: -0.8945465191519313
+      y: 0.8575224202901416
+      z: -0.3309524252393791
+    rotation:
+      x: 0.5019611480047155
+      y: -0.4966540054292078
+      z: 0.503338214465581
+      w: -0.4980165124205354
+      roll: -1.568056559039554
+      pitch: -0.01062886473606296
+      yaw: -1.570825446940327

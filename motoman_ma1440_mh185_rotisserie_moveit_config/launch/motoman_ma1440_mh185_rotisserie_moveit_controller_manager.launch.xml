@@ -6,5 +6,5 @@
   <param name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
 
   <!-- loads ros_controllers to the param server -->
-  <rosparam file="$(find motoman_ma1440_mh185_rotisserie_moveit_config)/config/controllers.yaml"/>
+  <rosparam file="$(find motoman_ma1440_mh185_rotisserie_moveit_config)/config/ros_controllers.yaml"/>
 </launch>
