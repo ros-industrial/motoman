@@ -39,7 +39,7 @@
   for each controller group in the ma1440_mh185_rotisserie_motion_interface.yaml -->
   <arg name="controller_ns"  default="dx200" />
  
-  <param name="robot_ns" value="$(arg robot_ns)"/>g
+  <param name="robot_ns" value="$(arg robot_ns)"/>
   <param name="controller_ns" value="$(arg controller_ns)"/>
 
   <!-- Load the cell parameters associated with this setup -->
@@ -52,7 +52,7 @@
     <arg name="ma1440_xyz" value="$(arg ma1440_xyz)"/>
     <arg name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
     <arg name="mh185_xyz" value="$(arg mh185_xyz)"/>
-    <arg name="mh185_rpy" value="$(arg mh185_xyz)"/>
+    <arg name="mh185_rpy" value="$(arg mh185_rpy)"/>
     <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
     <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>
