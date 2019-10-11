@@ -173,7 +173,7 @@ positioner:
     - SPARS
     - SPARStwo
 combined:
-  default_planner_config: None
+  default_planner_config: PRM
   planner_configs:
     - SBL
     - EST

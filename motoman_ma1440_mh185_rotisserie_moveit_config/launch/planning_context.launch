@@ -1,11 +1,11 @@
 <launch>
   <!-- By default we do not overwrite the URDF. Change the following to true to change the default behavior -->
-  <arg name="load_robot_description" default="false"/>
+  <arg name="load_robot_description" default="true"/>
 
   <!-- The name of the parameter under which the URDF is loaded -->
   <arg name="robot_description" default="robot_description"/>
 
-    <arg if="$(arg load_robot_description)" name="using_cam_mount" default="false"/>
+  <arg if="$(arg load_robot_description)" name="using_cam_mount" default="false"/>
 
   <arg if="$(arg load_robot_description)" name="offsets_file_path" default=""/>
 
@@ -13,17 +13,16 @@
   <arg if="$(arg load_robot_description)" name="ma1440_rpy" default=""/>
   <arg if="$(arg load_robot_description)" name="mh185_xyz" default=""/>
   <arg if="$(arg load_robot_description)" name="mh185_rpy" default=""/>
-  
 
   <!-- Load universal robot description format (URDF) -->
-    <param if="$(arg load_robot_description)" name="$(arg robot_description)"
-         command="xacro  $(find motoman_ma1440_mh185_rotisserie_support)/urdf/ma1440_mh185_rotisserie.xacro"/>
-    ma1440_xyz:='$(arg ma1440_xyz)'
-    ma1440_rpy:='$(arg ma1440_rpy)'
-    mh185_xyz:='$(arg mh185_xyz)'
-    mh185_rpy:='$(arg mh185_rpy)'
-    using_cam_mount:='$(arg using_cam_mount)'
-    offsets_file_path:='$(arg offsets_file_path)'"/>
+  <param if="$(arg load_robot_description)" name="$(arg robot_description)"
+         command="xacro $(find motoman_ma1440_mh185_rotisserie_support)/urdf/ma1440_mh185_rotisserie.xacro
+         ma1440_xyz:='$(arg ma1440_xyz)'
+         ma1440_rpy:='$(arg ma1440_rpy)'
+         mh185_xyz:='$(arg mh185_xyz)'
+         mh185_rpy:='$(arg mh185_rpy)'
+         using_cam_mount:='$(arg using_cam_mount)'
+         offsets_file_path:='$(arg offsets_file_path)'"/>
 
 
   <!-- The semantic description that corresponds to the URDF -->

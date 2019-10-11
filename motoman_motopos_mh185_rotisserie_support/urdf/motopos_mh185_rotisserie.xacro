@@ -14,6 +14,7 @@
     <material name="yaskawa_blue">
       <color rgba="0.12941 0.14902 0.74902 1" />
     </material>
+
     <xacro:unless value="${offsets_file_path == ''}">
       <xacro:motoman_motopos_mh185_rotisserie
           prefix="${prefix}"

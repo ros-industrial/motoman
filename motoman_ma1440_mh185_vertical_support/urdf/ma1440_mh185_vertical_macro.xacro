@@ -14,7 +14,7 @@
     <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440.xacro"/>
     <xacro:load_motoman_ma1440
         world_base_xyz="${ma1440_xyz}"
-        world_base_rpy="${ma1440_rpy}"
+        world_base_rpy="${ma1440_rpy }"
         using_cam_mount="${using_cam_mount}"
         offsets_file_path="${offsets_file_path}"
     />

@@ -9,10 +9,10 @@ controller_list:
       - ma1440_joint_t
   - name: fake_positioner_controller
     joints:
-      - joint_x
+      - mh185_joint_1
   - name: fake_combined_controller
     joints:
-      - joint_x
+      - mh185_joint_1
       - ma1440_joint_s
       - ma1440_joint_l
       - ma1440_joint_u
