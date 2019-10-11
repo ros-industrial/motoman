@@ -33,3 +33,10 @@ motoman_driver/MotoPlus/.vs/MpRosAllControllers/v15/Browse.VC.db
 *.db
 motoman_driver/MotoPlus/MpRosAllControllers.VC.db
 motoman_driver/MotoPlus/MpRosAllControllers.VC.db
+motoman_driver/MotoPlus/_buildLog/MotoROSDX100.log
+motoman_driver/MotoPlus/_buildLog/MotoROSDX200.log
+motoman_driver/MotoPlus/_buildLog/MotoROSFS100.log
+motoman_driver/MotoPlus/_buildLog/MotoROSYRC1000.log
+motoman_driver/MotoPlus/_buildLog/MotoROSYRC1000u.log
+*.cache
+*.user

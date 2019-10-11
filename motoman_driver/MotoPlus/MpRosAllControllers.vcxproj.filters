@@ -37,23 +37,11 @@
     <None Include="FS100LinkerArguments.mps">
       <Filter>Compile Settings</Filter>
     </None>
-    <None Include="RosSetupValidation.dnLib">
-      <Filter>MotoPlus Libraries</Filter>
-    </None>
-    <None Include="RosSetupValidation.fsLib">
-      <Filter>MotoPlus Libraries</Filter>
-    </None>
-    <None Include="RosSetupValidation.mpLib">
-      <Filter>MotoPlus Libraries</Filter>
-    </None>
     <None Include="YRC1000CompilerArguments.mps">
       <Filter>Compile Settings</Filter>
     </None>
     <None Include="YRC1000LinkerArguments.mps">
       <Filter>Compile Settings</Filter>
-    </None>
-    <None Include="RosSetupValidation.yrcLib">
-      <Filter>MotoPlus Libraries</Filter>
     </None>
     <None Include="ParameterExtraction.dnLib">
       <Filter>MotoPlus Libraries</Filter>
@@ -75,9 +63,6 @@
     </None>
     <None Include="YRC1000uLinkerArguments.mps">
       <Filter>Compile Settings</Filter>
-    </None>
-    <None Include="RosSetupValidation.yrcmlib">
-      <Filter>MotoPlus Libraries</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -123,9 +108,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParameterTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RosSetupValidation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IoServer.h">

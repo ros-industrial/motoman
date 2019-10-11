@@ -85,6 +85,7 @@ CtrlGroup* Ros_CtrlGroup_Create(int groupNo, BOOL bIsLastGrpToInit, float interp
 		ctrlGroup->groupNo = groupNo;
 		ctrlGroup->numAxes = numAxes;
 		ctrlGroup->groupId = Ros_CtrlGroup_FindGrpId(groupNo);
+		ctrlGroup->tool = 0;
 
 		status = GP_getAxisMotionType(groupNo, &ctrlGroup->axisType);
 		if (status != OK)

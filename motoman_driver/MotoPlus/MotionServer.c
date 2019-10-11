@@ -54,6 +54,7 @@ int Ros_MotionServer_AddTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFul
 int Ros_MotionServer_AddTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence);
 int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg);
+int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 
 // AddToIncQueue Task:
 void Ros_MotionServer_AddToIncQueueProcess(Controller* controller, int groupNo);
@@ -68,13 +69,6 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller);
 void Ros_MotionServer_ConvertToJointMotionData(SmBodyJointTrajPtFull* jointTrajData, JointMotionData* jointMotionData);
 STATUS Ros_MotionServer_DisableEcoMode(Controller* controller);
 void Ros_MotionServer_PrintError(USHORT err_no, char* msgPrefix);
-
-// IO functions:
-int Ros_MotionServer_ReadIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-int Ros_MotionServer_WriteIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-int Ros_MotionServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-int Ros_MotionServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-
 
 //-----------------------
 // Function implementation
@@ -286,6 +280,9 @@ int Ros_MotionServer_GetExpectedByteSizeForMessageType(SimpleMsg* receiveMsg, in
 	case ROS_MSG_MOTO_GET_DH_PARAMETERS:
 		expectedSize = minSize; //no additional data on the request
 		break;
+	case ROS_MSG_MOTO_SELECT_TOOL:
+		expectedSize = minSize + sizeof(SmBodySelectTool);
+		break;
 	default: //invalid message type
 		return -1;
 	}
@@ -461,6 +458,11 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	//-----------------------
 	case ROS_MSG_MOTO_GET_DH_PARAMETERS:
 		ret = Ros_MotionServer_GetDhParameters(controller, replyMsg);
+		break;
+
+	//-----------------------
+	case ROS_MSG_MOTO_SELECT_TOOL:
+		ret = Ros_MotionServer_SetSelectedTool(controller, receiveMsg, replyMsg);
 		break;
 
 	//-----------------------
@@ -1358,6 +1360,7 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 	memset(newPulsePos, 0x00, sizeof(newPulsePos));
 	memset(&incData, 0x00, sizeof(incData));
 	incData.frame = MP_INC_PULSE_DTYPE;
+	incData.tool = ctrlGroup->tool;
 	
 	// Calculate an acceleration coefficients
 	memset(&accCoef1, 0x00, sizeof(accCoef1));
@@ -1872,4 +1875,26 @@ int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg
 	}
 
 	return apiRet;
+}
+
+
+int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
+{
+	int groupNo = receiveMsg->body.selectTool.groupNo;
+	int tool = receiveMsg->body.selectTool.tool;
+
+	if (groupNo >= 0 && groupNo < controller->numRobot)
+	{	
+		if (tool >= MIN_VALID_TOOL_INDEX && tool <= MAX_VALID_TOOL_INDEX)
+		{
+			controller->ctrlGroups[receiveMsg->body.selectTool.groupNo]->tool = tool;
+			Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_SUCCESS, 0, replyMsg, groupNo);
+		}
+		else
+			Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_DATA_TOOLNO, replyMsg, groupNo);
+	}
+	else
+		Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_GROUPNO, replyMsg, groupNo);
+
+	return 0;
 }
