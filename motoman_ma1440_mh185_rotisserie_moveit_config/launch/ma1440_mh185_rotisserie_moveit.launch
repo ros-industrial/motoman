@@ -62,7 +62,7 @@
     <remap unless="$(arg sim)" from="joint_states" to="$(arg robot_ns)/joint_states" />
   </node>
  
-  <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
+  <!-- Run the main MoveIt executable  -->
   <include file="$(find motoman_ma1440_mh185_rotisserie_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
     <arg name="fake_execution" value="false"/>
@@ -79,10 +79,10 @@
   </include>
  
   <!-- this sets up the joint_trajectory_action server for the top level control group in MoveIt!, defined in /config/controllers.yaml -->
-  <group unless="$(arg sim)" ns="$(arg robot_ns)" >
+  <group ns="$(arg robot_ns)" >
     <!-- Set joints for joint_trajectory_action. -->
     <rosparam command="load" file="$(find motoman_ma1440_mh185_rotisserie_support)/config/joint_names_ma1440_mh185_rotisserie.yaml" />
-    <node pkg="industrial_robot_client" name="joint_trajectory_action" type="joint_trajectory_action" output="log">
+    <node pkg="industrial_robot_client" name="$(arg robot_ns)_joint_trajectory_action" type="joint_trajectory_action" output="log">
       <param name="constraints/goal_threshold" type="double" value="5e-4"/>
     </node>
   </group>
