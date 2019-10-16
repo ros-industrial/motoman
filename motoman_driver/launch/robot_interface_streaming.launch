@@ -17,7 +17,7 @@
 
 	<!-- version0: Set to true for older/single arm joint trajectory action -->
 	<arg name="version0" doc="If true, driver assumes an older version of client without multi-group support" />
-
+	<arg name="robot_ns" default=""/>
 	<!-- robot_ip: IP-address of the robot's socket-messaging server -->
 	<arg name="robot_ip" doc="IP of controller" />
 
@@ -42,13 +42,14 @@
 	<include file="$(find motoman_driver)/launch/motion_streaming_interface.launch">
 		<arg name="robot_ip"   value="$(arg robot_ip)" />
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
+		<arg name="robot_ns" value ="$(arg robot_ns)" />
 	</include>
 
 	<!-- joint_trajectory_action: provides actionlib interface for 
 	     high-level robot control
-	-->
 	<node if="$(arg version0)" name="joint_trajectory_action"
 		pkg="industrial_robot_client" type="joint_trajectory_action" />
 	<node unless="$(arg version0)" name="joint_trajectory_action"
 		pkg="motoman_driver" type="motoman_driver_joint_trajectory_action" />
+	-->
 </launch>

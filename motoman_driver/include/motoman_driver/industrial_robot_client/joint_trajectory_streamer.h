@@ -37,6 +37,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <queue>
 
 namespace industrial_robot_client
 {
@@ -51,7 +52,7 @@ namespace TransferStates
 {
 enum TransferState
 {
-  IDLE = 0, STREAMING = 1  // ,STARTING, //, STOPPING
+  IDLE = 0, STREAMING = 1, POINT_STREAMING = 2 // ,STARTING, //, STOPPING //, POINT
 };
 }
 typedef TransferStates::TransferState TransferState;
@@ -116,6 +117,10 @@ public:
 
   virtual void jointTrajectoryCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg);
 
+ // virtual void jointCommandCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
+
+  virtual void jointCommandCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg);
+
   virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
 
   virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
@@ -128,12 +133,17 @@ protected:
   void trajectoryStop();
 
   boost::thread* streaming_thread_;
+  static const size_t max_ptstreaming_queue_elements = 20;
   boost::mutex mutex_;
   int current_point_;
   std::vector<SimpleMessage> current_traj_;
   TransferState state_;
   ros::Time streaming_start_;
   int min_buffer_size_;
+
+  ros::Duration ptstreaming_last_time_from_start_; // last valid point streaming point time from start
+  int ptstreaming_seq_count_; // sequence count for point streaming (--> JointTrajPtFull::sequence_)
+  std::queue<SimpleMessage> ptstreaming_queue_; // message queue for point streaming
 };
 
 }  // namespace joint_trajectory_streamer
