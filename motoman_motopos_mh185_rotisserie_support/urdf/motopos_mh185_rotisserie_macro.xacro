@@ -49,6 +49,7 @@
   <!-- And connect positioner_link to base_link -->
 
   <link name="${prefix}base_link"/>
+  <link name="positioner/base"/>
   <!-- hs_base - positioner_link->base_link -->
   <xacro:property name="world2base_xyz" value="${world_base_xyz}"/>
   <xacro:property name="world2base_rpy" value="${world_base_rpy}"/>
@@ -67,7 +68,12 @@
                            parent="${prefix}base_link"
                            child="hs_base_link"
                            axis_xyz="1 0 0" />
-
+  <xacro:fixed_joint_macro name="positioner/base"
+                           origin_xyz="0 0 0"
+                           origin_rpy="0 0 0"
+                           parent="hs_base_link"
+                           child="positioner/base"
+                           axis_xyz="1 0 0" />
   <!-- Connect the tail stock to the headstock -->
   <!-- the base and prismatic joints should be connected to a non-rotating link, i.e. the headstock base link -->
   <xacro:fixed_joint_macro name="ts_base"
