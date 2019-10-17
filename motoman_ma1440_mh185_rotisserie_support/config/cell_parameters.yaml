@@ -1,0 +1,7 @@
+cell_parameters:
+  positioner_parameters:
+    #model_id corresponds to the PositionerModels int of the positioner for this cell found in forge_definitions/forge_positioners.
+    model_id: 4 # 4 is the model number for motoman_motopos_mh185_rotisserie
+#  arm_parameters:
+  # Not currently used/implemented
+  #    model_id:

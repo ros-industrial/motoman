@@ -1,0 +1,30 @@
+controller_list:
+  - name: combined
+    action_ns: joint_trajectory_action
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - ma1440_joint_s
+      - ma1440_joint_l
+      - ma1440_joint_u
+      - ma1440_joint_r
+      - ma1440_joint_b
+      - ma1440_joint_t
+      - mh185_joint_1
+  - name: /dx200/arm_controller
+    action_ns: joint_trajectory_action
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - ma1440_joint_s
+      - ma1440_joint_l
+      - ma1440_joint_u
+      - ma1440_joint_r
+      - ma1440_joint_b
+      - ma1440_joint_t
+  - name: /dx200/positioner_controller
+    action_ns: joint_trajectory_action
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - mh185_joint_1

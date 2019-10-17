@@ -1,0 +1,111 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:macro
+    name="motoman_motopos_mh185_rotisserie"
+    params=
+        "prefix
+        world_base_xyz
+        world_base_rpy
+        offsets_file_path"
+>
+
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+
+  <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
+
+
+
+
+<xacro:property name="world_to_pos_base_tf" value="${load_yaml('$(find motoman_motopos_mh185_rotisserie_support)/config/positioner_params.yaml')}"/>
+  <xacro:property name="world2pos_t" value="${world_to_pos_base_tf['positioner_params']['base_to_positioner_tf']['translation']}" />
+  <xacro:property name="world2pos_rot" value="${world_to_pos_base_tf['positioner_params']['base_to_positioner_tf']['rotation']}" />
+  <xacro:property name="world2pos_xyz" value="${world2pos_t['x']} ${world2pos_t['y']} ${world2pos_t['z']}"/>
+  <xacro:property name="world2pos_rpy" value="${world2pos_rot['roll']} ${world2pos_rot['pitch']} ${world2pos_rot['yaw']}"/>
+
+  <!-- Tailstock offsets. Should be loaded from yaml file created during calibration. -->
+  <xacro:property name="ts_base_offset" value="0.06985" />
+  <xacro:property name="ts_revolute_offset" value="${world_to_pos_base_tf['positioner_params']['tailstock_revolute_offset']}" />
+  <xacro:property name="hs_prismatic_offset" value="${world_to_pos_base_tf['positioner_params']['headstock_prismatic_offset']}"/>
+
+
+  <!-- Define a fixed joint macro -->
+  <xacro:macro name="fixed_joint_macro" params="name origin_xyz origin_rpy parent child axis_xyz">
+    <joint name="joint_${name}" type="fixed">
+      <origin xyz="${origin_xyz}" rpy="${origin_rpy}" />
+      <parent link="${parent}" />
+      <child link="${child}" />
+      <axis xyz="${axis_xyz}" />
+    </joint>
+  </xacro:macro>
+
+  <!-- link list -->
+
+
+
+  <!-- Add the headstock - hs_base_link, hs_revolute_link, hs_prismatic_link -->
+  <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/headstock/headstock.urdf_macro.xacro" />
+  <xacro:headstock_macro prefix="${prefix}"/>
+  <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/tailstock/tailstock.urdf_macro.xacro" />
+  <xacro:tailstock_macro prefix="${prefix}"/>
+
+  <!-- And connect positioner_link to base_link -->
+
+  <link name="${prefix}base_link"/>
+  <link name="positioner/base"/>
+  <link name="positioner/center"/>
+  <!-- hs_base - positioner_link->base_link -->
+  <xacro:property name="world2base_xyz" value="${world_base_xyz}"/>
+  <xacro:property name="world2base_rpy" value="${world_base_rpy}"/>
+
+  <xacro:fixed_joint_macro name="${prefix}world-base"
+                           origin_rpy="${world2base_rpy}"
+                           origin_xyz="${world2base_xyz}"
+                           parent="world"
+                           child="${prefix}base_link"
+                           axis_xyz="0 0 0"/>
+
+
+  <xacro:fixed_joint_macro name="base-hsbase"
+                           origin_xyz="${world2pos_xyz}"
+                           origin_rpy="${world2pos_rpy}"
+                           parent="${prefix}base_link"
+                           child="${prefix}hs_base_link"
+                           axis_xyz="1 0 0" />
+  <xacro:fixed_joint_macro name="positioner/base"
+                           origin_xyz="0 0 0"
+                           origin_rpy="0 0 0"
+                           parent="${prefix}hs_base_link"
+                           child="positioner/base"
+                           axis_xyz="0 0 0" />
+  <!-- Connect the tail stock to the headstock -->
+  <!-- the base and prismatic joints should be connected to a non-rotating link, i.e. the headstock base link -->
+  <xacro:fixed_joint_macro name="${prefix}ts_base"
+                           origin_xyz="0 0 -${ts_base_offset}"
+                           origin_rpy="0 0 0"
+                           parent="${prefix}hs_base_link"
+                           child="${prefix}ts_base_link"
+                           axis_xyz="1 0 0" />
+  <xacro:fixed_joint_macro name="${prefix}ts_prismatic"
+                           origin_xyz="0 0 -${ts_revolute_offset}"
+                           origin_rpy="0 0 0"
+                           parent="${prefix}hs_base_link"
+                           child="${prefix}ts_prismatic_link"
+                           axis_xyz="1 0 0" />
+  <!-- The revolute link should be connected to a rotating link, i.e. the headstock revolute link -->
+  <xacro:fixed_joint_macro name="${prefix}ts_revolute"
+                           origin_xyz="0 0 -${ts_revolute_offset}"
+                           origin_rpy="0 0 0"
+                           parent="${prefix}hs_revolute_link"
+                           child="${prefix}ts_revolute_link"
+                           axis_xyz="1 0 0" />
+
+  <xacro:fixed_joint_macro name="${prefix}joint1-center-fixed"
+                           origin_xyz="0 0 0"
+                           origin_rpy="0 0 0"
+                           parent="${prefix}hs_revolute_link"
+                           child="positioner/center"
+                           axis_xyz="0 0 0"/>
+
+
+  </xacro:macro>
+</robot>

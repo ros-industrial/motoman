@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<robot name="tailstock" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="tailstock_macro" params="prefix">
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+
+  <link
+    name="${prefix}ts_base_link">
+    <inertial>
+      <origin
+        xyz="-0.86548 -1.9124E-05 -0.76828"
+        rpy="0 0 0" />
+      <mass
+        value="95.379" />
+      <inertia
+        ixx="0.80668"
+        ixy="0.00011986"
+        ixz="-0.00015277"
+        iyy="0.61921"
+        iyz="0.0060394"
+        izz="0.19362" />
+    </inertial>
+
+
+      <visual>
+        <origin
+            xyz="0 0 0"
+            rpy="0 0 0" />
+        <geometry>
+          <mesh
+              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/tailstock/ts_base_collision_link.stl" />
+        </geometry>
+        <material
+            name="">
+          <color
+              rgba="0.75294 0.75294 0.75294 1" />
+        </material>
+      </visual>
+
+
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://motoman_motopos_mh185_rotisserie_support/meshes/tailstock/ts_base_collision_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link
+    name="${prefix}ts_prismatic_link">
+    <inertial>
+      <origin
+        xyz="-0.59358 0.0011065 -0.19385"
+        rpy="0 0 0" />
+      <mass
+        value="51.064" />
+      <inertia
+        ixx="0.21025"
+        ixy="-0.023272"
+        ixz="-0.5298"
+        iyy="3.772"
+        iyz="-0.00083715"
+        izz="3.7157" />
+    </inertial>
+
+
+      <visual>
+        <origin
+            xyz="0 0 0"
+            rpy="0 0 0" />
+        <geometry>
+          <mesh
+              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/tailstock/ts_prismatic_collision_link.stl" />
+        </geometry>
+        <material
+            name="">
+          <color
+              rgba="0.75294 0.75294 0.75294 1" />
+        </material>
+      </visual>
+
+
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://motoman_motopos_mh185_rotisserie_support/meshes/tailstock/ts_prismatic_collision_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link
+    name="${prefix}ts_revolute_link">
+    <inertial>
+      <origin
+        xyz="0.00010605 -5.8799E-07 0.0086687"
+        rpy="0 0 0" />
+      <mass
+        value="21.714" />
+      <inertia
+        ixx="0.053898"
+        ixy="-5.0267E-08"
+        ixz="8.1441E-05"
+        iyy="0.038897"
+        iyz="-5.5009E-07"
+        izz="0.017007" />
+    </inertial>
+
+
+      <visual>
+        <origin
+            xyz="0 0 0"
+            rpy="0 0 0" />
+        <geometry>
+          <mesh
+              filename="package://motoman_motopos_mh185_rotisserie_support/meshes/tailstock/ts_revolute_collision_link.stl" />
+        </geometry>
+        <material
+            name="">
+          <color
+              rgba="0.75294 0.75294 0.75294 1" />
+        </material>
+      </visual>
+
+
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://motoman_motopos_mh185_rotisserie_support/meshes/tailstock/ts_revolute_collision_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+  </xacro:macro>
+</robot>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>motoman_motopos_mh185_rotisserie_support</name>
+  <version>0.0.0</version>
+  <description>The motoman_motopos_mh185_rotisserie_support package</description>
+  <maintainer email="surag@path-robotics.com">suragbj</maintainer>
+
+
+  <license>TODO</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+
+
+</package>

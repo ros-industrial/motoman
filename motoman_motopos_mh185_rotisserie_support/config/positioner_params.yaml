@@ -1,0 +1,19 @@
+# Transforms from base_link to hs_base_link and the inverse. Also includes roll, pitch, yaw representations of rotation for urdfs.
+positioner_params:
+  headstock_prismatic_offset: 0
+  tailstock_revolute_offset: 0.9795075813963461
+  base_to_positioner_tf:
+    child_frame_id: hs_base_link
+    parent_frame_id: base_link
+    translation:
+      x: 0.8609655165188382
+      y: -0.319367566885879
+      z: 0.8954498425851499
+    rotation:
+      x: 0.5019611480047158
+      y: -0.496654005429208
+      z: 0.503338214465581
+      w: 0.4980165124205349
+      roll: 0
+      pitch: -1.568056713798056
+      yaw: 1.58142523141995

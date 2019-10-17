@@ -41,6 +41,7 @@
   <param name="robot_ns" value="$(arg robot_ns)"/>
   <param name="controller_ns" value="$(arg controller_ns)"/>
 
+ 
 
   <!-- Load the cell parameters associated with this setup -->
   <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/cell_parameters.yaml" />

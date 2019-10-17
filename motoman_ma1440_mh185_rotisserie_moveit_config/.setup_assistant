@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: motoman_ma1440_mh185_rotisserie_support
+    relative_path: urdf/ma1440_mh185_rotisserie.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/motoman_ma1440_mh185_rotisserie.srdf
+  CONFIG:
+    author_name: Surag Balajepalli
+    author_email: surag@path-robotics.com
+    generated_timestamp: 1570220831

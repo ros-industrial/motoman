@@ -27,7 +27,7 @@
                 <color rgba="0 1 1 1" />
             </material>
         </collision>
-        
+
 <inertial>
             <mass value="400" />
             <!-- Arbitrarily large value, to simulate bolting down in case of absence of fixed joint -->
@@ -60,7 +60,7 @@
             </geometry>
             <material name="yellow" />
         </collision>
-        
+
 <inertial>
             <mass value="112.57" />
             <inertia ixx="2.1336" ixy="0.197" ixz="0.8995" iyy="2.8341" iyz="0.2799" izz="2.49" />
@@ -91,7 +91,7 @@
             </geometry>
             <material name="yellow" />
         </collision>
-        
+
 <inertial>
             <mass value="45.143" />
             <inertia ixx="0.1565" ixy="-0.0239" ixz="-0.0981" iyy="2.4306" iyz="0.0329" izz="2.4493" />
@@ -122,7 +122,7 @@
             </geometry>
             <material name="yellow" />
         </collision>
-        
+
 <inertial>
             <mass value="77.767" />
             <inertia ixx="1.1285" ixy="-0.4562" ixz="-0.1754" iyy="0.965" iyz="0.2365" izz="1.2844" />
@@ -151,7 +151,7 @@
             </geometry>
             <material name="yellow" />
         </collision>
-        
+
 <inertial>
             <mass value="31.136" />
             <inertia ixx="0.5313" ixy="0.0027" ixz="0.0418" iyy="0.453" iyz="-0.0111" izz="0.1611" />
@@ -179,7 +179,7 @@
             </geometry>
             <material name="yellow" />
         </collision>
-        
+
 <inertial>
             <mass value="7.781" />
             <inertia ixx="0.019954" ixy="6.9E-05" ixz="-0.000759" iyy="0.024524" iyz="0.000206" izz="0.019404" />
@@ -207,7 +207,7 @@
             </geometry>
             <material name="yellow" />
         </collision>
-        
+
 <inertial>
             <mass value="0.40691" />
             <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
@@ -220,6 +220,8 @@
         <selfCollide>true</selfCollide>
         <material>Gazebo/White</material>
     </gazebo>
+
+
     <link name="link_tip">
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0" />
@@ -239,14 +241,16 @@
                 <color rgba="0.8 0.8 0.8 1" />
             </material>
         </collision>
-        
-<inertial>
+
+        <inertial>
             <mass value="4.7615" />
             <inertia ixx="0.034062" ixy="5.0098E-05" ixz="4.7762E-05" iyy="0.020719" iyz="-0.016082" izz="0.013698" />
             <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
         </inertial>
 
+
     </link>
+
     <gazebo reference="link_t">
         <turnGravityOff>false</turnGravityOff>
         <selfCollide>true</selfCollide>
@@ -258,6 +262,7 @@
         <origin rpy="0 0 0" xyz="0 0 0" />
         <parent link="world" />
         <child link="base_link" />
+
     </joint>
     <joint name="joint_s" type="revolute">
         <parent link="base_link" />
@@ -302,11 +307,13 @@
         <limit effort="100" lower="-3.1415" upper="3.1415" velocity="6.9813" />
     </joint>
     <joint name="joint_tip" type="fixed">
+
         <parent link="link_t" />
         <child link="link_tip" />
         <origin rpy="-2.35619449019 0 1.57079632679" xyz="-0.09591 0 -0.38772" />
         <axis xyz="0 0 0" />
     </joint>
+
     <!-- end of joint list -->
     <!-- ROS base_link (via base_link) to Motoman Robot (not Base) Frame transform -->
     <link name="base" />
@@ -332,7 +339,7 @@
                 <mesh filename="package://motoman_motopos_d500_support/meshes/motopos_d500/collision/base_link.stl" />
             </geometry>
         </collision>
-        
+
 <inertial>
             <mass value="0.1" />
             <inertia ixx="0.03" iyy="0.03" izz="0.03" ixy="0.0" ixz="0.0" iyz="0.0" />
@@ -351,7 +358,7 @@
                 <mesh filename="package://motoman_motopos_d500_support/meshes/motopos_d500/collision/link_1.stl" />
             </geometry>
         </collision>
-        
+
 <inertial>
             <mass value="0.1" />
             <inertia ixx="0.03" iyy="0.03" izz="0.03" ixy="0.0" ixz="0.0" iyz="0.0" />
@@ -370,7 +377,7 @@
                 <mesh filename="package://motoman_motopos_d500_support/meshes/motopos_d500/collision/link_2.stl" />
             </geometry>
         </collision>
-        
+
 <inertial>
             <mass value="0.1" />
             <inertia ixx="0.03" iyy="0.03" izz="0.03" ixy="0.0" ixz="0.0" iyz="0.0" />
@@ -392,7 +399,7 @@
         <axis xyz="0 -1 0" />
         <limit effort="1274" lower="-2.3561" upper="2.3561" velocity="1.3962" />
     </joint>
-    
+
 <transmission name="1_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <actuator name="1_motor">
