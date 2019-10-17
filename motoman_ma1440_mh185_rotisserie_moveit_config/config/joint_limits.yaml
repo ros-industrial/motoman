@@ -4,7 +4,7 @@
 joint_limits:
   mh185_joint_1:
     has_velocity_limits: true
-    max_velocity: 6.28318530718
+    max_velocity: 1.29852496348378120523
     has_acceleration_limits: false
     max_acceleration: 0
   ma1440_joint_b:

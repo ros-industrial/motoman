@@ -67,30 +67,30 @@
         <joint name="ma1440_joint_u" value="0" />
     </group_state>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
-    <disable_collisions link1="hs_base_link" link2="hs_prismatic_link" reason="Never" />
-    <disable_collisions link1="hs_base_link" link2="hs_revolute_link" reason="Adjacent" />
-    <disable_collisions link1="hs_base_link" link2="ma1440_base_link" reason="Adjacent" />
-    <disable_collisions link1="hs_base_link" link2="ma1440_link_s" reason="Never" />
-    <disable_collisions link1="hs_base_link" link2="ts_base_link" reason="Adjacent" />
-    <disable_collisions link1="hs_base_link" link2="ts_prismatic_link" reason="Adjacent" />
-    <disable_collisions link1="hs_base_link" link2="ts_revolute_link" reason="Never" />
-    <disable_collisions link1="hs_prismatic_link" link2="hs_revolute_link" reason="Adjacent" />
-    <disable_collisions link1="hs_prismatic_link" link2="ma1440_base_link" reason="Never" />
-    <disable_collisions link1="hs_prismatic_link" link2="ma1440_link_l" reason="Never" />
-    <disable_collisions link1="hs_prismatic_link" link2="ma1440_link_s" reason="Never" />
-    <disable_collisions link1="hs_prismatic_link" link2="ts_base_link" reason="Never" />
-    <disable_collisions link1="hs_prismatic_link" link2="ts_prismatic_link" reason="Never" />
-    <disable_collisions link1="hs_prismatic_link" link2="ts_revolute_link" reason="Never" />
-    <disable_collisions link1="hs_revolute_link" link2="ma1440_base_link" reason="Never" />
-    <disable_collisions link1="hs_revolute_link" link2="ma1440_link_s" reason="Never" />
-    <disable_collisions link1="hs_revolute_link" link2="ts_base_link" reason="Never" />
-    <disable_collisions link1="hs_revolute_link" link2="ts_prismatic_link" reason="Never" />
-    <disable_collisions link1="hs_revolute_link" link2="ts_revolute_link" reason="Adjacent" />
+    <disable_collisions link1="mh185_hs_base_link" link2="mh185_hs_prismatic_link" reason="Never" />
+    <disable_collisions link1="mh185_hs_base_link" link2="mh185_hs_revolute_link" reason="Adjacent" />
+    <disable_collisions link1="mh185_hs_base_link" link2="ma1440_base_link" reason="Adjacent" />
+    <disable_collisions link1="mh185_hs_base_link" link2="ma1440_link_s" reason="Never" />
+    <disable_collisions link1="mh185_hs_base_link" link2="mh185_ts_base_link" reason="Adjacent" />
+    <disable_collisions link1="mh185_hs_base_link" link2="mh185_ts_prismatic_link" reason="Adjacent" />
+    <disable_collisions link1="mh185_hs_base_link" link2="mh185_ts_revolute_link" reason="Never" />
+    <disable_collisions link1="mh185_hs_prismatic_link" link2="mh185_hs_revolute_link" reason="Adjacent" />
+    <disable_collisions link1="mh185_hs_prismatic_link" link2="ma1440_base_link" reason="Never" />
+    <disable_collisions link1="mh185_hs_prismatic_link" link2="ma1440_link_l" reason="Never" />
+    <disable_collisions link1="mh185_hs_prismatic_link" link2="ma1440_link_s" reason="Never" />
+    <disable_collisions link1="mh185_hs_prismatic_link" link2="mh185_ts_base_link" reason="Never" />
+    <disable_collisions link1="mh185_hs_prismatic_link" link2="mh185_ts_prismatic_link" reason="Never" />
+    <disable_collisions link1="mh185_hs_prismatic_link" link2="mh185_ts_revolute_link" reason="Never" />
+    <disable_collisions link1="mh185_hs_revolute_link" link2="ma1440_base_link" reason="Never" />
+    <disable_collisions link1="mh185_hs_revolute_link" link2="ma1440_link_s" reason="Never" />
+    <disable_collisions link1="mh185_hs_revolute_link" link2="mh185_ts_base_link" reason="Never" />
+    <disable_collisions link1="mh185_hs_revolute_link" link2="mh185_ts_prismatic_link" reason="Never" />
+    <disable_collisions link1="mh185_hs_revolute_link" link2="mh185_ts_revolute_link" reason="Adjacent" />
     <disable_collisions link1="ma1440_base_link" link2="ma1440_link_l" reason="Never" />
     <disable_collisions link1="ma1440_base_link" link2="ma1440_link_s" reason="Adjacent" />
-    <disable_collisions link1="ma1440_base_link" link2="ts_base_link" reason="Never" />
-    <disable_collisions link1="ma1440_base_link" link2="ts_prismatic_link" reason="Never" />
-    <disable_collisions link1="ma1440_base_link" link2="ts_revolute_link" reason="Never" />
+    <disable_collisions link1="ma1440_base_link" link2="mh185_ts_base_link" reason="Never" />
+    <disable_collisions link1="ma1440_base_link" link2="mh185_ts_prismatic_link" reason="Never" />
+    <disable_collisions link1="ma1440_base_link" link2="mh185_ts_revolute_link" reason="Never" />
     <disable_collisions link1="ma1440_cam_mount_link" link2="ma1440_link_b" reason="Never" />
     <disable_collisions link1="ma1440_cam_mount_link" link2="ma1440_link_t" reason="Adjacent" />
     <disable_collisions link1="ma1440_cam_mount_link" link2="ma1440_link_tip" reason="Default" />
@@ -103,18 +103,18 @@
     <disable_collisions link1="ma1440_link_l" link2="ma1440_link_s" reason="Adjacent" />
     <disable_collisions link1="ma1440_link_l" link2="ma1440_link_t" reason="Never" />
     <disable_collisions link1="ma1440_link_l" link2="ma1440_link_u" reason="Adjacent" />
-    <disable_collisions link1="ma1440_link_l" link2="ts_prismatic_link" reason="Never" />
-    <disable_collisions link1="ma1440_link_l" link2="ts_revolute_link" reason="Never" />
+    <disable_collisions link1="ma1440_link_l" link2="mh185_ts_prismatic_link" reason="Never" />
+    <disable_collisions link1="ma1440_link_l" link2="mh185_ts_revolute_link" reason="Never" />
     <disable_collisions link1="ma1440_link_r" link2="ma1440_link_t" reason="Never" />
     <disable_collisions link1="ma1440_link_r" link2="ma1440_link_tip" reason="Never" />
     <disable_collisions link1="ma1440_link_r" link2="ma1440_link_u" reason="Adjacent" />
-    <disable_collisions link1="ma1440_link_s" link2="ts_base_link" reason="Never" />
-    <disable_collisions link1="ma1440_link_s" link2="ts_prismatic_link" reason="Never" />
-    <disable_collisions link1="ma1440_link_s" link2="ts_revolute_link" reason="Never" />
+    <disable_collisions link1="ma1440_link_s" link2="mh185_ts_base_link" reason="Never" />
+    <disable_collisions link1="ma1440_link_s" link2="mh185_ts_prismatic_link" reason="Never" />
+    <disable_collisions link1="ma1440_link_s" link2="mh185_ts_revolute_link" reason="Never" />
     <disable_collisions link1="ma1440_link_t" link2="ma1440_link_tip" reason="Adjacent" />
     <disable_collisions link1="ma1440_link_t" link2="ma1440_link_u" reason="Never" />
     <disable_collisions link1="ma1440_link_tip" link2="ma1440_link_u" reason="Never" />
-    <disable_collisions link1="ts_base_link" link2="ts_prismatic_link" reason="Default" />
-    <disable_collisions link1="ts_base_link" link2="ts_revolute_link" reason="Never" />
-    <disable_collisions link1="ts_prismatic_link" link2="ts_revolute_link" reason="Never" />
+    <disable_collisions link1="mh185_ts_base_link" link2="mh185_ts_prismatic_link" reason="Default" />
+    <disable_collisions link1="mh185_ts_base_link" link2="mh185_ts_revolute_link" reason="Never" />
+    <disable_collisions link1="mh185_ts_prismatic_link" link2="mh185_ts_revolute_link" reason="Never" />
 </robot>

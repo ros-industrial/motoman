@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <robot name="tailstock" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="tailstock_macro" params="prefix">
   <!-- Constants for robot dimensions -->
   <xacro:property name="M_PI" value="3.1415926535897931"/>
 
   <link
-    name="ts_base_link">
+    name="${prefix}ts_base_link">
     <inertial>
       <origin
         xyz="-0.86548 -1.9124E-05 -0.76828"
@@ -49,7 +50,7 @@
   </link>
 
   <link
-    name="ts_prismatic_link">
+    name="${prefix}ts_prismatic_link">
     <inertial>
       <origin
         xyz="-0.59358 0.0011065 -0.19385"
@@ -94,7 +95,7 @@
   </link>
 
   <link
-    name="ts_revolute_link">
+    name="${prefix}ts_revolute_link">
     <inertial>
       <origin
         xyz="0.00010605 -5.8799E-07 0.0086687"
@@ -137,5 +138,5 @@
       </geometry>
     </collision>
   </link>
-
+  </xacro:macro>
 </robot>

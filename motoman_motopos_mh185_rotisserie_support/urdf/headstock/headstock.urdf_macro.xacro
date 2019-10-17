@@ -1,14 +1,16 @@
 <?xml version="1.0"?>
-<robot name="headstock" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="headstock" xmlns:xacro="http://www.ros.org/wiki/xacro" param="prefix">
+ <xacro:macro name ="headstock_macro" params="prefix">
+
   <!-- Constants for robot dimensions -->
   <xacro:property name="M_PI" value="3.1415926535897931"/>
+
   <!-- Import trasnmission macro -->
   <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/headstock/headstock.transmission.xacro" />
-
   <xacro:property name="hs_prismatic_offset" value="${load_yaml('$(find motoman_motopos_mh185_rotisserie_support)/config/positioner_params.yaml')['positioner_params']['headstock_prismatic_offset']}"/>
 
   <link
-    name="hs_base_link">
+    name="${prefix}hs_base_link">
     <inertial>
       <origin
         xyz="-0.30245 -2.3514E-05 0.139"
@@ -53,27 +55,27 @@
   </link>
 
   <joint
-    name="mh185_joint_1"
+    name="${prefix}joint_1"
     type="revolute">
     <origin
       xyz="0 0 0"
       rpy="0 0 0" />
     <parent
-      link="hs_base_link" />
+      link="${prefix}hs_base_link" />
     <child
-      link="hs_revolute_link" />
+      link="${prefix}hs_revolute_link" />
     <axis
       xyz="0 0 1" />
     <limit
-      lower="${-20*M_PI}"
-      upper="${20*M_PI}"
-      effort="10"
-      velocity="${2*M_PI}" />
+      lower="${-1.1*M_PI}"
+      upper="${1.1*M_PI}"
+      effort="100"
+      velocity="${(12.4/60)*2*M_PI}" />
   </joint>
-  <xacro:transmission_macro name="x" />
+  <xacro:transmission_macro name="${prefix}_joint_1" />
 
   <link
-    name="hs_revolute_link">
+    name="${prefix}hs_revolute_link">
     <inertial>
       <origin
         xyz="-1.4992E-05 0.011691 0.038341"
@@ -118,21 +120,21 @@
   </link>
 
   <joint
-    name="joint_hs_prismatic"
+    name="${prefix}joint_hs_prismatic"
     type="fixed">
     <origin
       xyz="0 ${hs_prismatic_offset} 0"
       rpy="0 0 0" />
     <parent
-      link="hs_revolute_link" />
+      link="${prefix}hs_revolute_link" />
     <child
-      link="hs_prismatic_link" />
+      link="${prefix}hs_prismatic_link" />
     <axis
       xyz="0 0 0" />
   </joint>
 
   <link
-    name="hs_prismatic_link">
+    name="${prefix}hs_prismatic_link">
     <inertial>
       <origin
         xyz="-0.0017858 0.00082133 -0.06439"
@@ -175,5 +177,6 @@
       </geometry>
     </collision>
   </link>
-
+ </xacro:macro>
 </robot>
+
