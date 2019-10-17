@@ -117,7 +117,6 @@ public:
 
   virtual void jointTrajectoryCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg);
 
- // virtual void jointCommandCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
 
   virtual void jointCommandCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg);
 

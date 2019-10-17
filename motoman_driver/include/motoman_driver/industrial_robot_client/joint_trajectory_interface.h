@@ -306,7 +306,6 @@ protected:
   *
   * \param msg JointTrajectory message
   */
-  //virtual void jointCommandCB(const trajectory_msgs::JointTrajectoryConstPtr &msg) = 0;
 
   virtual void jointCommandCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg) = 0;
   /**
