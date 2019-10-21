@@ -134,6 +134,14 @@ class dynamic_trajectory_converter(object):
                                                       DynamicJointTrajectory,
                                                       queue_size=1)
 
+        # Subscribe to joint_command from system
+        rospy.Subscriber(robot_ns + 'joint_command', JointTrajectory,
+                         self.joint_command_cb)
+        # Publish joint_command to robot/simulator
+        self.joint_command_pub = rospy.Publisher('joint_command',
+                                                 DynamicJointTrajectory,
+                                                 queue_size=1)
+
         # Publish joint states on top level /joint_states topic as well, needed
         # within moveit core to get current robot state
         self.joint_states_pub = rospy.Publisher(
@@ -373,6 +381,68 @@ class dynamic_trajectory_converter(object):
         dyn_traj.points = points
         # and publish
         self.joint_path_command_pub.publish(dyn_traj)
+
+    def joint_command_cb(self, msg):
+        # Divide the higher dof message into separate groups
+        points = ()
+        for i, dyn_point in enumerate(msg.points):
+
+            point = DynamicJointPoint()
+            groups = []
+
+            # loop through each control group to form a DynamicJointsGroup.msg
+            for ctrl_group in self.motoman_topic_list:
+                group = DynamicJointsGroup()
+                num_joints_in_group = len(ctrl_group['joints'])
+
+                positions = []
+                velocities = []
+                accelerations = []
+
+                # the combined message comes out in alphabetical order, so we
+                # have to loop through each joint in each control group and
+                # grab the appropriate position, velocity, and acceleration
+                # values by index
+                for joint in ctrl_group['joints']:
+                    try:
+                        joint_ind = msg.joint_names.index(joint)
+                    except ValueError:
+                        break
+
+                    positions.append(dyn_point.positions[joint_ind])
+
+                    # vectors will either be empty or should have the same number
+                    # of elements as the positions vector
+                    if dyn_point.velocities:
+                        velocities.append(dyn_point.velocities[joint_ind])
+                    if dyn_point.accelerations:
+                        accelerations.append(dyn_point.accelerations[joint_ind])
+
+                if len(positions) == num_joints_in_group:
+                    group.group_number = ctrl_group['group']
+                    group.num_joints = num_joints_in_group
+                    group.valid_fields = 0
+                    group.positions = positions
+                    group.velocities = velocities
+                    group.accelerations = accelerations
+                    group.time_from_start = dyn_point.time_from_start
+
+                    groups.append(group)
+
+            # aggregrate groups into a DynamicJointPoint
+            point.num_groups = len(groups)
+            point.groups = groups
+
+            # stuff it onto the end of the trajectory
+            points = points + (point,)
+
+        # rospy.loginfo(points)
+        dyn_traj = DynamicJointTrajectory()
+        dyn_traj.header = msg.header
+        dyn_traj.joint_names = self.get_all_joint_names()
+        dyn_traj.points = points
+        # and publish
+        self.joint_command_pub.publish(dyn_traj)
 
     # this subscribes to the top-level /robot_status topic published to by
     # the actual motoman robot and publishes it back out to MoveIt! and the
