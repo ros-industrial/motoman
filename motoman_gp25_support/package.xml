@@ -17,8 +17,8 @@
     </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
-      found in the online 
-      https://www.motoman.com/hubfs/Robots/gp25.pdf
+      found in <em>YASKAWA MOTOMAN-GP25 INSTRUCTIONS (HW1485496)</em> version
+      <em>185194-1CD, rev 0</em>.
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
@@ -29,7 +29,7 @@
     </p>
   </description>
   <author>Eric Marcil</author>
-  <maintainer email="shaun.edwards@gmail.com">Shaun Edwards</maintainer>
+  <maintainer email="eric.marcil@motoman.com">Eric Marcil</maintainer>
   <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
   <license>BSD</license>
 
