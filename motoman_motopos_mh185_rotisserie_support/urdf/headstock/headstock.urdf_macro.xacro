@@ -67,8 +67,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="${-1.1*M_PI}"
-      upper="${1.1*M_PI}"
+      lower="${-2*M_PI}"
+      upper="${2*M_PI}"
       effort="100"
       velocity="${(12.4/60)*2*M_PI}" />
   </joint>
