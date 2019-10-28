@@ -26,6 +26,8 @@
   <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
   <arg name="using_cam_mount" default="false"/>
 
+  <!-- Whether or not a laser mount is being used on the robot arm (ma1440) -->
+  <arg name="using_laser_mount" default="false"/>
   
  
   <!-- this 'robot_ns' argument corresponds to the robot name of the MoveIt controller group for both the arm and the
@@ -54,6 +56,8 @@
     <arg name="mh185_xyz" value="$(arg mh185_xyz)"/>
     <arg name="mh185_rpy" value="$(arg mh185_rpy)"/>
     <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
+    <arg name="using_laser_mount" value="$(arg using_laser_mount)"/>
+
     <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>
  

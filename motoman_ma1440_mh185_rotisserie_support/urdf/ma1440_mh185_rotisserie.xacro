@@ -7,6 +7,8 @@
 	<xacro:arg name="mh185_xyz" default=""/>
 	<xacro:arg name="mh185_rpy" default=""/>
 	<xacro:arg name="using_cam_mount" default=""/>
+	<xacro:arg name="using_laser_mount" default=""/>
+
 	<xacro:arg name="offsets_file_path" default=""/>
 
 	<xacro:include filename="$(find motoman_ma1440_mh185_rotisserie_support)/urdf/ma1440_mh185_rotisserie_macro.xacro" />
@@ -16,6 +18,7 @@
 			mh185_xyz="$(arg mh185_xyz)"
 			mh185_rpy="$(arg mh185_rpy)"
 			using_cam_mount="$(arg using_cam_mount)"
+			using_laser_mount="$(arg using_laser_mount)"
 			offsets_file_path="$(arg offsets_file_path)"
 	/>
 </robot>

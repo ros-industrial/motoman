@@ -7,6 +7,7 @@
 	<xacro:arg name="d500_rpy" default=""/>
 	<xacro:arg name="table_thickness" default=""/>
 	<xacro:arg name="using_cam_mount" default=""/>
+	<xacro:arg name="using_laser_mount" default=""/>
 	<xacro:arg name="offsets_file_path" default=""/>
 
 	<xacro:include filename="$(find motoman_ma1440_d500_support)/urdf/ma1440_d500_macro.xacro"/>
@@ -17,6 +18,7 @@
 			d500_rpy="$(arg d500_rpy)"
 			table_thickness="$(arg table_thickness)"
 			using_cam_mount="$(arg using_cam_mount)"
+			using_laser_mount="$(arg using_laser_mount)"
 			offsets_file_path="$(arg offsets_file_path)"
 	/>
 </robot>

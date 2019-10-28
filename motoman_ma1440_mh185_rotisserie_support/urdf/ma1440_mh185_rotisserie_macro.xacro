@@ -8,6 +8,7 @@
           mh185_xyz
           mh185_rpy
           using_cam_mount
+          using_laser_mount
           offsets_file_path"
   >
 
@@ -16,6 +17,8 @@
         world_base_xyz="${ma1440_xyz}"
         world_base_rpy="${ma1440_rpy}"
         using_cam_mount="${using_cam_mount}"
+        using_laser_mount="${using_laser_mount}"
+
         offsets_file_path="${offsets_file_path}"
     />
 
