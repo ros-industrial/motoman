@@ -6,8 +6,7 @@
 	<xacro:arg name="ma1440_rpy" default=""/>
 	<xacro:arg name="mh185_xyz" default=""/>
 	<xacro:arg name="mh185_rpy" default=""/>
-	<xacro:arg name="using_cam_mount" default=""/>
-	<xacro:arg name="using_laser_mount" default=""/>
+	<xacro:arg name="mount_type" default=""/>
 
 	<xacro:arg name="offsets_file_path" default=""/>
 
@@ -17,8 +16,7 @@
 			ma1440_rpy="$(arg ma1440_rpy)"
 			mh185_xyz="$(arg mh185_xyz)"
 			mh185_rpy="$(arg mh185_rpy)"
-			using_cam_mount="$(arg using_cam_mount)"
-			using_laser_mount="$(arg using_laser_mount)"
+			mount_type="$(arg mount_type)"
 			offsets_file_path="$(arg offsets_file_path)"
 	/>
 </robot>

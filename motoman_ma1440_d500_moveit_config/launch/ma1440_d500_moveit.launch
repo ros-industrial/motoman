@@ -17,12 +17,8 @@
   <!-- The thickness of the tabletop mounted on top of the last link of the D500 -->
   <arg name="table_thickness" default=""/>
 
-  <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
-  <!-- TODO: Make cam mount and laser mount exclusive -->
-  <!-- Whether or not a laser mount is being used on the robot arm (ma1440) -->
 
-
-
+  <!-- The type of mount being used on the robot arm -->
   <arg name="mount_type" default=""/>
   <!-- IP address of the robot to connect to, if connecting to a real robot -->
   <arg name="robot_ip" unless="$(arg sim)" />

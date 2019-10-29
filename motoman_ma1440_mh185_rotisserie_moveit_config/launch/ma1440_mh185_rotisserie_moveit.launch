@@ -10,6 +10,7 @@
   <arg name="ma1440_rpy" default=""/>
   <arg name="mh185_xyz" default=""/>
   <arg name="mh185_rpy" default=""/>
+  <arg name="mount_type" default=""/>
 
 
   <!-- IP address of the robot to connect to, if connecting to a real robot -->
@@ -23,12 +24,8 @@
   <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
 
   
-  <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
-  <arg name="using_cam_mount" default="false"/>
+  <!-- The type of mount being used on the arm -->
 
-  <!-- Whether or not a laser mount is being used on the robot arm (ma1440) -->
-  <arg name="using_laser_mount" default="false"/>
-  
  
   <!-- this 'robot_ns' argument corresponds to the robot name of the MoveIt controller group for both the arm and the
   positioner. this must be equivalent to the name of the controller group with all the joints in the system in
@@ -55,8 +52,7 @@
     <arg name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
     <arg name="mh185_xyz" value="$(arg mh185_xyz)"/>
     <arg name="mh185_rpy" value="$(arg mh185_rpy)"/>
-    <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
-    <arg name="using_laser_mount" value="$(arg using_laser_mount)"/>
+    <arg name="mount_type" value="$(arg mount_type)"/>
 
     <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>

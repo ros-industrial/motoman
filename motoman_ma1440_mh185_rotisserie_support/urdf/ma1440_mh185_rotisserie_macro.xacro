@@ -7,8 +7,7 @@
           ma1440_rpy
           mh185_xyz
           mh185_rpy
-          using_cam_mount
-          using_laser_mount
+          mount_type
           offsets_file_path"
   >
 
@@ -16,9 +15,7 @@
     <xacro:load_motoman_ma1440
         world_base_xyz="${ma1440_xyz}"
         world_base_rpy="${ma1440_rpy}"
-        using_cam_mount="${using_cam_mount}"
-        using_laser_mount="${using_laser_mount}"
-
+        mount_type="${mount_type}"
         offsets_file_path="${offsets_file_path}"
     />
 

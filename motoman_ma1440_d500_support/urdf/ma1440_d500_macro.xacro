@@ -8,8 +8,6 @@
           d500_xyz
           d500_rpy
           table_thickness
-
-
           mount_type
           offsets_file_path"
   >
@@ -18,7 +16,6 @@
     <xacro:load_motoman_ma1440
         world_base_xyz="${ma1440_xyz}"
         world_base_rpy="${ma1440_rpy}"
-
         offsets_file_path="${offsets_file_path}"
         mount_type="${mount_type}"
     />

@@ -5,8 +5,7 @@
   <!-- The name of the parameter under which the URDF is loaded -->
   <arg name="robot_description" default="robot_description"/>
 
-  <arg if="$(arg load_robot_description)" name="using_cam_mount" default="false"/>
-  <arg if="$(arg load_robot_description)" name="using_laser_mount" default="false"/>
+  <arg if="$(arg load_robot_description)" name="mount_type" default="cam"/>
 
   <arg if="$(arg load_robot_description)" name="offsets_file_path" default=""/>
 
@@ -22,8 +21,7 @@
          ma1440_rpy:='$(arg ma1440_rpy)'
          mh185_xyz:='$(arg mh185_xyz)'
          mh185_rpy:='$(arg mh185_rpy)'
-         using_cam_mount:='$(arg using_cam_mount)'
-         using_laser_mount:='$(arg using_laser_mount)'
+         mount_type:='$(arg mount_type)'
          offsets_file_path:='$(arg offsets_file_path)'"/>
 
 
