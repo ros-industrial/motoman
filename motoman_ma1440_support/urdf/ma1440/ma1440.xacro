@@ -8,8 +8,8 @@
             prefix:=ma1440_
             world_base_xyz
             world_base_rpy
-            using_cam_mount:=false
-            using_laser_mount:=false
+            mount_type
+
             offsets_file_path:='$(find motoman_ma1440_support)/config/robot_calibration_offsets.yaml'">
         <xacro:unless value="${offsets_file_path == ''}">
             <xacro:motoman_ma1440
@@ -28,7 +28,7 @@
             />
         </xacro:if>
         <!-- optionally add the cam mount to the end of the arm, this is the laser scanner enclosure used on the Corsa system -->
-        <xacro:if value="${using_cam_mount}">
+        <xacro:if value="${mount_type =='cam'}">
             <xacro:include filename="$(find motoman_ma1440_support)/urdf/cam_mount/cam_mount.xacro" />
             <xacro:cam_mount_load prefix="${prefix}"/>
             <joint name="joint_cam_mount" type="fixed">
@@ -38,7 +38,7 @@
                 <axis xyz="0 0 0" />
             </joint>
         </xacro:if>
-        <xacro:if value="${using_laser_mount}">
+        <xacro:if value="${mount_type=='laser'}">
             <xacro:include filename="$(find motoman_ma1440_support)/urdf/laser_mount/laser_mount.xacro" />
             <xacro:laser_mount_load prefix="${prefix}"/>
             <joint name="joint_laser_mount" type="fixed">
