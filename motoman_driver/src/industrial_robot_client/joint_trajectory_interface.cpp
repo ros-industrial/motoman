@@ -125,6 +125,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ve
                                   "joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryCB, this);
   this->sub_cur_pos_ = this->node_.subscribe(
                          "joint_states", 1, &JointTrajectoryInterface::jointStateCB, this);
+  this->sub_joint_command_ = this->node_.subscribe("joint_command",0,&JointTrajectoryInterface::jointCommandCB,this);
 
   return true;
 }
@@ -152,6 +153,7 @@ bool JointTrajectoryInterface::init(
                                   "joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryExCB, this);
   this->srv_stop_motion_ = this->node_.advertiseService(
                              "stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
+  this->sub_joint_command_ = this->node_.subscribe("joint_command",0,&JointTrajectoryInterface::jointCommandCB,this);
 
   for (it_type iterator = this->robot_groups_.begin(); iterator != this->robot_groups_.end(); iterator++)
   {
@@ -163,7 +165,7 @@ bool JointTrajectoryInterface::init(
     ros::ServiceServer srv_joint_trajectory;
     ros::ServiceServer srv_stop_motion;
     ros::Subscriber sub_joint_trajectory;
-
+    ros::Subscriber sub_joint_command;
     srv_stop_motion = this->node_.advertiseService(
                         ns_str + "/" + name_str + "/stop_motion",
                         &JointTrajectoryInterface::stopMotionCB, this);
@@ -173,6 +175,8 @@ bool JointTrajectoryInterface::init(
     sub_joint_trajectory = this->node_.subscribe(
                              ns_str + "/" + name_str + "/joint_path_command", 0,
                              &JointTrajectoryInterface::jointTrajectoryExCB, this);
+
+    sub_joint_command = this->node_.subscribe(ns_str+"/"+name_str+"/joint_command",0,&JointTrajectoryInterface::jointCommandCB,this);
 
     this->srv_stops_[robot_id] = srv_stop_motion;
     this->srv_joints_[robot_id] = srv_joint_trajectory;
