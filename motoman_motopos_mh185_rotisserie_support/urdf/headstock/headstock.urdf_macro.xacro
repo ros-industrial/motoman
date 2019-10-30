@@ -59,7 +59,7 @@
     type="revolute">
     <origin
       xyz="0 0 0"
-      rpy="0 0 0" />
+      rpy="0 ${M_PI} 0" />
     <parent
       link="${prefix}hs_base_link" />
     <child
@@ -70,7 +70,7 @@
       lower="${-2*M_PI}"
       upper="${2*M_PI}"
       effort="100"
-      velocity="${(12.4/60)*2*M_PI}" />
+      velocity="0.9" />
   </joint>
   <xacro:transmission_macro name="${prefix}_joint_1" />
 
@@ -124,7 +124,7 @@
     type="fixed">
     <origin
       xyz="0 ${hs_prismatic_offset} 0"
-      rpy="0 0 0" />
+      rpy="0 ${M_PI} 0" />
     <parent
       link="${prefix}hs_revolute_link" />
     <child

@@ -34,6 +34,6 @@ joint_limits:
     max_acceleration: 0
   mh185_vertical_joint_1:
     has_velocity_limits: true
-    max_velocity: 1.15
+    max_velocity: 0.9
     has_acceleration_limits: false
     max_acceleration: 0
