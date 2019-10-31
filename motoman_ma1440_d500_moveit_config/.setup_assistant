@@ -2,7 +2,7 @@ moveit_setup_assistant_config:
   URDF:
     package: motoman_ma1440_d500_support
     relative_path: urdf/ma1440_d500.xacro
-    xacro_args: ma1440_xyz:='0 0 0' ma1440_rpy:='0 0 0' d500_xyz:='0.889 0.475 0' d500_rpy:='0 0 0' table_thickness:='0.01905' using_cam_mount:=true
+    xacro_args: ma1440_xyz:='0 0 0' ma1440_rpy:='0 0 0' d500_xyz:='0.889 0.475 0' d500_rpy:='0 0 0' table_thickness:='0.01905' mount_type:=cam
   SRDF:
     relative_path: config/motoman_ma1440_d500.srdf
   CONFIG:

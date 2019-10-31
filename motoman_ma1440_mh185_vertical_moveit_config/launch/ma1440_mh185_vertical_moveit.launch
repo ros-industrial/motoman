@@ -15,7 +15,7 @@
   <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
 
   <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
-  <arg name="using_cam_mount" default=""/>
+  <arg name="mount_type" default=""/>
 
   <!-- IP address of the robot to connect to, if connecting to a real robot -->
   <arg name="robot_ip" unless="$(arg sim)" />
@@ -49,7 +49,7 @@
     <arg name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
     <arg name="mh185_vertical_xyz" value="$(arg mh185_vertical_xyz)"/>
     <arg name="mh185_vertical_rpy" value="$(arg mh185_vertical_rpy)"/>
-    <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
+    <arg name="mount_type" value="$(arg mount_type)"/>
     <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>
 

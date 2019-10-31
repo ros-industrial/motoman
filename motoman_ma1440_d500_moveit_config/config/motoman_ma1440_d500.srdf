@@ -114,7 +114,9 @@
     <disable_collisions link1="ma1440_base_link" link2="ma1440_link_l" reason="Never" />
     <disable_collisions link1="ma1440_base_link" link2="ma1440_link_s" reason="Adjacent" />
     <disable_collisions link1="ma1440_cam_mount_link" link2="ma1440_link_t" reason="Adjacent" />
+    <disable_collisions link1="ma1440_laser_mount_center_link" link2="ma1440_link_t" reason="Adjacent" />
     <disable_collisions link1="ma1440_cam_mount_link" link2="ma1440_link_tip" reason="Adjacent" />
+    <disable_collisions link1="ma1440_laser_mount_center_link" link2="ma1440_link_tip" reason="Adjacent" />
     <disable_collisions link1="ma1440_link_b" link2="ma1440_link_r" reason="Adjacent" />
     <disable_collisions link1="ma1440_link_b" link2="ma1440_link_t" reason="Adjacent" />
     <disable_collisions link1="ma1440_link_b" link2="ma1440_link_tip" reason="Never" />

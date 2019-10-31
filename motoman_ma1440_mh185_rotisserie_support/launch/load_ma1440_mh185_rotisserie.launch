@@ -1,6 +1,6 @@
 
 <launch>
-	<arg name="using_cam_mount" value="false"/>
+	<arg name="mount_type" value="cam"/>
 	<arg name="ma1440_xyz" value="0 0 0"/>
 	<arg name="ma1440_rpy" value="0 0 0"/>
 	<arg name="mh185_rotisserie_xyz" value="1 0 0"/>
@@ -12,5 +12,5 @@
          ma1440_rpy:='$(arg ma1440_rpy)'
          mh185_rotisserie_xyz:='$(arg mh185_rotisserie_xyz)'
          mh185_rotisserie_rpy:='$(arg mh185_rotisserie_rpy)'
-         using_cam_mount:='$(arg using_cam_mount)'"/>
+         mount_type:='$(arg mount_type)'"/>
 </launch>

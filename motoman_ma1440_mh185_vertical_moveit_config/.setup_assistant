@@ -2,7 +2,7 @@ moveit_setup_assistant_config:
   URDF:
     package: motoman_ma1440_mh185_vertical_support
     relative_path: urdf/ma1440_mh185_vertical.xacro
-    xacro_args: ma1440_xyz:='0 0 0' ma1440_rpy:='0 0 0' mh185_vertical_xyz:='1 0 0' mh185_vertical_rpy:='0 0 1.57079632695' using_cam_mount:=true
+    xacro_args: ma1440_xyz:='0 0 0' ma1440_rpy:='0 0 0' mh185_vertical_xyz:='1 0 0' mh185_vertical_rpy:='0 0 1.57079632695' mount_type:=cam
   SRDF:
     relative_path: config/motoman_ma1440_mh185_vertical.srdf
   CONFIG:
