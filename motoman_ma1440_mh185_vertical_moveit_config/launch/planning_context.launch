@@ -7,7 +7,7 @@
   <!-- The name of the parameter under which the URDF is loaded -->
   <arg name="robot_description" default="robot_description"/>
 
-  <arg if="$(arg load_robot_description)" name="mount_type" default="false"/>
+  <arg if="$(arg load_robot_description)" name="mount_type" default=""/>
 
   <arg if="$(arg load_robot_description)" name="offsets_file_path" default=""/>
 
