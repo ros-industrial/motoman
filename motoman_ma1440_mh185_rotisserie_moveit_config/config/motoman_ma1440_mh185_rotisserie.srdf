@@ -43,6 +43,14 @@
         <joint name="ma1440_joint_t" value="0" />
         <joint name="ma1440_joint_u" value="-0.9291" />
     </group_state>
+    <group_state name="axial_positioner_calibration_pose" group="arm">
+        <joint name="ma1440_joint_b" value="-2.3033790588378906" />
+        <joint name="ma1440_joint_l" value="0.5152430534362793" />
+        <joint name="ma1440_joint_r" value="1.4866927862167358" />
+        <joint name="ma1440_joint_s" value="1.37937331199646" />
+        <joint name="ma1440_joint_t" value="2.5315966606140137" />
+        <joint name="ma1440_joint_u" value="0.12761493027210236" />
+    </group_state>
     <group_state name="home_pose" group="positioner">
         <joint name="mh185_joint_1" value="0" />
     </group_state>
