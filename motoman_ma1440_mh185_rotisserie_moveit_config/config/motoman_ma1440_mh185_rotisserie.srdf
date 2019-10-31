@@ -51,6 +51,14 @@
         <joint name="ma1440_joint_t" value="2.5315966606140137" />
         <joint name="ma1440_joint_u" value="0.12761493027210236" />
     </group_state>
+    <group_state name="calibration_board_home_pose" group="arm">
+            <joint name="ma1440_joint_s" value="0" />
+            <joint name="ma1440_joint_l" value="-0.571590006351471" />
+            <joint name="ma1440_joint_u" value="0.06550712138414383" />
+            <joint name="ma1440_joint_r" value="0" />
+            <joint name="ma1440_joint_b" value="-1.0893715620040894," />
+            <joint name="ma1440_joint_t" value="0" />
+    </group_state>
     <group_state name="home_pose" group="positioner">
         <joint name="mh185_joint_1" value="0" />
     </group_state>
