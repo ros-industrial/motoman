@@ -51,13 +51,29 @@
         <joint name="ma1440_joint_t" value="2.5315966606140137" />
         <joint name="ma1440_joint_u" value="0.12761493027210236" />
     </group_state>
+    <group_state name="axial_positioner_secondary_calibration_pose" group="arm">
+        <joint name="ma1440_joint_s" value="1.2830935716629028" />
+        <joint name="ma1440_joint_l" value="0.12667997181415558" />
+        <joint name="ma1440_joint_u" value="0.19126901030540466" />
+        <joint name="ma1440_joint_r" value="1.3714778423309326" />
+        <joint name="ma1440_joint_b" value="-1.9426114559173584" />
+        <joint name="ma1440_joint_t" value="-1.68352210521698" />
+    </group_state>
+    <group_state name="axial_positioner_headstock_origin_calibration_pose" group="arm">
+        <joint name="ma1440_joint_s" value="0.7369205951690674" />
+        <joint name="ma1440_joint_l" value="-0.10098962485790253" />
+        <joint name="ma1440_joint_u" value="0.08272451907396317" />
+        <joint name="ma1440_joint_r" value="1.2259610891342163" />
+        <joint name="ma1440_joint_b" value="-1.7458291053771973" />
+        <joint name="ma1440_joint_t" value="-1.322331428527832" />
+    </group_state>
     <group_state name="calibration_board_home_pose" group="arm">
-            <joint name="ma1440_joint_s" value="0" />
-            <joint name="ma1440_joint_l" value="-0.571590006351471" />
-            <joint name="ma1440_joint_u" value="0.06550712138414383" />
-            <joint name="ma1440_joint_r" value="0" />
-            <joint name="ma1440_joint_b" value="-1.0893715620040894," />
-            <joint name="ma1440_joint_t" value="0" />
+        <joint name="ma1440_joint_s" value="0" />
+        <joint name="ma1440_joint_l" value="-0.571590006351471" />
+        <joint name="ma1440_joint_u" value="0.06550712138414383" />
+        <joint name="ma1440_joint_r" value="0" />
+        <joint name="ma1440_joint_b" value="-1.0893715620040894" />
+        <joint name="ma1440_joint_t" value="0" />
     </group_state>
     <group_state name="home_pose" group="positioner">
         <joint name="mh185_joint_1" value="0" />

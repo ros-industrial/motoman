@@ -63,8 +63,6 @@
                            parent="world"
                            child="${prefix}base_link"
                            axis_xyz="0 0 0"/>
-
-
   <xacro:fixed_joint_macro name="base-hsbase"
                            origin_xyz="${world2pos_xyz}"
                            origin_rpy="${world2pos_rpy}"
@@ -98,14 +96,11 @@
                            parent="${prefix}hs_revolute_link"
                            child="${prefix}ts_revolute_link"
                            axis_xyz="1 0 0" />
-
   <xacro:fixed_joint_macro name="${prefix}joint1-center-fixed"
                            origin_xyz="0 0 0"
                            origin_rpy="0 0 0"
                            parent="positioner/base"
                            child="positioner/center"
                            axis_xyz="0 0 0"/>
-
-
   </xacro:macro>
 </robot>
