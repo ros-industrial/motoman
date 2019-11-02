@@ -60,12 +60,12 @@
         <joint name="ma1440_joint_t" value="-1.68352210521698" />
     </group_state>
     <group_state name="axial_positioner_headstock_origin_calibration_pose" group="arm">
-        <joint name="ma1440_joint_s" value="0.7369205951690674" />
-        <joint name="ma1440_joint_l" value="-0.10098962485790253" />
-        <joint name="ma1440_joint_u" value="0.08272451907396317" />
-        <joint name="ma1440_joint_r" value="1.2259610891342163" />
-        <joint name="ma1440_joint_b" value="-1.7458291053771973" />
-        <joint name="ma1440_joint_t" value="-1.322331428527832" />
+        <joint name="ma1440_joint_s" value="0.5737873911857605" />
+        <joint name="ma1440_joint_l" value="0.1723964363336563" />
+        <joint name="ma1440_joint_u" value="0.3798259198665619" />
+        <joint name="ma1440_joint_r" value="1.2471219301223755" />
+        <joint name="ma1440_joint_b" value="-1.8215186595916748" />
+        <joint name="ma1440_joint_t" value="-1.4357432126998901" />
     </group_state>
     <group_state name="calibration_board_home_pose" group="arm">
         <joint name="ma1440_joint_s" value="0" />
