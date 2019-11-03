@@ -176,6 +176,18 @@
       </geometry>
     </collision>
   </link>
+
+   <joint name="${prefix}joint1-center-fixed" type="fixed">
+     <origin
+         xyz="0 0 0"
+         rpy="0 0 0" />
+     <parent
+         link="${prefix}hs_revolute_link" />
+     <child
+         link="positioner/center" />
+     <axis
+         xyz="0 0 0" />
+   </joint>
  </xacro:macro>
 </robot>
 

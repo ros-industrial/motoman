@@ -52,12 +52,12 @@
         <joint name="ma1440_joint_u" value="0.12761493027210236" />
     </group_state>
     <group_state name="axial_positioner_secondary_calibration_pose" group="arm">
-        <joint name="ma1440_joint_s" value="1.2830935716629028" />
-        <joint name="ma1440_joint_l" value="0.12667997181415558" />
-        <joint name="ma1440_joint_u" value="0.19126901030540466" />
-        <joint name="ma1440_joint_r" value="1.3714778423309326" />
-        <joint name="ma1440_joint_b" value="-1.9426114559173584" />
-        <joint name="ma1440_joint_t" value="-1.68352210521698" />
+        <joint name="ma1440_joint_s" value="0.8400948643684387" />
+        <joint name="ma1440_joint_l" value="0.18243633210659027" />
+        <joint name="ma1440_joint_u" value="0.45290476083755493" />
+        <joint name="ma1440_joint_r" value="1.324549674987793" />
+        <joint name="ma1440_joint_b" value="-1.890104055404663" />
+        <joint name="ma1440_joint_t" value="-1.5018713474273682" />
     </group_state>
     <group_state name="axial_positioner_headstock_origin_calibration_pose" group="arm">
         <joint name="ma1440_joint_s" value="0.5737873911857605" />

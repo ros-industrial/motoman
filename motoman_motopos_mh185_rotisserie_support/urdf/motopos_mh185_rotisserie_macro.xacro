@@ -11,16 +11,15 @@
 
   <xacro:property name="M_PI" value="3.1415926535897931"/>
 
-  <xacro:property name="offsets" value="${load_yaml('$(find motoman_motopos_mh185_rotisserie_support)/config/default_positioner_params.yaml')}"/>
-  <xacro:property name="world2pos_t" value="${offsets['base_to_hs_base_link_tf']['translation']}" />
-  <xacro:property name="world2pos_rot" value="${offsets['base_to_hs_base_link_tf']['rotation']}" />
+  <xacro:property name="offsets" value="${load_yaml('/var/local/forge/calibration/mh185_horizontal_pos_offsets.yaml')}"/>
+  <xacro:property name="world2pos_t" value="${offsets['transform']['translation']}" />
+  <xacro:property name="world2pos_rot" value="${offsets['transform']['rotation']}" />
   <xacro:property name="world2pos_xyz" value="${world2pos_t['x']} ${world2pos_t['y']} ${world2pos_t['z']}"/>
   <xacro:property name="world2pos_rpy" value="${world2pos_rot['roll']} ${world2pos_rot['pitch']} ${world2pos_rot['yaw']}"/>
 
   <!-- Tailstock offsets. Should be loaded from yaml file created during calibration. -->
   <xacro:property name="ts_base_offset" value="0.06985" />
   <xacro:property name="ts_revolute_offset" value="${offsets['tailstock_revolute_offset']}" />
-  <xacro:property name="hs_prismatic_offset" value="${offsets['headstock_prismatic_offset']}"/>
 
   <!-- Define a fixed joint macro -->
   <xacro:macro name="fixed_joint_macro" params="name origin_xyz origin_rpy parent child axis_xyz">
@@ -59,7 +58,7 @@
                            axis_xyz="1 0 0" />
   <xacro:fixed_joint_macro name="positioner/base"
                            origin_xyz="0 0 0"
-                           origin_rpy="0 0 0"
+                           origin_rpy="0 ${M_PI} 0"
                            parent="${prefix}hs_base_link"
                            child="positioner/base"
                            axis_xyz="0 0 0" />
@@ -84,11 +83,11 @@
                            parent="${prefix}hs_revolute_link"
                            child="${prefix}ts_revolute_link"
                            axis_xyz="1 0 0" />
-  <xacro:fixed_joint_macro name="${prefix}joint1-center-fixed"
-                           origin_xyz="0 0 0"
-                           origin_rpy="0 0 0"
-                           parent="positioner/base"
-                           child="positioner/center"
-                           axis_xyz="0 0 0"/>
+<!--  <xacro:fixed_joint_macro name="${prefix}joint1-center-fixed"-->
+<!--                           origin_xyz="0 0 0"-->
+<!--                           origin_rpy="0 0 0"-->
+<!--                           parent="{prefix}hs_revolute_link"-->
+<!--                           child="positioner/center"-->
+<!--                           axis_xyz="0 0 0"/>-->
   </xacro:macro>
 </robot>
