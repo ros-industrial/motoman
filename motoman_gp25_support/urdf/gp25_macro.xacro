@@ -1,0 +1,165 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:macro name="motoman_gp25" params="prefix">
+
+    <!-- Properties -->
+    <material name="yaskawa_blue">
+          <color rgba="0.12941 0.14902 0.74902 1" />
+    </material>
+
+    <!-- link list -->
+    <link name="${prefix}base_link">
+        <visual>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/visual/base_link.stl"/>
+            </geometry>
+            <material name="yaskawa_blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/collision/base_link.stl"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="${prefix}link_1_s">
+        <visual>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/visual/link_1_s.stl"/>
+            </geometry>
+            <material name="yaskawa_blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/collision/link_1_s.stl"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="${prefix}link_2_l">
+        <visual>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/visual/link_2_l.stl"/>
+            </geometry>
+            <material name="yaskawa_blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/collision/link_2_l.stl"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="${prefix}link_3_u">
+        <visual>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/visual/link_3_u.stl"/>
+            </geometry>
+            <material name="yaskawa_blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/collision/link_3_u.stl"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="${prefix}link_4_r">
+        <visual>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/visual/link_4_r.stl"/>
+            </geometry>
+            <material name="yaskawa_blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/collision/link_4_r.stl"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="${prefix}link_5_b">
+        <visual>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/visual/link_5_b.stl"/>
+            </geometry>
+            <material name="yaskawa_blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/collision/link_5_b.stl"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="${prefix}link_6_t">
+        <visual>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/visual/link_6_t.stl"/>
+            </geometry>
+            <material name="yaskawa_blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://motoman_gp25_support/meshes/collision/link_6_t.stl"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="${prefix}tool0"/>
+    <!-- end of link list -->
+
+    <!-- joint list -->
+    <joint name="${prefix}joint_1_s" type="revolute">
+        <parent link="${prefix}base_link"/>
+        <child link="${prefix}link_1_s"/>
+        <origin xyz="0 0 0.505" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
+        <limit lower="${radians(-180)}" upper="${radians(180)}" effort="3087" velocity="${radians(210)}"/>
+    </joint>
+    <joint name="${prefix}joint_2_l" type="revolute">
+        <parent link="${prefix}link_1_s"/>
+        <child link="${prefix}link_2_l"/>
+        <origin xyz="0.150 0 0" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit lower="${radians(-105)}" upper="${radians(155)}" effort="3087" velocity="${radians(210)}"/>
+    </joint>
+    <joint name="${prefix}joint_3_u" type="revolute">
+        <parent link="${prefix}link_2_l"/>
+        <child link="${prefix}link_3_u"/>
+        <origin xyz="0 0 0.760" rpy="0 0 0" />
+        <axis xyz="0 -1 0" />
+        <limit lower="${radians(-86)}" upper="${radians(160)}" effort="926.1" velocity="${radians(265)}"/>
+    </joint>
+    <joint name="${prefix}joint_4_r" type="revolute">
+        <parent link="${prefix}link_3_u"/>
+        <child link="${prefix}link_4_r"/>
+        <origin xyz="0 0 0.200" rpy="0 0 0" />
+        <axis xyz="-1 0 0" />
+        <limit lower="${radians(-200)}" upper="${radians(200)}" effort="88.2" velocity="${radians(420)}"/>
+    </joint>
+    <joint name="${prefix}joint_5_b" type="revolute">
+        <parent link="${prefix}link_4_r"/>
+        <child link="${prefix}link_5_b"/>
+        <origin xyz="0.795 0 0" rpy="0 0 0" />
+        <axis xyz="0 -1 0" />
+        <limit lower="${radians(-155)}" upper="${radians(150)}" effort="70.56" velocity="${radians(420)}"/>
+    </joint>
+    <joint name="${prefix}joint_6_t" type="revolute">
+        <parent link="${prefix}link_5_b"/>
+        <child link="${prefix}link_6_t"/>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <axis xyz="-1 0 0" />
+        <limit lower="${radians(-455)}" upper="${radians(455)}" effort="50.31" velocity="${radians(885)}"/>
+    </joint>
+    <joint name="${prefix}joint_6_t-tool0" type="fixed">
+        <origin xyz="0.100 0 0" rpy="3.1415926 -1.570796 0"/>
+        <parent link="${prefix}link_6_t"/>
+        <child link="${prefix}tool0"/>
+    </joint>
+    <!-- end of joint list -->
+
+    <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
+    <link name="${prefix}base" />
+    <joint name="${prefix}base_link-base" type="fixed">
+        <origin xyz="0 0 0.505" rpy="0 0 0"/>
+        <parent link="${prefix}base_link"/>
+        <child link="${prefix}base"/>
+    </joint>
+
+    </xacro:macro>
+</robot>
+
