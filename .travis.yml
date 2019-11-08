@@ -4,6 +4,9 @@ cache:
   directories:
     - $HOME/.ccache
 
+services:
+  - docker
+
 env:
   global:
     - CCACHE_DIR=$HOME/.ccache
