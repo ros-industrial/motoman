@@ -18,8 +18,9 @@ env:
 
 matrix:
   allow_failures:
-    - env: ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=ros
-    - env: ROS_DISTRO="indigo" ROS_REPOSITORY_PATH=ros-shadow-fixed
+    - env: ROS_DISTRO="indigo" ROS_REPO=ros
+    - env: ROS_DISTRO="indigo" ROS_REPO=ros-shadow-fixed
+    - env: ROS_DISTRO="kinetic" ROS_REPO=ros-shadow-fixed
 
 install:
   - git clone --depth=1 https://github.com/ros-industrial/industrial_ci.git .ci_config
