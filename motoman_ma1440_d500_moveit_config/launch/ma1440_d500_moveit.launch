@@ -17,9 +17,9 @@
   <!-- The thickness of the tabletop mounted on top of the last link of the D500 -->
   <arg name="table_thickness" default=""/>
 
-  <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
-  <arg name="using_cam_mount" default=""/>
 
+  <!-- The type of mount being used on the robot arm -->
+  <arg name="mount_type" default=""/>
   <!-- IP address of the robot to connect to, if connecting to a real robot -->
   <arg name="robot_ip" unless="$(arg sim)" />
 
@@ -54,7 +54,7 @@
     <arg name="d500_xyz" value="$(arg d500_xyz)"/>
     <arg name="d500_rpy" value="$(arg d500_rpy)"/>
     <arg name="table_thickness" value="$(arg table_thickness)"/>
-    <arg name="using_cam_mount" value="$(arg using_cam_mount)"/>
+    <arg name="mount_type" value="$(arg mount_type)"/>
     <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>
 

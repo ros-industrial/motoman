@@ -8,7 +8,8 @@
             prefix:=ma1440_
             world_base_xyz
             world_base_rpy
-            using_cam_mount:=false
+            mount_type
+
             offsets_file_path:='$(find motoman_ma1440_support)/config/robot_calibration_offsets.yaml'">
         <xacro:unless value="${offsets_file_path == ''}">
             <xacro:motoman_ma1440
@@ -26,8 +27,8 @@
                 offsets_file_path="'$(find motoman_ma1440_support)/config/robot_calibration_offsets.yaml'"
             />
         </xacro:if>
-        <!-- optionally add the cam mount to the end of the arm, this is the laserscanner enclosure used on the Corsa system -->
-        <xacro:if value="${using_cam_mount}">
+        <!-- optionally add the cam mount to the end of the arm, this is the laser scanner enclosure used on the Corsa system -->
+        <xacro:if value="${mount_type =='cam'}">
             <xacro:include filename="$(find motoman_ma1440_support)/urdf/cam_mount/cam_mount.xacro" />
             <xacro:cam_mount_load prefix="${prefix}"/>
             <joint name="joint_cam_mount" type="fixed">
@@ -35,6 +36,60 @@
                 <parent link="${prefix}link_t" />
                 <child link="${prefix}cam_mount_link" />
                 <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+        <!-- optionally add the laser mount to the end of the armand define all of its additional frames -->
+
+        <xacro:if value="${mount_type=='laser'}">
+            <xacro:include filename="$(find motoman_ma1440_support)/urdf/laser_mount/laser_mount.xacro" />
+            <xacro:laser_mount_load prefix="${prefix}"/>
+            <joint name="joint_laser_mount" type="fixed">
+                <origin xyz="0 0 -0.0735" rpy="${M_PI} 0 ${M_PI/2}" />
+                <parent link="${prefix}link_t" />
+                <child link="${prefix}laser_mount_center_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+            <joint name="joint_laser_center_to_receiver_1" type="fixed">
+                <origin xyz="0.0807 0.0777 -0.0508" rpy="0 0 0"/>
+                <parent link="${prefix}laser_mount_center_link"/>
+                <child link ="${prefix}laser_1_receiver_dummy_link"/>
+                <axis xyz="0 0 0"/>
+            </joint>
+            <joint name="joint_laser_center_to_receiver_2" type="fixed">
+                <origin xyz="-0.0807 0.0777 -0.0508" rpy="0 0 0"/>
+                <parent link="${prefix}laser_mount_center_link"/>
+                <child link ="${prefix}laser_2_receiver_dummy_link"/>
+                <axis xyz="0 0 0"/>
+            </joint>
+            <joint name="joint_laser_center_to_emitter_1" type="fixed">
+                <origin xyz="0.06788 -0.023345 -0.0508" rpy="0 0 0"/>
+                <parent link="${prefix}laser_mount_center_link"/>
+                <child link ="${prefix}laser_1_emitter_dummy_link"/>
+                <axis xyz="0 0 0"/>
+            </joint>
+            <joint name="joint_laser_center_to_emitter_2" type="fixed">
+                <origin xyz="0.03370 -0.063387 -0.0508" rpy="0 0 0"/>
+                <parent link="${prefix}laser_mount_center_link"/>
+                <child link ="${prefix}laser_2_emitter_dummy_link"/>
+                <axis xyz="0 0 0"/>
+            </joint>
+            <joint name="joint_laser_center_to_emitter_3" type="fixed">
+                <origin xyz="-0.03370 -0.063387 -0.0508" rpy="0 0 0"/>
+                <parent link="${prefix}laser_mount_center_link"/>
+                <child link ="${prefix}laser_3_emitter_dummy_link"/>
+                <axis xyz="0 0 0"/>
+            </joint>
+            <joint name="joint_laser_center_to_emitter_4" type="fixed">
+                <origin xyz="-0.06788 -0.023345 -0.0508" rpy="0 0 0"/>
+                <parent link="${prefix}laser_mount_center_link"/>
+                <child link ="${prefix}laser_4_emitter_dummy_link"/>
+                <axis xyz="0 0 0"/>
+            </joint>
+            <joint name="joint_laser_center_to_receiver_3" type="fixed">
+                <origin xyz="0.0 -0.093345 -0.0508" rpy="0 0 0"/>
+                <parent link="${prefix}laser_mount_center_link"/>
+                <child link ="${prefix}laser_3_receiver_dummy_link"/>
+                <axis xyz="0 0 0"/>
             </joint>
         </xacro:if>
     </xacro:macro>
