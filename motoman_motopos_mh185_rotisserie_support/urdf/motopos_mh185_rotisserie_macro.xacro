@@ -73,14 +73,14 @@
                            axis_xyz="1 0 0" />
   <xacro:fixed_joint_macro name="positioner/base"
                            origin_xyz="0 0 0"
-                           origin_rpy="0 0 0"
+                           origin_rpy="0 ${M_PI} 0"
                            parent="${prefix}hs_base_link"
                            child="positioner/base"
                            axis_xyz="0 0 0" />
   <!-- Connect the tail stock to the headstock -->
   <!-- the base and prismatic joints should be connected to a non-rotating link, i.e. the headstock base link -->
   <xacro:fixed_joint_macro name="${prefix}ts_base"
-                           origin_xyz="0 0 -${ts_base_offset}"
+                           origin_xyz="0 0 ${ts_base_offset}"
                            origin_rpy="0 0 0"
                            parent="${prefix}hs_base_link"
                            child="${prefix}ts_base_link"
@@ -93,18 +93,18 @@
                            axis_xyz="1 0 0" />
   <!-- The revolute link should be connected to a rotating link, i.e. the headstock revolute link -->
   <xacro:fixed_joint_macro name="${prefix}ts_revolute"
-                           origin_xyz="0 0 -${ts_revolute_offset}"
+                           origin_xyz="0 0 ${ts_revolute_offset}"
                            origin_rpy="0 0 0"
                            parent="${prefix}hs_revolute_link"
                            child="${prefix}ts_revolute_link"
                            axis_xyz="1 0 0" />
 
-  <xacro:fixed_joint_macro name="${prefix}joint1-center-fixed"
-                           origin_xyz="0 0 0"
-                           origin_rpy="0 0 0"
-                           parent="${prefix}hs_revolute_link"
-                           child="positioner/center"
-                           axis_xyz="0 0 0"/>
+<!--  <xacro:fixed_joint_macro name="${prefix}joint1-center-fixed"-->
+<!--                           origin_xyz="0 0 0"-->
+<!--                           origin_rpy="0 0 0"-->
+<!--                           parent="${prefix}hs_revolute_link"-->
+<!--                           child="positioner/center"-->
+<!--                           axis_xyz="0 0 0"/>-->
 
 
   </xacro:macro>

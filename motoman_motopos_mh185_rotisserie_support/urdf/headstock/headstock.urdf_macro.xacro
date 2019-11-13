@@ -59,7 +59,7 @@
     type="revolute">
     <origin
       xyz="0 0 0"
-      rpy="0 0 0" />
+      rpy="0 ${M_PI} 0" />
     <parent
       link="${prefix}hs_base_link" />
     <child
@@ -67,10 +67,10 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="${-1.1*M_PI}"
-      upper="${1.1*M_PI}"
+      lower="${-2*M_PI}"
+      upper="${2*M_PI}"
       effort="100"
-      velocity="${(12.4/60)*2*M_PI}" />
+      velocity="0.9" />
   </joint>
   <xacro:transmission_macro name="${prefix}_joint_1" />
 
@@ -123,8 +123,8 @@
     name="${prefix}joint_hs_prismatic"
     type="fixed">
     <origin
-      xyz="0 ${hs_prismatic_offset} 0"
-      rpy="0 0 0" />
+      xyz="0 0 0"
+      rpy="0 ${M_PI} 0" />
     <parent
       link="${prefix}hs_revolute_link" />
     <child
@@ -177,6 +177,17 @@
       </geometry>
     </collision>
   </link>
+   <joint name="${prefix}joint1-center-fixed" type="fixed">
+     <origin
+         xyz="0 0 0"
+         rpy="0 0 0" />
+     <parent
+         link="${prefix}hs_revolute_link" />
+     <child
+         link="positioner/center" />
+     <axis
+         xyz="0 0 0" />
+   </joint>
  </xacro:macro>
 </robot>
 

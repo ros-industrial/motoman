@@ -5,6 +5,10 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /MotionPlanning1
+        - /MotionPlanning1/Planning Request1
+        - /MotionPlanning1/Planned Path1
+        - /TF1
+        - /TF1/Frames1
       Splitter Ratio: 0.7425600290298462
     Tree Height: 418
   - Class: rviz/Help
@@ -73,31 +77,11 @@ Visualization Manager:
           Expand Link Details: false
           Expand Tree: false
           Link Tree Style: Links in Alphabetic Order
-          hs_base_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          hs_prismatic_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          hs_revolute_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           ma1440_base:
             Alpha: 1
             Show Axes: false
             Show Trail: false
           ma1440_base_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          ma1440_cam_mount_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -141,30 +125,53 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          ts_base_link:
+          mh185_hs_base_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
-          ts_prismatic_link:
+          mh185_hs_prismatic_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
-          ts_revolute_link:
+          mh185_hs_revolute_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
+          mh185_ts_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_ts_prismatic_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_ts_revolute_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          positioner/base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          positioner/center:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           world:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-        Loop Animation: true
+        Loop Animation: false
         Robot Alpha: 0.5
         Robot Color: 150; 50; 150
         Show Robot Collision: false
-        Show Robot Visual: true
+        Show Robot Visual: false
         Show Trail: false
         State Display Time: 0.05 s
         Trail Step Size: 1
@@ -182,8 +189,8 @@ Visualization Manager:
         Goal State Color: 250; 128; 0
         Interactive Marker Size: 0
         Joint Violation Color: 255; 0; 255
-        Planning Group: arm
-        Query Goal State: true
+        Planning Group: combined
+        Query Goal State: false
         Query Start State: false
         Show Workspace: false
         Start State Alpha: 1
@@ -205,31 +212,11 @@ Visualization Manager:
           Expand Link Details: false
           Expand Tree: false
           Link Tree Style: Links in Alphabetic Order
-          hs_base_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          hs_prismatic_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          hs_revolute_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           ma1440_base:
             Alpha: 1
             Show Axes: false
             Show Trail: false
           ma1440_base_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          ma1440_cam_mount_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -273,21 +260,44 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          ts_base_link:
+          mh185_hs_base_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
-          ts_prismatic_link:
+          mh185_hs_prismatic_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
-          ts_revolute_link:
+          mh185_hs_revolute_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
+          mh185_ts_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_ts_prismatic_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_ts_revolute_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          positioner/base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          positioner/center:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           world:
             Alpha: 1
             Show Axes: false
@@ -301,48 +311,50 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
-        All Enabled: true
-        hs_base_link:
-          Value: true
-        hs_prismatic_link:
-          Value: true
-        hs_revolute_link:
-          Value: true
+        All Enabled: false
         ma1440_base:
-          Value: true
+          Value: false
         ma1440_base_link:
-          Value: true
-        ma1440_cam_mount_link:
-          Value: true
+          Value: false
         ma1440_link_b:
-          Value: true
+          Value: false
         ma1440_link_l:
-          Value: true
+          Value: false
         ma1440_link_r:
-          Value: true
+          Value: false
         ma1440_link_s:
-          Value: true
+          Value: false
         ma1440_link_t:
-          Value: true
+          Value: false
         ma1440_link_tip:
           Value: true
         ma1440_link_u:
-          Value: true
+          Value: false
         mh185_base_link:
-          Value: true
-        ts_base_link:
-          Value: true
-        ts_prismatic_link:
-          Value: true
-        ts_revolute_link:
-          Value: true
+          Value: false
+        mh185_hs_base_link:
+          Value: false
+        mh185_hs_prismatic_link:
+          Value: false
+        mh185_hs_revolute_link:
+          Value: false
+        mh185_ts_base_link:
+          Value: false
+        mh185_ts_prismatic_link:
+          Value: false
+        mh185_ts_revolute_link:
+          Value: false
+        positioner/base:
+          Value: false
+        positioner/center:
+          Value: false
         world:
-          Value: true
+          Value: false
       Marker Scale: 1
       Name: TF
-      Show Arrows: true
+      Show Arrows: false
       Show Axes: true
-      Show Names: true
+      Show Names: false
       Tree:
         world:
           ma1440_base_link:
@@ -354,20 +366,22 @@ Visualization Manager:
                   ma1440_link_r:
                     ma1440_link_b:
                       ma1440_link_t:
-                        ma1440_cam_mount_link:
-                          {}
                         ma1440_link_tip:
                           {}
           mh185_base_link:
-            hs_base_link:
-              hs_revolute_link:
-                hs_prismatic_link:
+            mh185_hs_base_link:
+              mh185_hs_revolute_link:
+                mh185_hs_prismatic_link:
                   {}
-                ts_revolute_link:
+                mh185_ts_revolute_link:
                   {}
-              ts_base_link:
+                positioner/center:
+                  {}
+              mh185_ts_base_link:
                 {}
-              ts_prismatic_link:
+              mh185_ts_prismatic_link:
+                {}
+              positioner/base:
                 {}
       Update Interval: 0
       Value: true
@@ -423,5 +437,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1828
-  X: 459
-  Y: 41
+  X: 5418
+  Y: 425
