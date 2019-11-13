@@ -19,7 +19,8 @@
 
   <!-- Tailstock offsets. Should be loaded from yaml file created during calibration. -->
   <xacro:property name="ts_base_offset" value="0.06985" />
-  <xacro:property name="ts_revolute_offset" value="${offsets['tailstock_revolute_offset']}" />
+  <xacro:property name="ts_position" value="${load_yaml('/var/local/forge/calibration/mh185_horizontal_tailstock_position.yaml')}"/>
+  <xacro:property name="ts_revolute_offset" value="${ts_position['tailstock_revolute_offset']}" />
 
   <!-- Define a fixed joint macro -->
   <xacro:macro name="fixed_joint_macro" params="name origin_xyz origin_rpy parent child axis_xyz">
