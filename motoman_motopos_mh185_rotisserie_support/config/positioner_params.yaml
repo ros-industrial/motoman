@@ -6,9 +6,9 @@ positioner_params:
     child_frame_id: hs_base_link
     parent_frame_id: base_link
     translation:
-      x: 1.12305
+      x: 1.115
       y: -0.616361
-      z: 0.892564
+      z: 0.8805937532783039
     rotation:
       x: 0.5019611480047158
       y: -0.496654005429208

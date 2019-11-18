@@ -69,7 +69,7 @@
     <limit
       lower="${-2*M_PI}"
       upper="${2*M_PI}"
-      effort="100"
+      effort="10000"
       velocity="0.9" />
   </joint>
   <xacro:transmission_macro name="${prefix}_joint_1" />
