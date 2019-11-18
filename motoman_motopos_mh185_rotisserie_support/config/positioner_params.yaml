@@ -6,7 +6,7 @@ positioner_params:
     child_frame_id: hs_base_link
     parent_frame_id: base_link
     translation:
-      x: 1.115
+      x: 1.117
       y: -0.616361
       z: 0.8805937532783039
     rotation:
@@ -17,3 +17,6 @@ positioner_params:
       roll: 0
       pitch:  -1.57079632679
       yaw: 1.57079632679
+
+
+# tailstock XYZ as per rviz: X: 1.1134, Y: 0.733, 1.026
