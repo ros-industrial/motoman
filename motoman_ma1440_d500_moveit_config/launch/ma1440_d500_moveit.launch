@@ -41,7 +41,16 @@
   <param name="robot_ns" value="$(arg robot_ns)"/>
   <param name="controller_ns" value="$(arg controller_ns)"/>
 
- 
+  <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/ma1440_d500_motion_interface.yaml" />
+
+  <!-- Setup the motoman simulator. Robot groups and joints are read from topic_list defined in ma1440_d500_motion_interface.yaml -->
+  <group if="$(arg sim)">
+    <node name="joint_trajectory_action" pkg="motoman_driver" type="motoman_driver_joint_trajectory_action" output="screen"/>
+    <!-- Set the initial pose for the robot arm - the positioner will ignore these values because the num of joints doesn't match -->
+    <param name="initial_joint_state" value="[0.523599, 0, 0, 0, 0, 0]" type="yaml"/>
+    <node pkg="motoman_driver" type="industrial_robot_simulator" name="motoman_industrial_robot_simulator" output="screen"/>
+    <node pkg="motoman_driver" name="dynamic_trajectory_converter" type="dynamic_trajectory_converter.py" output="screen"/>
+  </group>
 
   <!-- Load the cell parameters associated with this setup -->
   <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/cell_parameters.yaml" />
@@ -86,17 +95,6 @@
     <node pkg="industrial_robot_client" name="$(arg robot_ns)_joint_trajectory_action" type="joint_trajectory_action" output="log">
       <param name="constraints/goal_threshold" type="double" value="5e-4"/>
     </node>
-  </group>
-
-  <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/ma1440_d500_motion_interface.yaml" />
-
-  <!-- Setup the motoman simulator. Robot groups and joints are read from topic_list defined in ma1440_d500_motion_interface.yaml -->
-  <group if="$(arg sim)">
-    <node name="joint_trajectory_action" pkg="motoman_driver" type="motoman_driver_joint_trajectory_action" output="screen"/>
-    <!-- Set the initial pose for the robot arm - the positioner will ignore these values because the num of joints doesn't match -->
-    <param name="initial_joint_state" value="[0.523599, 0, 0, 0, 0, 0]" type="yaml"/>
-    <node pkg="motoman_driver" type="industrial_robot_simulator" name="motoman_industrial_robot_simulator" output="screen"/>
-    <node pkg="motoman_driver" name="dynamic_trajectory_converter" type="dynamic_trajectory_converter.py" output="screen"/>
   </group>
 
   <!-- dynamic trajectory converter node is now launched in (find motoman_driver)/launch/motion_streaming_interface.launch -->
