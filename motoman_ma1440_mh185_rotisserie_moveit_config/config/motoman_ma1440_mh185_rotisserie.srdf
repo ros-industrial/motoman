@@ -66,6 +66,14 @@
         <joint name="ma1440_joint_t" value="0" />
         <joint name="ma1440_joint_u" value="0.4" />
     </group_state>
+    <group_state name="calibration_board_home_pose" group="arm">
+        <joint name="ma1440_joint_b" value="-0.6684938073158264" />
+        <joint name="ma1440_joint_l" value="-1.0064332485198975" />
+        <joint name="ma1440_joint_r" value="-0.007341515272855759" />
+        <joint name="ma1440_joint_s" value="-0.0027602300979197025" />
+        <joint name="ma1440_joint_t" value="0.006063980050384998" />
+        <joint name="ma1440_joint_u" value="-0.532487690448761" />
+    </group_state>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="mh185_hs_base_link" link2="mh185_hs_prismatic_link" reason="Never" />
     <disable_collisions link1="mh185_hs_base_link" link2="mh185_hs_revolute_link" reason="Adjacent" />
