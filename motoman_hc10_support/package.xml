@@ -15,11 +15,19 @@
     </p>
     <ul>
       <li>HC10 - Default</li>
-    </ul>
+      <li>HC10DT - Default</li>
+   </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
-      found in <em>YASKAWA MOTOMAN-HC10 INSTRUCTIONS (HW1483896)</em> version
-      <em>180571-1CD, rev 2</em>.
+      found in:
+	</p> 
+	<ul>
+	  <li><em>YASKAWA MOTOMAN-HC10 INSTRUCTIONS (HW1483896)</em> version
+      <em>180571-1CD, rev 2</em>.</li>
+	  <li><em>YASKAWA MOTOMAN-HC10DT INSTRUCTIONS (HW1485083)</em> version
+      <em>180572-1CD, rev 2</em>.</li>
+	</ul>
+	<p>
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
