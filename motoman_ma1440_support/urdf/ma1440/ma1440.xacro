@@ -9,7 +9,7 @@
             world_base_xyz
             world_base_rpy
             mount_type
-
+            use_structured_light_gantry
             offsets_file_path:='$(find motoman_ma1440_support)/config/robot_calibration_offsets.yaml'">
         <xacro:unless value="${offsets_file_path == ''}">
             <xacro:motoman_ma1440
@@ -27,6 +27,18 @@
                 offsets_file_path="'$(find motoman_ma1440_support)/config/robot_calibration_offsets.yaml'"
             />
         </xacro:if>
+
+        <xacro:if value="${use_structured_light_gantry}">
+            <xacro:include filename="$(find motoman_ma1440_support)/urdf/structured_light_gantry/structured_light_gantry.xacro" />
+            <xacro:structured_light_gantry_load/>
+            <joint name="gantry_mount_joint" type="fixed">
+                <origin xyz="2.2 -1.35 0" rpy="0 0 ${M_PI/2}" />
+                <parent link="world" />
+                <child link="structured_light_gantry_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
         <!-- optionally add the cam mount to the end of the arm, this is the laser scanner enclosure used on the Corsa system -->
         <xacro:if value="${mount_type =='cam'}">
             <xacro:include filename="$(find motoman_ma1440_support)/urdf/cam_mount/cam_mount.xacro" />

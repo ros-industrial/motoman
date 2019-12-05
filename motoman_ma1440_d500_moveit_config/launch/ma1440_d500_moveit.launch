@@ -12,6 +12,9 @@
   <arg name="d500_xyz" default=""/>
   <arg name="d500_rpy" default=""/>
 
+  <!-- whether or not to include the collision model for the gantry mounting system for the structured light -->
+  <arg name="use_structured_light_gantry" default="false"/>
+
   <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
 
   <!-- The thickness of the tabletop mounted on top of the last link of the D500 -->
@@ -64,6 +67,7 @@
     <arg name="d500_rpy" value="$(arg d500_rpy)"/>
     <arg name="table_thickness" value="$(arg table_thickness)"/>
     <arg name="mount_type" value="$(arg mount_type)"/>
+    <arg name="use_structured_light_gantry" value="$(arg use_structured_light_gantry)"/>
     <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>
 

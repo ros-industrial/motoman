@@ -6,12 +6,17 @@
   <!--  - if sim=false, a robot_ip argument is required -->
   <arg name="sim" default="true" />
 
+  <!-- The starting world positions/rotations for the ma1440 and mh185 -->
   <arg name="ma1440_xyz" default=""/>
   <arg name="ma1440_rpy" default=""/>
   <arg name="mh185_xyz" default=""/>
   <arg name="mh185_rpy" default=""/>
+
+  <!-- The type of mount being used on the arm -->
   <arg name="mount_type" default=""/>
 
+  <!-- whether or not to include the collision model for the gantry mounting system for the structured light -->
+  <arg name="use_structured_light_gantry" default=""/>
 
   <!-- IP address of the robot to connect to, if connecting to a real robot -->
   <arg name="robot_ip" unless="$(arg sim)" /> 
@@ -19,13 +24,7 @@
   <!--  TODO: Might consider giving this a more descriptive name -->
   <param name="/robot_joint_prefix" value="ma1440_"/>
 
-
-  <!-- The starting world positions/rotations for the ma1440 and mh185 -->
   <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
-
-  
-  <!-- The type of mount being used on the arm -->
-
  
   <!-- this 'robot_ns' argument corresponds to the robot name of the MoveIt controller group for both the arm and the
   positioner. this must be equivalent to the name of the controller group with all the joints in the system in
@@ -53,7 +52,7 @@
     <arg name="mh185_xyz" value="$(arg mh185_xyz)"/>
     <arg name="mh185_rpy" value="$(arg mh185_rpy)"/>
     <arg name="mount_type" value="$(arg mount_type)"/>
-
+    <arg name="use_structured_light_gantry" value="$(arg use_structured_light_gantry)"/>
     <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>
  

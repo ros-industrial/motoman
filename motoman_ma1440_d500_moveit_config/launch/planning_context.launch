@@ -14,6 +14,7 @@
   <arg if="$(arg load_robot_description)" name="ma1440_rpy" default=""/>
   <arg if="$(arg load_robot_description)" name="d500_xyz" default=""/>
   <arg if="$(arg load_robot_description)" name="d500_rpy" default=""/>
+  <arg if="$(arg load_robot_description)" name="use_structured_light_gantry" default=""/>
   <arg if="$(arg load_robot_description)" name="table_thickness" default="0"/>
 
   <!-- Load universal robot description format (URDF) -->
@@ -25,6 +26,7 @@
          d500_rpy:='$(arg d500_rpy)'
          table_thickness:='$(arg table_thickness)'
          mount_type:='$(arg mount_type)'
+         use_structured_light_gantry:='$(arg use_structured_light_gantry)'
          offsets_file_path:='$(arg offsets_file_path)'"/>
 
   <!-- The semantic description that corresponds to the URDF -->
