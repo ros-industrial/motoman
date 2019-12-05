@@ -69,7 +69,7 @@
              ${offsets[prefix + 'joint_1']['yaw']}"
     />
     <axis xyz="0 0 1" />
-    <limit lower="${-1*M_PI}" upper="${M_PI}" effort="1274" velocity="1.15"/>
+    <limit lower="${-2*M_PI}" upper="${2*M_PI}" effort="1274" velocity="1.15"/>
   </joint>
   <xacro:transmission_macro name="1"/>
   <joint name="${prefix}joint_1-tool0" type="fixed">

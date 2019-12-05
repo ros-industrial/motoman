@@ -7,7 +7,6 @@
 
   <!-- Import trasnmission macro -->
   <xacro:include filename="$(find motoman_motopos_mh185_rotisserie_support)/urdf/headstock/headstock.transmission.xacro" />
-  <xacro:property name="hs_prismatic_offset" value="${load_yaml('$(find motoman_motopos_mh185_rotisserie_support)/config/positioner_params.yaml')['positioner_params']['headstock_prismatic_offset']}"/>
 
   <link
     name="${prefix}hs_base_link">
@@ -69,7 +68,7 @@
     <limit
       lower="${-2*M_PI}"
       upper="${2*M_PI}"
-      effort="10000"
+      effort="100"
       velocity="0.9" />
   </joint>
   <xacro:transmission_macro name="${prefix}_joint_1" />
