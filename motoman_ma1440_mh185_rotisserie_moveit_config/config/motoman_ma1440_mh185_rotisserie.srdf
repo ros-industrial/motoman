@@ -19,7 +19,7 @@
         <joint name="ma1440_joint_tip" />
     </group>
     <group name="positioner">
-    <joint name="mh185_joint_1" />
+        <joint name="mh185_joint_1" />
     </group>
     <group name="combined">
         <group name="positioner" />
@@ -43,12 +43,44 @@
         <joint name="ma1440_joint_t" value="0" />
         <joint name="ma1440_joint_u" value="-0.9291" />
     </group_state>
+    <group_state name="robot_to_structured_light_calibration_pose" group="arm">
+        <joint name="ma1440_joint_s" value="-0.35163140296936035" />
+        <joint name="ma1440_joint_l" value="-1.4588598012924194" />
+        <joint name="ma1440_joint_u" value="-0.9047418832778931" />
+        <joint name="ma1440_joint_r" value="-0.0063878376968204975" />
+        <joint name="ma1440_joint_b" value="-0.49906012415885925" />
+        <joint name="ma1440_joint_t" value="0.0052580079063773155" />
+    </group_state>
+    <group_state name="axial_positioner_secondary_calibration_pose" group="arm">
+        <joint name="ma1440_joint_s" value="0.7954691052436829" />
+        <joint name="ma1440_joint_l" value="0.16352427005767822" />
+        <joint name="ma1440_joint_u" value="0.42060527205467224" />
+        <joint name="ma1440_joint_r" value="1.2975767850875854" />
+        <joint name="ma1440_joint_b" value="-1.8068650960922241" />
+        <joint name="ma1440_joint_t" value="-1.4009329080581665" />
+    </group_state>
+    <group_state name="axial_positioner_headstock_origin_calibration_pose" group="arm">
+        <joint name="ma1440_joint_s" value="0.5737873911857605" />
+        <joint name="ma1440_joint_l" value="0.1723964363336563" />
+        <joint name="ma1440_joint_u" value="0.3798259198665619" />
+        <joint name="ma1440_joint_r" value="1.2471219301223755" />
+        <joint name="ma1440_joint_b" value="-1.8215186595916748" />
+        <joint name="ma1440_joint_t" value="-1.4357432126998901" />
+    </group_state>
+    <group_state name="calibration_board_home_pose" group="arm">
+        <joint name="ma1440_joint_s" value="0" />
+        <joint name="ma1440_joint_l" value="-0.571590006351471" />
+        <joint name="ma1440_joint_u" value="0.06550712138414383" />
+        <joint name="ma1440_joint_r" value="0" />
+        <joint name="ma1440_joint_b" value="-1.0893715620040894" />
+        <joint name="ma1440_joint_t" value="0" />
+    </group_state>
     <group_state name="home_pose" group="positioner">
         <joint name="mh185_joint_1" value="0" />
     </group_state>
     <group_state name="zero_pose" group="positioner">
-            <joint name="mh185_joint_1" value="0" />
-        </group_state>
+        <joint name="mh185_joint_1" value="0" />
+    </group_state>
     <group_state name="zero_pose" group="combined">
         <joint name="mh185_joint_1" value="0" />
         <joint name="ma1440_joint_b" value="0" />

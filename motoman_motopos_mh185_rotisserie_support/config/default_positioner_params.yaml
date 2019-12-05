@@ -1,0 +1,12 @@
+# Transforms from base_link to hs_base_link and the inverse. Also includes roll, pitch, yaw representations of rotation for urdfs.
+tailstock_revolute_offset: 0.9795075813963461
+base_to_hs_base_link_tf:
+  translation:
+    x: 1.12305
+    y: -0.616361
+    z: 0.892564
+  rotation:
+    roll: 0
+    pitch: -1.57079632679
+    yaw: 1.57079632679
+
