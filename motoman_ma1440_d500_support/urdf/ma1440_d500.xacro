@@ -6,6 +6,7 @@
 	<xacro:arg name="d500_xyz" default=""/>
 	<xacro:arg name="d500_rpy" default=""/>
 	<xacro:arg name="table_thickness" default=""/>
+	<xacro:arg name="use_structured_light_gantry" default=""/>
 
 	<xacro:arg name="offsets_file_path" default=""/>
 	<xacro:arg name="mount_type" default=""/>
@@ -17,6 +18,7 @@
 			d500_xyz="$(arg d500_xyz)"
 			d500_rpy="$(arg d500_rpy)"
 			table_thickness="$(arg table_thickness)"
+			use_structured_light_gantry="$(arg use_structured_light_gantry)"
 
 			offsets_file_path="$(arg offsets_file_path)"
 			mount_type="$(arg mount_type)"

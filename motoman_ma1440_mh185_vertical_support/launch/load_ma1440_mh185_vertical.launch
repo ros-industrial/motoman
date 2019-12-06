@@ -1,6 +1,7 @@
 
 <launch>
 	<arg name="mount_type" value="cam"/>
+    <arg name="use_structured_light_gantry" value="false"/>
 	<arg name="ma1440_xyz" value="0 0 0"/>
 	<arg name="ma1440_rpy" value="0 0 0"/>
 	<arg name="mh185_vertical_xyz" value="1 0 0"/>
@@ -12,5 +13,6 @@
          ma1440_rpy:='$(arg ma1440_rpy)'
          mh185_vertical_xyz:='$(arg mh185_vertical_xyz)'
          mh185_vertical_rpy:='$(arg mh185_vertical_rpy)'
+         use_structured_light_gantry:='$(arg use_structured_light_gantry)'
          mount_type:='$(arg mount_type)'"/>
 </launch>

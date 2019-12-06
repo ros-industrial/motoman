@@ -176,7 +176,6 @@
       </geometry>
     </collision>
   </link>
-
    <joint name="${prefix}joint1-center-fixed" type="fixed">
      <origin
          xyz="0 0 0"

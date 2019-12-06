@@ -1,16 +1,20 @@
 
 <launch>
 	<arg name="mount_type" value="cam"/>
+    <arg name="use_structured_light_gantry" value="false"/>
 	<arg name="ma1440_xyz" value="0 0 0"/>
 	<arg name="ma1440_rpy" value="0 0 0"/>
-	<arg name="mh185_rotisserie_xyz" value="1 0 0"/>
-	<arg name="mh185_rotisserie_rpy" value="0 0 0"/>
+	<arg name="mh185_xyz" value="1 0 0"/>
+	<arg name="mh185_rpy" value="0 0 0"/>
+    <arg name="offsets_file_path" value=""/>
 
     <param name="robot_description"
          command="xacro $(find motoman_ma1440_mh185_rotisserie_support)/urdf/ma1440_mh185_rotisserie.xacro
          ma1440_xyz:='$(arg ma1440_xyz)'
          ma1440_rpy:='$(arg ma1440_rpy)'
-         mh185_rotisserie_xyz:='$(arg mh185_rotisserie_xyz)'
-         mh185_rotisserie_rpy:='$(arg mh185_rotisserie_rpy)'
-         mount_type:='$(arg mount_type)'"/>
+         mh185_xyz:='$(arg mh185_xyz)'
+         mh185_rpy:='$(arg mh185_rpy)'
+         use_structured_light_gantry:='$(arg use_structured_light_gantry)'
+         mount_type:='$(arg mount_type)'
+         offsets_file_path:='$(arg offsets_file_path)'"/>
 </launch>

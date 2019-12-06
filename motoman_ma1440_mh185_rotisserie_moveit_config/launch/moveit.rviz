@@ -80,25 +80,6 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          ma1440_base_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          ma1440_cam_mount_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          ma1440_link_b:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          ma1440_link_l:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
             Value: true
           ma1440_link_r:
             Alpha: 1
@@ -148,6 +129,25 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+          mh185_hs_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_hs_prismatic_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_hs_revolute_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_ts_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
             Value: true
           mh185_ts_prismatic_link:
             Alpha: 1
@@ -171,11 +171,11 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-        Loop Animation: true
+        Loop Animation: false
         Robot Alpha: 0.5
         Robot Color: 150; 50; 150
         Show Robot Collision: false
-        Show Robot Visual: true
+        Show Robot Visual: false
         Show Trail: false
         State Display Time: 0.005 s
         Trail Step Size: 1
@@ -220,25 +220,6 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          ma1440_base_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          ma1440_cam_mount_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          ma1440_link_b:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          ma1440_link_l:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
             Value: true
           ma1440_link_r:
             Alpha: 1
@@ -266,6 +247,25 @@ Visualization Manager:
             Show Trail: false
             Value: true
           mh185_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          mh185_hs_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_hs_prismatic_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_hs_revolute_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          mh185_ts_base_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -323,9 +323,9 @@ Visualization Manager:
         All Enabled: true
       Marker Scale: 1
       Name: TF
-      Show Arrows: true
+      Show Arrows: false
       Show Axes: true
-      Show Names: true
+      Show Names: false
       Tree:
         {}
       Update Interval: 0

@@ -1,6 +1,6 @@
-mh185_vertical_robot_calibration_offsets:
+mh185_robot_calibration_offsets:
 
-  mh185_vertical_joint_1:
+  mh185_joint_1:
     x: 0.0
     y: 0.0
     z: 0.0

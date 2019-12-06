@@ -11,15 +11,31 @@
 
   <xacro:property name="M_PI" value="3.1415926535897931"/>
 
-  <xacro:property name="offsets" value="${load_yaml('/var/local/forge/calibration/mh185_horizontal_pos_offsets.yaml')}"/>
-  <xacro:property name="world2pos_t" value="${offsets['transform']['translation']}" />
-  <xacro:property name="world2pos_rot" value="${offsets['transform']['rotation']}" />
+  <!-- IMPORTANT! The filepaths for the non-default calibrations are defined in the forge-shared-definitions package as well as the API!
+                  Do not change these filenames without also changing these values in the other places! -->
+  <xacro:if value="${offsets_file_path == ''}">
+    <xacro:property name="axis_offsets_filepath" value="$(find motoman_motopos_mh185_rotisserie_support)/config/default_axis_offsets.yaml"/>
+  </xacro:if>
+  <xacro:unless value="${offsets_file_path == ''}">
+    <xacro:property name="axis_offsets_filepath" value="/var/local/forge/calibration/mh185_horizontal/axis_offsets.yaml"/>
+  </xacro:unless>
+
+  <xacro:if value="${offsets_file_path == ''}">
+    <xacro:property name="tailstock_offset_filepath" value="$(find motoman_motopos_mh185_rotisserie_support)/config/default_tailstock_offset.yaml"/>
+  </xacro:if>
+  <xacro:unless value="${offsets_file_path == ''}">
+    <xacro:property name="tailstock_offset_filepath" value="/var/local/forge/calibration/mh185_horizontal/tailstock_offset.yaml"/>
+  </xacro:unless>    
+
+  <xacro:property name="axis_offsets" value="${load_yaml(axis_offsets_filepath)}"/>
+  <xacro:property name="world2pos_t" value="${axis_offsets['transform']['translation']}" />
+  <xacro:property name="world2pos_rot" value="${axis_offsets['transform']['rotation']}" />
   <xacro:property name="world2pos_xyz" value="${world2pos_t['x']} ${world2pos_t['y']} ${world2pos_t['z']}"/>
   <xacro:property name="world2pos_rpy" value="${world2pos_rot['roll']} ${world2pos_rot['pitch']} ${world2pos_rot['yaw']}"/>
 
   <!-- Tailstock offsets. Should be loaded from yaml file created during calibration. -->
   <xacro:property name="ts_base_offset" value="0.06985" />
-  <xacro:property name="ts_position" value="${load_yaml('/var/local/forge/calibration/mh185_horizontal_tailstock_position.yaml')}"/>
+  <xacro:property name="ts_position" value="${load_yaml(tailstock_offset_filepath)}"/>
   <xacro:property name="ts_revolute_offset" value="${ts_position['tailstock_revolute_offset']}" />
 
   <!-- Define a fixed joint macro -->
@@ -66,7 +82,7 @@
   <!-- Connect the tail stock to the headstock -->
   <!-- the base and prismatic joints should be connected to a non-rotating link, i.e. the headstock base link -->
   <xacro:fixed_joint_macro name="${prefix}ts_base"
-                           origin_xyz="0 0 -${ts_base_offset}"
+                           origin_xyz="0 0 ${ts_base_offset}"
                            origin_rpy="0 0 0"
                            parent="${prefix}hs_base_link"
                            child="${prefix}ts_base_link"

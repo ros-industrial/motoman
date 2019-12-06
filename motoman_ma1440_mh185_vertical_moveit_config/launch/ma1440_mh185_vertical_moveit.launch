@@ -12,6 +12,8 @@
   <arg name="mh185_vertical_xyz" default=""/>
   <arg name="mh185_vertical_rpy" default=""/>
 
+  <arg name="use_structured_light_gantry" default="false" doc="whether or not to include the collision model for the gantry mounting system for the structured light"/>
+
   <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
 
   <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
@@ -50,6 +52,7 @@
     <arg name="mh185_vertical_xyz" value="$(arg mh185_vertical_xyz)"/>
     <arg name="mh185_vertical_rpy" value="$(arg mh185_vertical_rpy)"/>
     <arg name="mount_type" value="$(arg mount_type)"/>
+    <arg name="use_structured_light_gantry" value="$(arg use_structured_light_gantry)"/>
     <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
   </include>
 

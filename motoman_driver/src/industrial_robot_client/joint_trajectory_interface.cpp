@@ -683,7 +683,7 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
       if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
 
       if (std::abs(pt.velocities[j]) > max_vel->second)
-        ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
+        ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'  with vel of %d", i, traj.joint_names[j].c_str(),pt.velocities[j]);
     }
 
     // check for valid timestamp
@@ -712,7 +712,7 @@ bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajecto
         if (max_vel == joint_vel_limits_.end()) continue;  // no velocity-checking if limit not defined
 
         if (std::abs(pt.velocities[j]) > max_vel->second)
-          ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'", i, traj.joint_names[j].c_str());
+          ROS_ERROR_RETURN(false, "Validation failed: Max velocity exceeded for trajectory pt %d, joint '%s'with vel of %d\"", i, traj.joint_names[j].c_str(),pt.velocities[j]);
       }
 
       // check for valid timestamp
