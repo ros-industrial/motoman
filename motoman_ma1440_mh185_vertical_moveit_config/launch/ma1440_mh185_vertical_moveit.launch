@@ -12,8 +12,7 @@
   <arg name="mh185_vertical_xyz" default=""/>
   <arg name="mh185_vertical_rpy" default=""/>
 
-  <!-- whether or not to include the collision model for the gantry mounting system for the structured light -->
-  <arg name="use_structured_light_gantry" default="false"/>
+  <arg name="use_structured_light_gantry" default="false" doc="whether or not to include the collision model for the gantry mounting system for the structured light"/>
 
   <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
 
