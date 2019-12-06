@@ -50,8 +50,8 @@
                 <axis xyz="0 0 0" />
             </joint>
         </xacro:if>
-        <!-- optionally add the laser mount to the end of the armand define all of its additional frames -->
-
+        
+        <!-- optionally add the laser mount to the end of the arm and define all of its additional frames -->
         <xacro:if value="${mount_type=='laser'}">
             <xacro:include filename="$(find motoman_ma1440_support)/urdf/laser_mount/laser_mount.xacro" />
             <xacro:laser_mount_load prefix="${prefix}"/>
