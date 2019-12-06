@@ -1,6 +1,7 @@
 
 <launch>
 	<arg name="mount_type" value="cam"/>
+    <arg name="use_structured_light_gantry" value="false"/>
 	<arg name="ma1440_xyz" value="0 0 0"/>
 	<arg name="ma1440_rpy" value="0 0 0"/>
 	<arg name="d500_xyz" value="1 0 0"/>
@@ -12,7 +13,8 @@
          ma1440_xyz:='$(arg ma1440_xyz)'
          ma1440_rpy:='$(arg ma1440_rpy)'
          d500_xyz:='$(arg d500_xyz)'
-         d500_rpy:='$(arg d500_rpy)' 
+         d500_rpy:='$(arg d500_rpy)'
+         use_structured_light_gantry:='$(arg use_structured_light_gantry)'
          table_thickness:=$(arg table_thickness)
          mount_type:=$(arg mount_type)"/>
 </launch>
