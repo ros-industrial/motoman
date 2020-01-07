@@ -8,7 +8,7 @@ catkin_package()
 
 if (CATKIN_ENABLE_TESTING)
   find_package(roslaunch REQUIRED)
-  roslaunch_add_file_check(test/launch_test.xml)
+  roslaunch_add_file_check(test/roslaunch_test_hc10.xml)
   roslaunch_add_file_check(test/roslaunch_test_hc10dt.xml)
 endif()
 
