@@ -105,13 +105,13 @@
     <link name="${prefix}link_6_dt">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_hc10_support/meshes/hc10/visual/link_6_dt.stl"/>
+          <mesh filename="package://motoman_hc10_support/meshes/hc10dt/visual/link_6_dt.stl"/>
         </geometry>
         <material name="yaskawa_white"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_hc10_support/meshes/hc10/collision/link_6_dt.stl"/>
+          <mesh filename="package://motoman_hc10_support/meshes/hc10dt/collision/link_6_dt.stl"/>
        </geometry>
       </collision>
     </link>
