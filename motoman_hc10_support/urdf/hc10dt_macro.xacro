@@ -92,26 +92,13 @@
     <link name="${prefix}link_6_t">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_hc10_support/meshes/hc10/visual/link_6_t.dae"/>
+          <mesh filename="package://motoman_hc10_support/meshes/hc10dt/visual/link_6_t.stl"/>
         </geometry>
         <material name="yaskawa_blue"/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_hc10_support/meshes/hc10/collision/link_6_t.stl"/>
-       </geometry>
-      </collision>
-    </link>
-    <link name="${prefix}link_6_dt">
-      <visual>
-        <geometry>
-          <mesh filename="package://motoman_hc10_support/meshes/hc10dt/visual/link_6_dt.stl"/>
-        </geometry>
-        <material name="yaskawa_white"/>
-      </visual>
-      <collision>
-        <geometry>
-          <mesh filename="package://motoman_hc10_support/meshes/hc10dt/collision/link_6_dt.stl"/>
+          <mesh filename="package://motoman_hc10_support/meshes/hc10dt/collision/link_6_t.stl"/>
        </geometry>
       </collision>
     </link>
@@ -160,11 +147,6 @@
       <origin xyz="0 0 0" rpy="0 0 0" />
       <axis xyz="0 0 1" />
       <limit lower="${radians(-180)}" upper="${radians(180)}" effort="31.36" velocity="${radians(250)}"/>
-    </joint>
-    <joint name="${prefix}joint_6_dt" type="fixed">
-      <parent link="${prefix}link_6_t"/>
-      <child link="${prefix}link_6_dt"/>
-      <origin xyz="0 0 0" rpy="0 0 0" />
     </joint>
     <joint name="${prefix}joint_6_t-tool0" type="fixed">
       <origin xyz="0 0 -0.170" rpy="${pi} 0 0"/>
