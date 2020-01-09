@@ -12,7 +12,7 @@
     >
       <xacro:property name="M_PI" value="3.1415926535897931"/>
       <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
-      <xacro:property name="vertical_offset" value="0"/>
+      <xacro:property name="vertical_offset" value="0.5"/>
 
         <link name="world">
             <origin xyz="0 0 0" rpy="0 0 0"/>
