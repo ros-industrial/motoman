@@ -69,6 +69,10 @@
         <joint name="d500_joint_1" value="0" />
         <joint name="d500_joint_2" value="0" />
     </group_state>
+    <group_state name="scan_pose" group="positioner">
+        <joint name="d500_joint_1" value="0" />
+        <joint name="d500_joint_2" value="-3.141593" />
+    </group_state>
     <group_state name="zero_pose" group="combined">
         <joint name="d500_joint_1" value="0" />
         <joint name="d500_joint_2" value="0" />

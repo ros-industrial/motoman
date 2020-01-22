@@ -55,6 +55,9 @@
     <group_state name="zero_pose" group="positioner">
         <joint name="mh185_vertical_joint_1" value="0" />
     </group_state>
+    <group_state name="scan_pose" group="positioner">
+        <joint name="mh185_vertical_joint_1" value="-3.141593" />
+    </group_state>
     <group_state name="home_pose" group="positioner">
         <joint name="mh185_vertical_joint_1" value="0" />
     </group_state>
