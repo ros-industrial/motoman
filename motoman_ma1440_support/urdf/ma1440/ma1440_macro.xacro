@@ -12,6 +12,7 @@
     >
       <xacro:property name="M_PI" value="3.1415926535897931"/>
       <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
+      <xacro:property name="vertical_offset" value="0.0"/>
 
         <link name="world">
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -267,7 +268,7 @@
         <!-- end of link list -->
         <!-- joint list -->
         <joint name="${prefix}world-base" type="fixed">
-            <origin xyz="${world_base_xyz}" rpy="${world_base_rpy}"/>
+            <origin xyz="0 0 ${vertical_offset}" rpy="${world_base_rpy}"/>
             <parent link="world" />
             <child link="${prefix}base_link"/>
         </joint>

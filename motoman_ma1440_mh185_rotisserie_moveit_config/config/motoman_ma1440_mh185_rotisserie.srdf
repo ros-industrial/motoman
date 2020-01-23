@@ -86,20 +86,20 @@
     </group_state>
     <group_state name="zero_pose" group="combined">
         <joint name="mh185_joint_1" value="0" />
-        <joint name="ma1440_joint_b" value="-0.4" />
-        <joint name="ma1440_joint_l" value="0" />
+        <joint name="ma1440_joint_b" value="0" />
+        <joint name="ma1440_joint_l" value="-1.4763" />
         <joint name="ma1440_joint_r" value="0" />
         <joint name="ma1440_joint_s" value="0" />
         <joint name="ma1440_joint_t" value="0" />
-        <joint name="ma1440_joint_u" value="0.52359" />
+        <joint name="ma1440_joint_u" value="0" />
     </group_state>
     <group_state name="zero_pose" group="arm">
         <joint name="ma1440_joint_b" value="0" />
-        <joint name="ma1440_joint_l" value="-0.4" />
+        <joint name="ma1440_joint_l" value="-1.4763" />
         <joint name="ma1440_joint_r" value="0" />
         <joint name="ma1440_joint_s" value="0" />
         <joint name="ma1440_joint_t" value="0" />
-        <joint name="ma1440_joint_u" value="0.52359" />
+        <joint name="ma1440_joint_u" value="0" />
     </group_state>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="mh185_hs_base_link" link2="mh185_hs_prismatic_link" reason="Never" />
