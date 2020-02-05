@@ -276,8 +276,8 @@
             <parent link="${prefix}base_link"/>
             <child link="${prefix}link_s"/>
             <origin
-                xyz="${offsets[prefix + 'joint_s']['x']} ${offsets[prefix + 'joint_s']['y']} ${0.165 + offsets[prefix + 'joint_s']['z']}"
-                rpy="${offsets[prefix + 'joint_s']['roll']} ${offsets[prefix + 'joint_s']['pitch']} ${offsets[prefix + 'joint_s']['yaw']}"
+                xyz="${0 + offsets[prefix + 'joint_s']['x']} ${0 + offsets[prefix + 'joint_s']['y']} ${0.45 + offsets[prefix + 'joint_s']['z']}"
+                rpy="${0 + offsets[prefix + 'joint_s']['roll']} ${0 + offsets[prefix + 'joint_s']['pitch']} ${0 + offsets[prefix + 'joint_s']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <limit lower="-2.96706" upper="2.96706" effort="100" velocity="4.01425727959" />
@@ -287,8 +287,8 @@
             <parent link="${prefix}link_s"/>
             <child link="${prefix}link_l"/>
             <origin
-                xyz="${0.155 + offsets[prefix + 'joint_l']['x']} ${-0.0425 + offsets[prefix + 'joint_l']['y']} ${0.285 + offsets[prefix + 'joint_l']['z']}"
-                rpy="${M_PI/2 + offsets[prefix + 'joint_l']['roll']} ${-M_PI/2 + offsets[prefix + 'joint_l']['pitch']} ${M_PI + offsets[prefix + 'joint_l']['yaw']}"
+                xyz="${0.155  + offsets[prefix + 'joint_l']['x']} ${0 + offsets[prefix + 'joint_l']['y'] + offsets[prefix + 'joint_l']['y']} ${0 + offsets[prefix + 'joint_l']['z']}"
+                rpy="${-0.7853981633974483 + offsets[prefix + 'joint_l']['roll']} ${-1.5707963267948966 + offsets[prefix + 'joint_l']['pitch']} ${-0.7853981633974483 + offsets[prefix + 'joint_l']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <limit lower="-1.5708" upper="2.70526" effort="100" velocity="3.49066" />
@@ -298,10 +298,10 @@
             <parent link="${prefix}link_l"/>
             <child link="${prefix}link_u"/>
             <origin
-                xyz="${0.614 + offsets[prefix + 'joint_u']['x']} ${0.0 + offsets[prefix + 'joint_u']['y']} ${-0.007 + offsets[prefix + 'joint_u']['z']}"
-                rpy="${0 + offsets[prefix + 'joint_u']['roll']} ${0 + offsets[prefix + 'joint_u']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_u']['yaw']}"
+                xyz="${0.614 + offsets[prefix + 'joint_u']['x']} ${0 + offsets[prefix + 'joint_u']['y']} ${0 + offsets[prefix + 'joint_u']['z']}"
+                rpy="${3.141592653589793 + offsets[prefix + 'joint_u']['roll']} ${0+ offsets[prefix + 'joint_u']['pitch']} ${0 + offsets[prefix + 'joint_u']['yaw']}"
             />
-            <axis xyz="0 0 -1" />
+            <axis xyz="0 0 1" />
 <!--            The commented out line is the specification for this joint, but it allows the robot to hit itself.-->
 <!--            <limit lower="-3.05433" upper="4.18879" effort="100" velocity="4.01425727959" />-->
             <limit lower="${-84*M_PI/180}" upper="${90*M_PI/180}" effort="100" velocity="4.01425727959" />
@@ -311,8 +311,8 @@
             <parent link="${prefix}link_u"/>
             <child link="${prefix}link_r"/>
             <origin
-                xyz="${0.265 + offsets[prefix + 'joint_r']['x']} ${-0.2 + offsets[prefix + 'joint_r']['y']} ${0.049 + offsets[prefix + 'joint_r']['z']}"
-                rpy="${M_PI/2 + offsets[prefix + 'joint_r']['roll']} ${0 + offsets[prefix + 'joint_r']['pitch']} ${-M_PI/2 + offsets[prefix + 'joint_r']['yaw']}"
+                xyz="${0.2 + offsets[prefix + 'joint_r']['x']} ${-0.64 + offsets[prefix + 'joint_r']['y']} ${0 + offsets[prefix + 'joint_r']['z']}"
+                rpy="${-1.5707963267948966 + offsets[prefix + 'joint_r']['roll']} ${0 + offsets[prefix + 'joint_r']['pitch']} ${0 + offsets[prefix + 'joint_r']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <limit lower="-2.61799" upper="2.61799" effort="100" velocity="7.50492" />
@@ -322,8 +322,8 @@
             <parent link="${prefix}link_r"/>
             <child link="${prefix}link_b"/>
             <origin
-                xyz="${0.0 + offsets[prefix + 'joint_b']['x']} ${-0.062 + offsets[prefix + 'joint_b']['y']} ${-0.375 + offsets[prefix + 'joint_b']['z']}"
-                rpy="${M_PI/2 + offsets[prefix + 'joint_b']['roll']} ${M_PI/2 + offsets[prefix + 'joint_b']['pitch']} ${0 + offsets[prefix + 'joint_b']['yaw']}"
+                xyz="${0 + offsets[prefix + 'joint_b']['x']} ${0 + offsets[prefix + 'joint_b']['y']} ${0 + offsets[prefix + 'joint_b']['z']}"
+                rpy="${1.5707963267948966 + offsets[prefix + 'joint_b']['roll']} ${0 + offsets[prefix + 'joint_b']['pitch']} ${0 + offsets[prefix + 'joint_b']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <!-- Note that the joint range here is for the A00 version,
@@ -335,8 +335,8 @@
             <parent link="${prefix}link_b"/>
             <child link="${prefix}link_t"/>
             <origin
-                xyz="${0.0875 + offsets[prefix + 'joint_t']['x']} ${0.0 + offsets[prefix + 'joint_t']['y']} ${-0.062 + offsets[prefix + 'joint_t']['z']}"
-                rpy="${-M_PI/2 + offsets[prefix + 'joint_t']['roll']} ${0 + offsets[prefix + 'joint_t']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_t']['yaw']}"
+                xyz="${0 + offsets[prefix + 'joint_t']['x']} ${-0.1+ offsets[prefix + 'joint_t']['y']} ${0 + offsets[prefix + 'joint_t']['z']}"
+                rpy="${-1.5707963267948966 + offsets[prefix + 'joint_t']['roll']} ${0 + offsets[prefix + 'joint_t']['pitch']} ${0 + offsets[prefix + 'joint_t']['yaw']}"
             />
             <axis xyz="0 0 1" />
             <limit lower="-3.66519" upper="3.66519" effort="100" velocity="10.9956" />
@@ -345,7 +345,7 @@
         <joint name="${prefix}joint_tip" type="fixed">
             <parent link="${prefix}link_t"/>
             <child link="${prefix}link_tip"/>
-            <origin xyz="-0.09591 0 -0.38772" rpy="${-135*M_PI/180} 0 ${M_PI/2}"/>
+            <origin xyz="-0.09591 0 ${-0.38772 + 0.0125}" rpy="${-135*M_PI/180} 0 ${M_PI/2}"/>
             <axis xyz="0 0 0" />
         </joint>
         <!-- end of joint list -->
