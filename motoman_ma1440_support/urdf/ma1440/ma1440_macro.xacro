@@ -125,7 +125,7 @@
                 <material name="blue"/>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <origin rpy="0 ${M_PI} ${M_PI_2}" xyz="0 0 0"/>
                 <geometry>
                     <mesh filename="package://motoman_ma1440_support/meshes/ma1440/collision/u_link_collision.stl" />
                 </geometry>
