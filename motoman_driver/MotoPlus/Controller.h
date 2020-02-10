@@ -98,6 +98,8 @@ typedef enum
 	IO_ROBOTSTATUS_ESTOP_CTRL,
 	IO_ROBOTSTATUS_WAITING_ROS,
 	IO_ROBOTSTATUS_INECOMODE,
+	IO_ROBOTSTATUS_PFL_STOP,
+	IO_ROBOTSTATUS_PFL_ESCAPE,
 	IO_ROBOTSTATUS_MAX
 } IoStatusIndex;
  
@@ -112,8 +114,7 @@ typedef struct
 	MP_IO_INFO ioStatusAddr[IO_ROBOTSTATUS_MAX];			// Array of Specific Input Address representing the I/O status
 	USHORT ioStatus[IO_ROBOTSTATUS_MAX];					// Array storing the current status of the controller
 	int alarmCode;											// Alarm number currently active
-	BOOL bRobotJobReady;									// Boolean indicating that the controller is ready for increment move
-	BOOL bRobotJobReadyRaised;								// Indicates that the signal was raised since operating was resumed
+	BOOL bRobotJobReady;									// Indicates the robot job is on the WAIT command (ready for motion)
 	BOOL bStopMotion;										// Flag to stop motion
 
 	// Connection Server
@@ -159,6 +160,7 @@ extern BOOL Ros_Controller_IsEcoMode(Controller* controller);
 extern BOOL Ros_Controller_IsEStop(Controller* controller);
 extern BOOL Ros_Controller_IsWaitingRos(Controller* controller);
 extern BOOL Ros_Controller_IsMotionReady(Controller* controller);
+extern BOOL Ros_Controller_IsPflActive(Controller* controller);
 extern int Ros_Controller_GetNotReadySubcode(Controller* controller);
 extern int Ros_Controller_StatusToMsg(Controller* controller, SimpleMsg* sendMsg);
 

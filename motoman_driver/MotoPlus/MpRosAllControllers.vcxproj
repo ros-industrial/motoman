@@ -170,11 +170,6 @@
     <None Include="ParameterExtraction.mpLib" />
     <None Include="ParameterExtraction.yrcLib" />
     <None Include="ParameterExtraction.yrcmlib" />
-    <None Include="RosSetupValidation.dnLib" />
-    <None Include="RosSetupValidation.fsLib" />
-    <None Include="RosSetupValidation.mpLib" />
-    <None Include="RosSetupValidation.yrcLib" />
-    <None Include="RosSetupValidation.yrcmlib" />
     <None Include="YRC1000CompilerArguments.mps" />
     <None Include="YRC1000LinkerArguments.mps" />
     <None Include="YRC1000uCompilerArguments.mps" />
@@ -197,7 +192,6 @@
     <ClInclude Include="MotoROS.h" />
     <ClInclude Include="ParameterExtraction.h" />
     <ClInclude Include="ParameterTypes.h" />
-    <ClInclude Include="RosSetupValidation.h" />
     <ClInclude Include="SimpleMessage.h" />
     <ClInclude Include="StateServer.h" />
   </ItemGroup>

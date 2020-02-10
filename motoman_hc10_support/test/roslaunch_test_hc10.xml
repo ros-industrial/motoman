@@ -1,0 +1,30 @@
+<launch>
+  <arg name="req_arg" value="default"/>
+  <arg name="yrc1000" value="yrc1000"/>
+  
+  <group ns="load_hc10">
+    <include file="$(find motoman_hc10_support)/launch/load_hc10.launch"/>
+  </group>
+
+  <group ns="test_hc10">
+    <include file="$(find motoman_hc10_support)/launch/test_hc10.launch"/>
+  </group>
+
+  <group ns="robot_interface_streaming_hc10">
+    <group ns="yrc1000" >
+      <include file="$(find motoman_hc10_support)/launch/robot_interface_streaming_hc10.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
+        <arg name="controller" value="$(arg yrc1000)"/>
+      </include>
+    </group>
+  </group>
+
+  <group ns="robot_state_visualize_hc10">
+    <group ns="yrc1000" >
+      <include file="$(find motoman_hc10_support)/launch/robot_state_visualize_hc10.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
+        <arg name="controller" value="$(arg yrc1000)"/>
+      </include>
+    </group>
+  </group>
+</launch>
