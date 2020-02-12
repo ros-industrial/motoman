@@ -330,7 +330,13 @@
             <axis xyz="0 0 1" />
             <!-- Note that the joint range here is for the A00 version,
             the A10 version is -135/+90 degrees             -->
-            <limit lower="-2.35619" upper="1.5078" effort="100" velocity="7.50492" />
+            <!--  the chessboard mount can scrape the robot if the wrist bends too far -->
+            <xacro:if value="${mount_type =='chess'}">
+                <limit lower="-1.945" upper="1.5078" effort="100" velocity="7.50492" />
+            </xacro:if>
+            <xacro:if value="${mount_type !='chess'}">
+                <limit lower="-2.35619" upper="1.5078" effort="100" velocity="7.50492" />
+            </xacro:if>
         </joint>
         <xacro:transmission_macro name="b"/>
         <joint name="${prefix}joint_t" type="revolute">

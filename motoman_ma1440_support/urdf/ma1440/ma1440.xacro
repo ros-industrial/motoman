@@ -50,6 +50,38 @@
                 <axis xyz="0 0 0" />
             </joint>
         </xacro:if>
+
+        <!-- optionally add chessboard to the end of the arm, this is the laser scanner enclosure used on the Corsa system -->
+        <xacro:if value="${mount_type =='chess'}">
+            <link name="${prefix}link_chessboard">
+                <visual>
+                    <origin rpy="0 0 0" xyz="0 0 0" />
+                    <geometry>
+                        <box size="0.26 0.45 0.15" />
+                    </geometry>
+                    <material name="silver" />
+                </visual>
+                <collision>
+                    <origin rpy="0 0 0" xyz="0 0 -0.07" />
+                    <geometry>
+                        <box size="0.26 0.45 0.15" />
+                    </geometry>
+                    <material name="silver" />
+                </collision>
+                <inertial>
+                    <mass value="0.0" />
+                    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
+                </inertial>
+            </link>
+
+            <joint name="joint_chessboard" type="fixed">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <parent link="${prefix}link_t" />
+                <child link="${prefix}link_chessboard" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
         
         <!-- optionally add the laser mount to the end of the arm and define all of its additional frames -->
         <xacro:if value="${mount_type=='laser'}">
