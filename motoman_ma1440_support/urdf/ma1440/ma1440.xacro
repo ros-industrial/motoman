@@ -51,7 +51,7 @@
             </joint>
         </xacro:if>
 
-        <!-- optionally add chessboard to the end of the arm, this is the laser scanner enclosure used on the Corsa system -->
+        <!-- optionally add chessboard to the end of the arm -->
         <xacro:if value="${mount_type =='chess'}">
             <link name="${prefix}link_chessboard">
                 <visual>
