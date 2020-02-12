@@ -336,7 +336,7 @@
             </xacro:if>
             <xacro:unless value="${mount_type =='chess'}">
                 <limit lower="-2.35619" upper="1.5078" effort="100" velocity="7.50492" />
-            </xacro:if>
+            </xacro:unless>
         </joint>
         <xacro:transmission_macro name="b"/>
         <joint name="${prefix}joint_t" type="revolute">
