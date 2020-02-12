@@ -334,7 +334,7 @@
             <xacro:if value="${mount_type =='chess'}">
                 <limit lower="-1.945" upper="1.5078" effort="100" velocity="7.50492" />
             </xacro:if>
-            <xacro:if value="${mount_type !='chess'}">
+            <xacro:if value="${!(mount_type =='chess')}">
                 <limit lower="-2.35619" upper="1.5078" effort="100" velocity="7.50492" />
             </xacro:if>
         </joint>
