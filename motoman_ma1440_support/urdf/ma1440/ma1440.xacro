@@ -92,16 +92,16 @@
                         <box size="0.08 0.26 0.18" />
                     </geometry>
                     <material name="silver">
-                        <color rgba="0.75 0.75 0.75 0.5"/>
+                        <color rgba="0.75 0.75 0.75 1"/>
                     </material>
                 </visual>
                 <collision>
-                    <origin rpy="0 0 0" xyz="0.07 0 -0.09" />
+                    <origin rpy="0 0 0" xyz="0.08 0 -0.09" />
                     <geometry>
-                        <box size="0.06 0.26 0.18" />
+                        <box size="0.08 0.26 0.18" />
                     </geometry>
                     <material name="silver">
-                        <color rgba="0.75 0.75 0.75 0.5"/>
+                        <color rgba="0.75 0.75 0.75 1"/>
                     </material>
                 </collision>
                 <inertial>
