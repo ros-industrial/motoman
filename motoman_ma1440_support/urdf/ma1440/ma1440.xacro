@@ -51,11 +51,11 @@
             </joint>
         </xacro:if>
 
-        <!-- optionally add chessboard to the end of the arm -->
-        <xacro:if value="${mount_type =='chess'}">
+        <!-- optionally add chessboard to the end of the arm, replacing the welder tip -->
+        <xacro:if value="${mount_type =='chess_front'}">
             <link name="${prefix}link_chessboard">
                 <visual>
-                    <origin rpy="0 0 0" xyz="0 0 0" />
+                    <origin rpy="0 0 0" xyz="0 0 -0.07" />
                     <geometry>
                         <box size="0.26 0.45 0.15" />
                     </geometry>
@@ -79,6 +79,75 @@
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <parent link="${prefix}link_t" />
                 <child link="${prefix}link_chessboard" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <!-- optionally add chessboard on a cam mount above the welder tip -->
+        <xacro:if value="${mount_type =='chess'}">
+            <link name="${prefix}link_chessboard">
+                <visual>
+                    <origin rpy="0 0 0" xyz="0.08 0 -0.09" />
+                    <geometry>
+                        <box size="0.08 0.26 0.18" />
+                    </geometry>
+                    <material name="silver">
+                        <color rgba="0.75 0.75 0.75 0.5"/>
+                    </material>
+                </visual>
+                <collision>
+                    <origin rpy="0 0 0" xyz="0.07 0 -0.09" />
+                    <geometry>
+                        <box size="0.06 0.26 0.18" />
+                    </geometry>
+                    <material name="silver">
+                        <color rgba="0.75 0.75 0.75 0.5"/>
+                    </material>
+                </collision>
+                <inertial>
+                    <mass value="0.0" />
+                    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
+                </inertial>
+            </link>
+
+            <joint name="joint_chessboard" type="fixed">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <parent link="${prefix}link_t" />
+                <child link="${prefix}link_chessboard" />
+                <axis xyz="0 0 0" />
+            </joint>
+
+            <link name="${prefix}link_collar">
+                <visual>
+                    <origin rpy="0 0 0" xyz="0 0 -0.027" />
+                    <geometry>
+                        <cylinder length="0.054" radius="0.09"/>
+                    </geometry>
+                    <material name="black">
+                        <color rgba="0 0 0 0.5"/>
+                    </material>
+                </visual>
+                <collision>
+                    <origin rpy="0 0 0" xyz="0 0 -0.027" />
+                    <geometry>
+                        <cylinder length="0.054" radius="0.09"/>
+                    </geometry>
+                    <material name="black">
+                        <color rgba="0 0 0 1"/>
+                    </material>
+                </collision>
+                <inertial>
+                    <mass value="0.0" />
+                    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
+                </inertial>
+            </link>
+
+            <joint name="joint_collar" type="fixed">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <parent link="${prefix}link_t" />
+                <child link="${prefix}link_collar" />
                 <axis xyz="0 0 0" />
             </joint>
         </xacro:if>
