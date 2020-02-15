@@ -154,4 +154,9 @@
     <disable_collisions link1="mh185_ts_base_link" link2="mh185_ts_prismatic_link" reason="Default" />
     <disable_collisions link1="mh185_ts_base_link" link2="mh185_ts_revolute_link" reason="Never" />
     <disable_collisions link1="mh185_ts_prismatic_link" link2="mh185_ts_revolute_link" reason="Never" />
+    <disable_collisions link1="ma1440_link_t" link2="ma1440_link_chessboard" reason="Never" />
+    <disable_collisions link1="ma1440_link_tip" link2="ma1440_link_chessboard" reason="Never" />
+    <disable_collisions link1="ma1440_link_t" link2="ma1440_link_collar" reason="Never" />
+    <disable_collisions link1="ma1440_link_tip" link2="ma1440_link_collar" reason="Never" />
+    <disable_collisions link1="ma1440_link_chessboard" link2="ma1440_link_collar" reason="Never" />
 </robot>
