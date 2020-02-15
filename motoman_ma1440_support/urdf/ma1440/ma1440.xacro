@@ -87,7 +87,7 @@
         <xacro:if value="${mount_type =='chess'}">
             <link name="${prefix}link_chessboard">
                 <visual>
-                    <origin rpy="0 0 0" xyz="0.08 0 -0.09" />
+                    <origin rpy="0 0 0" xyz="0.08 0 -0.16" />
                     <geometry>
                         <box size="0.08 0.26 0.18" />
                     </geometry>
@@ -96,7 +96,7 @@
                     </material>
                 </visual>
                 <collision>
-                    <origin rpy="0 0 0" xyz="0.08 0 -0.09" />
+                    <origin rpy="0 0 0" xyz="0.08 0 -0.16" />
                     <geometry>
                         <box size="0.08 0.26 0.18" />
                     </geometry>
@@ -120,7 +120,7 @@
 
             <link name="${prefix}link_collar">
                 <visual>
-                    <origin rpy="0 0 0" xyz="0 0 -0.027" />
+                    <origin rpy="0 0 0" xyz="0 0 -0.097" />
                     <geometry>
                         <cylinder length="0.054" radius="0.09"/>
                     </geometry>
@@ -129,7 +129,7 @@
                     </material>
                 </visual>
                 <collision>
-                    <origin rpy="0 0 0" xyz="0 0 -0.027" />
+                    <origin rpy="0 0 0" xyz="0 0 -0.097" />
                     <geometry>
                         <cylinder length="0.054" radius="0.09"/>
                     </geometry>
