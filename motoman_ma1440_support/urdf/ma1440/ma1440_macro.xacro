@@ -347,7 +347,8 @@
         <joint name="${prefix}joint_tip" type="fixed">
             <parent link="${prefix}link_t"/>
             <child link="${prefix}link_tip"/>
-            <origin xyz="-0.09591 0 ${-0.38772 + 0.0125}" rpy="${-135*M_PI/180} 0 ${M_PI/2}"/>
+            <origin xyz="${-0.09591+ + offsets[prefix + 'joint_tip']['x']} ${0+ + offsets[prefix + 'joint_tip']['y']} ${-0.38772 + 0.0125 + offsets[prefix + 'joint_tip']['z']}"
+                    rpy="${-135*M_PI/180 + offsets[prefix + 'joint_tip']['roll']} ${0 + offsets[prefix + 'joint_tip']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_tip']['yaw']}"/>
             <axis xyz="0 0 0" />
         </joint>
         <!-- end of joint list -->
