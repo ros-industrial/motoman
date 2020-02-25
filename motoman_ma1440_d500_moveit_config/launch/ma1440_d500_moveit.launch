@@ -6,22 +6,6 @@
   <!--  - if sim=false, a robot_ip argument is required -->
   <arg name="sim" default="true" />
 
-  <!-- The starting world positions/rotations for the ma1440 and d500 -->
-  <arg name="ma1440_xyz" default=""/>
-  <arg name="ma1440_rpy" default=""/>
-  <arg name="d500_xyz" default=""/>
-  <arg name="d500_rpy" default=""/>
-
-  <arg name="use_structured_light_gantry" default="false" doc="whether or not to include the collision model for the gantry mounting system for the structured light"/>
-
-  <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
-
-  <!-- The thickness of the tabletop mounted on top of the last link of the D500 -->
-  <arg name="table_thickness" default=""/>
-
-
-  <!-- The type of mount being used on the robot arm -->
-  <arg name="mount_type" default=""/>
   <!-- IP address of the robot to connect to, if connecting to a real robot -->
   <arg name="robot_ip" unless="$(arg sim)" />
 
@@ -58,17 +42,7 @@
   <rosparam command="load" file="$(find motoman_ma1440_d500_support)/config/cell_parameters.yaml" />
 
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
-  <include file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_context.launch">
-    <arg name="load_robot_description" value="true"/>
-    <arg name="ma1440_xyz" value="$(arg ma1440_xyz)"/>
-    <arg name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
-    <arg name="d500_xyz" value="$(arg d500_xyz)"/>
-    <arg name="d500_rpy" value="$(arg d500_rpy)"/>
-    <arg name="table_thickness" value="$(arg table_thickness)"/>
-    <arg name="mount_type" value="$(arg mount_type)"/>
-    <arg name="use_structured_light_gantry" value="$(arg use_structured_light_gantry)"/>
-    <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
-  </include>
+  <include file="$(find motoman_ma1440_d500_moveit_config)/launch/planning_context.launch" pass_all_args="true"/>
 
   <!-- Given the published joint states, publish tf for the robot links -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" >

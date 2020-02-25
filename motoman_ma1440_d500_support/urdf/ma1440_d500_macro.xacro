@@ -10,6 +10,7 @@
           table_thickness
           mount_type
           use_structured_light_gantry
+          use_pedestal
           offsets_file_path"
   >
 
@@ -19,6 +20,7 @@
         world_base_rpy="${ma1440_rpy}"
         offsets_file_path="${offsets_file_path}"
         use_structured_light_gantry="${use_structured_light_gantry}"
+        use_pedestal="${use_pedestal}"
         mount_type="${mount_type}"
     />
 

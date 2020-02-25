@@ -8,14 +8,15 @@
                  prefix
                  world_base_xyz:='0 0 0'
                  world_base_rpy:='0 0 0'
-                 offsets_file_path"
+                 offsets_file_path
+                 base_parent_link_name:='world'"
     >
       <xacro:property name="M_PI" value="3.1415926535897931"/>
       <xacro:property name="M_PI_2" value="1.57079632679"/>
       <xacro:property name="M_PI_4" value="0.7853981633974483"/>
       <xacro:property name="offsets" value="${load_yaml(offsets_file_path)[prefix + 'robot_calibration_offsets']}"/>
-      <xacro:property name="vertical_offset" value="0.0"/>
 
+        <!-- TODO: This shouldn't be defined here. If there are two robots with world defined, things will break. Should be defined in the highest level file. -->
         <link name="world">
             <origin xyz="0 0 0" rpy="0 0 0"/>
         </link>
@@ -270,8 +271,8 @@
         <!-- end of link list -->
         <!-- joint list -->
         <joint name="${prefix}world-base" type="fixed">
-            <origin xyz="0 0 ${vertical_offset}" rpy="${world_base_rpy}"/>
-            <parent link="world" />
+            <origin xyz="${world_base_xyz}" rpy="${world_base_rpy}"/>
+            <parent link="${base_parent_link_name}" />
             <child link="${prefix}base_link"/>
         </joint>
         <joint name="${prefix}joint_s" type="revolute">
@@ -360,11 +361,11 @@
         <!-- end of joint list -->
 
         <!-- ROS base_link (via base_link) to Motoman Robot (not Base) Frame transform -->
-        <link name="${prefix}base" />
+        <!-- <link name="${prefix}base" />
         <joint name="${prefix}base_link-base" type="fixed">
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <parent link="${prefix}base_link"/>
             <child link="${prefix}base"/>
-        </joint>
+        </joint> -->
     </xacro:macro>
 </robot>

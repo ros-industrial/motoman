@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<robot name="pedestal" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="M_PI" value="3.1415926535897931"/>
+
+  <xacro:macro name="pedestal_load" params="prefix">
+    <link name="${prefix}pedestal_link">
+      <visual>
+        <origin
+            xyz="-0.6701 0.381 -0.762"
+            rpy="${M_PI/2} 0 0" />
+        <geometry>
+          <mesh
+              filename="package://motoman_ma1440_support/meshes/pedestal/visual/McMaster_Ultra_Flat_Heavey_Duty_Table.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material
+            name="">
+          <color
+              rgba="0.75294 0.75294 0.75294 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="-0.6701 0.381 -0.762"
+          rpy="${M_PI/2} 0 0" />
+        <geometry>
+          <mesh
+            filename="package://motoman_ma1440_support/meshes/pedestal/collision/McMaster_Ultra_Flat_Heavey_Duty_Table.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin
+                xyz="-0.006942 -0.097138 0.034574"
+                rpy="0 0 0" />
+        <mass
+                value="4.0478" />
+        <inertia
+                ixx="0.00014683"
+                ixy="0.0000294"
+                ixz="-0.00002926"
+                iyy="0.000084784"
+                iyz="0.000073415"
+                izz="0.000085483" />
+      </inertial>
+    </link>
+
+    <joint name="pedestal_joint" type="fixed">
+      <origin xyz="0 0 0.762" rpy="0 0 0" />
+      <parent link="world" />
+      <child link="${prefix}pedestal_link" />
+    </joint>
+
+
+  </xacro:macro>
+</robot>

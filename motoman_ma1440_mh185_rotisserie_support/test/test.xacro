@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<!-- File used for quick testing of URDF without booting the whole system. Not used for real tests. -->
+<robot name="motoman_ma1440_mh185_rotisserie" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:arg name="ma1440_xyz" default="0 0 0"/>
+  <xacro:arg name="ma1440_rpy" default="0 0 0"/>
+  <xacro:arg name="mh185_xyz" default="0 0 0"/>
+  <xacro:arg name="mh185_rpy" default="0 0 0"/>
+  <xacro:arg name="mount_type" default=""/>
+  <xacro:arg name="use_structured_light_gantry" default="true"/>
+  <xacro:arg name="use_pedestal" default="true"/>
+  <xacro:arg name="offsets_file_path" default="/var/local/forge/calibration/robot_calibration_offsets.yaml"/>
+
+  <xacro:include filename="$(find motoman_ma1440_mh185_rotisserie_support)/urdf/ma1440_mh185_rotisserie_macro.xacro" />
+  <xacro:motoman_ma1440_mh185_rotisserie
+      ma1440_xyz="$(arg ma1440_xyz)"
+      ma1440_rpy="$(arg ma1440_rpy)"
+      mh185_xyz="$(arg mh185_xyz)"
+      mh185_rpy="$(arg mh185_rpy)"
+      mount_type="$(arg mount_type)"
+      use_structured_light_gantry="$(arg use_structured_light_gantry)"
+      use_pedestal="$(arg use_pedestal)"
+      offsets_file_path="$(arg offsets_file_path)"
+  />
+</robot>

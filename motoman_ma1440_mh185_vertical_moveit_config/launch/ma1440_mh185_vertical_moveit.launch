@@ -6,19 +6,6 @@
   <!--  - if sim=false, a robot_ip argument is required -->
   <arg name="sim" default="true" />
 
-  <!-- The starting world positions/rotations for the ma1440 and mh185 vertical -->
-  <arg name="ma1440_xyz" default=""/>
-  <arg name="ma1440_rpy" default=""/>
-  <arg name="mh185_vertical_xyz" default=""/>
-  <arg name="mh185_vertical_rpy" default=""/>
-
-  <arg name="use_structured_light_gantry" default="false" doc="whether or not to include the collision model for the gantry mounting system for the structured light"/>
-
-  <arg name="offsets_file_path" default="" doc="The file path to find the yaml file containing the joint offsets for this setup."/>
-
-  <!-- Whether or not a camera mount is being used on the robot arm (ma1440) -->
-  <arg name="mount_type" default=""/>
-
   <!-- IP address of the robot to connect to, if connecting to a real robot -->
   <arg name="robot_ip" unless="$(arg sim)" />
 
@@ -45,17 +32,7 @@
   <rosparam command="load" file="$(find motoman_ma1440_mh185_vertical_support)/config/cell_parameters.yaml" />
 
   <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
-  <include file="$(find motoman_ma1440_mh185_vertical_moveit_config)/launch/planning_context.launch">
-    <arg name="load_robot_description" value="true"/>
-    <arg name="ma1440_xyz" value="$(arg ma1440_xyz)"/>
-    <arg name="ma1440_rpy" value="$(arg ma1440_rpy)"/>
-    <arg name="mh185_vertical_xyz" value="$(arg mh185_vertical_xyz)"/>
-    <arg name="mh185_vertical_rpy" value="$(arg mh185_vertical_rpy)"/>
-    <arg name="mount_type" value="$(arg mount_type)"/>
-    <arg name="use_structured_light_gantry" value="$(arg use_structured_light_gantry)"/>
-    <arg name="offsets_file_path" value="$(arg offsets_file_path)" unless="$(eval offsets_file_path == '')"/>
-  </include>
-
+  <include file="$(find motoman_ma1440_mh185_vertical_moveit_config)/launch/planning_context.launch" pass_all_args="true"/>
   <!-- Given the published joint states, publish tf for the robot links -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" >
     <remap unless="$(arg sim)" from="joint_states" to="$(arg robot_ns)/joint_states" />

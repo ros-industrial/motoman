@@ -2,6 +2,8 @@
 
 <robot name="motoman_ma1440" xmlns:xacro="http://ros.org/wiki/xacro">
     <xacro:include filename="$(find motoman_ma1440_support)/urdf/ma1440/ma1440_macro.xacro" />
+    <!-- TODO: The use_structured_light_gantry should not be taken care of in this file.
+                It is not a child of the ma1440. It should be constructed in a file that calls this one. -->
     <xacro:macro
         name="load_motoman_ma1440"
         params="
@@ -10,23 +12,18 @@
             world_base_rpy
             mount_type
             use_structured_light_gantry
+            use_pedestal
             offsets_file_path:='$(find motoman_ma1440_support)/config/robot_calibration_offsets.yaml'">
-        <xacro:unless value="${offsets_file_path == ''}">
-            <xacro:motoman_ma1440
-                prefix="${prefix}"
-                world_base_xyz="${world_base_xyz}"
-                world_base_rpy="${world_base_rpy}"
-                offsets_file_path="${offsets_file_path}"
-            />
-        </xacro:unless>
-        <xacro:if value="${offsets_file_path == ''}">
-            <xacro:motoman_ma1440
-                prefix="${prefix}"
-                world_base_xyz="${world_base_xyz}"
-                world_base_rpy="${world_base_rpy}"
-                offsets_file_path="'$(find motoman_ma1440_support)/config/robot_calibration_offsets.yaml'"
-            />
-        </xacro:if>
+        <!-- This is a way to split up the xyz values. Leaving this here for future reference. -->
+        <!-- <xacro:property name="xyzList" value="${map(float, world_base_xyz.split())}"/> -->
+        <!-- world_base_xyz="${xyzList[0]} ${xyzList[1]} ${xyzList[2] + 0.7} if use_pedestal else world_base_xyz}" -->
+        <xacro:motoman_ma1440
+            prefix="${prefix}"
+            world_base_xyz="${world_base_xyz}"
+            world_base_rpy="${world_base_rpy}"
+            offsets_file_path="${offsets_file_path if offsets_file_path != '' else '$(find motoman_ma1440_support)/config/robot_calibration_offsets.yaml'}"
+            base_parent_link_name="${prefix+'pedestal_link' if use_pedestal else 'world'}"
+        />
 
         <xacro:if value="${use_structured_light_gantry}">
             <xacro:include filename="$(find motoman_ma1440_support)/urdf/structured_light_gantry/structured_light_gantry.xacro" />
@@ -37,6 +34,11 @@
                 <child link="structured_light_gantry_link" />
                 <axis xyz="0 0 0" />
             </joint>
+        </xacro:if>
+
+        <xacro:if value="${use_pedestal}">
+            <xacro:include filename="$(find motoman_ma1440_support)/urdf/pedestal/pedestal.xacro" />
+            <xacro:pedestal_load prefix="${prefix}"/>
         </xacro:if>
 
         <!-- optionally add the cam mount to the end of the arm, this is the laser scanner enclosure used on the Corsa system -->

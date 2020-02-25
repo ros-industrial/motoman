@@ -14,6 +14,7 @@
   <arg if="$(arg load_robot_description)" name="mh185_xyz" default=""/>
   <arg if="$(arg load_robot_description)" name="mh185_rpy" default=""/>
   <arg if="$(arg load_robot_description)" name="use_structured_light_gantry" default=""/>
+  <arg if="$(arg load_robot_description)" name="use_pedestal" default=""/>
 
   <!-- Load universal robot description format (URDF) -->
   <param if="$(arg load_robot_description)" name="$(arg robot_description)"
@@ -24,6 +25,7 @@
          mh185_rpy:='$(arg mh185_rpy)'
          mount_type:='$(arg mount_type)'
          use_structured_light_gantry:='$(arg use_structured_light_gantry)'
+         use_pedestal:='$(arg use_pedestal)'
          offsets_file_path:='$(arg offsets_file_path)'"/>
 
 

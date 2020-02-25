@@ -8,6 +8,7 @@
 	<xacro:arg name="mh185_rpy" default=""/>
 	<xacro:arg name="mount_type" default=""/>
 	<xacro:arg name="use_structured_light_gantry" default=""/>
+	<xacro:arg name="use_pedestal" default=""/>
 	<xacro:arg name="offsets_file_path" default=""/>
 
 	<xacro:include filename="$(find motoman_ma1440_mh185_rotisserie_support)/urdf/ma1440_mh185_rotisserie_macro.xacro" />
@@ -18,6 +19,7 @@
 			mh185_rpy="$(arg mh185_rpy)"
 			mount_type="$(arg mount_type)"
 			use_structured_light_gantry="$(arg use_structured_light_gantry)"
+			use_pedestal="$(arg use_pedestal)"
 			offsets_file_path="$(arg offsets_file_path)"
 	/>
 </robot>

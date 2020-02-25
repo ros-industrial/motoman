@@ -9,6 +9,7 @@
           mh185_rpy
           mount_type
           use_structured_light_gantry
+          use_pedestal
           offsets_file_path"
   >
 
@@ -18,6 +19,7 @@
         world_base_rpy="${ma1440_rpy}"
         mount_type="${mount_type}"
         use_structured_light_gantry="${use_structured_light_gantry}"
+        use_pedestal="${use_pedestal}"
         offsets_file_path="${offsets_file_path}"
     />
 
