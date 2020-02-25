@@ -6,6 +6,7 @@
 	<arg name="ma1440_rpy" value="0 0 0"/>
 	<arg name="mh185_vertical_xyz" value="1 0 0"/>
 	<arg name="mh185_vertical_rpy" value="0 0 0"/>
+	<arg name="use_pedestal" value="false"/>
 
     <param name="robot_description"
          command="xacro $(find motoman_ma1440_mh185_vertical_support)/urdf/ma1440_mh185_vertical.xacro
@@ -14,5 +15,6 @@
          mh185_vertical_xyz:='$(arg mh185_vertical_xyz)'
          mh185_vertical_rpy:='$(arg mh185_vertical_rpy)'
          use_structured_light_gantry:='$(arg use_structured_light_gantry)'
+         use_pedestal:='$(arg use_pedestal)'
          mount_type:='$(arg mount_type)'"/>
 </launch>

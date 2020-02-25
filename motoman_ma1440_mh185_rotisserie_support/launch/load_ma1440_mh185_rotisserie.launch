@@ -6,6 +6,7 @@
 	<arg name="ma1440_rpy" value="0 0 0"/>
 	<arg name="mh185_xyz" value="1 0 0"/>
 	<arg name="mh185_rpy" value="0 0 0"/>
+	<arg name="use_pedestal" value="false"/>
     <arg name="offsets_file_path" value=""/>
 
     <param name="robot_description"
@@ -15,6 +16,7 @@
          mh185_xyz:='$(arg mh185_xyz)'
          mh185_rpy:='$(arg mh185_rpy)'
          use_structured_light_gantry:='$(arg use_structured_light_gantry)'
+         use_pedestal:='$(arg use_pedestal)'
          mount_type:='$(arg mount_type)'
          offsets_file_path:='$(arg offsets_file_path)'"/>
 </launch>

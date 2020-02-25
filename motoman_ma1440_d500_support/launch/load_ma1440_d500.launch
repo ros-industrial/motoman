@@ -7,6 +7,7 @@
 	<arg name="d500_xyz" value="1 0 0"/>
 	<arg name="d500_rpy" value="0 0 0"/>
 	<arg name="table_thickness" value="0"/>
+	<arg name="use_pedestal" value="false"/>
 
     <param name="robot_description"
          command="xacro $(find motoman_ma1440_d500_support)/urdf/ma1440_d500.xacro
@@ -15,6 +16,7 @@
          d500_xyz:='$(arg d500_xyz)'
          d500_rpy:='$(arg d500_rpy)'
          use_structured_light_gantry:='$(arg use_structured_light_gantry)'
+         use_pedestal:='$(arg use_pedestal)'
          table_thickness:=$(arg table_thickness)
          mount_type:=$(arg mount_type)"/>
 </launch>
