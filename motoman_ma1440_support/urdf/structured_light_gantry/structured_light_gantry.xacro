@@ -7,11 +7,11 @@
     <link name="structured_light_gantry_link">
       <visual>
         <origin
-            xyz="0 0 0"
-            rpy="0 0 0" />
+            xyz="-0.16 2.11 0"
+            rpy="${M_PI/2} 0 0" />
         <geometry>
           <mesh
-              filename="package://motoman_ma1440_support/meshes/structured_light_gantry/visual/structured_light_gantry_link.stl" />
+              filename="package://motoman_ma1440_support/meshes/structured_light_gantry/visual/structured_light_gantry_link.stl"  scale="0.001 0.001 0.001"/>
         </geometry>
         <material
             name="">
@@ -21,17 +21,17 @@
       </visual>
       <collision>
         <origin
-          xyz="0 0 0"
-          rpy="0 0 0" />
+          xyz="-0.16 2.11 0"
+          rpy="${M_PI/2} 0 0" />
         <geometry>
           <mesh
-            filename="package://motoman_ma1440_support/meshes/structured_light_gantry/collision/structured_light_gantry_link_collision.stl" />
+            filename="package://motoman_ma1440_support/meshes/structured_light_gantry/collision/structured_light_gantry_link_collision.stl"  scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
       <inertial>
         <origin
                 xyz="-0.006942 -0.097138 0.034574"
-                rpy="0 0 0" />
+                rpy="0.0 0 0" />
         <mass
                 value="4.0478" />
         <inertia
