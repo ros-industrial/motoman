@@ -120,6 +120,7 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 MotomanJointTrajectoryStreamer::~MotomanJointTrajectoryStreamer()
 {
   // TODO( ): Find better place to call StopTrajMode
+  boost::mutex::scoped_lock lock(connection_mutex_);
   motion_ctrl_.setTrajMode(false);   // release TrajMode, so INFORM jobs can run
 }
 
@@ -128,8 +129,12 @@ bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &
 {
   trajectoryStop();
 
-  bool ret = motion_ctrl_.setTrajMode(false);
-  res.success = ret;
+  bool motion_ctrl_result = false;
+  {
+    boost::mutex::scoped_lock lock(connection_mutex_);
+    motion_ctrl_result = motion_ctrl_.setTrajMode(false);
+  }
+  res.success = motion_ctrl_result;
 
   if (!res.success)
   {
@@ -147,8 +152,12 @@ bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &
 
 bool MotomanJointTrajectoryStreamer::enableRobotCB(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
 {
-  bool ret = motion_ctrl_.setTrajMode(true);
-  res.success = ret;
+  bool motion_ctrl_result = false;
+  {
+    boost::mutex::scoped_lock lock(connection_mutex_);
+    motion_ctrl_result = motion_ctrl_.setTrajMode(true);
+  }
+  res.success = motion_ctrl_result;
 
   if (!res.success)
   {
@@ -369,7 +378,13 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
 // override send_to_robot to provide controllerReady() and setTrajMode() calls
 bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
-  if (!motion_ctrl_.controllerReady())
+  bool motion_ctrl_result = false;
+  {
+    boost::mutex::scoped_lock lock(connection_mutex_);
+    motion_ctrl_result = motion_ctrl_.controllerReady();
+  }
+
+  if (!motion_ctrl_result)
     ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion, trajectory execution ABORTED. If safe, call the "
                             "'robot_enable' service to (re-)enable Motoplus motion and retry.");
 
@@ -380,6 +395,8 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
 void MotomanJointTrajectoryStreamer::streamingThread()
 {
   int connectRetryCount = 1;
+  bool is_connected = false;
+  bool is_msg_sent = false;
 
   ROS_INFO("Starting Motoman joint trajectory streamer thread");
   while (ros::ok())
@@ -390,11 +407,22 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     if (connectRetryCount-- > 0)
     {
       ROS_INFO("Connecting to robot motion server");
-      this->connection_->makeConnect();
+      {
+        boost::mutex::scoped_lock lock(connection_mutex_);
+        this->connection_->makeConnect();
+      }
       ros::Duration(0.250).sleep();  // wait for connection
 
-      if (this->connection_->isConnected())
+      is_connected = false;
+      {
+        boost::mutex::scoped_lock lock(connection_mutex_);
+        is_connected = this->connection_->isConnected();
+      }
+
+      if (is_connected)
+      {
         connectRetryCount = 0;
+      }
       else if (connectRetryCount <= 0)
       {
         ROS_ERROR("Timeout connecting to robot controller.  Send new motion command to retry.");
@@ -421,7 +449,13 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         break;
       }
 
-      if (!this->connection_->isConnected())
+      is_connected = false;
+      {
+        boost::mutex::scoped_lock lock(connection_mutex_);
+        is_connected = this->connection_->isConnected();
+      }
+
+      if (!is_connected)
       {
         ROS_DEBUG("Robot disconnected.  Attempting reconnect...");
         connectRetryCount = 5;
@@ -432,8 +466,16 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
                ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
 
-      if (!this->connection_->sendAndReceiveMsg(msg, reply, false))
+      is_msg_sent = false;
+      {
+        boost::mutex::scoped_lock lock(connection_mutex_);
+        is_msg_sent = this->connection_->sendAndReceiveMsg(msg, reply, false);
+      }
+
+      if (!is_msg_sent)
+      {
         ROS_WARN("Failed sent joint point, will try again");
+      }
       else
       {
         MotionReplyMessage reply_status;
@@ -476,6 +518,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 void MotomanJointTrajectoryStreamer::trajectoryStop()
 {
   this->state_ = TransferStates::IDLE;  // stop sending trajectory points
+  boost::mutex::scoped_lock lock(connection_mutex_);
   motion_ctrl_.stopTrajectory();
 }
 

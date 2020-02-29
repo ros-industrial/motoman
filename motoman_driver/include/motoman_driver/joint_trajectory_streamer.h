@@ -32,6 +32,7 @@
 #ifndef MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 #define MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 
+#include <boost/thread/mutex.hpp>
 #include <map>
 #include <string>
 #include <vector>
@@ -132,6 +133,9 @@ public:
 protected:
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
+
+  // NOTE: make sure the access to SmplMsgConnection is atomic
+  boost::mutex connection_mutex_;
 
   std::map<int, MotomanMotionCtrl> motion_ctrl_map_;
 
