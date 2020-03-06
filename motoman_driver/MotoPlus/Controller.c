@@ -445,8 +445,10 @@ void Ros_Controller_StatusInit(Controller* controller)
 	controller->ioStatusAddr[IO_ROBOTSTATUS_ESTOP_CTRL].ulAddr = 80027;   		// Controller E-Stop
 	controller->ioStatusAddr[IO_ROBOTSTATUS_WAITING_ROS].ulAddr = IO_FEEDBACK_WAITING_MP_INCMOVE; // Job input signaling ready for external motion
 	controller->ioStatusAddr[IO_ROBOTSTATUS_INECOMODE].ulAddr = 50727;			// Energy Saving Mode
+#if (YRC1000||YRC1000u)
 	controller->ioStatusAddr[IO_ROBOTSTATUS_PFL_STOP].ulAddr = 81702;			// PFL function stopped the motion
 	controller->ioStatusAddr[IO_ROBOTSTATUS_PFL_ESCAPE].ulAddr = 81703;			// PFL function escape from clamping motion
+#endif
 	controller->alarmCode = 0;
 }
 
@@ -535,7 +537,10 @@ BOOL Ros_Controller_IsMotionReady(Controller* controller)
 
 BOOL Ros_Controller_IsPflActive(Controller* controller)
 {
+#if (YRC1000||YRC1000u)
 	return ((controller->ioStatus[IO_ROBOTSTATUS_PFL_STOP] | controller->ioStatus[IO_ROBOTSTATUS_PFL_ESCAPE]) != 0);
+#endif
+	return FALSE;
 }
 
 
@@ -722,6 +727,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 
 						break;
 					}
+#if (YRC1000||YRC1000u)
 					case IO_ROBOTSTATUS_PFL_STOP: // PFL Stop
 					case IO_ROBOTSTATUS_PFL_ESCAPE: //  PFL Escaping
 					{
@@ -733,6 +739,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 						}
 						break;
 					}
+#endif
 				}
 			}
 		}
