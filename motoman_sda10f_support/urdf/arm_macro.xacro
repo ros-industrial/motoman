@@ -118,7 +118,7 @@
 		<joint name="${prefix}joint_1_s" type="revolute">
 			<parent link="${parent}"/>
 			<child link="${prefix}link_1_s"/>
-                        <origin xyz="0.100 ${reflect*0.265} 0.0" rpy="${radians(90)} 0.0 ${(reflect-1)*${radians(90)}}"/>
+                        <origin xyz="0.100 ${reflect*0.265} 0.0" rpy="${radians(90)} 0.0 ${(reflect-1)*radians(90)}"/>
 			<axis xyz="0 0 ${-reflect}" />
 			<limit lower="${radians(-180)}" upper="${radians(180)}" effort="0" velocity="${radians(170)}" />
 		</joint>
@@ -167,7 +167,7 @@
     <joint name="${prefix}joint_tool0" type="fixed" >
       <parent link="${prefix}link_7_t" />
       <child link="${prefix}link_tool0" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 ${radians(180)}"/>
     </joint>
 		<!-- end of joint list -->
 	</xacro:macro>
