@@ -5,7 +5,7 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_s.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_s.stl"/>
 				</geometry>
 				<material name="blue">
 					<color rgba="0.8 0.8 0.8 1"/>
@@ -14,7 +14,7 @@
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_s.stl" />
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_s.stl" />
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -23,14 +23,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_l.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_l.stl"/>
 				</geometry>
 				<material name="silver"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_l.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_l.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -39,14 +39,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_e.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_e.stl"/>
 				</geometry>
 				<material name="blue"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_e.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_e.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -55,14 +55,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_u.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_u.stl"/>
 				</geometry>
 				<material name="silver"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_u.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_u.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -71,14 +71,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_r.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_r.stl"/>
 				</geometry>
 				<material name="blue"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_r.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_r.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -87,14 +87,14 @@
 			<visual>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_b.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_b.stl"/>
 				</geometry>
 				<material name="silver"/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_b.stl"/>
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_b.stl"/>
 				</geometry>
 				<material name="yellow"/>
 			</collision>
@@ -102,13 +102,13 @@
 		<link name="${prefix}link_7_t">
 			<visual>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/motoman_axis_t.stl" />
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_t.stl" />
 				</geometry>
 				<material name="blue"/>
 			</visual>
 			<collision>
 				<geometry>
-					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/motoman_axis_t.stl" />
+					<mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_t.stl" />
 				</geometry>
 				<material name="yellow"/>
 			</collision>
