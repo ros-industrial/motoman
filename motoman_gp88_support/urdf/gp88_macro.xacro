@@ -1,0 +1,165 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="motoman_gp88" params="prefix">
+
+    <!-- Properties -->
+    <material name="yaskawa_blue">
+      <color rgba="0 0.35546875 0.671875 1" />
+    </material>
+
+    <!-- link list -->
+    <link name="${prefix}base_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/visual/base_link.stl"/>
+        </geometry>
+        <material name="yaskawa_blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/collision/base_link.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_1_s">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/visual/link_1_s.stl"/>
+        </geometry>
+        <material name="yaskawa_blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/collision/link_1_s.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_2_l">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/visual/link_2_l.stl"/>
+        </geometry>
+        <material name="yaskawa_blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/collision/link_2_l.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_3_u">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/visual/link_3_u.stl"/>
+        </geometry>
+        <material name="yaskawa_blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/collision/link_3_u.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_4_r">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/visual/link_4_r.stl"/>
+        </geometry>
+        <material name="yaskawa_blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/collision/link_4_r.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_5_b">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/visual/link_5_b.stl"/>
+        </geometry>
+        <material name="yaskawa_blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/collision/link_5_b.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_6_t">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/visual/link_6_t.stl"/>
+        </geometry>
+        <material name="yaskawa_blue"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp88_support/meshes/gp88/collision/link_6_t.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- end of link list -->
+
+    <!-- joint list -->
+    <joint name="${prefix}joint_1_s" type="revolute">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}link_1_s"/>
+      <origin xyz="0 0 0.540" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <limit lower="${radians(-180)}" upper="${radians(180)}" effort="4903.32" velocity="${radians(170)}"/>
+    </joint>
+    <joint name="${prefix}joint_2_l" type="revolute">
+      <parent link="${prefix}link_1_s"/>
+      <child link="${prefix}link_2_l"/>
+      <origin xyz="0.320 0 0" rpy="0 0 0" />
+      <axis xyz="0 1 0" />
+      <limit lower="${radians(-90)}" upper="${radians(155)}" effort="7353.05" velocity="${radians(140)}"/>
+    </joint>
+    <joint name="${prefix}joint_3_u" type="revolute">
+      <parent link="${prefix}link_2_l"/>
+      <child link="${prefix}link_3_u"/>
+      <origin xyz="0 0 0.870" rpy="0 0 0" />
+      <axis xyz="0 -1 0" />
+      <limit lower="${radians(-80)}" upper="${radians(90)}" effort="3432.33" velocity="${radians(160)}"/>
+    </joint>
+    <joint name="${prefix}joint_4_r" type="revolute">
+      <parent link="${prefix}link_3_u"/>
+      <child link="${prefix}link_4_r"/>
+      <origin xyz="0 0 0.210" rpy="0 0 0" />
+      <axis xyz="-1 0 0" />
+      <limit lower="${radians(-360)}" upper="${radians(360)}" effort="978.21" velocity="${radians(230)}"/>
+    </joint>
+    <joint name="${prefix}joint_5_b" type="revolute">
+      <parent link="${prefix}link_4_r"/>
+      <child link="${prefix}link_5_b"/>
+      <origin xyz="1.025 0 0" rpy="0 0 0" />
+      <axis xyz="0 -1 0" />
+      <limit lower="${radians(-125)}" upper="${radians(125)}" effort="794.34" velocity="${radians(230)}"/>
+    </joint>
+    <joint name="${prefix}joint_6_t" type="revolute">
+      <parent link="${prefix}link_5_b"/>
+      <child link="${prefix}link_6_t"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <axis xyz="-1 0 0" />
+      <limit lower="${radians(-360)}" upper="${radians(360)}" effort="375.1" velocity="${radians(350)}"/>
+    </joint>
+    <!-- end of joint list -->
+
+    <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
+    <link name="${prefix}base" />
+    <joint name="${prefix}base_link-base" type="fixed">
+      <origin xyz="0 0 0.540" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}base"/>
+    </joint>
+
+    <!-- ROS-Industrial 'tool0' frame: all-zeros tool frame -->
+    <link name="${prefix}tool0"/>
+    <joint name="${prefix}joint_6_t-tool0" type="fixed">
+      <origin xyz="0.175 0 0" rpy="${radians(180)} ${radians(-90)} 0"/>
+      <parent link="${prefix}link_6_t"/>
+      <child link="${prefix}tool0"/>
+    </joint>
+  </xacro:macro>
+</robot>

@@ -21,6 +21,7 @@
   <exec_depend>motoman_gp7_support</exec_depend>
   <exec_depend>motoman_gp8_support</exec_depend>
   <exec_depend>motoman_gp180_support</exec_depend>
+  <exec_depend>motoman_gp88_support</exec_depend>
   <exec_depend>motoman_mh12_support</exec_depend>
   <exec_depend>motoman_mh50_support</exec_depend>
   <exec_depend>motoman_mh5_support</exec_depend>
