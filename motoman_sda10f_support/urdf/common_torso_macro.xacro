@@ -15,9 +15,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/base.stl" />
         </geometry>
-        <material name="yellow">
-          <color rgba="0 1 1 1"/>
-        </material>
       </collision>
     </link>
     <link name="${prefix}link_b1">
@@ -35,7 +32,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_b1.stl" />
         </geometry>
-        <material name="yellow"/>
       </collision>
     </link>
     <link name="${prefix}link_b2">
@@ -53,7 +49,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_b1.stl" />
         </geometry>
-        <material name="yellow"/>
       </collision>
     </link>
 

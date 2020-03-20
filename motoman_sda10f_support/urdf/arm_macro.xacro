@@ -16,7 +16,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_s.stl" />
         </geometry>
-        <material name="yellow"/>
       </collision>
     </link>
     <link name="${prefix}link_2_l">
@@ -32,7 +31,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_l.stl"/>
         </geometry>
-        <material name="yellow"/>
       </collision>
     </link>
     <link name="${prefix}link_3_e">
@@ -48,7 +46,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_e.stl"/>
         </geometry>
-        <material name="yellow"/>
       </collision>
     </link>
     <link name="${prefix}link_4_u">
@@ -64,7 +61,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_u.stl"/>
         </geometry>
-        <material name="yellow"/>
       </collision>
     </link>
     <link name="${prefix}link_5_r">
@@ -80,7 +76,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_r.stl"/>
         </geometry>
-        <material name="yellow"/>
       </collision>
     </link>
     <link name="${prefix}link_6_b">
@@ -96,7 +91,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_b.stl"/>
         </geometry>
-        <material name="yellow"/>
       </collision>
     </link>
     <link name="${prefix}link_7_t">
@@ -110,7 +104,6 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_t.stl" />
         </geometry>
-        <material name="yellow"/>
       </collision>
     </link>
     <link name="${prefix}link_tool0" />
