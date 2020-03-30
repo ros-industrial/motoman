@@ -34,23 +34,7 @@
         </geometry>
       </collision>
     </link>
-    <link name="${prefix}link_b2">
-      <visual>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_b1.stl"/>
-        </geometry>
-        <material name="silver">
-          <color rgba="0.8 0.8 0.8 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_b1.stl" />
-        </geometry>
-      </collision>
-    </link>
+    <link name="${prefix}link_b2"/>
 
     <!-- joint list -->
     <joint name="${prefix}joint_b1" type="revolute">
