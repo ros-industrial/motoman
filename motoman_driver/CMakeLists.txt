@@ -215,9 +215,6 @@ install(DIRECTORY
     MotoPlus
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(PROGRAMS src/move_to_joint.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
 
 #############
 ## Testing ##
