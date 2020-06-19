@@ -1,0 +1,203 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:macro name="motoman_sia50d" params="prefix">
+        <!-- link list -->
+        <link name="${prefix}base_link">
+            <visual>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/visual/base_link.stl" />
+                </geometry>
+                <material name="blue">
+                    <color rgba="0 0 1 1"/>
+                </material>
+            </visual>
+            <collision>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/collision/base_link.stl" />
+                </geometry>
+                <material name="yellow">
+                    <color rgba="0 1 1 1"/>
+                </material>
+            </collision>
+        </link>
+        <link name="${prefix}link_s">
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/visual/link_1_s.stl"/>
+                </geometry>
+                <material name="silver">
+                    <color rgba="0.8 0.8 0.8 1"/>
+                </material>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/collision/link_1_s.stl" />
+                </geometry>
+                <material name="yellow"/>
+            </collision>
+        </link>
+        <link name="${prefix}link_l">
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/visual/link_2_l.stl"/>
+                </geometry>
+                <material name="blue"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/collision/link_2_l.stl"/>
+                </geometry>
+                <material name="yellow"/>
+            </collision>
+        </link>
+        <link name="${prefix}link_e">
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/visual/link_3_e.stl"/>
+                </geometry>
+                <material name="silver"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/collision/link_3_e.stl"/>
+                </geometry>
+                <material name="yellow"/>
+            </collision>
+        </link>
+        <link name="${prefix}link_u">
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/visual/link_4_u.stl"/>
+                </geometry>
+                <material name="blue"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/collision/link_4_u.stl"/>
+                </geometry>
+                <material name="yellow"/>
+            </collision>
+        </link>
+        <link name="${prefix}link_r">
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/visual/link_5_r.stl"/>
+                </geometry>
+                <material name="silver"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/collision/link_5_r.stl"/>
+                </geometry>
+                <material name="yellow"/>
+            </collision>
+        </link>
+        <link name="${prefix}link_b">
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/visual/link_6_b.stl"/>
+                </geometry>
+                <material name="blue"/>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/collision/link_6_b.stl"/>
+                </geometry>
+                <material name="yellow"/>
+            </collision>
+        </link>
+        <link name="${prefix}link_t">
+            <visual>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/visual/link_7_t.stl" />
+                </geometry>
+                <material name="silver"/>
+            </visual>
+            <collision>
+                <geometry>
+                    <mesh filename="package://motoman_sia50d_support/meshes/sia50d/collision/link_7_t.stl" />
+                </geometry>
+                <material name="yellow"/>
+            </collision>
+        </link>
+        <link name="${prefix}tool0" />
+        <!-- end of link list -->
+        <!-- joint list -->
+        <joint name="${prefix}joint_s" type="revolute">
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}link_s"/>
+            <origin xyz="0 0 0.312000" rpy="0 0 0"/>
+            <axis xyz="0 0 1" />
+            <!-- Max Acc/Dec Torque: 4903.32, Rated Motor Torque: 18.5 -->
+            <limit lower="-3.1415" upper="3.1415" effort="18.5" velocity="2.967051" />
+        </joint>
+        <joint name="${prefix}joint_l" type="revolute">
+            <parent link="${prefix}link_s"/>
+            <child link="${prefix}link_l"/>
+            <origin xyz="0.145 0 0.228" rpy="0 0 0"/>
+            <axis xyz="0 1 0" />
+            <limit lower="-1.047198" upper="2.181662" effort="28.4" velocity="2.268928" /><!-- 5883.99 -->
+        </joint>
+        <joint name="${prefix}joint_e" type="revolute">
+            <parent link="${prefix}link_l"/>
+            <child link="${prefix}link_e"/>
+            <origin xyz="0 0 0.875" rpy="0 0 0"/>
+            <axis xyz="0 0 1" />
+            <limit lower="-2.967064" upper="2.967064" effort="22" velocity="2.26893" /><!-- 2549.73 -->
+        </joint>
+        <joint name="${prefix}joint_u" type="revolute">
+            <parent link="${prefix}link_e"/>
+            <child link="${prefix}link_u"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <axis xyz="0 -1 0" />
+            <limit lower="-0.610869" upper="3.752462" effort="22" velocity="2.26893" /><!-- 2549.73 -->
+        </joint>
+        <joint name="${prefix}joint_r" type="revolute">
+            <parent link="${prefix}link_u"/>
+            <child link="${prefix}link_r"/>
+            <origin xyz="0.61 0 0" rpy="0 0 0"/>
+            <axis xyz="-1 0 0" />
+            <limit lower="-2.96706" upper="2.96706" effort="6" velocity="2.268928" /><!-- 720.2 -->
+        </joint>
+        <joint name="${prefix}joint_b" type="revolute">
+            <parent link="${prefix}link_r"/>
+            <child link="${prefix}link_b"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <axis xyz="0 -1 0" />
+            <limit lower="-2.181662" upper="2.181662" effort="6" velocity="2.268928" /><!-- 720.2 -->
+        </joint>
+        <joint name="${prefix}joint_t" type="revolute">
+            <parent link="${prefix}link_b"/>
+            <child link="${prefix}link_t"/>
+            <origin xyz="0.35 0 0" rpy="0 0 0"/>
+            <axis xyz="-1 0 0" />
+            <limit lower="-3.141593" upper="3.141593" effort="2.5" velocity="3.490659" /><!-- 255.76 -->
+        </joint>
+        <joint name="${prefix}link_t-tool0" type="fixed">
+            <origin xyz="0 0 0.0" rpy="0 0 -3.1415926535"/>
+            <parent link="${prefix}link_t" />
+            <child link="${prefix}tool0" />
+        </joint>
+        <!-- end of joint list -->
+
+        <!-- ROS base_link (via base_link) to Motoman Robot (not Base) Frame transform -->
+        <!-- <link name="${prefix}base" />
+        <joint name="${prefix}base_link-base" type="fixed">
+            <origin xyz="0 0 0.410" rpy="0 0 0"/>
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}base"/>
+        </joint> -->
+    </xacro:macro>
+</robot>

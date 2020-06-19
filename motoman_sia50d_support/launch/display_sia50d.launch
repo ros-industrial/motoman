@@ -1,0 +1,8 @@
+<launch>
+	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find motoman_sia50d_support)/urdf/sia50d.xacro'" />
+	<!-- tmp -->
+	<node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui"/>
+	<!-- <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"/> -->
+	<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+	<node pkg="rviz" type="rviz" args="-d $(find motoman_sia50d_support)/config/sia50d.rviz" name="rviz"/>
+</launch>
