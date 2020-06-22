@@ -4,10 +4,10 @@
   <name>motoman_sia50_support</name>
   <version>0.3.5</version>
   <description>
-    <p>ROS-Industrial support for the Motoman SIA50D (and variants).</p>
+    <p>ROS-Industrial support for the Motoman SIA50 (and variants).</p>
     <p>
       This package contains configuration data, 3D models and launch files
-      for Motoman SIA50D manipulators.
+      for Motoman SIA50 manipulators.
     </p>
     <p>
       <b>Specifications</b>
@@ -27,19 +27,15 @@
       and derived from CAD information. For exact dynamic properties, please 
       contact Motoman (available via NDA).
     </p>
-    <p><strong>!!! THIS PACKAGE HAS NOT BEEN TESTED WITH A PHYSICAL ROBOT !!!</strong></p>
+    <p>Important note: This package has not been tested with a physical robot. Proceed at your own caution.</p>
     <p>
       Before using any of the configuration files and / or meshes included
       in this package, be sure to check they are correct for the particular
       robot model and configuration you intend to use them with.
     </p>
   </description>
-  <author>Wolfgang Merkt</author>
-  <author>Shaun Edwards</author><!-- Author of original SIA20D support package on which this one is based -->
-  <maintainer email="opensource@wolfgangmerkt.com">Wolfgang Merkt</maintainer>
-  <!-- tbd: who from ROS-Industrial would be maintainer? -->
-  <!-- <maintainer email="shaun.edwards@gmail.com">Shaun Edwards</maintainer> -->
-  <!-- <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer> -->
+  <author email="opensource@wolfgangmerkt.com">Wolfgang Merkt</author>
+  <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
   <license>BSD</license>
 
   <url type="website">http://wiki.ros.org/motoman_sia50_support</url>
