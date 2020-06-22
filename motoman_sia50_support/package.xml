@@ -17,8 +17,7 @@
     </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
-      found in the online 
-      https://www.motoman.com/en-us/products/robots/industrial/assembly-handling/sia-series/sia50d
+      found in YASKAWA SIA50D specification sheet (DS-405-F, January 2016).
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
