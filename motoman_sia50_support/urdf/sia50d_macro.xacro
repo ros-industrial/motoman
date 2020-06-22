@@ -19,6 +19,12 @@
                     <color rgba="0 1 1 1"/>
                 </material>
             </collision>
+            <!-- These inertial properties are approximate and derived from CAD assuming uniform material density and a robot mass of 650kg. Please contact Motoman for accurate inertial properties. -->
+            <inertial>
+                <origin xyz="-0.0421897352312 -0.00130689427337 0.167362268086" rpy="0 0 0"/>
+                <mass value="90.2966415128"/>
+                <inertia ixx="0.000342272059344" ixy="6.93025424427e-06" ixz="2.5540408455e-05" iyy="0.000539876256743" iyz="4.08880947583e-07" izz="0.000619400540788"/>
+            </inertial>
         </link>
         <link name="${prefix}link_s">
             <visual>
@@ -37,6 +43,12 @@
                 </geometry>
                 <material name="yellow"/>
             </collision>
+            <!-- These inertial properties are approximate and derived from CAD assuming uniform material density and a robot mass of 650kg. Please contact Motoman for accurate inertial properties. -->
+            <inertial>
+                <origin xyz="0.0662481488377 0.0245844969252 0.161038242224" rpy="0 0 0"/>
+                <mass value="155.685216787"/>
+                <inertia ixx="0.000782247459633" ixy="-9.39647218606e-05" ixz="0.000114668908994" iyy="0.00092262137353" iyz="2.09260166551e-05" izz="0.000863676440211"/>
+            </inertial>
         </link>
         <link name="${prefix}link_l">
             <visual>
@@ -53,6 +65,12 @@
                 </geometry>
                 <material name="yellow"/>
             </collision>
+            <!-- These inertial properties are approximate and derived from CAD assuming uniform material density and a robot mass of 650kg. Please contact Motoman for accurate inertial properties. -->
+            <inertial>
+                <origin xyz="-0.000472450065319 -0.0565735117265 0.341955699387" rpy="0 0 0"/>
+                <mass value="146.516295138"/>
+                <inertia ixx="0.00120123250631" ixy="6.94197615159e-08" ixz="1.96016523628e-06" iyy="0.00118109045771" iyz="0.000294660709886" izz="0.000407228823109"/>
+            </inertial>
         </link>
         <link name="${prefix}link_e">
             <visual>
@@ -69,6 +87,12 @@
                 </geometry>
                 <material name="yellow"/>
             </collision>
+            <!-- These inertial properties are approximate and derived from CAD assuming uniform material density and a robot mass of 650kg. Please contact Motoman for accurate inertial properties. -->
+            <inertial>
+                <origin xyz="6.55434595002e-06 -0.0416530035319 -0.0558847560847" rpy="0 0 0"/>
+                <mass value="105.798616166"/>
+                <inertia ixx="0.000368711469503" ixy="-1.60027491692e-08" ixz="1.8911568962e-08" iyy="0.000351739832414" iyz="3.13953720856e-05" izz="0.000220357128296"/>
+            </inertial>
         </link>
         <link name="${prefix}link_u">
             <visual>
@@ -85,6 +109,12 @@
                 </geometry>
                 <material name="yellow"/>
             </collision>
+            <!-- These inertial properties are approximate and derived from CAD assuming uniform material density and a robot mass of 650kg. Please contact Motoman for accurate inertial properties. -->
+            <inertial>
+                <origin xyz="0.126248439623 0.0870176309485 1.78120376363e-05" rpy="0 0 0"/>
+                <mass value="56.5044678374"/>
+                <inertia ixx="0.000113127838213" ixy="-5.70751216091e-05" ixz="-4.9057193456e-08" iyy="0.000219807501449" iyz="8.20775892167e-08" izz="0.000216608911402"/>
+            </inertial>
         </link>
         <link name="${prefix}link_r">
             <visual>
@@ -101,6 +131,12 @@
                 </geometry>
                 <material name="yellow"/>
             </collision>
+            <!-- These inertial properties are approximate and derived from CAD assuming uniform material density and a robot mass of 650kg. Please contact Motoman for accurate inertial properties. -->
+            <inertial>
+                <origin xyz="-0.120030624388 0.0273111725654 1.75251140193e-06" rpy="0 0 0"/>
+                <mass value="65.0547467729"/>
+                <inertia ixx="7.90411227629e-05" ixy="1.93533134827e-05" ixz="-1.0428176398e-09" iyy="0.000239011313292" iyz="1.24268964689e-09" izz="0.000240347669961"/>
+            </inertial>
         </link>
         <link name="${prefix}link_b">
             <visual>
@@ -117,6 +153,12 @@
                 </geometry>
                 <material name="yellow"/>
             </collision>
+            <!-- These inertial properties are approximate and derived from CAD assuming uniform material density and a robot mass of 650kg. Please contact Motoman for accurate inertial properties. -->
+            <inertial>
+                <origin xyz="0.123037492026 -0.0609540013663 -5.50610015586e-05" rpy="0 0 0"/>
+                <mass value="28.8584650362"/>
+                <inertia ixx="3.6399577403e-05" ixy="2.70905283374e-05" ixz="1.45932977567e-08" iyy="0.000114906882123" iyz="-1.42414282713e-08" izz="0.00010753363993"/>
+            </inertial>
         </link>
         <link name="${prefix}link_t">
             <visual>
@@ -131,6 +173,12 @@
                 </geometry>
                 <material name="yellow"/>
             </collision>
+            <!-- These inertial properties are approximate and derived from CAD assuming uniform material density and a robot mass of 650kg. Please contact Motoman for accurate inertial properties. -->
+            <inertial>
+                <origin xyz="-0.0194774661957 -0.000425920310668 0.00013387892643" rpy="0 0 0"/>
+                <mass value="1.28555075004"/>
+                <inertia ixx="8.58980027025e-07" ixy="-5.4574297809e-10" ixz="3.16302575697e-10" iyy="4.53172533535e-07" iyz="6.27683410146e-09" izz="4.51330707334e-07"/>
+            </inertial>
         </link>
         <link name="${prefix}tool0" />
         <!-- end of link list -->
