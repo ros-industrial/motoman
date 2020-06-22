@@ -30,17 +30,17 @@
   <arg name="dx100" value="dx100"/>
 
   <group ns="load_sia50d">
-	  <include file="$(find motoman_sia50d_support)/launch/load_sia50d.launch"/>
+	  <include file="$(find motoman_sia50_support)/launch/load_sia50d.launch"/>
   </group>
 
   <group ns="test_sia50d">
-	  <include file="$(find motoman_sia50d_support)/launch/test_sia50d.launch"/>
+	  <include file="$(find motoman_sia50_support)/launch/test_sia50d.launch"/>
   </group>
 
 
   <group ns="robot_interface_streaming_sia50d">
     <group ns="dx100" >
-	    <include file="$(find motoman_sia50d_support)/launch/robot_interface_streaming_sia50d.launch">
+	    <include file="$(find motoman_sia50_support)/launch/robot_interface_streaming_sia50d.launch">
 		    <arg name="robot_ip" value="$(arg req_arg)"/>
 	    </include>
     </group>
@@ -48,7 +48,7 @@
 
   <group ns="robot_state_visualize_sia50d">
     <group ns="dx100" >
-	    <include file="$(find motoman_sia50d_support)/launch/robot_state_visualize_sia50d.launch">
+	    <include file="$(find motoman_sia50_support)/launch/robot_state_visualize_sia50d.launch">
 		    <arg name="robot_ip" value="$(arg req_arg)"/>
 	    </include>
     </group>
