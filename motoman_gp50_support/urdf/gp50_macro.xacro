@@ -11,91 +11,91 @@
     <link name="${prefix}base_link">
         <visual>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/visual/base_link.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/visual/base_link.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/collision/base_link.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/collision/base_link.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_1_s">
         <visual>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/visual/link_1_s.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/visual/link_1_s.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/collision/link_1_s.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/collision/link_1_s.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_2_l">
         <visual>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/visual/link_2_l.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/visual/link_2_l.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/collision/link_2_l.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/collision/link_2_l.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_3_u">
         <visual>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/visual/link_3_u.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/visual/link_3_u.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/collision/link_3_u.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/collision/link_3_u.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_4_r">
         <visual>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/visual/link_4_r.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/visual/link_4_r.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/collision/link_4_r.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/collision/link_4_r.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_5_b">
         <visual>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/visual/link_5_b.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/visual/link_5_b.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/collision/link_5_b.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/collision/link_5_b.stl"/>
             </geometry>
         </collision>
     </link>
     <link name="${prefix}link_6_t">
         <visual>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/visual/link_6_t.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/visual/link_6_t.stl"/>
             </geometry>
             <material name="yaskawa_blue"/>
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_gp50_support/meshes/collision/link_6_t.stl"/>
+                <mesh filename="package://motoman_gp50_support/meshes/gp50/collision/link_6_t.stl"/>
             </geometry>
         </collision>
     </link>
