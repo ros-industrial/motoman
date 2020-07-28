@@ -138,14 +138,14 @@
     <joint name="${prefix}joint_s" type="revolute">
       <parent link="${prefix}base_link"/>
       <child link="${prefix}link_s"/>
-      <origin xyz="0 0 0.312" rpy="0 0 0"/>
+      <origin xyz="0 0 0.540" rpy="0 0 0"/>
       <axis xyz="0 0 1" />
       <limit lower="${radians(-180)}" upper="${radians(180)}" effort="4903.32" velocity="${radians(170)}" />
     </joint>
     <joint name="${prefix}joint_l" type="revolute">
       <parent link="${prefix}link_s"/>
       <child link="${prefix}link_l"/>
-      <origin xyz="0.145 0 0.228" rpy="0 0 0"/>
+      <origin xyz="0.145 0 0" rpy="0 0 0"/>
       <axis xyz="0 1 0" />
       <limit lower="${radians(-60)}" upper="${radians(125)}" effort="5883.99" velocity="${radians(130)}" />
     </joint>
