@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-<xacro:macro name="motoman_gp50" params="prefix">
+  <xacro:macro name="motoman_gp50" params="prefix">
 
     <!-- Properties -->
     <material name="yaskawa_blue">
@@ -160,6 +160,5 @@
         <child link="${prefix}base"/>
     </joint>
 
-    </xacro:macro>
+  </xacro:macro>
 </robot>
-
