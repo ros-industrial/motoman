@@ -1,4 +1,3 @@
-
 <!--
   Manipulator specific version of 'robot_interface_streaming.launch'.
 
@@ -9,14 +8,14 @@
     robot_interface_streaming_gp50.launch robot_ip:=<value> controller:=<yrc1000>
 -->
 <launch>
-	<arg name="robot_ip" />
-	
+  <arg name="robot_ip" />
+
   <!-- controller: Controller name (yrc1000) -->
   <arg name="controller"/>
 
-	<rosparam command="load" file="$(find motoman_gp50_support)/config/joint_names_gp50.yaml" />
+  <rosparam command="load" file="$(find motoman_gp50_support)/config/joint_names_gp50.yaml" />
 
-	<include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
-		<arg name="robot_ip"   value="$(arg robot_ip)" />
-	</include>
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip"   value="$(arg robot_ip)" />
+  </include>
 </launch>
