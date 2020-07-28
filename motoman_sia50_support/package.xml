@@ -23,11 +23,6 @@
       unless noted otherwise.
     </p>
     <p>
-      Please note: The dynamic properties in this robot model are approximate 
-      and derived from CAD information. For exact dynamic properties, please 
-      contact Motoman (available via NDA).
-    </p>
-    <p>
       Important note: This package has not been tested with a physical robot.
       Proceed at your own caution.
     </p>
