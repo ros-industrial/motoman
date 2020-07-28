@@ -87,7 +87,7 @@
       </collision>
     </link>
     <link name="${prefix}link_6_t">
-      <visual>pi
+      <visual>
         <geometry>
           <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/link_6_t.stl"/>
         </geometry>
