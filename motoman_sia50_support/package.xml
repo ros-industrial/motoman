@@ -17,7 +17,8 @@
     </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
-      found in YASKAWA SIA50D specification sheet (DS-405-F, January 2016).
+      found in <em>YASKAWA SIA50D</em> specification sheet (<em>DS-405-F,
+      January 2016</em>).
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
@@ -26,7 +27,10 @@
       and derived from CAD information. For exact dynamic properties, please 
       contact Motoman (available via NDA).
     </p>
-    <p>Important note: This package has not been tested with a physical robot. Proceed at your own caution.</p>
+    <p>
+      Important note: This package has not been tested with a physical robot.
+      Proceed at your own caution.
+    </p>
     <p>
       Before using any of the configuration files and / or meshes included
       in this package, be sure to check they are correct for the particular
