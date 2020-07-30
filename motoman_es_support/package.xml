@@ -30,8 +30,8 @@
   <license>Apache 2.0</license>
 
   <url type="website">http://wiki.ros.org/motoman_es165rdii_support</url>
-  <url type="bugtracker">https://github.com/ros-industrial/motoman_experimental/issues</url>
-  <url type="repository">https://github.com/ros-industrial/motoman_experimental</url>
+  <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
+  <url type="repository">https://github.com/ros-industrial/motoman</url>
 
   <buildtool_depend>catkin</buildtool_depend>
 
