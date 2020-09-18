@@ -1,0 +1,30 @@
+<launch>
+  <arg name="req_arg" value="default"/>
+  <arg name="yrc1000" value="yrc1000"/>
+
+  <group ns="load_gp50">
+    <include file="$(find motoman_gp50_support)/launch/load_gp50.launch"/>
+  </group>
+
+  <group ns="test_gp50">
+    <include file="$(find motoman_gp50_support)/launch/test_gp50.launch"/>
+  </group>
+
+  <group ns="robot_interface_streaming_gp50">
+    <group ns="yrc1000" >
+      <include file="$(find motoman_gp50_support)/launch/robot_interface_streaming_gp50.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
+        <arg name="controller" value="$(arg yrc1000)"/>
+      </include>
+    </group>
+  </group>
+
+  <group ns="robot_state_visualize_gp50">
+    <group ns="yrc1000" >
+      <include file="$(find motoman_gp50_support)/launch/robot_state_visualize_gp50.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
+        <arg name="controller" value="$(arg yrc1000)"/>
+      </include>
+    </group>
+  </group>
+</launch>
