@@ -3,13 +3,13 @@
   Manipulator specific version of the state visualizer.
 
   Usage:
-    robot_state_visualize_es165rdii.launch robot_ip:=<value> controller:=<controller>
+    robot_state_visualize_es165.launch robot_ip:=<value> controller:=<controller>
 -->
 <launch>
   <arg name="robot_ip" />
   <arg name="controller"/>
 
-  <rosparam command="load" file="$(find motoman_es_support)/config/joint_names_es165rdii.yaml" />
+  <rosparam command="load" file="$(find motoman_es_support)/config/joint_names_es165.yaml" />
 
   <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
     <arg name="robot_ip" value="$(arg robot_ip)" />
@@ -17,7 +17,7 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-  <include file="$(find motoman_es_support)/launch/load_es165rdii.launch" >
+  <include file="$(find motoman_es_support)/launch/load_es165.launch" >
     <arg name="controller" value="$(arg controller)"/>
   </include>
 

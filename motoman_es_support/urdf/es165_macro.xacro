@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:macro name="motoman_es165rdii" params="prefix joint_velocities_file">
+  <xacro:macro name="motoman_es165" params="prefix joint_velocities_file">
     <!-- link list -->
     <link name="${prefix}base_link">
       <visual>
@@ -73,14 +73,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://motoman_es_support/meshes/es165rdii/visual/link_r.stl"/>
+        <mesh filename="package://motoman_es_support/meshes/es165/visual/link_r.stl"/>
       </geometry>
       <material name="blue"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://motoman_es_support/meshes/es165rdii/collision/link_r.stl"/>
+          <mesh filename="package://motoman_es_support/meshes/es165/collision/link_r.stl"/>
         </geometry>
         <material name="yellow"/>
       </collision>

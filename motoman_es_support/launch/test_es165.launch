@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <launch>
   <arg name="controller"/>
-  <include file="$(find motoman_es_support)/launch/load_es165rdii.launch" >
+  <include file="$(find motoman_es_support)/launch/load_es165.launch" >
     <arg name="controller" value="$(arg controller)"/>
   </include>
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" >
