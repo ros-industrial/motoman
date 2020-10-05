@@ -109,7 +109,7 @@ bool WriteSingleIO::unload(industrial::byte_array::ByteArray *buffer)
 {
   LOG_COMM("Executing WriteSingleIO command unload");
 
-  if (!buffer->load(this->value_))
+  if (!buffer->unload(this->value_))
   {
     LOG_ERROR("Failed to unload WriteSingleIO value");
     return false;
