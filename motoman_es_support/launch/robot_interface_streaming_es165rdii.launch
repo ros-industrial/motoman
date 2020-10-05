@@ -8,7 +8,7 @@
 <launch>
   <arg name="robot_ip" />
 
-  <!-- controller: Controller name (fs100 or dx100) -->
+  <!-- controller: Controller name (dx100, dx200) -->
   <arg name="controller"/>
 
   <rosparam command="load" file="$(find motoman_es_support)/config/joint_names_es165rdii.yaml" />

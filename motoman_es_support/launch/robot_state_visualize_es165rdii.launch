@@ -17,7 +17,9 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-  <include file="$(find motoman_es_support)/launch/load_es165rdii.launch" />
+  <include file="$(find motoman_es_support)/launch/load_es165rdii.launch" >
+    <arg name="controller" value="$(arg controller)"/>
+  </include>
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
 </launch>
