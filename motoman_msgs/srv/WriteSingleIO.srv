@@ -1,3 +1,4 @@
+# Writable addresses are Network Inputs #27xxx (or #25xxx on DX100/FS100) and Universal/General Outputs #10xxx
 uint32 address
 int32 value
 ---
