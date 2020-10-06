@@ -1,0 +1,21 @@
+<!--
+  Manipulator specific version of 'robot_interface_streaming.launch'.
+
+  Defaults provided for sia50:
+   - 7 joints
+
+  Usage:
+    robot_interface_streaming_sia50.launch robot_ip:=<value> controller:=<dx100>
+-->
+<launch>
+  <arg name="robot_ip" doc="IP of controller" />
+
+  <!-- controller: Controller name (dx100) -->
+  <arg name="controller" default="dx100" doc="Series of the controller (default: dx100)" />
+
+  <rosparam command="load" file="$(find motoman_sia50_support)/config/joint_names_sia50.yaml" />
+
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+  </include>
+</launch>
