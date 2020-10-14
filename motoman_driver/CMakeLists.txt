@@ -129,6 +129,19 @@ set_target_properties(motoman_motion_streaming_interface
   PROPERTIES OUTPUT_NAME motion_streaming_interface
   PREFIX "")
 
+# I/O relay node
+add_executable(motoman_io_relay
+  src/io_relay_node.cpp
+  src/io_relay.cpp
+  src/io_ctrl.cpp)
+target_link_libraries(motoman_io_relay
+  motoman_simple_message
+  motoman_industrial_robot_client
+  ${catkin_LIBRARIES})
+set_target_properties(motoman_io_relay
+  PROPERTIES OUTPUT_NAME motoman_io_relay
+  PREFIX "")
+
 
 #----------------------------------------------------------------
 # FS100 uses opposite byte-ordering from most i386-based PCs
