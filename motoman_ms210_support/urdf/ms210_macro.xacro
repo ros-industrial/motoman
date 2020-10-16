@@ -1,0 +1,217 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:macro name="motoman_ms210" params="prefix">
+
+  <!-- link list -->
+  <link  name="${prefix}base_link">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/visual/MS210_BASE_AXIS.STL" />
+      </geometry>
+      <material name="yaskawa_blue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/collision/MS210_BASE_AXIS.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link  name="${prefix}link_s">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/visual/MS210_S_AXIS.STL" />
+      </geometry>
+      <material name="yaskawa_blue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/collision/MS210_S_AXIS.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link  name="${prefix}link_l">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/visual/MS210_L_AXIS.STL" />
+      </geometry>
+      <material name="yaskawa_blue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/collision/MS210_L_AXIS.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link  name="${prefix}link_u">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/visual/MS210_U_AXIS.STL" />
+      </geometry>
+      <material name="yaskawa_blue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/collision/MS210_U_AXIS.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link  name="${prefix}link_r">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/visual/MS210_R_AXIS.STL" />
+      </geometry>
+      <material name="yaskawa_blue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/collision/MS210_R_AXIS.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link  name="${prefix}link_b">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/visual/MS210_B_AXIS.STL" />
+      </geometry>
+      <material name="yaskawa_blue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/collision/MS210_B_AXIS.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link  name="${prefix}link_t">
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/visual/MS210_T_AXIS.STL" />
+      </geometry>
+      <material name="yaskawa_blue"/>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://motoman_ms210_support/meshes/ms210/collision/MS210_T_AXIS.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="${prefix}tool0"/>
+  <!-- end of link list -->
+
+  <!-- joint list -->
+  <joint name="${prefix}joint_s" type="revolute">
+    <parent link="${prefix}base_link" />
+    <child  link="${prefix}link_s" />
+    <origin xyz="0 0 0.342" rpy="0 0 0" />
+    <axis   xyz="0 0 1" />
+    <limit
+      lower="-3.1416"
+      upper="3.1416"
+      effort="0"
+      velocity="2.09440" />
+  </joint>
+  <joint name="${prefix}joint_l" type="revolute">
+    <parent link="${prefix}link_s" />
+    <child link="${prefix}link_l" />
+    <origin xyz="0.325 0 0.333" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+    <limit
+      lower="-1.0472"
+      upper="1.3265"
+      effort="0"
+      velocity="1.69297" />
+  </joint>
+  <joint name="${prefix}joint_u" type="revolute">
+    <parent link="${prefix}link_l" />
+    <child link="${prefix}link_u" />
+    <origin xyz="0 0 1.15" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+    <limit
+      lower="-2.5656"
+      upper="1.5708"
+      effort="0"
+      velocity="2.00713" />
+  </joint>
+  <joint name="${prefix}joint_r" type="revolute">
+    <parent link="${prefix}link_u" />
+    <child link="${prefix}link_r" />
+    <origin xyz="0.9735 0 0.3" rpy="0 0 0" />
+    <axis xyz="1 0 0" />
+    <limit
+      lower="-3.6652"
+      upper="3.6652"
+      effort="0"
+      velocity="2.53073" />
+  </joint>
+  <joint name="${prefix}joint_b" type="revolute">
+    <origin xyz="0.2515 0 0" rpy="0 0 0" />
+    <parent link="${prefix}link_r" />
+    <child link="${prefix}link_b" />
+    <axis xyz="0 1 0" />
+    <limit
+      lower="-2.1816"
+      upper="2.1816"
+      effort="0"
+      velocity="2.53073" />
+  </joint>
+  <joint name="${prefix}joint_t" type="revolute">
+    <origin xyz="0.21695 0 0" rpy="0 0 0" />
+    <parent link="${prefix}link_b" />
+    <child link="${prefix}link_t" />
+    <axis xyz="1 0 0" />
+    <limit
+      lower="-3.6652"
+      upper="3.6652"
+      effort="0"
+      velocity="3.83972" />
+  </joint>
+  <joint name="${prefix}joint_t-tool0" type="fixed">
+    <origin xyz="0.035 0 0 " rpy="0 0 0 "/><!-- ATTN USERS! MODIFY THIS LINE TO MATCH YOUR MOUNTED TOOLING -->
+    <parent link="${prefix}link_t"/>
+    <child link="${prefix}tool0"/>
+  </joint>
+  <!-- end of joint list -->
+
+  </xacro:macro>
+</robot>

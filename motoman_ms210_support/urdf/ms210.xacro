@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<robot name="motoman_ms210" xmlns:xacro="http://ros.org/wiki/xacro">
+
+	<!-- Properties -->
+	<material name="yaskawa_blue">
+		<color rgba="0.12941 0.14902 0.74902 1" />
+	</material>
+
+	<!-- Robot -->
+	<xacro:include filename="$(find motoman_ms210_support)/urdf/ms210_macro.xacro" />
+	<xacro:motoman_ms210 prefix=""/>
+</robot>
