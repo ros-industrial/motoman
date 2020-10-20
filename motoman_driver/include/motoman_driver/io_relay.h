@@ -55,10 +55,10 @@ public:
    * \brief Class initializer
    *
    * \param default_ip
-   * \param version_0
+   * \param default_port
    * \return true on success, false otherwise
    */
-  bool init(std::string default_ip, bool version_0);
+  bool init(std::string default_ip, int default_port);
 
 protected:
   io_ctrl::MotomanIoCtrl io_ctrl_;

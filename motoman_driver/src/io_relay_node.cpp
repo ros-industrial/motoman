@@ -35,12 +35,14 @@ using motoman::io_relay::MotomanIORelay;
 
 int main(int argc, char** argv)
 {
+  const int io_port = 50242;
+
   // initialize node
   ros::init(argc, argv, "io_relay");
 
   MotomanIORelay io_relay;
 
-  io_relay.init("", false);
+  io_relay.init("", io_port);
 
   ros::spin();
 
