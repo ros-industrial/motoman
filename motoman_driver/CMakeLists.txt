@@ -139,7 +139,7 @@ target_link_libraries(motoman_io_relay
   motoman_industrial_robot_client
   ${catkin_LIBRARIES})
 set_target_properties(motoman_io_relay
-  PROPERTIES OUTPUT_NAME motoman_io_relay
+  PROPERTIES OUTPUT_NAME io_relay
   PREFIX "")
 
 
