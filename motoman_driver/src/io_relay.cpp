@@ -65,6 +65,7 @@ bool MotomanIORelay::init(std::string default_ip, int default_port)
   ROS_INFO("I/O relay connecting to IP address: '%s:%d'", ip_addr, port);
   default_tcp_connection_.init(ip_addr, port);
   free(ip_addr);
+  default_tcp_connection_.makeConnect();
 
   io_ctrl_.init(&default_tcp_connection_);
   this->srv_read_single_io = this->node_.advertiseService("read_single_io",
