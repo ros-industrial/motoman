@@ -62,6 +62,7 @@ namespace io_ctrl
 bool MotomanIoCtrl::init(SmplMsgConnection* connection)
 {
   connection_ = connection;
+  connection_->makeConnect();
   return true;
 }
 
