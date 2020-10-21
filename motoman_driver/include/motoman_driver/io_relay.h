@@ -1,7 +1,7 @@
 ﻿/*
  * Software License Agreement (BSD License)
  *
- * Copyright (c) 2013, Southwest Research Institute
+ * Copyright (c) 2020, Southwest Research Institute
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
