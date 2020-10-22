@@ -46,7 +46,7 @@ namespace io_relay
 using industrial::tcp_client::TcpClient;
 
 /**
- * \brief Message handler that streams I/O control to the robot controller.
+ * \brief Message handler that sends I/O service requests to the robot controller and receives the responses.
  */
 class MotomanIORelay
 {
