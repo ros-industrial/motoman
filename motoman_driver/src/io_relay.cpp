@@ -1,6 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
+ * Copyright (c) 2020, Delft Robotics Institute
  * Copyright (c) 2020, Southwest Research Institute
  * All rights reserved.
  *
