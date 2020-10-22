@@ -33,12 +33,12 @@
 #include <string>
 #include <ros/ros.h>
 
-using industrial::shared_types::shared_int;
-
 namespace motoman
 {
 namespace io_relay
 {
+
+using industrial::shared_types::shared_int;
 
 bool MotomanIORelay::init(int default_port)
 {
