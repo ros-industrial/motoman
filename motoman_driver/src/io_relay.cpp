@@ -43,15 +43,15 @@ namespace io_relay
 // TODO: is this needed?
 #define ROS_ERROR_RETURN(rtn,...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while(0)
 
-bool MotomanIORelay::init(std::string default_ip, int default_port)
+bool MotomanIORelay::init(int default_port)
 {
   ROS_INFO("MotomanIORelay: init");
 
   std::string ip;
   int port;
 
-  // override IP/port with ROS params, if available
-  ros::param::param<std::string>("robot_ip_address", ip, default_ip);
+  ros::param::get("robot_ip_address", ip);
+  // override port with ROS param, if available
   ros::param::param<int>("~port", port, default_port);
 
   // check for valid parameter values
