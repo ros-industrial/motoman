@@ -43,14 +43,13 @@ using industrial::shared_types::shared_int;
 
 bool MotomanIORelay::init(int default_port)
 {
-  ROS_DEBUG_NAMED("io.init", "Using default port: %d", default_port);
-
   std::string ip;
   int port;
 
   ros::param::get("robot_ip_address", ip);
   // override port with ROS param, if available
   ros::param::param<int>("~port", port, default_port);
+  ROS_DEBUG_NAMED("io.init", "Using port: %d (default was: %d)", port, default_port);
 
   // check for valid parameter values
   if (ip.empty())
