@@ -43,7 +43,7 @@ using industrial::shared_types::shared_int;
 
 bool MotomanIORelay::init(int default_port)
 {
-  ROS_DEBUG_NAMED("init", "MotomanIORelay::init(default_port = %d)", default_port);
+  ROS_DEBUG_NAMED("io.init", "MotomanIORelay::init(default_port = %d)", default_port);
 
   std::string ip;
   int port;
@@ -55,15 +55,15 @@ bool MotomanIORelay::init(int default_port)
   // check for valid parameter values
   if (ip.empty())
   {
-    ROS_ERROR_NAMED("init", "No valid robot IP address found.  Please set ROS 'robot_ip_address' param");
+    ROS_ERROR_NAMED("io.init", "No valid robot IP address found.  Please set ROS 'robot_ip_address' param");
     return false;
   }
 
   char* ip_addr = strdup(ip.c_str());  // connection.init() requires "char*", not "const char*"
-  ROS_DEBUG_NAMED("init", "I/O relay connecting to IP address: '%s:%d'", ip_addr, port);
+  ROS_DEBUG_NAMED("io.init", "I/O relay connecting to IP address: '%s:%d'", ip_addr, port);
   if (!default_tcp_connection_.init(ip_addr, port))
   {
-    ROS_ERROR_NAMED("init", "Failed to initialize TcpClient");
+    ROS_ERROR_NAMED("io.init", "Failed to initialize TcpClient");
     return false;
   }
   free(ip_addr);
@@ -71,7 +71,7 @@ bool MotomanIORelay::init(int default_port)
 
   if (!io_ctrl_.init(&default_tcp_connection_))
   {
-    ROS_ERROR_NAMED("init", "Failed to initialize MotomanIoCtrl");
+    ROS_ERROR_NAMED("io.init", "Failed to initialize MotomanIoCtrl");
     return false;
   }
 
@@ -97,11 +97,11 @@ bool MotomanIORelay::readSingleIoCB(
 
   if (!result)
   {
-    ROS_ERROR_NAMED("read", "Reading IO element %d failed", req.address);
+    ROS_ERROR_NAMED("io.read", "Reading IO element %d failed", req.address);
     return false;
   }
   res.value = io_val;
-  ROS_DEBUG_NAMED("read", "Element %d value: %d", req.address, io_val);
+  ROS_DEBUG_NAMED("io.read", "Element %d value: %d", req.address, io_val);
 
   return true;
 }
@@ -121,10 +121,10 @@ bool MotomanIORelay::writeSingleIoCB(
 
   if (!result)
   {
-    ROS_ERROR_NAMED("write", "Writing IO element %d failed", req.address);
+    ROS_ERROR_NAMED("io.write", "Writing IO element %d failed", req.address);
     return false;
   }
-  ROS_DEBUG_NAMED("write", "Element %d set to: %d", req.address, req.value);
+  ROS_DEBUG_NAMED("io.write", "Element %d set to: %d", req.address, req.value);
 
   return true;
 }
