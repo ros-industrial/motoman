@@ -184,6 +184,20 @@ set_target_properties(motoman_motion_streaming_interface_bswap
   PROPERTIES OUTPUT_NAME motion_streaming_interface_bswap
   PREFIX "")
 
+# I/O relay node
+add_executable(motoman_io_relay_bswap
+  src/io_relay_node.cpp
+  src/io_relay.cpp
+  src/io_ctrl.cpp)
+target_link_libraries(motoman_io_relay_bswap
+  motoman_simple_message_bswap
+  motoman_industrial_robot_client_bswap
+  ${catkin_LIBRARIES})
+set_target_properties(motoman_io_relay_bswap
+  PROPERTIES OUTPUT_NAME io_relay_bswap
+  PREFIX "")
+
+
 add_executable(${PROJECT_NAME}_joint_trajectory_action
   src/industrial_robot_client/joint_trajectory_action.cpp
   src/joint_trajectory_action_node.cpp)
