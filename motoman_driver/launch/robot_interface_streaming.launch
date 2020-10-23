@@ -44,6 +44,14 @@
 		<arg name="use_bswap"  value="$(arg use_bswap)" />
 	</include>
 
+	<!-- io_relay: sends and receives IO reads/writes to the controller
+	     (using socket connection to robot)
+	-->
+	<include file="$(find motoman_driver)/launch/io_relay.launch">
+		<arg name="robot_ip"   value="$(arg robot_ip)" />
+		<arg name="use_bswap"  value="$(arg use_bswap)" />
+	</include>
+
 	<!-- joint_trajectory_action: provides actionlib interface for 
 	     high-level robot control
 	-->
