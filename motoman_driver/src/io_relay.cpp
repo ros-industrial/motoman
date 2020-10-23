@@ -32,6 +32,7 @@
 
 #include "motoman_driver/io_relay.h"
 #include <string>
+#include <limits>
 #include <ros/ros.h>
 
 namespace motoman
@@ -53,6 +54,12 @@ bool MotomanIORelay::init(int default_port)
   {
     ROS_WARN_STREAM_NAMED("io.init", "Failed to get '" << port_param_name
       << "' parameter: using default (" << default_port << ")");
+  }
+  if(port < 0 or port > std::numeric_limits<unsigned short>::max())
+  {
+    ROS_FATAL_STREAM_NAMED("io.init", "Invalid value for port (" << port << "), "
+      "must be between 0 and " << std::numeric_limits<unsigned short>::max() << ".");
+    return false;
   }
 
   const std::string robot_ip_param_name = "robot_ip_address";
