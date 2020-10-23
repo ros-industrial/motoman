@@ -48,8 +48,13 @@ bool MotomanIORelay::init(int default_port)
 
   ros::param::get("robot_ip_address", ip);
   // override port with ROS param, if available
-  ros::param::param<int>("~port", port, default_port);
-  ROS_DEBUG_NAMED("io.init", "Using port: %d (default was: %d)", port, default_port);
+  const std::string port_param_name = "~port";
+  // TODO: should really use a private NodeHandle here
+  if(!ros::param::param<int>(port_param_name, port, default_port))
+  {
+    ROS_WARN_STREAM_NAMED("io.init", "Failed to get '" << port_param_name
+      << "' parameter: using default (" << default_port << ")");
+  }
 
   // check for valid parameter values
   if (ip.empty())
