@@ -3,9 +3,9 @@
 <xacro:macro name="motoman_ms210" params="prefix">
 
   <!-- Properties -->
-	<material name="yaskawa_blue">
-		<color rgba="0 0.35546875 0.671875 1" />
-	</material>
+  <material name="yaskawa_blue">
+    <color rgba="0 0.35546875 0.671875 1" />
+  </material>
 
   <!-- link list -->
   <link  name="${prefix}base_link">
