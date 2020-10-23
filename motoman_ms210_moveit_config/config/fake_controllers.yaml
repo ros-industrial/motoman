@@ -1,5 +1,5 @@
 controller_list:
-  - name: fake_ms210_arm_controller
+  - name: fake_manipulator_controller
     joints:
       - joint_s
       - joint_l
@@ -8,5 +8,5 @@ controller_list:
       - joint_b
       - joint_t
 initial:  # Define initial robot poses.
-  - group: ms210_arm
+  - group: manipulator
     pose: default_mfg

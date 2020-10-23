@@ -2,12 +2,8 @@
   <!-- The planning and execution components of MoveIt! configured to run -->
   <!-- using the ROS-Industrial interface. -->
 
-  <!-- Non-standard joint names:
-       - Create a file motoman_ms210_moveit_config/config/joint_names.yaml
-           controller_joint_names: [joint_1, joint_2, ... joint_N]
-       - Update with joint names for your robot (in order expected by rbt controller)
-       - and uncomment the following line: -->
-  <rosparam command="load" file="$(find motoman_ms210_moveit_config)/config/joint_names.yaml"/>
+  <!-- Non-standard joint names: provided by MS210 Support Package-->
+  <rosparam command="load" file="$(find motoman_ms210_support)/config/joint_names_ms210.yaml"/>
 
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
   <!--  - if sim=false, a robot_ip argument is required -->

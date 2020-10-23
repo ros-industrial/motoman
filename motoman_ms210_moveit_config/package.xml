@@ -10,7 +10,7 @@
     </p>
   </description>
   <author>Adam Buynak</author>
-  <maintainer email="buynak.9@buckeyemail.osu.edu">Adam Buynak (AIMS Lab @ The Ohio State University)</maintainer>
+  <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
   <license>BSD</license>
 
   <url type="website">http://moveit.ros.org/</url>
@@ -31,7 +31,7 @@
   <run_depend>xacro</run_depend>
   <!-- This package is referenced in the warehouse launch files, but does not build out of the box at the moment. Commented the dependency until this works. -->
   <!-- <run_depend>warehouse_ros_mongo</run_depend> -->
-    <run_depend>motoman_ms210_support</run_depend>
+  <run_depend>motoman_ms210_support</run_depend>
 
 
 </package>
