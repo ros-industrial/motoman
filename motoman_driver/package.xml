@@ -18,6 +18,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <test_depend>roslaunch</test_depend>
   <test_depend>roslint</test_depend>
 
   <depend>actionlib</depend>

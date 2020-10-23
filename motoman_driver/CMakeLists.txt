@@ -254,4 +254,7 @@ install(DIRECTORY
 if(CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
   roslint_cpp()
+
+  find_package(roslaunch REQUIRED)
+  roslaunch_add_file_check(tests/roslaunch_test_io_relay.xml)
 endif()
