@@ -2,8 +2,8 @@
 <!--
   Manipulator specific version of the state visualizer.
 
-  Defaults provided for ms210:
-   - 7 joints
+  Defaults provided for MS210:
+   - 6 joints
 
   Usage:
     robot_state_visualize_ms210.launch robot_ip:=<value> controller:=<dx200>
@@ -11,8 +11,8 @@
 <launch>
 	<arg name="robot_ip" doc="IP of controller" />
 
-  <!-- controller: Controller name (fs100 or dx100) -->
-  <arg name="controller" doc="Series of the controller (dx100, dx200, fs100 or yrc1000)"/>
+  <!-- controller: Controller name (dx200) -->
+  <arg name="controller" doc="Series of the controller (dx200)"/>
 
 	<rosparam command="load" file="$(find motoman_ms210_support)/config/joint_names_ms210.yaml" />
 
