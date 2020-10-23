@@ -73,7 +73,7 @@ bool MotomanIORelay::init(int default_port)
   char* ip_addr = strdup(ip.c_str());  // connection.init() requires "char*", not "const char*"
   if (!default_tcp_connection_.init(ip_addr, port))
   {
-    ROS_ERROR_NAMED("io.init", "Failed to initialize TcpClient");
+    ROS_FATAL_NAMED("io.init", "Failed to initialize TcpClient");
     return false;
   }
   free(ip_addr);
@@ -81,13 +81,13 @@ bool MotomanIORelay::init(int default_port)
   ROS_DEBUG_STREAM_NAMED("io.init", "I/O relay attempting to connect to: tcp://" << ip << ":" << port);
   if (!default_tcp_connection_.makeConnect())
   {
-    ROS_ERROR_NAMED("io.init", "Failed to connect");
+    ROS_FATAL_NAMED("io.init", "Failed to connect");
     return false;
   }
 
   if (!io_ctrl_.init(&default_tcp_connection_))
   {
-    ROS_ERROR_NAMED("io.init", "Failed to initialize MotomanIoCtrl");
+    ROS_FATAL_NAMED("io.init", "Failed to initialize MotomanIoCtrl");
     return false;
   }
 
