@@ -43,7 +43,7 @@ using industrial::shared_types::shared_int;
 
 bool MotomanIORelay::init(int default_port)
 {
-  ROS_DEBUG_NAMED("io.init", "MotomanIORelay::init(default_port = %d)", default_port);
+  ROS_DEBUG_NAMED("io.init", "Using default port: %d", default_port);
 
   std::string ip;
   int port;
@@ -60,7 +60,7 @@ bool MotomanIORelay::init(int default_port)
   }
 
   char* ip_addr = strdup(ip.c_str());  // connection.init() requires "char*", not "const char*"
-  ROS_DEBUG_NAMED("io.init", "I/O relay connecting to IP address: '%s:%d'", ip_addr, port);
+  ROS_DEBUG_NAMED("io.init", "I/O relay attempting to connect to: tcp://%s:%d", ip_addr, port);
   if (!default_tcp_connection_.init(ip_addr, port))
   {
     ROS_ERROR_NAMED("io.init", "Failed to initialize TcpClient");
