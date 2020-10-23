@@ -66,7 +66,12 @@ bool MotomanIORelay::init(int default_port)
     return false;
   }
   free(ip_addr);
-  default_tcp_connection_.makeConnect();
+
+  if (!default_tcp_connection_.makeConnect())
+  {
+    ROS_ERROR_NAMED("io.init", "Failed to connect");
+    return false;
+  }
 
   if (!io_ctrl_.init(&default_tcp_connection_))
   {
