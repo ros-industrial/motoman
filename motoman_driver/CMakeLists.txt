@@ -214,6 +214,8 @@ target_link_libraries(${PROJECT_NAME}_joint_trajectory_action
 # binaries
 install(TARGETS
   ${PROJECT_NAME}_joint_trajectory_action
+  motoman_io_relay
+  motoman_io_relay_bswap
   motoman_motion_streaming_interface
   motoman_motion_streaming_interface_bswap
   motoman_robot_state
