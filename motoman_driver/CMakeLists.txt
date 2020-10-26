@@ -129,6 +129,19 @@ set_target_properties(motoman_motion_streaming_interface
   PROPERTIES OUTPUT_NAME motion_streaming_interface
   PREFIX "")
 
+# I/O relay node
+add_executable(motoman_io_relay
+  src/io_relay_node.cpp
+  src/io_relay.cpp
+  src/io_ctrl.cpp)
+target_link_libraries(motoman_io_relay
+  motoman_simple_message
+  motoman_industrial_robot_client
+  ${catkin_LIBRARIES})
+set_target_properties(motoman_io_relay
+  PROPERTIES OUTPUT_NAME io_relay
+  PREFIX "")
+
 
 #----------------------------------------------------------------
 # FS100 uses opposite byte-ordering from most i386-based PCs
@@ -171,6 +184,20 @@ set_target_properties(motoman_motion_streaming_interface_bswap
   PROPERTIES OUTPUT_NAME motion_streaming_interface_bswap
   PREFIX "")
 
+# I/O relay node
+add_executable(motoman_io_relay_bswap
+  src/io_relay_node.cpp
+  src/io_relay.cpp
+  src/io_ctrl.cpp)
+target_link_libraries(motoman_io_relay_bswap
+  motoman_simple_message_bswap
+  motoman_industrial_robot_client_bswap
+  ${catkin_LIBRARIES})
+set_target_properties(motoman_io_relay_bswap
+  PROPERTIES OUTPUT_NAME io_relay_bswap
+  PREFIX "")
+
+
 add_executable(${PROJECT_NAME}_joint_trajectory_action
   src/industrial_robot_client/joint_trajectory_action.cpp
   src/joint_trajectory_action_node.cpp)
@@ -187,6 +214,8 @@ target_link_libraries(${PROJECT_NAME}_joint_trajectory_action
 # binaries
 install(TARGETS
   ${PROJECT_NAME}_joint_trajectory_action
+  motoman_io_relay
+  motoman_io_relay_bswap
   motoman_motion_streaming_interface
   motoman_motion_streaming_interface_bswap
   motoman_robot_state
@@ -225,4 +254,7 @@ install(DIRECTORY
 if(CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
   roslint_cpp()
+
+  find_package(roslaunch REQUIRED)
+  roslaunch_add_file_check(tests/roslaunch_test_io_relay.xml)
 endif()

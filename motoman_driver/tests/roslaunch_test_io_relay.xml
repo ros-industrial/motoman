@@ -1,0 +1,17 @@
+<launch>
+  <arg name="robot_ip" value="127.0.0.1"/>
+
+  <group ns="io_relay">
+    <include file="$(find motoman_driver)/launch/io_relay.launch">
+      <arg name="robot_ip"  value="$(arg robot_ip)" />
+      <arg name="use_bswap" value="false"/>
+    </include>
+  </group>
+
+  <group ns="io_relay_bswap">
+    <include file="$(find motoman_driver)/launch/io_relay.launch">
+      <arg name="robot_ip"  value="$(arg robot_ip)" />
+      <arg name="use_bswap" value="true"/>
+    </include>
+  </group>
+</launch>
