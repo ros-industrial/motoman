@@ -17,3 +17,5 @@
 uint32 address
 int32 value
 ---
+bool success
+string message

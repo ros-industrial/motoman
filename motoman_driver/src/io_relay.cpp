@@ -34,6 +34,7 @@
 #include <string>
 #include <limits>
 #include <ros/ros.h>
+#include <sstream>
 
 namespace motoman
 {
@@ -113,12 +114,20 @@ bool MotomanIORelay::readSingleIoCB(
 
   if (!result)
   {
-    ROS_ERROR_NAMED("io.read", "Reading IO element %d failed", req.address);
-    return false;
+    std::stringstream message;
+    message << "Reading IO element " << req.address << " failed";
+    res.success = false;
+    res.message = message.str();
+    ROS_ERROR_NAMED("io.read", message.str().c_str());
+    return true;
   }
-  res.value = io_val;
-  ROS_DEBUG_NAMED("io.read", "Element %d value: %d", req.address, io_val);
 
+  std::stringstream message;
+  message << "Element " << req.address << " value: " << io_val;
+  res.value = io_val;
+  res.success = true;
+  res.message = message.str();
+  ROS_DEBUG_NAMED("io.read", message.str().c_str());
   return true;
 }
 
@@ -137,11 +146,19 @@ bool MotomanIORelay::writeSingleIoCB(
 
   if (!result)
   {
-    ROS_ERROR_NAMED("io.write", "Writing IO element %d failed", req.address);
-    return false;
+    std::stringstream message;
+    message << "Writing to IO element " << req.address << " failed";
+    res.success = false;
+    res.message = message.str();
+    ROS_ERROR_NAMED("io.write",  message.str().c_str());
+    return true;
   }
-  ROS_DEBUG_NAMED("io.write", "Element %d set to: %d", req.address, req.value);
 
+  std::stringstream message;
+  message << "Element " << req.address << " set to: " << req.value;
+  res.success = true;
+  res.message = message.str();
+  ROS_DEBUG_NAMED("io.write", message.str().c_str());
   return true;
 }
 
