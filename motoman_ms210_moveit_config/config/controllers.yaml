@@ -2,4 +2,4 @@ controller_list:
   - name: ""
     action_ns: joint_trajectory_action
     type: FollowJointTrajectory
-    joints: [joint_s, joint_l, joint_u, joint_r, joint_b, joint_t]
+    joints: [joint_1_s, joint_2_l, joint_3_u, joint_4_r, joint_5_b, joint_6_t]
