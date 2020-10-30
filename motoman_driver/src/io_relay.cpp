@@ -34,6 +34,7 @@
 #include <string>
 #include <limits>
 #include <ros/ros.h>
+#include <sstream>
 
 namespace motoman
 {
@@ -113,12 +114,22 @@ bool MotomanIORelay::readSingleIoCB(
 
   if (!result)
   {
-    ROS_ERROR_NAMED("io.read", "Reading IO element %d failed", req.address);
-    return false;
-  }
-  res.value = io_val;
-  ROS_DEBUG_NAMED("io.read", "Element %d value: %d", req.address, io_val);
+    res.success = false;
 
+    // provide caller with failure indication (not very informative yet)
+    std::stringstream message;
+    message << "Reading IO element " << req.address << " failed.";
+    res.message = message.str();
+    ROS_ERROR_STREAM_NAMED("io.read", res.message);
+
+    return true;
+  }
+
+  ROS_DEBUG_STREAM_NAMED("io.read", "Address " << req.address << ", value: " << io_val);
+
+  // no failure, so no need for an additional message
+  res.value = io_val;
+  res.success = true;
   return true;
 }
 
@@ -137,11 +148,21 @@ bool MotomanIORelay::writeSingleIoCB(
 
   if (!result)
   {
-    ROS_ERROR_NAMED("io.write", "Writing IO element %d failed", req.address);
-    return false;
-  }
-  ROS_DEBUG_NAMED("io.write", "Element %d set to: %d", req.address, req.value);
+    res.success = false;
 
+    // provide caller with failure indication (not very informative yet)
+    std::stringstream message;
+    message << "Writing to IO element " << req.address << " failed";
+    res.message = message.str();
+    ROS_ERROR_STREAM_NAMED("io.write", res.message);
+
+    return true;
+  }
+
+  ROS_DEBUG_STREAM_NAMED("io.write", "Element " << req.address << " set to: " << req.value);
+
+  // no failure, so no need for an additional message
+  res.success = true;
   return true;
 }
 
