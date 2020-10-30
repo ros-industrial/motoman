@@ -12,6 +12,6 @@
 
 uint32 address
 ---
+string message
 bool success
 int32 value
-string message
