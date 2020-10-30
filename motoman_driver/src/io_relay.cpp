@@ -122,12 +122,11 @@ bool MotomanIORelay::readSingleIoCB(
     return true;
   }
 
-  std::stringstream message;
-  message << "Element " << req.address << " value: " << io_val;
+  ROS_DEBUG_STREAM_NAMED("io.read", "Address " << req.address << ", value: " << io_val);
+
+  // no failure, so no need for an additional message
   res.value = io_val;
   res.success = true;
-  res.message = message.str();
-  ROS_DEBUG_NAMED("io.read", message.str().c_str());
   return true;
 }
 
@@ -154,11 +153,10 @@ bool MotomanIORelay::writeSingleIoCB(
     return true;
   }
 
-  std::stringstream message;
-  message << "Element " << req.address << " set to: " << req.value;
+  ROS_DEBUG_STREAM_NAMED("io.write", "Element " << req.address << " set to: " << req.value);
+
+  // no failure, so no need for an additional message
   res.success = true;
-  res.message = message.str();
-  ROS_DEBUG_NAMED("io.write", message.str().c_str());
   return true;
 }
 
