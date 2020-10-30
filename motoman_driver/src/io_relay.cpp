@@ -118,7 +118,7 @@ bool MotomanIORelay::readSingleIoCB(
     message << "Reading IO element " << req.address << " failed";
     res.success = false;
     res.message = message.str();
-    ROS_ERROR_STREAM_NAMED("io.read", message.str());
+    ROS_ERROR_STREAM_NAMED("io.read", res.message);
     return true;
   }
 
@@ -150,7 +150,7 @@ bool MotomanIORelay::writeSingleIoCB(
     message << "Writing to IO element " << req.address << " failed";
     res.success = false;
     res.message = message.str();
-    ROS_ERROR_STREAM_NAMED("io.write", message.str());
+    ROS_ERROR_STREAM_NAMED("io.write", res.message);
     return true;
   }
 
