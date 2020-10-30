@@ -114,11 +114,14 @@ bool MotomanIORelay::readSingleIoCB(
 
   if (!result)
   {
-    std::stringstream message;
-    message << "Reading IO element " << req.address << " failed";
     res.success = false;
+
+    // provide caller with failure indication (not very informative yet)
+    std::stringstream message;
+    message << "Reading IO element " << req.address << " failed.";
     res.message = message.str();
     ROS_ERROR_STREAM_NAMED("io.read", res.message);
+
     return true;
   }
 
@@ -145,11 +148,14 @@ bool MotomanIORelay::writeSingleIoCB(
 
   if (!result)
   {
+    res.success = false;
+
+    // provide caller with failure indication (not very informative yet)
     std::stringstream message;
     message << "Writing to IO element " << req.address << " failed";
-    res.success = false;
     res.message = message.str();
     ROS_ERROR_STREAM_NAMED("io.write", res.message);
+
     return true;
   }
 
