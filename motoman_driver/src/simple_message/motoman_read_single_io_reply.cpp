@@ -80,8 +80,16 @@ std::string ReadSingleIOReply::getResultString(shared_int result_code)
 {
   switch (result_code)
   {
-  case ReadSingleIOReplyResultCodes::FAILURE:
-    return "Failed";
+  case ReadSingleIOReplyResultCodes::READ_ADDRESS_INVALID:
+     return "Illegal address for read: outside permitted range on this controller, see documentation (1001)";
+  case ReadSingleIOReplyResultCodes::WRITE_ADDRESS_INVALID:
+     return "Illegal address for write: outside permitted range on this controller, see documentation (1002)";
+  case ReadSingleIOReplyResultCodes::WRITE_VALUE_INVALID:
+     return "Illegal value for the type of IO element addressed (1003)";
+  case ReadSingleIOReplyResultCodes::READ_API_ERROR:
+     return "The MotoPlus function MpReadIO returned -1. No further information is available (1004)";
+  case ReadSingleIOReplyResultCodes::WRITE_API_ERROR:
+     return "The MotoPlus function MpWriteIO returned -1. No further information is available (1005)";
   case ReadSingleIOReplyResultCodes::SUCCESS:
     return "Success";
   default:
