@@ -41,8 +41,8 @@
 #include <string>
 
 
-namespace ReadSingleIOReplyResults = motoman::simple_message::io_ctrl_reply::ReadSingleIOReplyResults;
-namespace WriteSingleIOReplyResults = motoman::simple_message::io_ctrl_reply::WriteSingleIOReplyResults;
+namespace ReadSingleIOReplyResultCodes = motoman::simple_message::io_ctrl_reply::ReadSingleIOReplyResultCodes;
+namespace WriteSingleIOReplyResultCodes = motoman::simple_message::io_ctrl_reply::WriteSingleIOReplyResultCodes;
 
 using motoman::simple_message::io_ctrl::ReadSingleIO;
 using motoman::simple_message::io_ctrl_message::ReadSingleIOMessage;
@@ -77,7 +77,9 @@ bool MotomanIoCtrl::readSingleIO(shared_int address, shared_int &value)
 
   value = reply.getValue();
 
-  return (reply.getResultCode() == ReadSingleIOReplyResults::SUCCESS);
+  bool read_success = reply.getResultCode() == ReadSingleIOReplyResultCodes::SUCCESS;
+
+  return read_success;
 }
 
 bool MotomanIoCtrl::writeSingleIO(shared_int address, shared_int value)
@@ -90,7 +92,9 @@ bool MotomanIoCtrl::writeSingleIO(shared_int address, shared_int value)
     return false;
   }
 
-  return (reply.getResultCode() == WriteSingleIOReplyResults::SUCCESS);
+  bool write_success = reply.getResultCode() == WriteSingleIOReplyResultCodes::SUCCESS;
+
+  return write_success;
 }
 
 bool MotomanIoCtrl::sendAndReceive(shared_int address, ReadSingleIOReply &reply)

@@ -57,15 +57,15 @@ namespace io_ctrl_reply
 /**
  * \brief Enumeration of Read Single IO reply result codes.
  */
-namespace ReadSingleIOReplyResults
+namespace ReadSingleIOReplyResultCodes
 {
-enum ReadSingleIOReplyResult
+enum ReadSingleIOReplyResultCode
 {
   FAILURE    = 0,
   SUCCESS    = 1
 };
 }
-typedef ReadSingleIOReplyResults::ReadSingleIOReplyResult ReadSingleIOReplyResult;
+typedef ReadSingleIOReplyResultCodes::ReadSingleIOReplyResultCode ReadSingleIOReplyResultCode;
 
 /**
  * \brief Class encapsulated read single io reply data.  These messages are sent
@@ -111,7 +111,7 @@ public:
    *
    */
   void init(industrial::shared_types::shared_int value,
-            ReadSingleIOReplyResult result_code);
+            ReadSingleIOReplyResultCode result_code);
 
   /**
    * \brief Sets value

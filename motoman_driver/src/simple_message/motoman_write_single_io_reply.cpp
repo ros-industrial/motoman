@@ -47,7 +47,7 @@
 #endif
 
 using industrial::shared_types::shared_int;
-namespace WriteSingleIOReplyResults = motoman::simple_message::io_ctrl_reply::WriteSingleIOReplyResults;
+namespace WriteSingleIOReplyResultCodes = motoman::simple_message::io_ctrl_reply::WriteSingleIOReplyResultCodes;
 
 namespace motoman
 {
@@ -67,10 +67,10 @@ WriteSingleIOReply::~WriteSingleIOReply(void)
 void WriteSingleIOReply::init()
 {
   // TODO: is success a good initial value?
-  this->init(WriteSingleIOReplyResults::SUCCESS);
+  this->init(WriteSingleIOReplyResultCodes::SUCCESS);
 }
 
-void WriteSingleIOReply::init(WriteSingleIOReplyResult result_code)
+void WriteSingleIOReply::init(WriteSingleIOReplyResultCode result_code)
 {
   this->setResultCode(result_code);
 }
@@ -79,9 +79,9 @@ std::string WriteSingleIOReply::getResultString(shared_int result_code)
 {
   switch (result_code)
   {
-  case WriteSingleIOReplyResults::FAILURE:
+  case WriteSingleIOReplyResultCodes::FAILURE:
     return "Failed";
-  case WriteSingleIOReplyResults::SUCCESS:
+  case WriteSingleIOReplyResultCodes::SUCCESS:
     return "Success";
   default:
     return "Unknown";

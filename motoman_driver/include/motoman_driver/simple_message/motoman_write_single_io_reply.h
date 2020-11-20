@@ -57,15 +57,15 @@ namespace io_ctrl_reply
 /**
  * \brief Enumeration of Write Single IO reply result codes.
  */
-namespace WriteSingleIOReplyResults
+namespace WriteSingleIOReplyResultCodes
 {
-enum WriteSingleIOReplyResult
+enum WriteSingleIOReplyResultCode
 {
   FAILURE    = 0,
   SUCCESS    = 1
 };
 }
-typedef WriteSingleIOReplyResults::WriteSingleIOReplyResult WriteSingleIOReplyResult;
+typedef WriteSingleIOReplyResultCodes::WriteSingleIOReplyResultCode WriteSingleIOReplyResultCode;
 
 /**
  * \brief Class encapsulated write single io reply data.  These messages are sent
@@ -109,7 +109,7 @@ public:
    * \brief Initializes a complete read single io reply
    *
    */
-  void init(WriteSingleIOReplyResult result_code);
+  void init(WriteSingleIOReplyResultCode result_code);
 
   /**
    * \brief Sets the result code
