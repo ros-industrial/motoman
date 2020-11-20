@@ -106,19 +106,21 @@ bool MotomanIORelay::readSingleIoCB(
   motoman_msgs::ReadSingleIO::Response &res)
 {
   shared_int io_val= -1;
+  std::string err_msg;
 
   // send message and release mutex as soon as possible
   this->mutex_.lock();
-  bool result = io_ctrl_.readSingleIO(req.address, io_val);
+  bool result = io_ctrl_.readSingleIO(req.address, io_val, err_msg);
   this->mutex_.unlock();
 
   if (!result)
   {
     res.success = false;
 
-    // provide caller with failure indication (not very informative yet)
+    // provide caller with failure indication
+    // TODO: should we also return the result code?
     std::stringstream message;
-    message << "Reading IO element " << req.address << " failed.";
+    message << "Read failed (address: " << req.address << "): " << err_msg;
     res.message = message.str();
     ROS_ERROR_STREAM_NAMED("io.read", res.message);
 
@@ -140,19 +142,21 @@ bool MotomanIORelay::writeSingleIoCB(
   motoman_msgs::WriteSingleIO::Response &res)
 {
   shared_int io_val= -1;
+  std::string err_msg;
 
   // send message and release mutex as soon as possible
   this->mutex_.lock();
-  bool result = io_ctrl_.writeSingleIO(req.address, req.value);
+  bool result = io_ctrl_.writeSingleIO(req.address, req.value, err_msg);
   this->mutex_.unlock();
 
   if (!result)
   {
     res.success = false;
 
-    // provide caller with failure indication (not very informative yet)
+    // provide caller with failure indication
+    // TODO: should we also return the result code?
     std::stringstream message;
-    message << "Writing to IO element " << req.address << " failed";
+    message << "Write failed (address: " << req.address << "): " << err_msg;
     res.message = message.str();
     ROS_ERROR_STREAM_NAMED("io.write", res.message);
 
