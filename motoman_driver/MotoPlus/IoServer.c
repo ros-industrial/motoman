@@ -417,7 +417,7 @@ int Ros_IoServer_WriteIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	{
 		ioWriteData.ulAddr = receiveMsg->body.writeIOBit.ioAddress;
 		ioWriteData.ulValue = receiveMsg->body.writeIOBit.ioValue;
-		apiRet = mpWriteIO(&ioWriteData, 1);
+		apiRet = mpWriteIO(&ioWriteData, QUANTITY_BIT);
 
 		replyMsg->body.writeIOBitReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_WRITE_API_ERROR;
 		replyMsg->header.replyType = (apiRet == OK) ? ROS_REPLY_SUCCESS : ROS_REPLY_FAILURE;
@@ -458,12 +458,12 @@ int Ros_IoServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 
 	if (bAddressOk && bValueOk)
 	{
-		for (i = 0; i < 8; i += 1)
+		for (i = 0; i < QUANTITY_BYTE; i += 1)
 		{
 			ioWriteData[i].ulAddr = (receiveMsg->body.writeIOGroup.ioAddress * 10) + i;
 			ioWriteData[i].ulValue = (receiveMsg->body.writeIOGroup.ioValue & (1 << i)) >> i;
 		}
-		apiRet = mpWriteIO(ioWriteData, 8);
+		apiRet = mpWriteIO(ioWriteData, QUANTITY_BYTE);
 
 		replyMsg->body.writeIOGroupReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_WRITE_API_ERROR;
 		replyMsg->header.replyType = (apiRet == OK) ? ROS_REPLY_SUCCESS : ROS_REPLY_FAILURE;
@@ -546,7 +546,7 @@ int Ros_IoServer_WriteIORegister(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	{
 		ioWriteData.ulAddr = receiveMsg->body.writeRegister.registerNumber;
 		ioWriteData.ulValue = receiveMsg->body.writeRegister.value;
-		apiRet = mpWriteIO(&ioWriteData, 1);
+		apiRet = mpWriteIO(&ioWriteData, QUANTITY_BIT);
 
 		replyMsg->body.writeRegisterReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_WRITE_API_ERROR;
 		replyMsg->header.replyType = (apiRet == OK) ? ROS_REPLY_SUCCESS : ROS_REPLY_FAILURE;
