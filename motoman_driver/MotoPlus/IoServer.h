@@ -270,4 +270,7 @@ extern BOOL Ros_IoServer_IsValidWriteValue(UINT32 value, IoAccessSize size);
 
 #endif
 
+#define QUANTITY_BIT	(1)
+#define QUANTITY_BYTE	(8)
+
 #endif

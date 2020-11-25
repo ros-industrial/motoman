@@ -70,9 +70,7 @@ typedef enum
 	ROS_MSG_MOTO_WRITE_IO_GROUP_REPLY = 2010,
 	ROS_MSG_MOTO_IOCTRL_REPLY = 2011,
 	ROS_MSG_MOTO_READ_MREGISTER = 2012,
-	ROS_MSG_MOTO_READ_MREGISTER_REPLY = 2013,
-	ROS_MSG_MOTO_WRITE_MREGISTER = 2014,
-	ROS_MSG_MOTO_WRITE_MREGISTER_REPLY = 2015,
+	ROS_MSG_MOTO_WRITE_MREGISTER = 2013,
 
 	ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016,
 	ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017,
@@ -318,7 +316,7 @@ typedef struct _SmBodyMotoWriteIOBitReply SmBodyMotoWriteIOBitReply;
 
 struct _SmBodyMotoReadIOGroup
 {
-	UINT32 ioAddress; //Group address. Example: '1001' will read OG#1 (10010 - 10017)
+	UINT32 ioAddress; //Group address. Example: '1001' will read OG#1 (Bits 10010 through 10017)
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoReadIOGroup SmBodyMotoReadIOGroup;
 
@@ -331,7 +329,7 @@ typedef struct _SmBodyMotoReadIOGroupReply SmBodyMotoReadIOGroupReply;
 
 struct _SmBodyMotoWriteIOGroup
 {
-	UINT32 ioAddress; //Group address. Example: '1001' will write OG#1 (10010 - 10017)
+	UINT32 ioAddress; //Group address. Example: '1001' will write OG#1 (Bits 10010 through 10017)
 	UINT32 ioValue;
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoWriteIOGroup SmBodyMotoWriteIOGroup;

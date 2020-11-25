@@ -331,7 +331,7 @@ int Ros_IoServer_ReadIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	if (Ros_IoServer_IsValidReadAddress(receiveMsg->body.readIOBit.ioAddress, IO_ACCESS_BIT))
 	{
 		ioReadInfo.ulAddr = receiveMsg->body.readIOBit.ioAddress;
-		apiRet = mpReadIO(&ioReadInfo, &ioValue, 1);
+		apiRet = mpReadIO(&ioReadInfo, &ioValue, QUANTITY_BIT);
 
 		replyMsg->body.readIOBitReply.value = ioValue;
 		replyMsg->body.readIOBitReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_READ_API_ERROR;
@@ -371,7 +371,7 @@ int Ros_IoServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 		{
 			ioReadInfo[i].ulAddr = (receiveMsg->body.readIOGroup.ioAddress * 10) + i;
 		}
-		apiRet = mpReadIO(ioReadInfo, ioValue, 8);
+		apiRet = mpReadIO(ioReadInfo, ioValue, QUANTITY_BYTE);
 
 		resultValue = 0;
 		for (i = 0; i < 8; i += 1)
@@ -494,7 +494,7 @@ int Ros_IoServer_ReadIORegister(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoReadIOMRegisterReply);
 
 	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_READ_MREGISTER_REPLY;
+	replyMsg->header.msgType = ROS_MSG_MOTO_READ_MREGISTER;
 	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
 
 	if (receiveMsg->body.readRegister.registerNumber < 1000000)
@@ -503,7 +503,7 @@ int Ros_IoServer_ReadIORegister(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	if (Ros_IoServer_IsValidReadAddress(receiveMsg->body.readRegister.registerNumber, IO_ACCESS_REGISTER))
 	{
 		ioReadInfo.ulAddr = receiveMsg->body.readRegister.registerNumber;
-		apiRet = mpReadIO(&ioReadInfo, &ioValue, 1);
+		apiRet = mpReadIO(&ioReadInfo, &ioValue, QUANTITY_BIT);
 
 		replyMsg->body.readRegisterReply.value = ioValue;
 		replyMsg->body.readRegisterReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_READ_API_ERROR;
@@ -533,7 +533,7 @@ int Ros_IoServer_WriteIORegister(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoWriteIOMRegisterReply);
 
 	// set header information of the reply
-	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_MREGISTER_REPLY;
+	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_MREGISTER;
 	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
 
 	if (receiveMsg->body.writeRegister.registerNumber < 1000000)
