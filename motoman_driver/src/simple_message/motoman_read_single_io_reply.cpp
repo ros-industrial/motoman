@@ -47,7 +47,7 @@
 #endif
 
 using industrial::shared_types::shared_int;
-namespace ReadSingleIOReplyResults = motoman::simple_message::io_ctrl_reply::ReadSingleIOReplyResults;
+namespace ReadSingleIOReplyResultCodes = motoman::simple_message::io_ctrl_reply::ReadSingleIOReplyResultCodes;
 
 namespace motoman
 {
@@ -67,10 +67,10 @@ ReadSingleIOReply::~ReadSingleIOReply(void)
 void ReadSingleIOReply::init()
 {
   // TODO: is '0' a good initial value?
-  this->init(0/*value*/, ReadSingleIOReplyResults::SUCCESS);
+  this->init(0/*value*/, ReadSingleIOReplyResultCodes::SUCCESS);
 }
 
-void ReadSingleIOReply::init(shared_int value, ReadSingleIOReplyResult result_code)
+void ReadSingleIOReply::init(shared_int value, ReadSingleIOReplyResultCode result_code)
 {
   this->setValue(value);
   this->setResultCode(result_code);
@@ -80,9 +80,22 @@ std::string ReadSingleIOReply::getResultString(shared_int result_code)
 {
   switch (result_code)
   {
-  case ReadSingleIOReplyResults::FAILURE:
-    return "Failed";
-  case ReadSingleIOReplyResults::SUCCESS:
+  case ReadSingleIOReplyResultCodes::READ_ADDRESS_INVALID:
+     return "Illegal address for read: outside permitted range on this controller, "
+            "see documentation (" + std::to_string(ReadSingleIOReplyResultCodes::READ_ADDRESS_INVALID) + ")";
+  case ReadSingleIOReplyResultCodes::WRITE_ADDRESS_INVALID:
+     return "Illegal address for write: outside permitted range on this controller, "
+            "see documentation (" + std::to_string(ReadSingleIOReplyResultCodes::WRITE_ADDRESS_INVALID) + ")";
+  case ReadSingleIOReplyResultCodes::WRITE_VALUE_INVALID:
+     return "Illegal value for the type of IO element addressed "
+            "(" + std::to_string(ReadSingleIOReplyResultCodes::WRITE_VALUE_INVALID) + ")";
+  case ReadSingleIOReplyResultCodes::READ_API_ERROR:
+     return "The MotoPlus function MpReadIO returned -1. No further information is available "
+            "(" + std::to_string(ReadSingleIOReplyResultCodes::READ_API_ERROR) + ")";
+  case ReadSingleIOReplyResultCodes::WRITE_API_ERROR:
+     return "The MotoPlus function MpWriteIO returned -1. No further information is available ";
+            "(" + std::to_string(ReadSingleIOReplyResultCodes::WRITE_API_ERROR) + ")";
+  case ReadSingleIOReplyResultCodes::SUCCESS:
     return "Success";
   default:
     return "Unknown";

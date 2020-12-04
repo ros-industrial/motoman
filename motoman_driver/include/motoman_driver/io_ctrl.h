@@ -70,20 +70,22 @@ public:
    *
    * \param address The address (index) of the IO point
    * \param value [out] Will contain the value of the IO point
+   * \param err_msg [out] A descriptive error message in case of failure
    * \return True IFF reading was successful
    */
   bool readSingleIO(industrial::shared_types::shared_int address,
-    industrial::shared_types::shared_int &value);
+    industrial::shared_types::shared_int &value, std::string& err_msg);
 
   /**
    * \brief Writes to a single IO point on the controller.
    *
    * \param address The address (index) of the IO point
    * \param value The value to set the IO element to
+   * \param err_msg [out] A descriptive error message in case of failure
    * \return True IFF writing was successful
    */
   bool writeSingleIO(industrial::shared_types::shared_int address,
-    industrial::shared_types::shared_int value);
+    industrial::shared_types::shared_int value, std::string& err_msg);
 
 protected:
   SmplMsgConnection* connection_;

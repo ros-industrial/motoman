@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(motoman_driver)
 
+# require C++11
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Load catkin and all dependencies required for this package
 find_package(
   catkin

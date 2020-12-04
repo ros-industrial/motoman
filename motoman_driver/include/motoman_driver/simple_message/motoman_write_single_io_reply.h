@@ -57,15 +57,19 @@ namespace io_ctrl_reply
 /**
  * \brief Enumeration of Write Single IO reply result codes.
  */
-namespace WriteSingleIOReplyResults
+namespace WriteSingleIOReplyResultCodes
 {
-enum WriteSingleIOReplyResult
+enum WriteSingleIOReplyResultCode
 {
-  FAILURE    = 0,
-  SUCCESS    = 1
+  SUCCESS               =    0,
+  READ_ADDRESS_INVALID  = 1001, // The ioAddress cannot be read on this controller
+  WRITE_ADDRESS_INVALID = 1002, // The ioAddress cannot be written to on this controller
+  WRITE_VALUE_INVALID   = 1003, // The value supplied is not a valid value for the addressed IO element
+  READ_API_ERROR        = 1004, // mpReadIO returned -1
+  WRITE_API_ERROR       = 1005, // mpWriteIO returned -1
 };
 }
-typedef WriteSingleIOReplyResults::WriteSingleIOReplyResult WriteSingleIOReplyResult;
+typedef WriteSingleIOReplyResultCodes::WriteSingleIOReplyResultCode WriteSingleIOReplyResultCode;
 
 /**
  * \brief Class encapsulated write single io reply data.  These messages are sent
@@ -109,7 +113,7 @@ public:
    * \brief Initializes a complete read single io reply
    *
    */
-  void init(WriteSingleIOReplyResult result_code);
+  void init(WriteSingleIOReplyResultCode result_code);
 
   /**
    * \brief Sets the result code
