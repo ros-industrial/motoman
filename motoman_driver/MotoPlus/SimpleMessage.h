@@ -69,6 +69,8 @@ typedef enum
 	ROS_MSG_MOTO_WRITE_IO_GROUP = 2009,
 	ROS_MSG_MOTO_WRITE_IO_GROUP_REPLY = 2010,
 	ROS_MSG_MOTO_IOCTRL_REPLY = 2011,
+	ROS_MSG_MOTO_READ_MREGISTER = 2012,
+	ROS_MSG_MOTO_WRITE_MREGISTER = 2013,
 
 	ROS_MSG_MOTO_JOINT_TRAJ_PT_FULL_EX = 2016,
 	ROS_MSG_MOTO_JOINT_FEEDBACK_EX = 2017,
@@ -276,6 +278,16 @@ typedef struct _SmBodySelectTool SmBodySelectTool;
 // IO Commands
 //--------------
 
+typedef enum
+{
+	IO_RESULT_OK = 0,
+	IO_RESULT_READ_ADDRESS_INVALID = 1001,	//The ioAddress cannot be read on this controller
+	IO_RESULT_WRITE_ADDRESS_INVALID,		//The ioAddress cannot be written to on this controller
+	IO_RESULT_WRITE_VALUE_INVALID,			//The value supplied is not a valid value for the addressed IO element
+	IO_RESULT_READ_API_ERROR,				//mpReadIO return -1
+	IO_RESULT_WRITE_API_ERROR				//mpWriteIO returned -1
+} IoResultCodes;
+
 struct _SmBodyMotoReadIOBit
 {
 	UINT32 ioAddress;
@@ -285,7 +297,7 @@ typedef struct _SmBodyMotoReadIOBit SmBodyMotoReadIOBit;
 struct _SmBodyMotoReadIOBitReply
 {
 	UINT32 value;
-	UINT32 resultCode;
+	IoResultCodes resultCode;
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoReadIOBitReply SmBodyMotoReadIOBitReply;
 
@@ -298,33 +310,33 @@ typedef struct _SmBodyMotoWriteIOBit SmBodyMotoWriteIOBit;
 
 struct _SmBodyMotoWriteIOBitReply
 {
-	UINT32 resultCode;
+	IoResultCodes resultCode;
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoWriteIOBitReply SmBodyMotoWriteIOBitReply;
 
 struct _SmBodyMotoReadIOGroup
 {
-	UINT32 ioAddress;
+	UINT32 ioAddress; //Group address. Example: '1001' will read OG#1 (Bits 10010 through 10017)
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoReadIOGroup SmBodyMotoReadIOGroup;
 
 struct _SmBodyMotoReadIOGroupReply
 {
 	UINT32 value;
-	UINT32 resultCode;
+	IoResultCodes resultCode;
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoReadIOGroupReply SmBodyMotoReadIOGroupReply;
 
 struct _SmBodyMotoWriteIOGroup
 {
-	UINT32 ioAddress;
+	UINT32 ioAddress; //Group address. Example: '1001' will write OG#1 (Bits 10010 through 10017)
 	UINT32 ioValue;
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoWriteIOGroup SmBodyMotoWriteIOGroup;
 
 struct _SmBodyMotoWriteIOGroupReply
 {
-	UINT32 resultCode;
+	IoResultCodes resultCode;
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoWriteIOGroupReply SmBodyMotoWriteIOGroupReply;
 
@@ -334,6 +346,32 @@ struct _SmBodyMotoIoCtrlReply	// ROS_MSG_MOTO_IOCTRL_REPLY = 2011
 	int subcode;				// More detailed result code (optional)
 } __attribute__((__packed__));
 typedef struct _SmBodyMotoIoCtrlReply SmBodyMotoIoCtrlReply;
+
+struct _SmBodyMotoReadIOMRegister
+{
+	UINT32 registerNumber;	//Actual register index. Do not add 1000000 to this value. (Example: 123 = M123)
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoReadIOMRegister SmBodyMotoReadIOMRegister;
+
+struct _SmBodyMotoReadIOMRegisterReply
+{
+	UINT32 value;
+	IoResultCodes resultCode;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoReadIOMRegisterReply SmBodyMotoReadIOMRegisterReply;
+
+struct _SmBodyMotoWriteIOMRegister
+{
+	UINT32 registerNumber;	//Actual register index. Do not add 1000000 to this value. (Example: 123 = M123)
+	UINT32 value;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoWriteIOMRegister SmBodyMotoWriteIOMRegister;
+
+struct _SmBodyMotoWriteIOMRegisterReply
+{
+	IoResultCodes resultCode;
+} __attribute__((__packed__));
+typedef struct _SmBodyMotoWriteIOMRegisterReply SmBodyMotoWriteIOMRegisterReply;
 
 //--------------
 // DH Parameters
@@ -369,6 +407,10 @@ typedef union
 	SmBodyMotoWriteIOGroupReply writeIOGroupReply;
 	SmBodyMotoIoCtrlReply ioCtrlReply;
 	SmBodyMotoGetDhParameters dhParameters;
+	SmBodyMotoReadIOMRegister readRegister;
+	SmBodyMotoReadIOMRegisterReply readRegisterReply;
+	SmBodyMotoWriteIOMRegister writeRegister;
+	SmBodyMotoWriteIOMRegisterReply writeRegisterReply;
 } SmBody;
 
 //-------------------

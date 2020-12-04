@@ -35,17 +35,6 @@
 #include "MotoROS.h"
 
 //-----------------------
-// Function Declarations
-//-----------------------
-// Main Task: 
-void Ros_IoServer_StartNewConnection(Controller* controller, int sd);
-void Ros_IoServer_StopConnection(Controller* controller, int connectionIndex);
-
-// WaitForSimpleMsg Task:
-void Ros_IoServer_WaitForSimpleMsg(Controller* controller, int connectionIndex);
-BOOL Ros_IoServer_SimpleMsgProcess(SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-
-//-----------------------
 // Function implementation
 //-----------------------
 
@@ -145,6 +134,12 @@ int Ros_IoServer_GetExpectedByteSizeForMessageType(SimpleMsg* receiveMsg)
 	case ROS_MSG_MOTO_WRITE_IO_GROUP:
 		expectedSize = minSize + sizeof(SmBodyMotoWriteIOGroup);
 		break;
+	case ROS_MSG_MOTO_READ_MREGISTER:
+		expectedSize = minSize + sizeof(SmBodyMotoReadIOMRegister);
+		break;
+	case ROS_MSG_MOTO_WRITE_MREGISTER:
+		expectedSize = minSize + sizeof(SmBodyMotoWriteIOMRegister);
+		break;
 	default: //invalid message type
 		return -1;
 	}
@@ -180,6 +175,16 @@ int Ros_IoServer_SimpleMsgProcess(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 		//-----------------------
 	case ROS_MSG_MOTO_WRITE_IO_GROUP:
 		ret = Ros_IoServer_WriteIOGroup(receiveMsg, replyMsg);
+		break;
+
+		//-----------------------
+	case ROS_MSG_MOTO_READ_MREGISTER:
+		ret = Ros_IoServer_ReadIORegister(receiveMsg, replyMsg);
+		break;
+
+		//-----------------------
+	case ROS_MSG_MOTO_WRITE_MREGISTER:
+		ret = Ros_IoServer_WriteIORegister(receiveMsg, replyMsg);
 		break;
 
 		//-----------------------
@@ -311,8 +316,7 @@ int Ros_IoServer_ReadIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 {
 	int apiRet;
 	MP_IO_INFO ioReadInfo;
-	USHORT ioValue;
-	int resultCode;
+	USHORT ioValue = 0;
 
 	//initialize memory
 	memset(replyMsg, 0x00, sizeof(SimpleMsg));
@@ -324,18 +328,23 @@ int Ros_IoServer_ReadIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	replyMsg->header.msgType = ROS_MSG_MOTO_READ_IO_BIT_REPLY;
 	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
 	
-	ioReadInfo.ulAddr = receiveMsg->body.readIOBit.ioAddress;
-	apiRet = mpReadIO(&ioReadInfo, &ioValue, 1);
+	if (Ros_IoServer_IsValidReadAddress(receiveMsg->body.readIOBit.ioAddress, IO_ACCESS_BIT))
+	{
+		ioReadInfo.ulAddr = receiveMsg->body.readIOBit.ioAddress;
+		apiRet = mpReadIO(&ioReadInfo, &ioValue, QUANTITY_BIT);
 
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
+		replyMsg->body.readIOBitReply.value = ioValue;
+		replyMsg->body.readIOBitReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_READ_API_ERROR;
+		replyMsg->header.replyType = (apiRet == OK) ? ROS_REPLY_SUCCESS : ROS_REPLY_FAILURE;
+	}
 	else
-		resultCode = ROS_REPLY_FAILURE;
+	{
+		replyMsg->body.readIOBitReply.value = 0;
+		replyMsg->body.readIOBitReply.resultCode = IO_RESULT_READ_ADDRESS_INVALID;
+		replyMsg->header.replyType = ROS_REPLY_FAILURE;
+	}
 
-	replyMsg->body.readIOBitReply.value = ioValue;
-	replyMsg->body.readIOBitReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
+	return OK; //keep connection alive regardless of any error code
 }
 
 int Ros_IoServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
@@ -343,7 +352,6 @@ int Ros_IoServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	int apiRet;
 	MP_IO_INFO ioReadInfo[8];
 	USHORT ioValue[8];
-	int resultCode;
 	int resultValue = 0;
 	int i;
 
@@ -357,34 +365,40 @@ int Ros_IoServer_ReadIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	replyMsg->header.msgType = ROS_MSG_MOTO_READ_IO_GROUP_REPLY;
 	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
 
-	for (i = 0; i < 8; i += 1)
+	if (Ros_IoServer_IsValidReadAddress(receiveMsg->body.readIOGroup.ioAddress, IO_ACCESS_GROUP))
 	{
-		ioReadInfo[i].ulAddr = (receiveMsg->body.readIOGroup.ioAddress * 10) + i;
-	}
-	apiRet = mpReadIO(ioReadInfo, ioValue, 8);
+		for (i = 0; i < 8; i += 1)
+		{
+			ioReadInfo[i].ulAddr = (receiveMsg->body.readIOGroup.ioAddress * 10) + i;
+		}
+		apiRet = mpReadIO(ioReadInfo, ioValue, QUANTITY_BYTE);
 
-	resultValue = 0;
-	for (i = 0; i < 8; i += 1)
-	{
-		resultValue |= (ioValue[i] << i);
-	}
+		resultValue = 0;
+		for (i = 0; i < 8; i += 1)
+		{
+			resultValue |= (ioValue[i] << i);
+		}
 
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
+		replyMsg->body.readIOGroupReply.value = resultValue;
+		replyMsg->body.readIOGroupReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_READ_API_ERROR;
+		replyMsg->header.replyType = (apiRet == OK) ? ROS_REPLY_SUCCESS : ROS_REPLY_FAILURE;
+	}
 	else
-		resultCode = ROS_REPLY_FAILURE;
+	{
+		replyMsg->body.readIOGroupReply.value = 0;
+		replyMsg->body.readIOGroupReply.resultCode = IO_RESULT_READ_ADDRESS_INVALID;
+		replyMsg->header.replyType = ROS_REPLY_FAILURE;
+	}
 
-	replyMsg->body.readIOGroupReply.value = resultValue;
-	replyMsg->body.readIOGroupReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
+	return OK; //keep connection alive regardless of any error code
 }
 
 int Ros_IoServer_WriteIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 {	
 	int apiRet;
 	MP_IO_DATA ioWriteData;
-	int resultCode;
+	BOOL bAddressOk;
+	BOOL bValueOk;
 
 	//initialize memory
 	memset(replyMsg, 0x00, sizeof(SimpleMsg));
@@ -396,26 +410,38 @@ int Ros_IoServer_WriteIOBit(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_IO_BIT_REPLY;
 	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
 	
-	ioWriteData.ulAddr = receiveMsg->body.writeIOBit.ioAddress;
-	ioWriteData.ulValue = receiveMsg->body.writeIOBit.ioValue;
-	apiRet = mpWriteIO(&ioWriteData, 1);
+	bAddressOk = Ros_IoServer_IsValidWriteAddress(receiveMsg->body.writeIOBit.ioAddress, IO_ACCESS_BIT);
+	bValueOk = Ros_IoServer_IsValidWriteValue(receiveMsg->body.writeIOBit.ioValue, IO_ACCESS_BIT);
 
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
+	if (bAddressOk && bValueOk)
+	{
+		ioWriteData.ulAddr = receiveMsg->body.writeIOBit.ioAddress;
+		ioWriteData.ulValue = receiveMsg->body.writeIOBit.ioValue;
+		apiRet = mpWriteIO(&ioWriteData, QUANTITY_BIT);
+
+		replyMsg->body.writeIOBitReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_WRITE_API_ERROR;
+		replyMsg->header.replyType = (apiRet == OK) ? ROS_REPLY_SUCCESS : ROS_REPLY_FAILURE;
+	}
 	else
-		resultCode = ROS_REPLY_FAILURE;
+	{
+		replyMsg->header.replyType = ROS_REPLY_FAILURE;
 
-	replyMsg->body.writeIOBitReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
+		if (!bAddressOk)
+			replyMsg->body.writeIOBitReply.resultCode = IO_RESULT_WRITE_ADDRESS_INVALID;
+		else if (!bValueOk)
+			replyMsg->body.writeIOBitReply.resultCode = IO_RESULT_WRITE_VALUE_INVALID;
+	}
+
+	return OK; //keep connection alive regardless of any error code
 }
 
 int Ros_IoServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 {
 	int apiRet;
 	MP_IO_DATA ioWriteData[8];
-	int resultCode;
 	int i;
+	BOOL bAddressOk;
+	BOOL bValueOk;
 
 	//initialize memory
 	memset(replyMsg, 0x00, sizeof(SimpleMsg));
@@ -427,19 +453,184 @@ int Ros_IoServer_WriteIOGroup(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_IO_GROUP_REPLY;
 	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
 
-	for (i = 0; i < 8; i += 1)
+	bAddressOk = Ros_IoServer_IsValidWriteAddress(receiveMsg->body.writeIOGroup.ioAddress, IO_ACCESS_GROUP);
+	bValueOk = Ros_IoServer_IsValidWriteValue(receiveMsg->body.writeIOGroup.ioValue, IO_ACCESS_GROUP);
+
+	if (bAddressOk && bValueOk)
 	{
-		ioWriteData[i].ulAddr = (receiveMsg->body.writeIOGroup.ioAddress * 10) + i;
-		ioWriteData[i].ulValue = (receiveMsg->body.writeIOGroup.ioValue & (1 << i)) >> i;
+		for (i = 0; i < QUANTITY_BYTE; i += 1)
+		{
+			ioWriteData[i].ulAddr = (receiveMsg->body.writeIOGroup.ioAddress * 10) + i;
+			ioWriteData[i].ulValue = (receiveMsg->body.writeIOGroup.ioValue & (1 << i)) >> i;
+		}
+		apiRet = mpWriteIO(ioWriteData, QUANTITY_BYTE);
+
+		replyMsg->body.writeIOGroupReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_WRITE_API_ERROR;
+		replyMsg->header.replyType = (apiRet == OK) ? ROS_REPLY_SUCCESS : ROS_REPLY_FAILURE;
 	}
-	apiRet = mpWriteIO(ioWriteData, 8);
-
-	if (apiRet == OK)
-		resultCode = ROS_REPLY_SUCCESS;
 	else
-		resultCode = ROS_REPLY_FAILURE;
+	{
+		replyMsg->header.replyType = ROS_REPLY_FAILURE;
 
-	replyMsg->body.writeIOGroupReply.resultCode = resultCode;
-	replyMsg->header.replyType = (SmReplyType)resultCode;
-	return OK;
+		if (!bAddressOk)
+			replyMsg->body.writeIOGroupReply.resultCode = IO_RESULT_WRITE_ADDRESS_INVALID;
+		else if (!bValueOk)
+			replyMsg->body.writeIOGroupReply.resultCode = IO_RESULT_WRITE_VALUE_INVALID;
+	}
+
+	return OK; //keep connection alive regardless of any error code
+}
+
+int Ros_IoServer_ReadIORegister(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
+{
+	int apiRet;
+	MP_IO_INFO ioReadInfo;
+	USHORT ioValue = 0;
+
+	//initialize memory
+	memset(replyMsg, 0x00, sizeof(SimpleMsg));
+
+	// set prefix: length of message excluding the prefix
+	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoReadIOMRegisterReply);
+
+	// set header information of the reply
+	replyMsg->header.msgType = ROS_MSG_MOTO_READ_MREGISTER;
+	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+
+	if (receiveMsg->body.readRegister.registerNumber < 1000000)
+		receiveMsg->body.readRegister.registerNumber += 1000000;
+
+	if (Ros_IoServer_IsValidReadAddress(receiveMsg->body.readRegister.registerNumber, IO_ACCESS_REGISTER))
+	{
+		ioReadInfo.ulAddr = receiveMsg->body.readRegister.registerNumber;
+		apiRet = mpReadIO(&ioReadInfo, &ioValue, QUANTITY_BIT);
+
+		replyMsg->body.readRegisterReply.value = ioValue;
+		replyMsg->body.readRegisterReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_READ_API_ERROR;
+		replyMsg->header.replyType = (apiRet == OK) ? ROS_REPLY_SUCCESS : ROS_REPLY_FAILURE;
+	}
+	else
+	{
+		replyMsg->body.readRegisterReply.value = 0;
+		replyMsg->body.readRegisterReply.resultCode = IO_RESULT_READ_ADDRESS_INVALID;
+		replyMsg->header.replyType = ROS_REPLY_FAILURE;
+	}
+
+	return OK; //keep connection alive regardless of any error code
+}
+
+int Ros_IoServer_WriteIORegister(SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
+{
+	int apiRet;
+	MP_IO_DATA ioWriteData;
+	BOOL bAddressOk;
+	BOOL bValueOk;
+
+	//initialize memory
+	memset(replyMsg, 0x00, sizeof(SimpleMsg));
+
+	// set prefix: length of message excluding the prefix
+	replyMsg->prefix.length = sizeof(SmHeader) + sizeof(SmBodyMotoWriteIOMRegisterReply);
+
+	// set header information of the reply
+	replyMsg->header.msgType = ROS_MSG_MOTO_WRITE_MREGISTER;
+	replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+
+	if (receiveMsg->body.writeRegister.registerNumber < 1000000)
+		receiveMsg->body.writeRegister.registerNumber += 1000000;
+
+	bAddressOk = Ros_IoServer_IsValidWriteAddress(receiveMsg->body.writeRegister.registerNumber, IO_ACCESS_REGISTER);
+	bValueOk = Ros_IoServer_IsValidWriteValue(receiveMsg->body.writeRegister.value, IO_ACCESS_REGISTER);
+
+	if (bAddressOk && bValueOk)
+	{
+		ioWriteData.ulAddr = receiveMsg->body.writeRegister.registerNumber;
+		ioWriteData.ulValue = receiveMsg->body.writeRegister.value;
+		apiRet = mpWriteIO(&ioWriteData, QUANTITY_BIT);
+
+		replyMsg->body.writeRegisterReply.resultCode = (apiRet == OK) ? IO_RESULT_OK : IO_RESULT_WRITE_API_ERROR;
+		replyMsg->header.replyType = (apiRet == OK) ? ROS_REPLY_SUCCESS : ROS_REPLY_FAILURE;
+	}
+	else
+	{
+		replyMsg->header.replyType = ROS_REPLY_FAILURE;
+
+		if (!bAddressOk)
+			replyMsg->body.writeRegisterReply.resultCode = IO_RESULT_WRITE_ADDRESS_INVALID;
+		else if (!bValueOk)
+			replyMsg->body.writeRegisterReply.resultCode = IO_RESULT_WRITE_VALUE_INVALID;
+	}
+
+	return OK; //keep connection alive regardless of any error code
+}
+
+BOOL Ros_IoServer_IsValidReadAddress(UINT32 address, IoAccessSize size)
+{
+	int mod = 0;
+
+	if (size == IO_ACCESS_GROUP)
+		address *= 10;
+
+	mod = address % 10;
+
+	//last digit cannot end in 8 or 9, unless it is an M Register
+	if (size != IO_ACCESS_REGISTER && mod > 7)
+		return FALSE;
+	
+	if ((address >= GENERALINMIN && address <= GENERALINMAX) ||
+		(address >= GENERALOUTMIN && address <= GENERALOUTMAX) ||
+		(address >= EXTERNALINMIN && address <= EXTERNALINMAX) ||
+		(address >= NETWORKINMIN && address <= NETWORKINMAX) ||
+		(address >= NETWORKOUTMIN && address <= NETWORKOUTMAX) ||
+		(address >= EXTERNALOUTMIN && address <= EXTERNALOUTMAX) ||
+		(address >= SPECIFICINMIN && address <= SPECIFICINMAX) ||
+		(address >= SPECIFICOUTMIN && address <= SPECIFICOUTMAX) ||
+		(address >= IFPANELMIN && address <= IFPANELMAX) ||
+		(address >= AUXRELAYMIN && address <= AUXRELAYMAX) ||
+		(address >= CONTROLSTATUSMIN && address <= CONTROLSTATUSMAX) ||
+		(address >= PSEUDOINPUTMIN && address <= PSEUDOINPUTMAX) ||
+		(address >= REGISTERMIN && address <= REGISTERMAX_READ))
+	{
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
+BOOL Ros_IoServer_IsValidWriteAddress(UINT32 address, IoAccessSize size)
+{
+	int mod = 0;
+
+	if (size == IO_ACCESS_GROUP)
+		address *= 10;
+
+	mod = address % 10;
+
+	//last digit cannot end in 8 or 9, unless it is an M Register
+	if (size != IO_ACCESS_REGISTER && mod > 7)
+		return FALSE;
+
+	if ((address >= GENERALOUTMIN && address <= GENERALOUTMAX) ||
+		(address >= NETWORKINMIN && address <= NETWORKINMAX) ||
+		(address >= IFPANELMIN && address <= IFPANELMAX) ||
+		(address >= REGISTERMIN && address <= REGISTERMAX_WRITE))
+	{
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
+BOOL Ros_IoServer_IsValidWriteValue(UINT32 value, IoAccessSize size)
+{
+	if (size == IO_ACCESS_REGISTER && value > 0xFFFF)
+		return FALSE;
+	
+	if (size == IO_ACCESS_GROUP && value > 0xFF)
+		return FALSE;
+
+	if (size == IO_ACCESS_BIT && value > 1)
+		return FALSE;
+
+	return TRUE;
 }
