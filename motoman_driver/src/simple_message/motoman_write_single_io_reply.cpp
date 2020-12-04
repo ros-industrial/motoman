@@ -80,15 +80,20 @@ std::string WriteSingleIOReply::getResultString(shared_int result_code)
   switch (result_code)
   {
   case WriteSingleIOReplyResultCodes::READ_ADDRESS_INVALID:
-     return "Illegal address for read: outside permitted range on this controller, see documentation (1001)";
+     return "Illegal address for read: outside permitted range on this controller, "
+            "see documentation (" + std::to_string(WriteSingleIOReplyResultCodes::READ_ADDRESS_INVALID) + ")";
   case WriteSingleIOReplyResultCodes::WRITE_ADDRESS_INVALID:
-     return "Illegal address for write: outside permitted range on this controller, see documentation (1002)";
+     return "Illegal address for write: outside permitted range on this controller, "
+            "see documentation (" + std::to_string(WriteSingleIOReplyResultCodes::WRITE_ADDRESS_INVALID) + ")";
   case WriteSingleIOReplyResultCodes::WRITE_VALUE_INVALID:
-     return "Illegal value for the type of IO element addressed (1003)";
+     return "Illegal value for the type of IO element addressed "
+            "(" + std::to_string(WriteSingleIOReplyResultCodes::WRITE_VALUE_INVALID) + ")";
   case WriteSingleIOReplyResultCodes::READ_API_ERROR:
-     return "The MotoPlus function MpReadIO returned -1. No further information is available (1004)";
+     return "The MotoPlus function MpReadIO returned -1. No further information is available "
+            "(" + std::to_string(WriteSingleIOReplyResultCodes::READ_API_ERROR) + ")";
   case WriteSingleIOReplyResultCodes::WRITE_API_ERROR:
-     return "The MotoPlus function MpWriteIO returned -1. No further information is available (1005)";
+     return "The MotoPlus function MpWriteIO returned -1. No further information is available ";
+            "(" + std::to_string(WriteSingleIOReplyResultCodes::WRITE_API_ERROR) + ")";
   case WriteSingleIOReplyResultCodes::SUCCESS:
     return "Success";
   default:
