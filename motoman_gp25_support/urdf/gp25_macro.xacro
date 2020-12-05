@@ -99,7 +99,6 @@
             </geometry>
         </collision>
     </link>
-    <link name="${prefix}tool0"/>
     <!-- end of link list -->
 
     <!-- joint list -->
@@ -145,11 +144,6 @@
         <axis xyz="-1 0 0" />
         <limit lower="${radians(-455)}" upper="${radians(455)}" effort="50.31" velocity="${radians(885)}"/>
     </joint>
-    <joint name="${prefix}joint_6_t-tool0" type="fixed">
-        <origin xyz="0.100 0 0" rpy="3.1415926 -1.570796 0"/>
-        <parent link="${prefix}link_6_t"/>
-        <child link="${prefix}tool0"/>
-    </joint>
     <!-- end of joint list -->
 
     <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
@@ -158,6 +152,22 @@
         <origin xyz="0 0 0.505" rpy="0 0 0"/>
         <parent link="${prefix}base_link"/>
         <child link="${prefix}base"/>
+    </joint>
+
+    <!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
+    <link name="${prefix}flange" />
+    <joint name="${prefix}joint_6_t-flange" type="fixed">
+        <origin xyz="0.10 0 0" rpy="0 0 0" />
+        <parent link="${prefix}link_6_t" />
+        <child link="${prefix}flange" />
+    </joint>
+
+    <!-- ROS-Industrial 'tool0' frame: all-zeros tool frame -->
+    <link name="${prefix}tool0" />
+    <joint name="${prefix}flange-tool0" type="fixed">
+        <origin xyz="0 0 0" rpy="${pi} ${-pi/2.0} 0" />
+        <parent link="${prefix}flange" />
+        <child link="${prefix}tool0" />
     </joint>
 
     </xacro:macro>
