@@ -2,13 +2,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="motoman_hc10dt" params="prefix">
 
-    <!-- Properties -->
-    <material name="yaskawa_blue">
-      <color rgba="0.12941 0.14902 0.74902 1" />
-    </material>
-    <material name="yaskawa_white">
-      <color rgba="0.95294 0.95294 0.95294 1" />
-    </material>
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
     <link name="${prefix}base_link">
@@ -16,7 +10,7 @@
         <geometry>
           <mesh filename="package://motoman_hc10_support/meshes/hc10/visual/base_link.dae"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -29,7 +23,7 @@
         <geometry>
           <mesh filename="package://motoman_hc10_support/meshes/hc10/visual/link_1_s.dae"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -42,7 +36,7 @@
         <geometry>
           <mesh filename="package://motoman_hc10_support/meshes/hc10/visual/link_2_l.dae"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -55,7 +49,7 @@
         <geometry>
           <mesh filename="package://motoman_hc10_support/meshes/hc10/visual/link_3_u.dae"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -68,7 +62,7 @@
         <geometry>
           <mesh filename="package://motoman_hc10_support/meshes/hc10/visual/link_4_r.dae"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -81,7 +75,7 @@
         <geometry>
           <mesh filename="package://motoman_hc10_support/meshes/hc10/visual/link_5_b.dae"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -94,7 +88,7 @@
         <geometry>
           <mesh filename="package://motoman_hc10_support/meshes/hc10dt/visual/link_6_t.dae"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>

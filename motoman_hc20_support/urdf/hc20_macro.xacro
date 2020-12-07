@@ -2,10 +2,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="motoman_hc20" params="prefix">
 
-    <!-- Properties -->
-    <material name="yaskawa_white">
-      <color rgba="0.99 0.99 0.99 1" />
-    </material>
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
     <link name="${prefix}base_link">
@@ -13,7 +10,7 @@
         <geometry>
           <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/base_link.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <geometry>
@@ -26,7 +23,7 @@
         <geometry>
           <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/link_1_s.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <geometry>
@@ -39,7 +36,7 @@
         <geometry>
           <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/link_2_l.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <geometry>
@@ -52,7 +49,7 @@
         <geometry>
           <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/link_3_u.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <geometry>
@@ -65,7 +62,7 @@
         <geometry>
           <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/link_4_r.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <geometry>
@@ -78,7 +75,7 @@
         <geometry>
           <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/link_5_b.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <geometry>
@@ -91,7 +88,7 @@
         <geometry>
           <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/link_6_t.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <geometry>
