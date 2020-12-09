@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>motoman_motomini_support</name>
-  <version>0.3.5</version>
+  <version>0.3.6</version>
   <description>
     <p>ROS-Industrial support for the Motoman MotoMini (and variants).</p>
     <p>
@@ -44,6 +44,7 @@
 
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>motoman_driver</exec_depend>
+  <exec_depend>motoman_resources</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>rviz</exec_depend>
   <exec_depend>xacro</exec_depend>
