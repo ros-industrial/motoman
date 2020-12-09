@@ -166,6 +166,22 @@
 			<limit lower="-6.2831" upper="6.2831" effort="100" velocity="6.97" />
 		</joint>
 		<!-- end of joint list -->
+
+		<!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
+		<link name="${prefix}flange" />
+		<joint name="${prefix}link_t-flange" type="fixed">
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<parent link="${prefix}link_t" />
+			<child link="${prefix}flange" />
+		</joint>
+
+		<!-- ROS-Industrial 'tool0' frame: all-zeros tool frame -->
+		<link name="${prefix}tool0" />
+		<joint name="${prefix}flange-tool0" type="fixed">
+			<origin xyz="0 0 0" rpy="${pi} ${-pi/2.0} 0" />
+			<parent link="${prefix}flange" />
+			<child link="${prefix}tool0" />
+		</joint>
 	</xacro:macro>
 </robot>
 
