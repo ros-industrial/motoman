@@ -2,24 +2,27 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>motoman_mh5_support</name>
-  <version>0.3.5</version>
+  <version>0.3.6</version>
   <description>
-    <p>ROS-Industrial support for the Motoman MH5 (and variants).</p>
+    <p>ROS-Industrial support for Motoman MH5 variants.</p>
     <p>
       This package contains configuration data, 3D models and launch files
-      for Motoman MH5 manipulators.
+      for Motoman MH5 variants.
     </p>
     <p>
       <b>Specifications</b>
     </p>
     <ul>
-      <li>MH5 - Default</li>
+      <li>MH5  - Short Variants: MH5F(FS100),  MH5SII(DX200),  MH5S(DX100)</li>
+      <li>MH5L - Long Variants:  MH5LF(FS100), MH5SLII(DX200), MH5SL(DX100)</li>
     </ul>
+    <p>Models within each short / long variant are the same (physically and parameters).</p>
     <p>
-      Joint limits and maximum joint velocities are based on the information 
-      found in the online 
-      http://www.motoman.com/datasheets/mh5.pdf
-      All urdfs are based on the default motion and joint velocity limits, 
+      Maximum joint velocities are based on the information
+      found online https://www.motoman.com/en-us/products/robots/industrial/assembly-handling/mh-series/mh5ls-ii
+      Joint limits and inertial values were provided by Motoman support and found
+      under ros-industrial/motoman issue # 377. See explanation in issue.
+      All urdfs are based on the default motion and joint velocity limits,
       unless noted otherwise.
     </p>
     <p>
