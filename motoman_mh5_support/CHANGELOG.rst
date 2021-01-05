@@ -2,6 +2,20 @@
 Changelog for package motoman_mh5_support
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.6 (UNRELEASED)
+------------------
+** Added support for MH5 SHORT and LONG variants
+* Each variant has unique launch, test, urdf, and mesh files. Only config/joint_names is shared.
+* Fixed collision meshes
+* Fixed tab/spacing in all code
+* Renamed links & joints to ros-i convention
+* Updated appropriate motoman controllers list (fs100, dx100, dx200)
+* Rotated BASE_LINK mesh 180deg about Z-axis (allowing code to match convention)
+* Macro level definition of material_color properties
+* Added tool0, flange, base
+* Added Max Accel/Deccel (provided by EricMarcil)
+Contributors: acbuynak
+
 0.3.5 (2016-07-03)
 ------------------
 * No changes
