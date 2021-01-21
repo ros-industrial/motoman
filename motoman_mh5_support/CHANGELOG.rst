@@ -5,7 +5,7 @@ Changelog for package motoman_mh5_support
 0.3.6 (UNRELEASED)
 ------------------
 ** Added support for MH5 SHORT and LONG variants
-* Each variant has unique launch, test, urdf, and mesh files. Only config/joint_names is shared.
+* Each variant has unique launch, test, urdf, and (L & U) mesh files. Config/joint_names and remaining mesh files are shared.
 * Fixed collision meshes
 * Fixed tab/spacing in all code
 * Renamed links & joints to ros-i convention
