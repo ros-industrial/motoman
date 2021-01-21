@@ -12,14 +12,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/visual/base_link.stl" />
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/base_link.stl" />
         </geometry>
         <material name="yaskawa_white"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/collision/base_link.stl" />
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/collision/base_link.stl" />
         </geometry>
       </collision>
     </link>
@@ -27,14 +27,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/visual/link_1_s.stl"/>
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_1_s.stl"/>
         </geometry>
         <material name="yaskawa_white"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/collision/link_1_s.stl" />
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/collision/link_1_s.stl" />
         </geometry>
       </collision>
     </link>
@@ -57,14 +57,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/visual/link_3_u.stl"/>
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_3_u.stl"/>
         </geometry>
         <material name="yaskawa_white"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/collision/link_3_u.stl" />
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/collision/link_3_u.stl" />
         </geometry>
       </collision>
     </link>
@@ -87,14 +87,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/visual/link_5_b.stl"/>
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_5_b.stl"/>
         </geometry>
         <material name="yaskawa_white"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/collision/link_5_b.stl" />
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/collision/link_5_b.stl" />
         </geometry>
       </collision>
     </link>
@@ -102,14 +102,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/visual/link_6_t.stl" />
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_6_t.stl" />
         </geometry>
         <material name="yaskawa_white"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5l/collision/link_6_t.stl" />
+          <mesh filename="package://motoman_mh5_support/meshes/mh5/collision/link_6_t.stl" />
         </geometry>
       </collision>
     </link>

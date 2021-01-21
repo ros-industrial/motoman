@@ -58,6 +58,7 @@
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_3_u.stl"/>
+          <!-- <mesh filename="package://motoman_mh5_support/meshes/mh5_old_variants/visual/link_3_u.stl"/> --><!-- Uncomment & switch with above to use alternative U-link. -->
         </geometry>
         <material name="yaskawa_white"/>
       </visual>
@@ -65,6 +66,7 @@
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/collision/link_3_u.stl" />
+          <!-- <mesh filename="package://motoman_mh5_support/meshes/mh5_old_variants/collision/link_3_u.stl" /> --><!-- Uncomment & switch with above to use alternative U-link. -->
         </geometry>
       </collision>
     </link>
