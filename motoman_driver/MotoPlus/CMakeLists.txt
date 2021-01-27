@@ -1,151 +1,40 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(MotoRos NONE)
+project(MpRosAllControllers NONE)
 
-set(SRCS
-    ./Controller.c
-    ./CtrlGroup.c
-    ./IoServer.c
-    ./MotionServer.c
-    ./mpMain.c
-    ./SimpleMessage.c
-    ./StateServer.c
-    )
+set(PROJECT_VERSION v192)
 
-set(HEADERS
-    ./Controller.h
-    ./CtrlGroup.h
-    ./IoServer.h
-    ./MotionServer.h
-    ./MotoROS.h
-    ./ParameterExtraction.h
-    ./ParameterTypes.h
-    ./SimpleMessage.h
-    ./StateServer.h
-    )
-
-#.*lib files (don't put extension, automatically suffixed according controller version) are in fact .a files obtained from .c files
-set(LIBS
-    ./ParameterExtraction
-    )
-
-#set(CMAKE_VERBOSE_MAKEFILE ON)
+FILE(GLOB_RECURSE SOURCES "*.c")
+FILE(GLOB_RECURSE HEADERS "*.h")
+FILE(GLOB_RECURSE LIBS "*.*ib")
+FILE(GLOB_RECURSE MPS "*.mps")
 
 set(MPBUILDER_DIR "C:/Program Files (x86)/Yaskawa/MotoPlus for Visual Studio")
 set(MPBUILDER_PATH ${MPBUILDER_DIR}/mpbuilder.exe)
 
-set(PROJECT_VERSION _v192)
-
-set(COMPILER_OPTIONS
-    -march=atom
-    -nostdlib
-    -fno-builtin
-    -fno-defer-pop
-    -fno-implicit-fp
-    -fno-zero-initialized-in-bss
-    -Wall
-    -Werror-implicit-function-declaration
-    -g
-    -MD
-    -MP
-    -DCPU=_VX_ATOM
-    -DTOOL_FAMILY=gnu
-    -DTOOL=gnu
-    -D_WRS_KERNEL
-    -DDEBUG=1
-    )
-
-set(LINKER_OPTIONS
-    -nostdlib
-    -r
-    -WI,-X
-    )
-
-macro(PROJECT_CONFIG projectName controller)
-    set(${controller}_COMPILER_OPTIONS
-        ${COMPILER_OPTIONS}
-        -D${controller})
-    set(${controller}_LINKER_OPTIONS
-        ${LINKER_OPTIONS})
-    if(${controller} MATCHES DX100)
-        set(LIBEXT .mpLib)
-    elseif(${controller} MATCHES DX200)
-        set(LIBEXT .dnLib)
-    elseif(${controller} MATCHES FS100)
-        set(LIBEXT .fsLib)
-    elseif(${controller} MATCHES YRC1000)
-        set(LIBEXT .yrcmLib)
-    elseif(${controller} MATCHES YRC1000u)
-        set(LIBEXT .yrcmuLib)
-    else()
-        set(LIBEXT .a)
-    endif()
-    set(name ${projectName})
-    set(MOTOPLUSPROJECT_DIR ${CMAKE_SOURCE_DIR}/${name})
-    set(SRCS_
-        ${SRCS}
-        )
-    set(HEADERS_
-        ${HEADERS}
-        )
-    #Writing compiler arguments file
-    set(COMPILER_OPTIONS_
-        ${${controller}_COMPILER_OPTIONS}
-        -DMOTOPLUS
-        -I\"~ProjectDir~\"
-        -I\"~IncludeDir~\"
-        -I\"${CMAKE_SOURCE_DIR}/..\"
-        -O2
-        -c \"~FilePath~\"
-        -o \"~OutputPath~\")
-    string(REPLACE ";" " " COMPILER_OPTIONS_ "${COMPILER_OPTIONS_}")
-    file(WRITE ${MOTOPLUSPROJECT_DIR}/${controller}CompilerArguments.mps ${COMPILER_OPTIONS_})
-    #Writing linker arguments file
-    foreach(lib ${LIBS})
-        set(fullPathLib "")
-        get_filename_component(fullPathLib ${lib}${LIBEXT} ABSOLUTE)
-        set(fullPathLibs ${fullPathLibs} ${fullPathLib})
-    endforeach(lib)
-    set(LINKER_OPTIONS_
-        ${${controller}_LINKER_OPTIONS}
-        -WI~FileList~ ${fullPathLibs}
-        -o \"~OutputPath~\")
-    string(REPLACE ";" " " LINKER_OPTIONS_ "${LINKER_OPTIONS_}")
-    file(WRITE ${MOTOPLUSPROJECT_DIR}/${controller}LinkerArguments.mps ${LINKER_OPTIONS_})
-    #Writing VC project file
-    set(ITEMS ${SRCS_} ${HEADERS_})
-    set(END "\" />")
-    set(BEGIN "<ClCompile Include=\"")
-    string(REPLACE "/" "\\" ITEMS "${ITEMS}")
-    string(REPLACE "\" \\>" ${END} ITEMS "${ITEMS}")
-    string(REPLACE ".\\" "..\\" ITEMS "${ITEMS}")
-    string(REPLACE ";" "${END}
-       ${BEGIN}" ITEMS "${ITEMS}")
-    file(WRITE ${MOTOPLUSPROJECT_DIR}/${name}.vcxproj
-         "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">
-    <ItemGroup>
-       ${BEGIN}${ITEMS}${END}
-    </ItemGroup>
-</Project>
-"
-         )
-    #Launching compilation and linking
-    add_custom_target(${name} ALL
-                      SOURCES ${SRCS_} ${HEADERS_}
+macro(PROJECT_CONFIG name controller suffix)
+    set(path ${CMAKE_SOURCE_DIR}/output/${controller}/${name}${suffix})
+    string(REPLACE / \\ path ${path})
+    add_custom_target(${name}${suffix} ALL
+                      SOURCES
+                      ${SOURCES}
+                      ${HEADERS}
+                      ${controller}CompilerArguments.mps
+                      ${controller}LinkerArguments.mps
                       COMMAND ${MPBUILDER_PATH}
                       -c ${controller}
-                      -p ${MOTOPLUSPROJECT_DIR}
-                      -n ${name}${PROJECT_VERSION}
-                      -I${MPBUILDER_DIR}/${controller}/inc
+                      -p ${CMAKE_SOURCE_DIR}
+                      -n ${name}${suffix}
                       -l N
                       -d T
-                      #-b ${CMAKE_SOURCE_DIR}/${name}/output
-                      -o build)
+                      -o build
+                      COMMAND rename
+                      ${path}\\${name}${suffix}.out
+                      ${name}${suffix}${PROJECT_VERSION}.out)
 endmacro(PROJECT_CONFIG)
 
-#project_config(MotoRos DX100)
-project_config(MotoRos DX200)
-#project_config(MotoRos FS100)
-#project_config(MotoRos YRC1000)
-#project_config(MotoRos YRC1000u)
+project_config(MotoRos DX100 DX1_)
+project_config(MotoRos DX200 DX2_)
+project_config(MotoRos FS100 FS_)
+project_config(MotoRos YRC1000 YRC1u_)
+project_config(MotoRos YRC1000u YRC1_)
