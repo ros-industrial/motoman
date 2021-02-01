@@ -129,9 +129,9 @@ bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &
 
   trajectoryStop();
 
-  bool ret = motion_ctrl_.setTrajMode(false);  
+  bool ret = motion_ctrl_.setTrajMode(false);
   res.success = ret;
-  
+
   if (!res.success) {
     res.message="Motoman robot was NOT disabled. Please re-examine and retry.";
     ROS_ERROR_STREAM(res.message);
@@ -140,7 +140,7 @@ bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &
     res.message="Motoman robot is now disabled and will NOT accept motion commands.";
     ROS_WARN_STREAM(res.message);
   }
-    
+
 
   return true;
 
@@ -149,9 +149,9 @@ bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &
 bool MotomanJointTrajectoryStreamer::enableRobotCB(std_srvs::Trigger::Request &req,
 						   std_srvs::Trigger::Response &res)
 {
-  bool ret = motion_ctrl_.setTrajMode(true);  
+  bool ret = motion_ctrl_.setTrajMode(true);
   res.success = ret;
-  
+
   if (!res.success) {
     res.message="Motoman robot was NOT enabled. Please re-examine and retry.";
     ROS_ERROR_STREAM(res.message);
@@ -166,7 +166,7 @@ bool MotomanJointTrajectoryStreamer::enableRobotCB(std_srvs::Trigger::Request &r
 }
 
 
-  
+
 // override create_message to generate JointTrajPtFull message (instead of default JointTrajPt)
 bool MotomanJointTrajectoryStreamer::create_message(int seq, const trajectory_msgs::JointTrajectoryPoint &pt, SimpleMessage *msg)
 {
@@ -365,7 +365,7 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
   }
   return true;
 }
-  
+
 // override send_to_robot to provide controllerReady() and setTrajMode() calls
 bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
@@ -429,7 +429,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 
       tmpMsg = this->current_traj_[this->current_point_];
       msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
-               ReplyTypes::INVALID, tmpMsg.getData());  // set commType=REQUEST
+               ReplyTypes::INVALID, tmpMsg.getData());
 
       if (!this->connection_->sendAndReceiveMsg(msg, reply, false))
         ROS_WARN("Failed sent joint point, will try again");
@@ -461,6 +461,72 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         }
       }
       break;
+
+    case TransferStates::POINT_STREAMING:
+      // if no points in queue, streaming complete, set to idle.
+      if (this->ptstreaming_queue_.empty())
+      {
+        if (this->dt_ptstreaming_points_ < this->ptstreaming_timeout_)
+        {
+          this->dt_ptstreaming_points_ = ros::Time::now().toSec() - this->time_ptstreaming_last_point_;
+          ros::Duration(0.005).sleep();
+          ROS_DEBUG("Time since last point: %f", this->dt_ptstreaming_points_);
+          break;
+        }
+        else
+        {
+          ROS_INFO("Point streaming complete,  setting state to IDLE");
+          this->state_ = TransferStates::IDLE;
+          break;
+        }
+      }
+      // if not connected, reconnect.
+      if (!this->connection_->isConnected())
+      {
+        ROS_DEBUG("Robot disconnected.  Attempting reconnect...");
+        connectRetryCount = 5;
+        break;
+      }
+      // otherwise, send point to robot.
+      tmpMsg = this->ptstreaming_queue_.front();
+      msg.init(tmpMsg.getMessageType(), CommTypes::SERVICE_REQUEST,
+               ReplyTypes::INVALID, tmpMsg.getData());
+
+      if (this->connection_->sendAndReceiveMsg(msg, reply, false))
+      {
+        MotionReplyMessage reply_status;
+        if (!reply_status.init(reply))
+        {
+          ROS_ERROR("Aborting point stream operation.");
+          this->state_ = TransferStates::IDLE;
+          break;
+        }
+        if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
+        {
+          this->dt_ptstreaming_points_ = 0.0;
+          this->time_ptstreaming_last_point_ = ros::Time::now().toSec();
+          this->ptstreaming_queue_.pop();
+          ROS_DEBUG("Point sent to controller, remaining points in queue [%lu]", this->ptstreaming_queue_.size());
+        }
+        else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
+        {
+          ROS_DEBUG("silently resending.");
+          break;  // silently retry sending this point
+        }
+        else
+        {
+          ROS_ERROR_STREAM("Aborting point stream operation.  Failed to send point"
+                           << " (#" << this->current_point_ << "): "
+                           << MotomanMotionCtrl::getErrorString(reply_status.reply_));
+          this->state_ = TransferStates::IDLE;
+          break;
+        }
+      }
+      else
+        ROS_WARN("Failed sent joint point, will try again");
+
+      break;
+
     default:
       ROS_ERROR("Joint trajectory streamer: unknown state");
       this->state_ = TransferStates::IDLE;
@@ -545,4 +611,3 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
 
 }  // namespace joint_trajectory_streamer
 }  // namespace motoman
-
