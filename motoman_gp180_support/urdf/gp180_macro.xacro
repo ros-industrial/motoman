@@ -63,7 +63,7 @@
     </link>
     <link name="${prefix}link_4_r">
         <visual>
-            <origin rpy="${radians(0)} ${radians(90)} ${radians(0)}" />
+            <origin rpy="${radians(0)} ${radians(90)} ${radians(0)}" xyz="0 0 1.225"/>
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180/visual/link_4_r.stl"/>
             </geometry>
@@ -133,14 +133,14 @@
     <joint name="${prefix}joint_4_r" type="revolute">
         <parent link="${prefix}link_3_u"/>
         <child link="${prefix}link_4_r"/>
-        <origin xyz="0.300 0 0" rpy="${radians(-90)} 0 0" />
+        <origin xyz="0.300 -1.225 0" rpy="${radians(-90)} 0 0" />
         <axis xyz="0 0 1" />
         <limit lower="${radians(-360)}" upper="${radians(360)}" effort="1671.05" velocity="${radians(182)}"/>
     </joint>
     <joint name="${prefix}joint_5_b" type="revolute">
         <parent link="${prefix}link_4_r"/>
         <child link="${prefix}link_5_b"/>
-        <origin xyz="0 0 -1.225" rpy="${radians(90)} 0 0" />
+        <origin xyz="0 0 0" rpy="${radians(90)} 0 0" />
         <axis xyz="0 0 1" />
         <limit lower="${radians(-130)}" upper="${radians(130)}" effort="1081.18" velocity="${radians(175)}"/>
     </joint>
