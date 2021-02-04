@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-<xacro:macro name="motoman_gp180" params="prefix">
+<xacro:macro name="motoman_gp180" params="prefix kinematic_offsets">
 
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
@@ -112,42 +112,48 @@
     <joint name="${prefix}joint_1_s" type="revolute">
         <parent link="${prefix}base_link"/>
         <child link="${prefix}link_1_s"/>
-        <origin xyz="0 0 0.650" rpy="0 0 0" />
+        <origin xyz="${0 + kinematic_offsets['1_s']['x']} ${0 + kinematic_offsets['1_s']['y']} ${0.650 + kinematic_offsets['1_s']['z']}"
+                rpy="${0 + kinematic_offsets['1_s']['roll']} ${0 + kinematic_offsets['1_s']['pitch']} ${0 + kinematic_offsets['1_s']['yaw']}"/>
         <axis xyz="0 0 1" />
         <limit lower="${radians(-180)}" upper="${radians(180)}" effort="8237.59" velocity="${radians(125)}"/>
     </joint>
     <joint name="${prefix}joint_2_l" type="revolute">
         <parent link="${prefix}link_1_s"/>
         <child link="${prefix}link_2_l"/>
-        <origin xyz="0.325 0 0" rpy="0 ${radians(-90)} ${radians(-90)}" />
+        <origin xyz="${0.325 + kinematic_offsets['2_l']['x']} ${0 + kinematic_offsets['2_l']['y']} ${0 + kinematic_offsets['2_l']['z']}"
+                rpy="${0 + kinematic_offsets['2_l']['roll']} ${radians(-90) + kinematic_offsets['2_l']['pitch']} ${radians(-90) + kinematic_offsets['2_l']['yaw']}"/>
         <axis xyz="0 0 1" />
         <limit lower="${radians(-60)}" upper="${radians(76)}" effort="10419.57" velocity="${radians(115)}"/>
     </joint>
     <joint name="${prefix}joint_3_u" type="revolute">
         <parent link="${prefix}link_2_l"/>
         <child link="${prefix}link_3_u"/>
-        <origin xyz="1.150 0 0" rpy="${radians(180)} 0 0" />
+        <origin xyz="${1.150 + kinematic_offsets['3_u']['x']} ${0 + kinematic_offsets['3_u']['y']} ${0 + kinematic_offsets['3_u']['z']}"
+                rpy="${radians(180) + kinematic_offsets['3_u']['roll']} ${0 + kinematic_offsets['3_u']['pitch']} ${0 + kinematic_offsets['3_u']['yaw']}"/>
         <axis xyz="0 0 1" />
         <limit lower="${radians(-86)}" upper="${radians(90)}" effort="7453.05" velocity="${radians(125)}"/>
     </joint>
     <joint name="${prefix}joint_4_r" type="revolute">
         <parent link="${prefix}link_3_u"/>
         <child link="${prefix}link_4_r"/>
-        <origin xyz="0.300 -1.225 0" rpy="${radians(-90)} 0 0" />
+        <origin xyz="${0.300 + kinematic_offsets['4_r']['x']} ${-1.225 + kinematic_offsets['4_r']['y']} ${0 + kinematic_offsets['4_r']['z']}"
+                rpy="${radians(-90) + kinematic_offsets['4_r']['roll']} ${0 + kinematic_offsets['4_r']['pitch']} ${0 + kinematic_offsets['4_r']['yaw']}"/>
         <axis xyz="0 0 1" />
         <limit lower="${radians(-360)}" upper="${radians(360)}" effort="1671.05" velocity="${radians(182)}"/>
     </joint>
     <joint name="${prefix}joint_5_b" type="revolute">
         <parent link="${prefix}link_4_r"/>
         <child link="${prefix}link_5_b"/>
-        <origin xyz="0 0 0" rpy="${radians(90)} 0 0" />
+        <origin xyz="${0 + kinematic_offsets['5_b']['x']} ${0 + kinematic_offsets['5_b']['y']} ${0 + kinematic_offsets['5_b']['z']}"
+                rpy="${radians(90) + kinematic_offsets['5_b']['roll']} ${0 + kinematic_offsets['5_b']['pitch']} ${0 + kinematic_offsets['5_b']['yaw']}"/>
         <axis xyz="0 0 1" />
         <limit lower="${radians(-130)}" upper="${radians(130)}" effort="1081.18" velocity="${radians(175)}"/>
     </joint>
     <joint name="${prefix}joint_6_t" type="revolute">
         <parent link="${prefix}link_5_b"/>
         <child link="${prefix}link_6_t"/>
-        <origin xyz="0 -0.225 0" rpy="${radians(-90)} 0 0" />
+        <origin xyz="${0 + kinematic_offsets['6_t']['x']} ${-0.225 + kinematic_offsets['6_t']['y']} ${0 + kinematic_offsets['6_t']['z']}"
+                rpy="${radians(-90) + kinematic_offsets['6_t']['roll']} ${0 + kinematic_offsets['6_t']['pitch']} ${0 + kinematic_offsets['6_t']['yaw']}"/>
         <axis xyz="0 0 1" />
         <limit lower="${radians(-360)}" upper="${radians(360)}" effort="926.73" velocity="${radians(265)}"/>
     </joint>
