@@ -1758,7 +1758,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 #if (YRC1000||YRC1000u)
 				else if (ret == -1 || ret == -19)
 				{
-					printf("mpExRcsIncrementMove returned: %d (TFS Active)\r\n", ret, moveData.ctrl_grp);
+					printf("mpExRcsIncrementMove returned: %d (PFL Active)\r\n", ret, moveData.ctrl_grp);
 					controller->bPFLduringRosMove = TRUE;
 				}
 #endif
