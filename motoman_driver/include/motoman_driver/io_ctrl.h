@@ -34,6 +34,7 @@
 #ifndef MOTOMAN_DRIVER_IO_CTRL_H
 #define MOTOMAN_DRIVER_IO_CTRL_H
 
+#include <string>
 #include "simple_message/smpl_msg_connection.h"
 #include "motoman_driver/simple_message/motoman_read_single_io.h"
 #include "motoman_driver/simple_message/motoman_read_single_io_reply.h"
