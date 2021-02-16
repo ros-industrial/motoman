@@ -142,7 +142,6 @@ bool MotomanIORelay::writeSingleIoCB(
   motoman_msgs::WriteSingleIO::Request &req,
   motoman_msgs::WriteSingleIO::Response &res)
 {
-  shared_int io_val = -1;
   std::string err_msg;
 
   // send message and release mutex as soon as possible

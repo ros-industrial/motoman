@@ -91,11 +91,14 @@ bool JointFeedbackExRelayHandler::create_messages(SimpleMessage& msg_in,
   tmp_msg.init(msg_in);
   motoman_msgs::DynamicJointTrajectoryFeedback dynamic_control_state;
 
-  for (int i = 0; i < tmp_msg.getJointMessages().size(); i++)
+  for (size_t i = 0; i < tmp_msg.getJointMessages().size(); i++)
   {
     int group_number = tmp_msg.getJointMessages()[i].getRobotID();
 
-    create_messages(tmp_msg.getJointMessages()[i], control_state, sensor_state, group_number);
+    if (!create_messages(tmp_msg.getJointMessages()[i], control_state, sensor_state, group_number))
+    {
+      return false;
+    }
     motoman_msgs::DynamicJointState dyn_joint_state;
     dyn_joint_state.num_joints = control_state->joint_names.size();
     dyn_joint_state.group_number = group_number;
@@ -108,6 +111,8 @@ bool JointFeedbackExRelayHandler::create_messages(SimpleMessage& msg_in,
   dynamic_control_state.header.stamp = ros::Time::now();
   dynamic_control_state.num_groups = tmp_msg.getGroupsNumber();
   this->dynamic_pub_joint_control_state_.publish(dynamic_control_state);
+
+  return true;
 }
 
 bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,

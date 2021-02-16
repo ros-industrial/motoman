@@ -77,7 +77,7 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
   rtn &= JointTrajectoryStreamer::init(connection, robot_groups, velocity_limits);
 
   motion_ctrl_.init(connection, 0);
-  for (int i = 0; i < robot_groups_.size(); i++)
+  for (size_t i = 0; i < robot_groups_.size(); i++)
   {
     MotomanMotionCtrl motion_ctrl;
 
@@ -354,12 +354,12 @@ bool MotomanJointTrajectoryStreamer::create_message(int seq, const motoman_msgs:
 bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double> &vec,
     JointData &joints)
 {
-  if (vec.size() > joints.getMaxNumJoints())
+  if (static_cast<int>(vec.size()) > joints.getMaxNumJoints())
     ROS_ERROR_RETURN(false, "Failed to copy to JointData.  Len (%d) out of range (0 to %d)",
                      (int)vec.size(), joints.getMaxNumJoints());
 
   joints.init();
-  for (int i = 0; i < vec.size(); ++i)
+  for (size_t i = 0; i < vec.size(); ++i)
   {
     joints.setJoint(i, vec[i]);
   }
@@ -485,13 +485,13 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
   if (!JointTrajectoryInterface::is_valid(traj))
     return false;
 
-  for (int i = 0; i < traj.points.size(); ++i)
+  for (size_t i = 0; i < traj.points.size(); ++i)
   {
     const trajectory_msgs::JointTrajectoryPoint &pt = traj.points[i];
 
     // FS100 requires valid velocity data
     if (pt.velocities.empty())
-      ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
+      ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %lu", i);
   }
 
   if ((cur_joint_pos_.header.stamp - ros::Time::now()).toSec() > pos_stale_time_)
@@ -514,7 +514,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
     return false;
   ros::Time time_stamp;
   int group_number;
-  for (int i = 0; i < traj.points.size(); ++i)
+  for (size_t i = 0; i < traj.points.size(); ++i)
   {
     for (int gr = 0; gr < traj.points[i].num_groups; gr++)
     {
@@ -524,7 +524,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
       group_number = pt.group_number;
       // FS100 requires valid velocity data
       if (pt.velocities.empty())
-        ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %d", i);
+        ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %lu", i);
 
       // FS100 requires trajectory start at current position
       namespace IRC_utils = industrial_robot_client::utils;
