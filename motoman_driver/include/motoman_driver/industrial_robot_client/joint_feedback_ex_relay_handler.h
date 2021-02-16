@@ -1,10 +1,3 @@
-#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_EX_RELAY_HANDLER_H
-#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_EX_RELAY_HANDLER_H
-
-#include <vector>
-#include <map>
-#include <string>
-#include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
 /*
  * Software License Agreement (BSD License)
  *
@@ -38,6 +31,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_EX_RELAY_HANDLER_H
+#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_EX_RELAY_HANDLER_H
+
+#include <vector>
+#include <map>
+#include <string>
+#include "motoman_driver/industrial_robot_client/joint_relay_handler.h"
 #include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "motoman_driver/simple_message/messages/joint_feedback_ex_message.h"
 #include "motoman_msgs/DynamicJointsGroup.h"
@@ -71,7 +71,7 @@ public:
   /**
   * \brief Constructor
   */
-  JointFeedbackExRelayHandler(int groups_number = -1) : groups_number_(groups_number) {};
+  explicit JointFeedbackExRelayHandler(int groups_number = -1) : groups_number_(groups_number) {}
 
 
   /**
@@ -119,7 +119,6 @@ protected:
                        sensor_msgs::JointState* sensor_state, int robot_id);
 
 private:
-
   static bool JointDataToVector(const industrial::joint_data::JointData &joints,
                                 std::vector<double> &vec, int len);
 
@@ -140,6 +139,6 @@ private:
 };  // class JointFeedbackExRelayHandler
 
 }  // namespace joint_feedback_ex_relay_handler
-}  // namespace industrial_robot_cliet
+}  // namespace industrial_robot_client
 
 #endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_EX_RELAY_HANDLER_H

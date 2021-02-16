@@ -38,9 +38,9 @@
 #include "simple_message/shared_types.h"
 #include "simple_message/log_wrapper.h"
 #else
-#include "joint_feedback_ex.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "joint_feedback_ex.h"  // NOLINT(build/include)
+#include "shared_types.h"       // NOLINT(build/include)
+#include "log_wrapper.h"        // NOLINT(build/include)
 #endif
 
 using industrial::joint_feedback_message::JointFeedbackMessage;
@@ -139,7 +139,7 @@ bool JointFeedbackEx::unload(industrial::byte_array::ByteArray *buffer)
 
     // every msg gets deserialised, but we only keep those with valid data.
     //
-    // TODO: is a message with just 'TIME' also valid? For now it is not (not
+    // TODO( ): is a message with just 'TIME' also valid? For now it is not (not
     // sure how that would work anyway, as Jointfeedback msgs are assumed to
     // contain joint feedback. Time alone would not seem to fit in that
     // category).

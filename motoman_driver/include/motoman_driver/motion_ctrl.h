@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2013, Southwest Research Institute
@@ -35,7 +35,7 @@
 #include "simple_message/smpl_msg_connection.h"
 #include "motoman_driver/simple_message/motoman_motion_ctrl.h"
 #include "motoman_driver/simple_message/motoman_motion_reply.h"
-
+#include <string>
 namespace motoman
 {
 namespace motion_ctrl

@@ -42,10 +42,10 @@
 #include "simple_message/shared_types.h"
 #include "motoman_driver/simple_message/joint_feedback_ex.h"
 #else
-#include "typed_message.h"
-#include "simple_message.h"
-#include "shared_types.h"
-#include "joint_feedback_ex.h"
+#include "typed_message.h"      // NOLINT(build/include)
+#include "simple_message.h"     // NOLINT(build/include)
+#include "shared_types.h"       // NOLINT(build/include)
+#include "joint_feedback_ex.h"  // NOLINT(build/include)
 #endif
 
 namespace industrial

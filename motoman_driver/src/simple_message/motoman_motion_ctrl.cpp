@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2013, Southwest Research Institute
@@ -36,9 +36,9 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "motoman_motion_ctrl.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "motoman_motion_ctrl.h"  // NOLINT(build/include)
+#include "shared_types.h"         // NOLINT(build/include)
+#include "log_wrapper.h"          // NOLINT(build/include)
 #endif
 
 using industrial::shared_types::shared_int;
@@ -121,7 +121,8 @@ bool MotionCtrl::load(industrial::byte_array::ByteArray *buffer)
     shared_real value = this->getData(i);
     if (!buffer->load(value))
     {
-      LOG_ERROR("Failed to load MotionCtrl data element %d from data[%d]", static_cast<int>(i), buffer->getBufferSize());
+      LOG_ERROR("Failed to load MotionCtrl data element %d from data[%d]", static_cast<int>(i),
+                buffer->getBufferSize());
       return false;
     }
   }
@@ -139,7 +140,8 @@ bool MotionCtrl::unload(industrial::byte_array::ByteArray *buffer)
     shared_real value;
     if (!buffer->unload(value))
     {
-      LOG_ERROR("Failed to unload message data element: %d from data[%d]", static_cast<int>(i), buffer->getBufferSize());
+      LOG_ERROR("Failed to unload message data element: %d from data[%d]", static_cast<int>(i),
+                buffer->getBufferSize());
       return false;
     }
     this->setData(i, value);

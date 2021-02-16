@@ -64,7 +64,6 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
   for (int i = 0; i < robot_groups.size(); i++)
   {
-
     std::string joint_path_action_name = robot_groups[i].get_ns() + "/" + robot_groups[i].get_name();
     std::vector<std::string> rg_joint_names = robot_groups[i].get_joint_names();
     int group_number_int = robot_groups[i].get_group_id();

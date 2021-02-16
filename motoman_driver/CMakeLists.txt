@@ -258,7 +258,13 @@ install(DIRECTORY
 
 if(CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
-  roslint_cpp()
+  # gather files, ignoring MotoPlus (we can't use '--exclude' (not supported
+  # by roslint's version ofcpplint) and we don't want to add a CPPLINT.cfg
+  # file to MotoPlus)
+  file(GLOB_RECURSE files_to_cpplint RELATIVE ${CMAKE_CURRENT_LIST_DIR} "*.cpp" "*.h")
+  string(REGEX REPLACE "MotoPlus/[^;]+;?" "" files_to_cpplint "${files_to_cpplint}")
+  roslint_cpp(${files_to_cpplint})
+  roslint_add_test()
 
   find_package(roslaunch REQUIRED)
   roslaunch_add_file_check(tests/roslaunch_test_io_relay.xml)

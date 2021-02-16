@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2013, Southwest Research Institute
@@ -28,6 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
 #include <string>
 #ifdef ROS
 #include "motoman_driver/simple_message/motoman_motion_ctrl.h"
@@ -37,10 +38,10 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "motoman_motion_ctrl.h"
-#include "motoman_motion_reply.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "motoman_motion_ctrl.h"   // NOLINT(build/include)
+#include "motoman_motion_reply.h"  // NOLINT(build/include)
+#include "shared_types.h"          // NOLINT(build/include)
+#include "log_wrapper.h"           // NOLINT(build/include)
 #endif
 
 using industrial::shared_types::shared_int;
@@ -226,7 +227,8 @@ bool MotionReply::load(industrial::byte_array::ByteArray *buffer)
     shared_real value = this->getData(i);
     if (!buffer->load(value))
     {
-      LOG_ERROR("Failed to load MotionReply data element %d from data[%d]", static_cast<int>(i), buffer->getBufferSize());
+      LOG_ERROR("Failed to load MotionReply data element %d from data[%d]", static_cast<int>(i),
+                buffer->getBufferSize());
       return false;
     }
   }
@@ -244,7 +246,8 @@ bool MotionReply::unload(industrial::byte_array::ByteArray *buffer)
     shared_real value;
     if (!buffer->unload(value))
     {
-      LOG_ERROR("Failed to unload message data element: %d from data[%d]", static_cast<int>(i), buffer->getBufferSize());
+      LOG_ERROR("Failed to unload message data element: %d from data[%d]", static_cast<int>(i),
+                buffer->getBufferSize());
       return false;
     }
     this->setData(i, value);
