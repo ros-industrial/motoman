@@ -119,8 +119,10 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
 MotomanJointTrajectoryStreamer::~MotomanJointTrajectoryStreamer()
 {
+  // SmplMsgConnection is not thread safe, so lock first
+  // NOTE: motion_ctrl_ uses the SmplMsgConnection here
+  const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
   // TODO( ): Find better place to call StopTrajMode
-  boost::mutex::scoped_lock lock(connection_mutex_);
   motion_ctrl_.setTrajMode(false);   // release TrajMode, so INFORM jobs can run
 }
 
@@ -129,12 +131,12 @@ bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &
 {
   trajectoryStop();
 
-  bool motion_ctrl_result = false;
   {
-    boost::mutex::scoped_lock lock(connection_mutex_);
-    motion_ctrl_result = motion_ctrl_.setTrajMode(false);
+    // SmplMsgConnection is not thread safe, so lock first
+    // NOTE: motion_ctrl_ uses the SmplMsgConnection here
+    const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
+    res.success = motion_ctrl_.setTrajMode(false);
   }
-  res.success = motion_ctrl_result;
 
   if (!res.success)
   {
@@ -152,12 +154,12 @@ bool MotomanJointTrajectoryStreamer::disableRobotCB(std_srvs::Trigger::Request &
 
 bool MotomanJointTrajectoryStreamer::enableRobotCB(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
 {
-  bool motion_ctrl_result = false;
   {
-    boost::mutex::scoped_lock lock(connection_mutex_);
-    motion_ctrl_result = motion_ctrl_.setTrajMode(true);
+    // SmplMsgConnection is not thread safe, so lock first
+    // NOTE: motion_ctrl_ uses the SmplMsgConnection here
+    const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
+    res.success = motion_ctrl_.setTrajMode(true);
   }
-  res.success = motion_ctrl_result;
 
   if (!res.success)
   {
@@ -380,7 +382,9 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
 {
   bool motion_ctrl_result = false;
   {
-    boost::mutex::scoped_lock lock(connection_mutex_);
+    // SmplMsgConnection is not thread safe, so lock first
+    // NOTE: motion_ctrl_ uses the SmplMsgConnection here
+    const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
     motion_ctrl_result = motion_ctrl_.controllerReady();
   }
 
@@ -408,14 +412,17 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     {
       ROS_INFO("Connecting to robot motion server");
       {
-        boost::mutex::scoped_lock lock(connection_mutex_);
+        // SmplMsgConnection is not thread safe, so lock first
+        const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
         this->connection_->makeConnect();
       }
       ros::Duration(0.250).sleep();  // wait for connection
 
       is_connected = false;
       {
-        boost::mutex::scoped_lock lock(connection_mutex_);
+        // SmplMsgConnection is not thread safe, so lock first
+        // TODO(gavanderhoorn): not sure this needs to be protected by a mutex
+        const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
         is_connected = this->connection_->isConnected();
       }
 
@@ -431,6 +438,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       continue;
     }
 
+    // this does not lock smpl_msg_conx_mutex_, but the mutex from JointTrajectoryStreamer
     this->mutex_.lock();
 
     SimpleMessage msg, tmpMsg, reply;
@@ -451,7 +459,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 
       is_connected = false;
       {
-        boost::mutex::scoped_lock lock(connection_mutex_);
+        // SmplMsgConnection is not thread safe, so lock first
+        // TODO(gavanderhoorn): not sure this needs to be protected by a mutex
+        const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
         is_connected = this->connection_->isConnected();
       }
 
@@ -468,7 +478,8 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 
       is_msg_sent = false;
       {
-        boost::mutex::scoped_lock lock(connection_mutex_);
+        // SmplMsgConnection is not thread safe, so lock first
+        const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
         is_msg_sent = this->connection_->sendAndReceiveMsg(msg, reply, false);
       }
 
@@ -509,6 +520,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       this->state_ = TransferStates::IDLE;
       break;
     }
+    // this does not unlock smpl_msg_conx_mutex_, but the mutex from JointTrajectoryStreamer
     this->mutex_.unlock();
   }
   ROS_WARN("Exiting trajectory streamer thread");
@@ -518,7 +530,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 void MotomanJointTrajectoryStreamer::trajectoryStop()
 {
   this->state_ = TransferStates::IDLE;  // stop sending trajectory points
-  boost::mutex::scoped_lock lock(connection_mutex_);
+  // SmplMsgConnection is not thread safe, so lock first
+  // NOTE: motion_ctrl_ uses the SmplMsgConnection here
+  const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
   motion_ctrl_.stopTrajectory();
 }
 

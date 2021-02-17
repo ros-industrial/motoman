@@ -32,7 +32,7 @@
 #ifndef MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 #define MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 #include <map>
 #include <string>
 #include <vector>
@@ -134,8 +134,11 @@ protected:
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
 
-  // NOTE: make sure the access to SmplMsgConnection is atomic
-  boost::mutex connection_mutex_;
+  // used to enforce serialisation of all access to the single, shared SmplMsgConnection.
+  // The MotomanMotionCtrl instances can access the shared SmplMsgConnection
+  // concurrently, and SimpleMessage is not thread-safe, so we enforce here in
+  // in this class.
+  std::mutex smpl_msg_conx_mutex_;
 
   std::map<int, MotomanMotionCtrl> motion_ctrl_map_;
 
