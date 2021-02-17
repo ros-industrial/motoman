@@ -32,7 +32,8 @@
 #ifndef MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 #define MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 
-#include <mutex>
+#include <mutex>  // NOLINT(build/c++11): Google doesn't approve of mutex
+                  // see https://github.com/google/styleguide/issues/194
 #include <map>
 #include <string>
 #include <vector>
