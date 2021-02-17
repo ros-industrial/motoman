@@ -70,7 +70,7 @@
             <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
-            <origin rpy="${radians(0)} ${radians(90)} ${radians(0)}" />
+            <origin rpy="${radians(0)} ${radians(90)} ${radians(0)}" xyz="0 0 1.225"/>
             <geometry>
                 <mesh filename="package://motoman_gp180_support/meshes/gp180/collision/link_4_r.stl"/>
             </geometry>
