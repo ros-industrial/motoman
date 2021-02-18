@@ -1,0 +1,12 @@
+<launch>
+  <arg name="req_arg" value="default"/>
+  <arg name="dx200" value="dx200"/>
+  
+  <group ns="load_motopos_d500">
+    <include file="$(find motoman_motopos_d500_support)/launch/load_motopos_d500.launch"/>
+  </group>
+
+  <group ns="test_motopos_d500">
+    <include file="$(find motoman_motopos_d500_support)/launch/test_motopos_d500.launch"/>
+  </group>
+</launch>
