@@ -1,0 +1,9 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: motoman_ms210_support
+    relative_path: urdf/ms210.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/motoman_ms210.srdf
+  CONFIG:
+    generated_timestamp: 1601773849
