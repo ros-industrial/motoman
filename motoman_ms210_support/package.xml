@@ -2,28 +2,28 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>motoman_ms210_support</name>
-  <version>0.1.0</version>
+  <version>0.3.5</version>
   <description>
-   <p>ROS Industrial support for the Motoman MS210.</p>
-   <p>
-       This package contains configuration data, 3D models and launch files
-       for Motoman MS210 manipulators.
-     </p>
-   <p>
-    <b>Specifications</b>
-   </p>
-   <ul>
-    <li>MS210 - Default</li>
-   </ul>
-   <p>
-       All urdfs are based on the default motion and joint velocity limits,
-       unless noted otherwise.
-     </p>
-   <p>
-       Before using any of the configuration files and / or meshes included
-       in this package, be sure to check they are correct for the particular
-       robot model and configuration you intend to use them with.
-     </p>
+    <p>ROS Industrial support for the Motoman MS210.</p>
+    <p>
+      This package contains configuration data, 3D models and launch files
+      for Motoman MS210 manipulators (and variants).
+    </p>
+    <p>
+      <b>Specifications</b>
+    </p>
+    <ul>
+      <li>MS210 - Default</li>
+    </ul>
+    <p>
+      All urdfs are based on the default motion and joint velocity limits,
+      unless noted otherwise.
+    </p>
+    <p>
+      Before using any of the configuration files and / or meshes included
+      in this package, be sure to check they are correct for the particular
+      robot model and configuration you intend to use them with.
+    </p>
   </description>
   <author>Adam Buynak</author>
   <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
@@ -42,6 +42,7 @@
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>rviz</exec_depend>
   <exec_depend>xacro</exec_depend>
+
   <export>
     <architecture_independent />
   </export>

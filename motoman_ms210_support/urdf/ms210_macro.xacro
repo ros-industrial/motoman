@@ -119,9 +119,9 @@
   <!-- joint list -->
   <joint name="${prefix}joint_1_s" type="revolute">
     <parent link="${prefix}base_link" />
-    <child  link="${prefix}link_1_s" />
+    <child link="${prefix}link_1_s" />
     <origin xyz="0 0 0.650" rpy="0 0 0" />
-    <axis   xyz="0 0 1" />
+    <axis xyz="0 0 1" />
     <limit lower="${radians(-180)}" upper="${radians(180)}" effort="6276.26" velocity="${radians(120)}" />
   </joint>
   <joint name="${prefix}joint_2_l" type="revolute">
