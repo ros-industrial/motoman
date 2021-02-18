@@ -1,3 +1,6 @@
+#With Visual Studio support: existing .vcxproj (created by Visual Studio) and linked mps files (created by hand?) in git repository
+#Note: remove "_with_vs_support" in filename to normally use this file with CMake
+
 cmake_minimum_required(VERSION 3.0)
 
 project(MpRosAllControllers NONE)
@@ -33,6 +36,7 @@ macro(PROJECT_CONFIG name controller suffix)
                       ${name}${suffix}${PROJECT_VERSION}.out)
 endmacro(PROJECT_CONFIG)
 
+#Adding support for the application on several controllers
 project_config(MotoRos DX100 DX1_)
 project_config(MotoRos DX200 DX2_)
 project_config(MotoRos FS100 FS_)
