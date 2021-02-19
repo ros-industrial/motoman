@@ -544,9 +544,9 @@ BOOL Ros_Controller_IsPflActive(Controller* controller)
 {
 #if (YRC1000||YRC1000u)
 	//return ((controller->ioStatus[IO_ROBOTSTATUS_PFL_STOP] | controller->ioStatus[IO_ROBOTSTATUS_PFL_ESCAPE]) != 0);
-	if (controller->bPFLduringRosMove | controller->ioStatus[IO_ROBOTSTATUS_PFL_STOP] | controller->ioStatus[IO_ROBOTSTATUS_PFL_ESCAPE] |
+	if (controller->bPFLduringRosMove || controller->ioStatus[IO_ROBOTSTATUS_PFL_STOP] || controller->ioStatus[IO_ROBOTSTATUS_PFL_ESCAPE] ||
 		( controller->ioStatus[IO_ROBOTSTATUS_PFL_AVOIDING]
-		&& (controller->ioStatus[IO_ROBOTSTATUS_PFL_AVOID_JOINT] | controller->ioStatus[IO_ROBOTSTATUS_PFL_AVOID_TRANS])) != 0)
+		&& (controller->ioStatus[IO_ROBOTSTATUS_PFL_AVOID_JOINT] || controller->ioStatus[IO_ROBOTSTATUS_PFL_AVOID_TRANS])) != 0)
 	{
 		return TRUE;
 	}

@@ -1753,12 +1753,12 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 			ret = mpExRcsIncrementMove(&moveData);
 			if(ret != 0)
 			{
-				if(ret == -3)
+				if(ret == E_EXRCS_CTRL_GRP)
 					printf("mpExRcsIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
 #if (YRC1000||YRC1000u)
-				else if (ret == -1 || ret == -19)
+				else if (ret == E_EXRCS_IMOV_UNREADY)
 				{
-					printf("mpExRcsIncrementMove returned: %d (TFS Active)\r\n", ret, moveData.ctrl_grp);
+					printf("mpExRcsIncrementMove returned UNREADY: %d (Could be PFL Active)\r\n", ret, moveData.ctrl_grp);
 					controller->bPFLduringRosMove = TRUE;
 				}
 #endif
