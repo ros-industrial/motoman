@@ -1758,7 +1758,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 #if (YRC1000||YRC1000u)
 				else if (ret == E_EXRCS_IMOV_UNREADY)
 				{
-					printf("mpExRcsIncrementMove returned UNREADY: %d (Could be PFL Active)\r\n", ret, moveData.ctrl_grp);
+					printf("mpExRcsIncrementMove returned UNREADY: %d (Could be PFL Active)\r\n", ret);
 					controller->bPFLduringRosMove = TRUE;
 				}
 #endif
