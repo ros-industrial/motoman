@@ -302,6 +302,14 @@ protected:
   virtual void jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
 
   /**
+   * \brief Callback function registered to joint_command topic subscriber.
+   *   Specific method is implemented in JointTrajectoryStreamer class.
+   *
+   * \param msg JointTrajectory message
+   */
+  virtual void jointCommandCB(const trajectory_msgs::JointTrajectoryConstPtr &msg) = 0;
+
+  /**
    * \brief Callback function registered to ROS stopMotion service
    *   Sends stop-motion command to robot.
    *
@@ -343,6 +351,9 @@ protected:
   SmplMsgConnection* connection_;
   ros::Subscriber sub_cur_pos_;  // handle for joint-state topic subscription
   ros::Subscriber sub_joint_trajectory_;  // handle for joint-trajectory topic subscription
+  
+  ros::Subscriber sub_joint_command_; // handle for joint-trajectory topic subscription
+  
   ros::ServiceServer srv_joint_trajectory_;  // handle for joint-trajectory service
   ros::Subscriber sub_joint_trajectory_ex_;  // handle for joint-trajectory topic subscription
   ros::ServiceServer srv_joint_trajectory_ex_;  // handle for joint-trajectory service
