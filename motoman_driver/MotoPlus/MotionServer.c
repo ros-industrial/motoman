@@ -877,6 +877,10 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	// Update status
 	Ros_Controller_StatusUpdate(controller);
 
+	// Reset PFL Activation Flag
+	if (controller->bPFLduringRosMove)
+		controller->bPFLduringRosMove = FALSE;
+
 	// Check if already in the proper mode
 	if(Ros_Controller_IsMotionReady(controller))
 		return TRUE;
@@ -1639,7 +1643,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 		
 		if (Ros_Controller_IsMotionReady(controller) 
 			&& Ros_MotionServer_HasDataInQueue(controller) 
-			&& !controller->bStopMotion )
+			&& !controller->bStopMotion)
 		{
 			//bNoData = FALSE;   // for testing
 			
@@ -1749,8 +1753,15 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 			ret = mpExRcsIncrementMove(&moveData);
 			if(ret != 0)
 			{
-				if(ret == -3)
+				if(ret == E_EXRCS_CTRL_GRP)
 					printf("mpExRcsIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
+#if (YRC1000||YRC1000u)
+				else if (ret == E_EXRCS_IMOV_UNREADY)
+				{
+					printf("mpExRcsIncrementMove returned UNREADY: %d (Could be PFL Active)\r\n", ret);
+					controller->bPFLduringRosMove = TRUE;
+				}
+#endif
 				else
 					printf("mpExRcsIncrementMove returned: %d\r\n", ret);
 			}

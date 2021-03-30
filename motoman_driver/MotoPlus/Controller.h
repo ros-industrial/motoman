@@ -101,6 +101,9 @@ typedef enum
 #if (YRC1000||YRC1000u)
 	IO_ROBOTSTATUS_PFL_STOP,
 	IO_ROBOTSTATUS_PFL_ESCAPE,
+	IO_ROBOTSTATUS_PFL_AVOIDING,
+	IO_ROBOTSTATUS_PFL_AVOID_JOINT,
+	IO_ROBOTSTATUS_PFL_AVOID_TRANS,
 #endif
 	IO_ROBOTSTATUS_MAX
 } IoStatusIndex;
@@ -118,6 +121,7 @@ typedef struct
 	int alarmCode;											// Alarm number currently active
 	BOOL bRobotJobReady;									// Indicates the robot job is on the WAIT command (ready for motion)
 	BOOL bStopMotion;										// Flag to stop motion
+	BOOL bPFLduringRosMove;									// Flag to keep track PFL activation during RosMotion
 
 	// Connection Server
 	int tidConnectionSrv;
