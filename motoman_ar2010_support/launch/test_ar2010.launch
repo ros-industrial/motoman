@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<launch>
+	<arg name="use_joint_gui" default="true" doc="If true, the joint state publisher will start with a gui so joint values can be changed"/>
+
+	<include file="$(find motoman_ar2010_support)/launch/load_ar2010.launch" />
+	<node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" if="$(arg use_joint_gui)"/>
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" unless="$(arg use_joint_gui)"/>
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
+</launch>

@@ -2,10 +2,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 <xacro:macro name="motoman_gp7" params="prefix">
 
-    <!-- Properties -->
-    <material name="yaskawa_blue">
-          <color rgba="0.12941 0.14902 0.74902 1" />
-    </material>
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
     <link name="${prefix}base_link">
@@ -13,7 +10,7 @@
             <geometry>
                 <mesh filename="package://motoman_gp7_support/meshes/visual/gp7_base_link.stl"/>
             </geometry>
-            <material name="yaskawa_blue"/>
+            <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
             <geometry>
@@ -26,7 +23,7 @@
             <geometry>
                 <mesh filename="package://motoman_gp7_support/meshes/visual/gp7_link_1_s.stl"/>
             </geometry>
-            <material name="yaskawa_blue"/>
+            <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
             <geometry>
@@ -39,7 +36,7 @@
             <geometry>
                 <mesh filename="package://motoman_gp7_support/meshes/visual/gp7_link_2_l.stl"/>
             </geometry>
-            <material name="yaskawa_blue"/>
+            <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
             <geometry>
@@ -52,7 +49,7 @@
             <geometry>
                 <mesh filename="package://motoman_gp7_support/meshes/visual/gp7_link_3_u.stl"/>
             </geometry>
-            <material name="yaskawa_blue"/>
+            <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
             <geometry>
@@ -65,7 +62,7 @@
             <geometry>
                 <mesh filename="package://motoman_gp7_support/meshes/visual/gp7_link_4_r.stl"/>
             </geometry>
-            <material name="yaskawa_blue"/>
+            <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
             <geometry>
@@ -78,7 +75,7 @@
             <geometry>
                 <mesh filename="package://motoman_gp7_support/meshes/visual/gp7_link_5_b.stl"/>
             </geometry>
-            <material name="yaskawa_blue"/>
+            <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
             <geometry>
@@ -91,7 +88,7 @@
             <geometry>
                 <mesh filename="package://motoman_gp7_support/meshes/visual/gp7_link_6_t.stl"/>
             </geometry>
-            <material name="yaskawa_blue"/>
+            <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
             <geometry>
