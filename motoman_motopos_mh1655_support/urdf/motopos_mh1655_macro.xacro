@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="motoman_motopos_mh1655" params="prefix use_pedestal:=false">
+
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
+
+    <!-- link list -->
+    <link name="${prefix}base_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/visual/base_link.stl"/>
+        </geometry>
+        <xacro:material_yaskawa_blue/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/collision/base_link.stl"/>
+        </geometry>
+      </collision>
+      <xacro:if value="${use_pedestal}">
+        <!-- Pedestal is 0.695m high -->
+        <visual>
+          <geometry>
+            <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/visual/pedestal.stl"/>
+          </geometry>
+          <xacro:material_yaskawa_blue/>
+        </visual>
+        <collision>
+          <geometry>
+            <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/collision/pedestal.stl"/>
+          </geometry>
+        </collision>
+      </xacro:if>
+    </link>
+    <link name="${prefix}link_1">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/visual/link_1.stl"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.75294 0.75294 0.75294 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/collision/link_1.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- end of link list -->
+
+    <!-- joint list -->
+    <joint name="${prefix}joint_1" type="revolute">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}link_1"/>
+      <origin xyz="0 0 0.305" rpy="0 0 0"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="${-2*pi}" upper="${2*pi}" effort="1274" velocity="1.3962"/>
+    </joint>
+    <!-- end of joint list -->
+
+    <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
+    <link name="${prefix}base"/>
+    <joint name="${prefix}base_link-base" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}base"/>
+    </joint>
+
+    <!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
+    <link name="${prefix}flange"/>
+    <joint name="${prefix}joint_1-flange" type="fixed">
+      <origin xyz="0.2768 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}link_1"/>
+      <child link="${prefix}flange"/>
+    </joint>
+
+    <!-- ROS-Industrial 'tool0' frame: all-zeros tool frame -->
+    <link name="${prefix}tool0"/>
+    <joint name="${prefix}flange-tool0" type="fixed">
+      <origin xyz="0 0 0" rpy="${pi} ${-pi/2} 0"/>
+      <parent link="${prefix}flange"/>
+      <child link="${prefix}tool0"/>
+    </joint>
+  </xacro:macro>
+</robot>
