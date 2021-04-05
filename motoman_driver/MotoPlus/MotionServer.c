@@ -83,6 +83,7 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 {
 	int groupNo;
 	int connectionIndex;
+	int sockOpt;
 	
 	printf("Starting new connection to the Motion Server\r\n");
 
@@ -102,6 +103,9 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 		mpClose(sd);
 		return;
 	}
+
+	sockOpt = 1;
+	mpSetsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char*)&sockOpt, sizeof(sockOpt));
 	
 	// If not started, start the IncMoveTask (there should be only one instance of this thread)
 	if(controller->tidIncMoveThread == INVALID_TASK)
@@ -300,11 +304,10 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 	int minSize = sizeof(SmPrefix) + sizeof(SmHeader);
 	int expectedSize;
 	int ret = 0;
-	BOOL bDisconnect = FALSE;
 	int partialMsgByteCount = 0;
 	BOOL bSkipNetworkRecv = FALSE;
 
-	while(!bDisconnect) //keep accepting messages until connection closes
+	while(TRUE) //keep accepting messages until connection closes
 	{
 		Ros_Sleep(0);	//give it some time to breathe, if needed
 		
@@ -352,9 +355,9 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 			{
 				// Process the simple message
 				ret = Ros_MotionServer_SimpleMsgProcess(controller, &receiveMsg, &replyMsg);
-				if (ret == 1) //error during processing
+				if (ret != OK) //error during processing
 				{
-					bDisconnect = TRUE;
+					break; //disconnect
 				}
 				else if (byteSize > expectedSize) // Received extra data in single message
 				{
@@ -414,7 +417,7 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 //-----------------------------------------------------------------------
 int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 {
-	int ret = 0;
+	int ret = ERROR;
 	int invalidSubcode = 0;
 	
 	switch(receiveMsg->header.msgType)
@@ -476,7 +479,7 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	if(invalidSubcode != 0)
 	{
 		Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, invalidSubcode, replyMsg, 0);
-		ret = -1;
+		ret = ERROR;
 	}
 		
 	return ret;
