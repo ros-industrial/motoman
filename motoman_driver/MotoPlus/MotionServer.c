@@ -104,6 +104,8 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 		return;
 	}
 
+	//This timeout detection takes two hours. So, it's not terribly useful. But, I'm keeping it
+	//in the code as a backup in case the heartbeat ping routine somehow fails.
 	sockOpt = 1;
 	mpSetsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char*)&sockOpt, sizeof(sockOpt));
 	
@@ -241,6 +243,9 @@ int Ros_MotionServer_GetExpectedByteSizeForMessageType(SimpleMsg* receiveMsg, in
 
 	switch (receiveMsg->header.msgType)
 	{
+	case ROS_MSG_PING:
+		expectedSize = minSize;
+		break;
 	case ROS_MSG_ROBOT_STATUS:
 		expectedSize = minSize + sizeof(SmBodyRobotStatus);
 		break;
@@ -306,32 +311,74 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 	int ret = 0;
 	int partialMsgByteCount = 0;
 	BOOL bSkipNetworkRecv = FALSE;
+	struct fd_set fds;
+	struct timeval recvTimeout;
+	int retSelect;
+	BOOL bHeartbeatOk;
+	BOOL bTimeoutOccurredOnce;
 
 	while(TRUE) //keep accepting messages until connection closes
 	{
 		Ros_Sleep(0);	//give it some time to breathe, if needed
 		
-		if (!bSkipNetworkRecv)
+		if (!bSkipNetworkRecv) //if I don't already have an extra complete packet buffered from the previous recv
 		{
-			if (partialMsgByteCount) //partial (incomplete) message already received
+			bHeartbeatOk = TRUE;
+			bTimeoutOccurredOnce = FALSE;
+			while (bHeartbeatOk)
 			{
-				//Receive message from the PC
-				memset((&receiveMsg) + partialMsgByteCount, 0x00, sizeof(SimpleMsg) - partialMsgByteCount);
-				byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)((&receiveMsg) + partialMsgByteCount), sizeof(SimpleMsg) - partialMsgByteCount, 0);
-				if (byteSize <= 0)
-					break; //end connection
+				FD_ZERO(&fds);
+				FD_SET(controller->sdMotionConnections[connectionIndex], &fds);
 
-				byteSize += partialMsgByteCount;
-				partialMsgByteCount = 0;
+				recvTimeout.tv_sec = 30;
+				recvTimeout.tv_usec = 0;
+
+				retSelect = mpSelect(controller->sdMotionConnections[connectionIndex] + 1, &fds, NULL, NULL, &recvTimeout);
+				if (retSelect > 0) //ready to recv
+				{
+					//Receive message from the PC
+					memset((&receiveMsg) + partialMsgByteCount, 0x00, sizeof(SimpleMsg) - partialMsgByteCount);
+					byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)((&receiveMsg) + partialMsgByteCount), sizeof(SimpleMsg) - partialMsgByteCount, 0);
+					if (byteSize <= 0)
+					{
+						bHeartbeatOk = FALSE; //end connection
+						break; //get out of heartbeat loop
+					}
+
+					byteSize += partialMsgByteCount;
+					partialMsgByteCount = 0;
+					break; //get out of heartbeat loop (Process Message)
+				}
+				else if (retSelect < 0) //error
+				{
+					bHeartbeatOk = FALSE;
+					break; //get out of heartbeat loop
+				}
+				else if (retSelect == 0 && !bTimeoutOccurredOnce) //No communication for 30 seconds. Send a ping as a heartbeat.
+				{
+					bTimeoutOccurredOnce = TRUE;
+
+					memset(&replyMsg, 0x00, sizeof(SimpleMsg));
+
+					replyMsg.prefix.length = sizeof(SmHeader);
+					replyMsg.header.msgType = ROS_MSG_PING;
+					replyMsg.header.commType = ROS_COMM_SERVICE_REQUEST;
+
+					byteSizeResponse = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);
+					if (byteSizeResponse <= 0)
+					{
+						bHeartbeatOk = FALSE;
+						break;	// Close the connection
+					}
+				}
+				else if (retSelect == 0 && bTimeoutOccurredOnce) //No response to the ping. Kill connection.
+				{
+					bHeartbeatOk = FALSE;
+					break; //get out of heartbeat loop
+				}
 			}
-			else //get whole message
-			{
-				//Receive message from the PC
-				memset(&receiveMsg, 0x00, sizeof(receiveMsg));
-				byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)(&receiveMsg), sizeof(SimpleMsg), 0);
-				if (byteSize <= 0)
-					break; //end connection
-			}
+			if (!bHeartbeatOk)
+				break; //end connection
 		}
 		else
 		{
@@ -422,6 +469,16 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	
 	switch(receiveMsg->header.msgType)
 	{
+	case ROS_MSG_PING:
+		memset(replyMsg, 0x00, sizeof(SimpleMsg));
+
+		replyMsg->prefix.length = sizeof(SmHeader);
+		replyMsg->header.msgType = ROS_MSG_PING;
+		replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+		replyMsg->header.replyType = ROS_REPLY_SUCCESS;
+		ret = OK;
+		break;
+
 	case ROS_MSG_JOINT_TRAJ_PT_FULL:
 		ret = Ros_MotionServer_JointTrajDataProcess(controller, receiveMsg, replyMsg);
 		break;

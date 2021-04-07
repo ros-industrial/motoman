@@ -45,6 +45,7 @@
 void Ros_IoServer_StartNewConnection(Controller* controller, int sd)
 {
 	int connectionIndex;
+	int sockOpt;
 
 	printf("Starting new connection to the IO Server\r\n");
 
@@ -64,6 +65,11 @@ void Ros_IoServer_StartNewConnection(Controller* controller, int sd)
 		mpClose(sd);
 		return;
 	}
+
+	//This timeout detection takes two hours. So, it's not terribly useful. But, I'm keeping it
+	//in the code as a backup in case the heartbeat ping routine somehow fails.
+	sockOpt = 1;
+	mpSetsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char*)&sockOpt, sizeof(sockOpt));
 
 	if (controller->tidIoConnections[connectionIndex] == INVALID_TASK)
 	{
