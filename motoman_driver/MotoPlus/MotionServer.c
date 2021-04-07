@@ -445,10 +445,13 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 			Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGSIZE, &replyMsg, 0);
 		}
 
-		//Send reply message
-		byteSizeResponse = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);
-		if (byteSizeResponse <= 0)
-			break;	// Close the connection
+		if (receiveMsg.header.commType != ROS_COMM_SERVICE_REPLY) //don't send a reply to a reply from the pc
+		{
+			//Send reply message
+			byteSizeResponse = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);
+			if (byteSizeResponse <= 0)
+				break;	// Close the connection
+		}
 	}
 	
 	Ros_Sleep(50);	// Just in case other associated task need time to clean-up.
