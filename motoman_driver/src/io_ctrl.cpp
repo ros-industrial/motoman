@@ -151,6 +151,6 @@ bool MotomanIoCtrl::sendAndReceive(shared_int address, shared_int value, WriteSi
   return true;
 }
 
-} // io_ctrl
+}  // namespace io_ctrl
 
-} // motoman
+}  // namespace motoman

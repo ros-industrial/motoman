@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2013, Southwest Research Institute
@@ -39,9 +39,9 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "simple_serialize.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "simple_serialize.h"  // NOLINT(build/include)
+#include "shared_types.h"      // NOLINT(build/include)
+#include "log_wrapper.h"       // NOLINT(build/include)
 #endif
 
 namespace motoman
@@ -279,4 +279,4 @@ private:
 }  // namespace simple_message
 }  // namespace motoman
 
-#endif /* MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_H */
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_MOTION_CTRL_H

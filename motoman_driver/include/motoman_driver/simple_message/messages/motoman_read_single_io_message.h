@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2016, Delft Robotics Institute
@@ -31,8 +31,8 @@
  * \author G.A. vd. Hoorn (TU Delft Robotics Institute)
  */
 
-#ifndef MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_READ_SINGLE_IO_MESSAGE_H
-#define MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_READ_SINGLE_IO_MESSAGE_H
+#ifndef MOTOMAN_DRIVER_SIMPLE_MESSAGE_MESSAGES_MOTOMAN_READ_SINGLE_IO_MESSAGE_H
+#define MOTOMAN_DRIVER_SIMPLE_MESSAGE_MESSAGES_MOTOMAN_READ_SINGLE_IO_MESSAGE_H
 
 #ifdef ROS
 #include "simple_message/typed_message.h"
@@ -43,10 +43,10 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "typed_message.h"
-#include "shared_types.h"
-#include "motoman_simple_message.h"
-#include "motoman_read_single_io.h"
+#include "typed_message.h"           // NOLINT(build/include)
+#include "shared_types.h"            // NOLINT(build/include)
+#include "motoman_simple_message.h"  // NOLINT(build/include)
+#include "motoman_read_single_io.h"  // NOLINT(build/include)
 
 #endif
 
@@ -123,4 +123,4 @@ private:
 }  // namespace simple_message
 }  // namespace motoman
 
-#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_READ_SINGLE_IO_MESSAGE_H
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MESSAGES_MOTOMAN_READ_SINGLE_IO_MESSAGE_H

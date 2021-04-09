@@ -29,7 +29,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATE_INTERFACE_H
 #define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATE_INTERFACE_H
 
@@ -185,7 +184,7 @@ protected:
 };  // class RobotStateInterface
 
 }  // namespace robot_state_interface
-}  // namespace industrial_robot_cliet
+}  // namespace industrial_robot_client
 
 
-#endif // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATE_INTERFACE_H
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATE_INTERFACE_H

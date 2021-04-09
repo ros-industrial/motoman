@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2013, Southwest Research Institute
@@ -28,7 +28,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 
 #ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_RELAY_HANDLER_H
 #define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_RELAY_HANDLER_H
@@ -65,11 +64,10 @@ using motoman_msgs::DynamicJointsGroup;
 class JointRelayHandler : public industrial::message_handler::MessageHandler
 {
 public:
-
   /**
   * \brief Constructor
   */
-  JointRelayHandler() {};
+  JointRelayHandler() {}
 
   typedef std::map<int, RobotGroup>::iterator it_type;
   /**
@@ -82,7 +80,8 @@ public:
    *
    * \return true on success, false otherwise (an invalid message type)
    */
-  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::map<int, RobotGroup> &robot_groups)
+  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection,
+                    std::map<int, RobotGroup>& robot_groups)
   {
     return init(connection, static_cast<int>(industrial::simple_message::StandardMsgTypes::JOINT), robot_groups);
   }
@@ -97,7 +96,8 @@ public:
    *
    * \return true on success, false otherwise (an invalid message type)
    */
-  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection, std::vector<std::string> &joint_names)
+  virtual bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection,
+                    std::vector<std::string>& joint_names)
   {
     return init(connection, static_cast<int>(industrial::simple_message::StandardMsgTypes::JOINT), joint_names);
   }
@@ -254,11 +254,10 @@ private:
    * \param[out] joint_state JointTrajectoryPt message for intermediate processing
    */
   bool convert_message(JointMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id);
-
 };  // class JointRelayHandler
 
 }  // namespace joint_relay_handler
-}  // namespace industrial_robot_cliet
+}  // namespace industrial_robot_client
 
 
 #endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_RELAY_HANDLER_H

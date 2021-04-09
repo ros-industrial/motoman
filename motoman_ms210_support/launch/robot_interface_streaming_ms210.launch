@@ -1,0 +1,21 @@
+<!--
+  Manipulator specific version of 'robot_interface_streaming.launch'.
+
+  Defaults provided for MS210:
+   - 6 joints
+
+  Usage:
+    robot_interface_streaming_ms210.launch robot_ip:=<value> controller:=<dx200>
+-->
+<launch>
+  <arg name="robot_ip" doc="IP of controller" />
+
+  <!-- controller: Controller name (dx200) -->
+  <arg name="controller" doc="Series of the controller (dx200)"/>
+
+  <rosparam command="load" file="$(find motoman_ms210_support)/config/joint_names_ms210.yaml" />
+
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip"   value="$(arg robot_ip)" />
+  </include>
+</launch>

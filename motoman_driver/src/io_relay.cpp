@@ -32,6 +32,7 @@
 
 #include "motoman_driver/io_relay.h"
 #include <string>
+#include <cstdint>
 #include <limits>
 #include <ros/ros.h>
 #include <sstream>
@@ -50,21 +51,21 @@ bool MotomanIORelay::init(int default_port)
 
   // override port with ROS param, if available
   const std::string port_param_name = "~port";
-  // TODO: should really use a private NodeHandle here
-  if(!ros::param::param<int>(port_param_name, port, default_port))
+  // TODO( ): should really use a private NodeHandle here
+  if (!ros::param::param<int>(port_param_name, port, default_port))
   {
     ROS_WARN_STREAM_NAMED("io.init", "Failed to get '" << port_param_name
       << "' parameter: using default (" << default_port << ")");
   }
-  if(port < 0 || port > std::numeric_limits<unsigned short>::max())
+  if (port < 0 || port > std::numeric_limits<uint16_t>::max())
   {
     ROS_FATAL_STREAM_NAMED("io.init", "Invalid value for port (" << port << "), "
-      "must be between 0 and " << std::numeric_limits<unsigned short>::max() << ".");
+      "must be between 0 and " << std::numeric_limits<uint16_t>::max() << ".");
     return false;
   }
 
   const std::string robot_ip_param_name = "robot_ip_address";
-  if(!ros::param::get(robot_ip_param_name, ip) || ip.empty())
+  if (!ros::param::get(robot_ip_param_name, ip) || ip.empty())
   {
     ROS_FATAL_STREAM_NAMED("io.init", "Invalid IP address: please set the '"
       << robot_ip_param_name << "' parameter");
@@ -105,7 +106,7 @@ bool MotomanIORelay::readSingleIoCB(
   motoman_msgs::ReadSingleIO::Request &req,
   motoman_msgs::ReadSingleIO::Response &res)
 {
-  shared_int io_val= -1;
+  shared_int io_val = -1;
   std::string err_msg;
 
   // send message and release mutex as soon as possible
@@ -118,7 +119,7 @@ bool MotomanIORelay::readSingleIoCB(
     res.success = false;
 
     // provide caller with failure indication
-    // TODO: should we also return the result code?
+    // TODO( ): should we also return the result code?
     std::stringstream message;
     message << "Read failed (address: " << req.address << "): " << err_msg;
     res.message = message.str();
@@ -141,7 +142,6 @@ bool MotomanIORelay::writeSingleIoCB(
   motoman_msgs::WriteSingleIO::Request &req,
   motoman_msgs::WriteSingleIO::Response &res)
 {
-  shared_int io_val= -1;
   std::string err_msg;
 
   // send message and release mutex as soon as possible
@@ -154,7 +154,7 @@ bool MotomanIORelay::writeSingleIoCB(
     res.success = false;
 
     // provide caller with failure indication
-    // TODO: should we also return the result code?
+    // TODO( ): should we also return the result code?
     std::stringstream message;
     message << "Write failed (address: " << req.address << "): " << err_msg;
     res.message = message.str();

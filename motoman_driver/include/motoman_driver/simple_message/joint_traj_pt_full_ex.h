@@ -41,10 +41,10 @@
 #include "simple_message/shared_types.h"
 #include "simple_message/joint_traj_pt_full.h"
 #else
-#include "joint_data.h"
-#include "simple_message.h"
-#include "simple_serialize.h"
-#include "shared_types.h"
+#include "joint_data.h"        // NOLINT(build/include)
+#include "simple_message.h"    // NOLINT(build/include)
+#include "simple_serialize.h"  // NOLINT(build/include)
+#include "shared_types.h"      // NOLINT(build/include)
 #endif
 
 #include<vector>
@@ -193,7 +193,8 @@ public:
   bool unload(industrial::byte_array::ByteArray *buffer);
   unsigned int byteLength()
   {
-    return sizeof(industrial::shared_types::shared_int) + sizeof(industrial::shared_types::shared_int) + MAX_NUM_GROUPS * (this->joint_traj_full_sample_.byteLength() - sizeof(industrial::shared_types::shared_int));
+    return sizeof(industrial::shared_types::shared_int) + sizeof(industrial::shared_types::shared_int) +
+           MAX_NUM_GROUPS * (this->joint_traj_full_sample_.byteLength() - sizeof(industrial::shared_types::shared_int));
   }
 
 private:

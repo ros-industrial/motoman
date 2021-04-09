@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2013, Southwest Research Institute
@@ -75,7 +75,7 @@ public:
    *
    * \param robot_id robot group # on this controller (for multi-group systems)
    */
-  MotomanJointTrajectoryStreamer(int robot_id = -1) : JointTrajectoryStreamer(1),
+  explicit MotomanJointTrajectoryStreamer(int robot_id = -1) : JointTrajectoryStreamer(1),
     robot_id_(robot_id) {}
 
   ~MotomanJointTrajectoryStreamer();
@@ -130,7 +130,6 @@ public:
   virtual void streamingThread();
 
 protected:
-
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
 
@@ -170,8 +169,6 @@ protected:
    */
   bool enableRobotCB(std_srvs::Trigger::Request &req,
                      std_srvs::Trigger::Response &res);
-
-
 };
 
 }  // namespace joint_trajectory_streamer

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2016, Delft Robotics Institute
@@ -38,9 +38,9 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "motoman_read_single_io_reply_message.h"
-#include "byte_array.h"
-#include "log_wrapper.h"
+#include "motoman_read_single_io_reply_message.h"  // NOLINT(build/include)
+#include "byte_array.h"                            // NOLINT(build/include)
+#include "log_wrapper.h"                           // NOLINT(build/include)
 #endif
 
 using industrial::byte_array::ByteArray;

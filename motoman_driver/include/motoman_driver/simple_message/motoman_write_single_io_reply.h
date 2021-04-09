@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2016, Delft Robotics Institute
@@ -42,9 +42,9 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "simple_serialize.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "simple_serialize.h"  // NOLINT(build/include)
+#include "shared_types.h"      // NOLINT(build/include)
+#include "log_wrapper.h"       // NOLINT(build/include)
 #endif
 
 namespace motoman
@@ -62,13 +62,13 @@ namespace WriteSingleIOReplyResultCodes
 enum WriteSingleIOReplyResultCode
 {
   SUCCESS               =    0,
-  READ_ADDRESS_INVALID  = 1001, // The ioAddress cannot be read on this controller
-  WRITE_ADDRESS_INVALID = 1002, // The ioAddress cannot be written to on this controller
-  WRITE_VALUE_INVALID   = 1003, // The value supplied is not a valid value for the addressed IO element
-  READ_API_ERROR        = 1004, // mpReadIO returned -1
-  WRITE_API_ERROR       = 1005, // mpWriteIO returned -1
+  READ_ADDRESS_INVALID  = 1001,  // The ioAddress cannot be read on this controller
+  WRITE_ADDRESS_INVALID = 1002,  // The ioAddress cannot be written to on this controller
+  WRITE_VALUE_INVALID   = 1003,  // The value supplied is not a valid value for the addressed IO element
+  READ_API_ERROR        = 1004,  // mpReadIO returned -1
+  WRITE_API_ERROR       = 1005,  // mpWriteIO returned -1
 };
-}
+}  // namespace WriteSingleIOReplyResultCodes
 typedef WriteSingleIOReplyResultCodes::WriteSingleIOReplyResultCode WriteSingleIOReplyResultCode;
 
 /**

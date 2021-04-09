@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2016, Delft Robotics Institute
@@ -38,9 +38,9 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "motoman_read_single_io.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "motoman_read_single_io.h"  // NOLINT(build/include)
+#include "shared_types.h"            // NOLINT(build/include)
+#include "log_wrapper.h"             // NOLINT(build/include)
 #endif
 
 using industrial::shared_types::shared_int;
@@ -61,7 +61,7 @@ ReadSingleIO::~ReadSingleIO(void)
 
 void ReadSingleIO::init()
 {
-  // TODO: is '0' a good initial value?
+  // TODO( ): is '0' a good initial value?
   this->init(0);
 }
 
