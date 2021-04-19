@@ -49,6 +49,7 @@ void Ros_IoServer_StartNewConnection(Controller* controller, int sd)
 
 	printf("Starting new connection to the IO Server\r\n");
 
+ATTEMPT_IO_CONNECTION:
 	//look for next available connection slot
 	for (connectionIndex = 0; connectionIndex < MAX_IO_CONNECTIONS; connectionIndex++)
 	{
@@ -61,13 +62,21 @@ void Ros_IoServer_StartNewConnection(Controller* controller, int sd)
 	
 	if (connectionIndex == MAX_IO_CONNECTIONS)
 	{
-		puts("IO server already connected... not accepting last attempt.");
-		mpClose(sd);
-		return;
+		if (Ros_MotionServer_HasDataInQueue(controller)) //another client is actively controlling motion; likely controlling I/O too
+		{
+			puts("IO server already connected... not accepting last attempt.");
+			mpClose(sd);
+			return;
+		}
+		else
+		{
+			puts("IO server already connected... closing old connection.");
+			Ros_IoServer_StopConnection(controller, 0); //close socket, cleanup resources, and delete tasks
+			goto ATTEMPT_IO_CONNECTION;
+		}
 	}
 
-	//This timeout detection takes two hours. So, it's not terribly useful. But, I'm keeping it
-	//in the code as a backup in case the heartbeat ping routine somehow fails.
+	//This timeout detection takes two hours. So, it's not terribly useful. But, it still serves a purpose
 	sockOpt = 1;
 	mpSetsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char*)&sockOpt, sizeof(sockOpt));
 
@@ -231,25 +240,14 @@ void Ros_IoServer_WaitForSimpleMsg(Controller* controller, int connectionIndex)
 		
 		if (!bSkipNetworkRecv)
 		{
-			if (partialMsgByteCount) //partial (incomplete) message already received
-			{
-				//Receive message from the PC
-				memset((&receiveMsg) + partialMsgByteCount, 0x00, sizeof(SimpleMsg) - partialMsgByteCount);
-				byteSize = mpRecv(controller->sdIoConnections[connectionIndex], (char*)((&receiveMsg) + partialMsgByteCount), sizeof(SimpleMsg) - partialMsgByteCount, 0);
-				if (byteSize <= 0)
-					break; //end connection
+			//Receive message from the PC
+			memset((&receiveMsg) + partialMsgByteCount, 0x00, sizeof(SimpleMsg) - partialMsgByteCount);
+			byteSize = mpRecv(controller->sdIoConnections[connectionIndex], (char*)((&receiveMsg) + partialMsgByteCount), sizeof(SimpleMsg) - partialMsgByteCount, 0);
+			if (byteSize <= 0)
+				break; //end connection
 
-				byteSize += partialMsgByteCount;
-				partialMsgByteCount = 0;
-			}
-			else //get whole message
-			{
-				//Receive message from the PC
-				memset(&receiveMsg, 0x00, sizeof(receiveMsg));
-				byteSize = mpRecv(controller->sdIoConnections[connectionIndex], (char*)(&receiveMsg), sizeof(SimpleMsg), 0);
-				if (byteSize <= 0)
-					break; //end connection
-			}
+			byteSize += partialMsgByteCount;
+			partialMsgByteCount = 0;
 		}
 		else
 		{
@@ -273,7 +271,7 @@ void Ros_IoServer_WaitForSimpleMsg(Controller* controller, int connectionIndex)
 			{
 				// Process the simple message
 				ret = Ros_IoServer_SimpleMsgProcess(&receiveMsg, &replyMsg);
-				if (ret == 1) //error during processing
+				if (ret != OK) //error during processing
 				{
 					bDisconnect = TRUE;
 				}
