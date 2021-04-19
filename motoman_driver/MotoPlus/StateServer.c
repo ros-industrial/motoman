@@ -49,6 +49,7 @@ void Ros_StateServer_StopConnection(Controller* controller, int connectionIndex)
 void Ros_StateServer_StartNewConnection(Controller* controller, int sd)
 {
 	int connectionIndex;
+	int sockOpt;
 
 	printf("Starting new connection to the State Server\r\n");
 	
@@ -78,6 +79,9 @@ ATTEMPT_STATE_CONNECTION:
 			goto ATTEMPT_STATE_CONNECTION;
 		}
 	}
+
+	sockOpt = 1;
+	mpSetsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char*)&sockOpt, sizeof(sockOpt));
 
 	//start task that will send the controller state
 	controller->tidStateSendState[connectionIndex] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE,
