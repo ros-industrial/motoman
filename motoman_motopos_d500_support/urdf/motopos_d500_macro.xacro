@@ -2,13 +2,15 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 <xacro:macro name="motoman_motopos_d500" params="prefix">
 
+  <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
+
   <!-- link list -->
   <link name="${prefix}base_link">
     <visual>
       <geometry>
         <mesh filename="package://motoman_motopos_d500_support/meshes/motopos_d500/visual/base_link.stl"/>
       </geometry>
-      <material name="yaskawa_blue"/>
+      <xacro:material_yaskawa_blue/>
     </visual>
     <collision>
       <geometry>
@@ -21,7 +23,7 @@
       <geometry>
         <mesh filename="package://motoman_motopos_d500_support/meshes/motopos_d500/visual/link_1.stl"/>
       </geometry>
-      <material name="yaskawa_blue"/>
+      <xacro:material_yaskawa_blue/>
     </visual>
     <collision>
       <geometry>
@@ -34,7 +36,7 @@
       <geometry>
         <mesh filename="package://motoman_motopos_d500_support/meshes/motopos_d500/visual/link_2.stl"/>
       </geometry>
-      <material name="yaskawa_blue"/>
+      <xacro:material_yaskawa_blue/>
     </visual>
     <collision>
       <geometry>
@@ -63,13 +65,13 @@
   </joint>
 
   <joint name="${prefix}joint_2-flange" type="fixed">
-    <origin xyz="0 0 0.150" rpy="0 0 0"/>
-    <parent link="${prefix}link_1"/>
+    <origin xyz="0 0 0.150" rpy="0 ${-pi/2} 0"/>
+    <parent link="${prefix}link_2"/>
     <child link="${prefix}flange"/>
   </joint>
 
   <joint name="${prefix}flange-tool0" type="fixed">
-    <origin xyz="0 0 0" rpy="${pi} ${-pi/2} 0"/>
+    <origin xyz="0 0 0" rpy="0 ${pi/2} 0"/>
     <parent link="${prefix}flange"/>
     <child link="${prefix}tool0"/>
   </joint>
