@@ -26,6 +26,7 @@
     <ProjectGuid>{64C31524-A3C4-49D4-AD04-955D44202226}</ProjectGuid>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <NMakeUseOemCodePage>true</NMakeUseOemCodePage>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DX100|Win32'" Label="Configuration">

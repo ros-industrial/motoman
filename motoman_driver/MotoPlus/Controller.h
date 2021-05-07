@@ -131,7 +131,7 @@ typedef struct
 	int	tidIoConnections[MAX_IO_CONNECTIONS];				// ThreadId array for Io Server
 
 	// State Server Connection
-	int tidStateSendState;  								// ThreadId of thread sending the controller state
+	int tidStateSendState[MAX_STATE_CONNECTIONS];			// ThreadId of thread sending the controller state
 	int	sdStateConnections[MAX_STATE_CONNECTIONS];			// Socket Descriptor array for State Server
 
 	// Motion Server Connection
