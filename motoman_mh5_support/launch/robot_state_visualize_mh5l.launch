@@ -1,9 +1,9 @@
 <!--
   Manipulator specific version of the state visualizer.
-  Defaults provided for MH5:
+  Defaults provided for MH5L:
    - 6 joints
   Usage:
-    robot_state_visualize_mh5.launch robot_ip:=<value> controller:=<fs100|dx100|dx200>
+    robot_state_visualize_mh5l.launch robot_ip:=<value> controller:=<fs100|dx100|dx200>
 -->
 <launch>
   <arg name="robot_ip" doc="IP of controller" />
@@ -19,7 +19,7 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-  <include file="$(find motoman_mh5_support)/launch/load_mh5.launch" />
+  <include file="$(find motoman_mh5_support)/launch/load_mh5l.launch" />
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
 </launch>
