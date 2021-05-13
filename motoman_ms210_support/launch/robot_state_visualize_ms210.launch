@@ -1,0 +1,27 @@
+<!--
+  Manipulator specific version of the state visualizer.
+
+  Defaults provided for MS210:
+   - 6 joints
+
+  Usage:
+    robot_state_visualize_ms210.launch robot_ip:=<value> controller:=<dx200>
+-->
+<launch>
+  <arg name="robot_ip" doc="IP of controller" />
+
+  <!-- controller: Controller name (dx200) -->
+  <arg name="controller" doc="Series of the controller (dx200)"/>
+
+  <rosparam command="load" file="$(find motoman_ms210_support)/config/joint_names_ms210.yaml" />
+
+  <include file="$(find motoman_driver)/launch/robot_state_$(arg controller).launch">
+    <arg name="robot_ip"   value="$(arg robot_ip)" />
+  </include>
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <include file="$(find motoman_ms210_support)/launch/load_ms210.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
+</launch>

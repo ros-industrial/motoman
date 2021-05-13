@@ -30,6 +30,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
 #ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H
 #define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H
 
@@ -149,7 +150,7 @@ private:
    * \brief The default goal joint threshold see(goal_threshold). Unit
    * are joint specific (i.e. radians or meters).
    */
-  static const double DEFAULT_GOAL_THRESHOLD_;// = 0.01;
+  static const double DEFAULT_GOAL_THRESHOLD_;  // = 0.01;
 
   /**
    * \brief The goal joint threshold used for determining if a robot
@@ -190,7 +191,7 @@ private:
   /**
    * \brief The watchdog period (seconds)
    */
-  static const double WATCHD0G_PERIOD_;// = 1.0;
+  static const double WATCHD0G_PERIOD_;  // = 1.0;
 
   /**
    * \brief Watch dog callback, used to detect robot driver failures
@@ -288,5 +289,5 @@ private:
 }  // namespace joint_trajectory_action
 }  // namespace industrial_robot_client
 
-#endif /* MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H */
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H
 

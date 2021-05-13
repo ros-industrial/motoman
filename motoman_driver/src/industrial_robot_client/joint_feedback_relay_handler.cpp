@@ -31,6 +31,7 @@
 
 #include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "simple_message/log_wrapper.h"
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -173,7 +174,8 @@ bool JointFeedbackRelayHandler::JointDataToVector(const JointData &joints,
   return true;
 }
 
-bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointsGroup* joint_state, int robot_id)
+bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, DynamicJointsGroup* joint_state,
+                                                int robot_id)
 {
   JointData values;
   int num_jnts = robot_groups_[robot_id].get_joint_names().size();
@@ -274,17 +276,17 @@ bool JointFeedbackRelayHandler::convert_message(JointFeedbackMessage& msg_in, Jo
   return true;
 }
 
-bool JointFeedbackRelayHandler::select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
+bool JointFeedbackRelayHandler::select(const DynamicJointsGroup& all_joint_state,
+                                       const std::vector<std::string>& all_joint_names,
                                        DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names)
 {
-
   ROS_ASSERT(all_joint_state.positions.size() == all_joint_names.size());
 
   *pub_joint_state = DynamicJointsGroup();  // start with a "clean" message
   pub_joint_names->clear();
 
   // skip over "blank" joint names
-  for (int i = 0; i < all_joint_names.size(); ++i)
+  for (size_t i = 0; i < all_joint_names.size(); ++i)
   {
     if (all_joint_names[i].empty())
       continue;

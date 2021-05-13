@@ -58,10 +58,11 @@ bool JointRelayHandler::init(SmplMsgConnection* connection, int msg_type, std::m
     name_str = iterator->second.get_name();
     ns_str = iterator->second.get_ns();
 
-    this->pub_joint_control_state_ =
-      this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>(ns_str + "/" + name_str + "/feedback_states", 1);
+    this->pub_joint_control_state_ = this->node_.advertise<control_msgs::FollowJointTrajectoryFeedback>(
+        ns_str + "/" + name_str + "/feedback_states", 1);
 
-    this->pub_joint_sensor_state_ = this->node_.advertise<sensor_msgs::JointState>(ns_str + "/" + name_str + "/joint_states", 1);
+    this->pub_joint_sensor_state_ =
+        this->node_.advertise<sensor_msgs::JointState>(ns_str + "/" + name_str + "/joint_states", 1);
 
     this->pub_controls_[robot_id] = this->pub_joint_control_state_;
     this->pub_states_[robot_id] = this->pub_joint_sensor_state_;
@@ -114,7 +115,7 @@ bool JointRelayHandler::internalCB(SimpleMessage& msg_in)
   return rtn;
 }
 
-// TODO: Add support for other message fields (effort, desired pos)
+// TODO( ): Add support for other message fields (effort, desired pos)
 bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
                                         control_msgs::FollowJointTrajectoryFeedback* control_state,
                                         sensor_msgs::JointState* sensor_state)
@@ -164,7 +165,7 @@ bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
   return true;
 }
 
-// TODO: Add support for other message fields (effort, desired pos)
+// TODO( ): Add support for other message fields (effort, desired pos)
 bool JointRelayHandler::create_messages(SimpleMessage& msg_in,
                                         control_msgs::FollowJointTrajectoryFeedback* control_state,
                                         sensor_msgs::JointState* sensor_state, int robot_id)
@@ -286,8 +287,9 @@ bool JointRelayHandler::convert_message(JointMessage& msg_in, DynamicJointsGroup
   return true;
 }
 
-bool JointRelayHandler::select(const JointTrajectoryPoint& all_joint_state, const std::vector<std::string>& all_joint_names,
-                               JointTrajectoryPoint* pub_joint_state, std::vector<std::string>* pub_joint_names)
+bool JointRelayHandler::select(const JointTrajectoryPoint& all_joint_state,
+                               const std::vector<std::string>& all_joint_names, JointTrajectoryPoint* pub_joint_state,
+                               std::vector<std::string>* pub_joint_names)
 {
   ROS_ASSERT(all_joint_state.positions.size() == all_joint_names.size());
 
@@ -295,7 +297,7 @@ bool JointRelayHandler::select(const JointTrajectoryPoint& all_joint_state, cons
   pub_joint_names->clear();
 
   // skip over "blank" joint names
-  for (int i = 0; i < all_joint_names.size(); ++i)
+  for (size_t i = 0; i < all_joint_names.size(); ++i)
   {
     if (all_joint_names[i].empty())
       continue;
@@ -313,17 +315,17 @@ bool JointRelayHandler::select(const JointTrajectoryPoint& all_joint_state, cons
   return true;
 }
 
-bool JointRelayHandler::select(const DynamicJointsGroup& all_joint_state, const std::vector<std::string>& all_joint_names,
-                               DynamicJointsGroup* pub_joint_state, std::vector<std::string>* pub_joint_names)
+bool JointRelayHandler::select(const DynamicJointsGroup& all_joint_state,
+                               const std::vector<std::string>& all_joint_names, DynamicJointsGroup* pub_joint_state,
+                               std::vector<std::string>* pub_joint_names)
 {
-
   ROS_ASSERT(all_joint_state.positions.size() == all_joint_names.size());
 
   *pub_joint_state = DynamicJointsGroup();  // start with a "clean" message
   pub_joint_names->clear();
 
   // skip over "blank" joint names
-  for (int i = 0; i < all_joint_names.size(); ++i)
+  for (size_t i = 0; i < all_joint_names.size(); ++i)
   {
     if (all_joint_names[i].empty())
       continue;

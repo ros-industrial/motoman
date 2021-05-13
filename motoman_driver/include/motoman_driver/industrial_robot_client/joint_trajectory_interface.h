@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2013, Southwest Research Institute
@@ -67,13 +67,11 @@ namespace StandardSocketPorts = industrial::simple_socket::StandardSocketPorts;
  */
 class JointTrajectoryInterface
 {
-
 public:
-
   /**
    * \brief Default constructor.
    */
-  JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0) {};
+  JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0) {}
   typedef std::map<int, RobotGroup>::iterator it_type;
 
   /**
@@ -86,7 +84,8 @@ public:
    *
    * \return true on success, false otherwise
    */
-  virtual bool init(std::string default_ip = "", int default_port = StandardSocketPorts::MOTION, bool version_0 = false);
+  virtual bool init(std::string default_ip = "", int default_port = StandardSocketPorts::MOTION,
+                    bool version_0 = false);
 
   /**
    * \brief Initialize robot connection using specified method.
@@ -138,7 +137,6 @@ public:
   }
 
 protected:
-
   /**
    * \brief Send a stop command to the robot
    */
@@ -153,7 +151,8 @@ protected:
    *
    * \return true on success, false otherwise
    */
-  virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
+  virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr& traj,
+                                  std::vector<SimpleMessage>* msgs);
 
   /**
    * \brief Convert ROS trajectory message into stream of SimpleMessages for sending to robot.
@@ -164,7 +163,8 @@ protected:
    *
    * \return true on success, false otherwise
    */
-  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
+  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj,
+                                  std::vector<SimpleMessage>* msgs);
 
   /**
    * \brief Transform joint positions before publishing.
@@ -175,7 +175,8 @@ protected:
    *
    * \return true on success, false otherwise
    */
-  virtual bool transform(const trajectory_msgs::JointTrajectoryPoint& pt_in, trajectory_msgs::JointTrajectoryPoint* pt_out)
+  virtual bool transform(const trajectory_msgs::JointTrajectoryPoint& pt_in,
+                         trajectory_msgs::JointTrajectoryPoint* pt_out)
   {
     *pt_out = pt_in;  // by default, no transform is applied
     return true;
@@ -211,9 +212,9 @@ protected:
    *
    * \return true on success, false otherwise
    */
-  virtual bool select(const std::vector<std::string>& ros_joint_names, const trajectory_msgs::JointTrajectoryPoint& ros_pt,
+  virtual bool select(const std::vector<std::string>& ros_joint_names,
+                      const trajectory_msgs::JointTrajectoryPoint& ros_pt,
                       const std::vector<std::string>& rbt_joint_names, trajectory_msgs::JointTrajectoryPoint* rbt_pt);
-
 
   /**
    * \brief Create SimpleMessage for sending to the robot
@@ -381,6 +382,6 @@ private:
 };
 
 }  // namespace joint_trajectory_interface
-} //industrial_robot_client
+}  // namespace industrial_robot_client
 
-#endif // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_INTERFACE_H
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_INTERFACE_H

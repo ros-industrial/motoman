@@ -101,6 +101,9 @@ typedef enum
 #if (YRC1000||YRC1000u)
 	IO_ROBOTSTATUS_PFL_STOP,
 	IO_ROBOTSTATUS_PFL_ESCAPE,
+	IO_ROBOTSTATUS_PFL_AVOIDING,
+	IO_ROBOTSTATUS_PFL_AVOID_JOINT,
+	IO_ROBOTSTATUS_PFL_AVOID_TRANS,
 #endif
 	IO_ROBOTSTATUS_MAX
 } IoStatusIndex;
@@ -118,6 +121,7 @@ typedef struct
 	int alarmCode;											// Alarm number currently active
 	BOOL bRobotJobReady;									// Indicates the robot job is on the WAIT command (ready for motion)
 	BOOL bStopMotion;										// Flag to stop motion
+	BOOL bPFLduringRosMove;									// Flag to keep track PFL activation during RosMotion
 
 	// Connection Server
 	int tidConnectionSrv;
@@ -127,7 +131,7 @@ typedef struct
 	int	tidIoConnections[MAX_IO_CONNECTIONS];				// ThreadId array for Io Server
 
 	// State Server Connection
-	int tidStateSendState;  								// ThreadId of thread sending the controller state
+	int tidStateSendState[MAX_STATE_CONNECTIONS];			// ThreadId of thread sending the controller state
 	int	sdStateConnections[MAX_STATE_CONNECTIONS];			// Socket Descriptor array for State Server
 
 	// Motion Server Connection

@@ -51,6 +51,7 @@ typedef struct
 
 typedef enum
 {
+	ROS_MSG_PING = 1,
 	ROS_MSG_GET_VERSION = 2,
 	ROS_MSG_ROBOT_STATUS = 13,
 

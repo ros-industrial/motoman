@@ -1,0 +1,32 @@
+<!-- launch_test_ms210.xml - ROSlaunch tests -->
+<launch>
+  <arg name="req_arg" value="default"/>
+  <arg name="dx200" value="dx200"/>
+
+  <group ns="load_ms210">
+    <include file="$(find motoman_ms210_support)/launch/load_ms210.launch"/>
+  </group>
+
+  <group ns="test_ms210">
+    <include file="$(find motoman_ms210_support)/launch/test_ms210.launch"/>
+  </group>
+
+  <group ns="robot_interface_streaming_ms210">
+    <group ns="dx200" >
+      <include file="$(find motoman_ms210_support)/launch/robot_interface_streaming_ms210.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
+        <arg name="controller" value="$(arg dx200)"/>
+      </include>
+    </group>
+  </group>
+
+  <group ns="robot_state_visualize_ms210">
+    <group ns="dx200" >
+      <include file="$(find motoman_ms210_support)/launch/robot_state_visualize_ms210.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
+        <arg name="controller" value="$(arg dx200)"/>
+      </include>
+    </group>
+  </group>
+
+</launch>

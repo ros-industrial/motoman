@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<robot name="motoman_motopos_d500" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Properties -->
+  <material name="yaskawa_blue">
+      <color rgba="0.12941 0.14902 0.74902 1" />
+  </material>
+  
+  <xacro:include filename="$(find motoman_motopos_d500_support)/urdf/motopos_d500_macro.xacro" />
+  <xacro:motoman_motopos_d500 prefix=""/>
+</robot>

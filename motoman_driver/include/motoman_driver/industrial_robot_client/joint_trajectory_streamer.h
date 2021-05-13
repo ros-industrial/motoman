@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2013, Southwest Research Institute
@@ -77,7 +77,7 @@ public:
    *
    * \param min_buffer_size minimum number of points as required by robot implementation
    */
-  JointTrajectoryStreamer(int min_buffer_size = 1) : min_buffer_size_(min_buffer_size) {};
+  explicit JointTrajectoryStreamer(int min_buffer_size = 1) : min_buffer_size_(min_buffer_size) {}
 
   /**
    * \brief Class initializer
@@ -116,9 +116,11 @@ public:
 
   virtual void jointTrajectoryCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg);
 
-  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
+  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj,
+                                  std::vector<SimpleMessage>* msgs);
 
-  virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr &traj, std::vector<SimpleMessage>* msgs);
+  virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr& traj,
+                                  std::vector<SimpleMessage>* msgs);
 
   virtual void streamingThread();
 
@@ -139,4 +141,4 @@ protected:
 }  // namespace joint_trajectory_streamer
 }  // namespace industrial_robot_client
 
-#endif /* MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_STREAMER_H */
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_STREAMER_H

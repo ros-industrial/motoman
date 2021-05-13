@@ -39,10 +39,10 @@
 #include "simple_message/shared_types.h"
 #include "simple_message/log_wrapper.h"
 #else
-#include "joint_traj_pt_full_ex.h"
-#include "joint_traj_pt_full.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "joint_traj_pt_full_ex.h"  // NOLINT(build/include)
+#include "joint_traj_pt_full.h"     // NOLINT(build/include)
+#include "shared_types.h"           // NOLINT(build/include)
+#include "log_wrapper.h"            // NOLINT(build/include)
 #endif
 
 using industrial::joint_traj_pt_full::JointTrajPtFull;
@@ -114,7 +114,7 @@ bool JointTrajPtFullEx::load(industrial::byte_array::ByteArray *buffer)
     return false;
   }
 
-  for (int i = 0; i < joint_trajectory_points_.size(); i++)
+  for (size_t i = 0; i < joint_trajectory_points_.size(); i++)
   {
     JointTrajPtFull traj_full = joint_trajectory_points_[i];
 
@@ -206,7 +206,7 @@ bool JointTrajPtFullEx::unload(industrial::byte_array::ByteArray *buffer)
 {
   LOG_COMM("Executing joint traj. pt. unload");
 
-  for (int i = 0; i < joint_trajectory_points_.size(); i++)
+  for (size_t i = 0; i < joint_trajectory_points_.size(); i++)
   {
     if (!buffer->unload(joint_trajectory_points_[i]))
     {

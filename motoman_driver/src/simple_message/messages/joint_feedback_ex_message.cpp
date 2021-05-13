@@ -38,10 +38,10 @@
 #include "simple_message/log_wrapper.h"
 #include "motoman_driver/simple_message/motoman_simple_message.h"
 #else
-#include "joint_feedback_ex_message.h"
-#include "joint_data.h"
-#include "byte_array.h"
-#include "log_wrapper.h"
+#include "joint_feedback_ex_message.h"  // NOLINT(build/include)
+#include "joint_data.h"                 // NOLINT(build/include)
+#include "byte_array.h"                 // NOLINT(build/include)
+#include "log_wrapper.h"                // NOLINT(build/include)
 #endif
 
 using industrial::byte_array::ByteArray;

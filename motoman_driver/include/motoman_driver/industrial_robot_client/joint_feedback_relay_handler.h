@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2013, Southwest Research Institute
@@ -29,10 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_RELAY_HANDLER_H
 #define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_RELAY_HANDLER_H
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -65,7 +65,7 @@ public:
   /**
   * \brief Constructor
   */
-  JointFeedbackRelayHandler(int robot_id = -1) : robot_id_(robot_id) {};
+  explicit JointFeedbackRelayHandler(int robot_id = -1) : robot_id_(robot_id) {}
 
 
   /**
@@ -146,7 +146,7 @@ private:
 };  // class JointFeedbackRelayHandler
 
 }  // namespace joint_feedback_relay_handler
-}  // namespace industrial_robot_cliet
+}  // namespace industrial_robot_client
 
 
 #endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_FEEDBACK_RELAY_HANDLER_H

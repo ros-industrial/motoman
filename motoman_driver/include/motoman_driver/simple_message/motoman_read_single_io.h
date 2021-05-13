@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Software License Agreement (BSD License)
  *
  * Copyright (c) 2016, Delft Robotics Institute
@@ -41,9 +41,9 @@
 #endif
 
 #ifdef MOTOPLUS
-#include "simple_serialize.h"
-#include "shared_types.h"
-#include "log_wrapper.h"
+#include "simple_serialize.h"  // NOLINT(build/include)
+#include "shared_types.h"      // NOLINT(build/include)
+#include "log_wrapper.h"       // NOLINT(build/include)
 #endif
 
 namespace motoman
@@ -144,10 +144,9 @@ private:
    * \brief Address of IO element.
    */
   industrial::shared_types::shared_int address_;
-
 };
 }  // namespace io_ctrl
 }  // namespace simple_message
 }  // namespace motoman
 
-#endif /* MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_READ_SINGLE_IO_H */
+#endif  // MOTOMAN_DRIVER_SIMPLE_MESSAGE_MOTOMAN_READ_SINGLE_IO_H

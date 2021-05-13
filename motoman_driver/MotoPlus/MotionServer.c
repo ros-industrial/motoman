@@ -83,9 +83,11 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 {
 	int groupNo;
 	int connectionIndex;
+	int sockOpt;
 	
 	printf("Starting new connection to the Motion Server\r\n");
 
+ATTEMPT_MOTION_CONNECTION:
 	//look for next available connection slot
 	for (connectionIndex = 0; connectionIndex < MAX_MOTION_CONNECTIONS; connectionIndex++)
 	{
@@ -98,10 +100,23 @@ void Ros_MotionServer_StartNewConnection(Controller* controller, int sd)
 	
 	if (connectionIndex == MAX_MOTION_CONNECTIONS)
 	{
-		puts("Motion server already connected... not accepting last attempt.");
-		mpClose(sd);
-		return;
+		if (Ros_MotionServer_HasDataInQueue(controller)) //another client is actively controlling motion
+		{
+			puts("Motion server already connected... not accepting last attempt.");
+			mpClose(sd);
+			return;
+		}
+		else
+		{
+			puts("Motion server already connected... closing old connection.");
+			Ros_MotionServer_StopConnection(controller, 0); //close socket, cleanup resources, and delete tasks
+			goto ATTEMPT_MOTION_CONNECTION; //goto is sometimes useful... don't judge me
+		}
 	}
+
+	//This timeout detection takes two hours. So, it's not terribly useful. But, it still serves a purpose.
+	sockOpt = 1;
+	mpSetsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char*)&sockOpt, sizeof(sockOpt));
 	
 	// If not started, start the IncMoveTask (there should be only one instance of this thread)
 	if(controller->tidIncMoveThread == INVALID_TASK)
@@ -237,6 +252,9 @@ int Ros_MotionServer_GetExpectedByteSizeForMessageType(SimpleMsg* receiveMsg, in
 
 	switch (receiveMsg->header.msgType)
 	{
+	case ROS_MSG_PING:
+		expectedSize = minSize;
+		break;
 	case ROS_MSG_ROBOT_STATUS:
 		expectedSize = minSize + sizeof(SmBodyRobotStatus);
 		break;
@@ -300,35 +318,23 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 	int minSize = sizeof(SmPrefix) + sizeof(SmHeader);
 	int expectedSize;
 	int ret = 0;
-	BOOL bDisconnect = FALSE;
 	int partialMsgByteCount = 0;
 	BOOL bSkipNetworkRecv = FALSE;
 
-	while(!bDisconnect) //keep accepting messages until connection closes
+	while (TRUE) //keep accepting messages until connection closes
 	{
 		Ros_Sleep(0);	//give it some time to breathe, if needed
-		
-		if (!bSkipNetworkRecv)
-		{
-			if (partialMsgByteCount) //partial (incomplete) message already received
-			{
-				//Receive message from the PC
-				memset((&receiveMsg) + partialMsgByteCount, 0x00, sizeof(SimpleMsg) - partialMsgByteCount);
-				byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)((&receiveMsg) + partialMsgByteCount), sizeof(SimpleMsg) - partialMsgByteCount, 0);
-				if (byteSize <= 0)
-					break; //end connection
 
-				byteSize += partialMsgByteCount;
-				partialMsgByteCount = 0;
-			}
-			else //get whole message
-			{
-				//Receive message from the PC
-				memset(&receiveMsg, 0x00, sizeof(receiveMsg));
-				byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)(&receiveMsg), sizeof(SimpleMsg), 0);
-				if (byteSize <= 0)
-					break; //end connection
-			}
+		if (!bSkipNetworkRecv) //if I don't already have an extra complete packet buffered from the previous recv
+		{
+			//Receive message from the PC
+			memset((&receiveMsg) + partialMsgByteCount, 0x00, sizeof(SimpleMsg) - partialMsgByteCount);
+			byteSize = mpRecv(controller->sdMotionConnections[connectionIndex], (char*)((&receiveMsg) + partialMsgByteCount), sizeof(SimpleMsg) - partialMsgByteCount, 0);
+			if (byteSize <= 0)
+				break; //end connection
+
+			byteSize += partialMsgByteCount;
+			partialMsgByteCount = 0;
 		}
 		else
 		{
@@ -352,9 +358,9 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 			{
 				// Process the simple message
 				ret = Ros_MotionServer_SimpleMsgProcess(controller, &receiveMsg, &replyMsg);
-				if (ret == 1) //error during processing
+				if (ret != OK) //error during processing
 				{
-					bDisconnect = TRUE;
+					break; //disconnect
 				}
 				else if (byteSize > expectedSize) // Received extra data in single message
 				{
@@ -395,10 +401,13 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 			Ros_SimpleMsg_MotionReply(&receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_MSGSIZE, &replyMsg, 0);
 		}
 
-		//Send reply message
-		byteSizeResponse = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);
-		if (byteSizeResponse <= 0)
-			break;	// Close the connection
+		if (receiveMsg.header.commType != ROS_COMM_SERVICE_REPLY) //don't send a reply to a reply from the pc
+		{
+			//Send reply message
+			byteSizeResponse = mpSend(controller->sdMotionConnections[connectionIndex], (char*)(&replyMsg), replyMsg.prefix.length + sizeof(SmPrefix), 0);
+			if (byteSizeResponse <= 0)
+				break;	// Close the connection
+		}
 	}
 	
 	Ros_Sleep(50);	// Just in case other associated task need time to clean-up.
@@ -414,11 +423,21 @@ void Ros_MotionServer_WaitForSimpleMsg(Controller* controller, int connectionInd
 //-----------------------------------------------------------------------
 int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 {
-	int ret = 0;
+	int ret = ERROR;
 	int invalidSubcode = 0;
 	
 	switch(receiveMsg->header.msgType)
 	{
+	case ROS_MSG_PING:
+		memset(replyMsg, 0x00, sizeof(SimpleMsg));
+
+		replyMsg->prefix.length = sizeof(SmHeader);
+		replyMsg->header.msgType = ROS_MSG_PING;
+		replyMsg->header.commType = ROS_COMM_SERVICE_REPLY;
+		replyMsg->header.replyType = ROS_REPLY_SUCCESS;
+		ret = OK;
+		break;
+
 	case ROS_MSG_JOINT_TRAJ_PT_FULL:
 		ret = Ros_MotionServer_JointTrajDataProcess(controller, receiveMsg, replyMsg);
 		break;
@@ -476,7 +495,7 @@ int Ros_MotionServer_SimpleMsgProcess(Controller* controller, SimpleMsg* receive
 	if(invalidSubcode != 0)
 	{
 		Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, invalidSubcode, replyMsg, 0);
-		ret = -1;
+		ret = ERROR;
 	}
 		
 	return ret;
@@ -876,6 +895,10 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 
 	// Update status
 	Ros_Controller_StatusUpdate(controller);
+
+	// Reset PFL Activation Flag
+	if (controller->bPFLduringRosMove)
+		controller->bPFLduringRosMove = FALSE;
 
 	// Check if already in the proper mode
 	if(Ros_Controller_IsMotionReady(controller))
@@ -1639,7 +1662,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 		
 		if (Ros_Controller_IsMotionReady(controller) 
 			&& Ros_MotionServer_HasDataInQueue(controller) 
-			&& !controller->bStopMotion )
+			&& !controller->bStopMotion)
 		{
 			//bNoData = FALSE;   // for testing
 			
@@ -1749,8 +1772,15 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 			ret = mpExRcsIncrementMove(&moveData);
 			if(ret != 0)
 			{
-				if(ret == -3)
+				if(ret == E_EXRCS_CTRL_GRP)
 					printf("mpExRcsIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
+#if (YRC1000||YRC1000u)
+				else if (ret == E_EXRCS_IMOV_UNREADY)
+				{
+					printf("mpExRcsIncrementMove returned UNREADY: %d (Could be PFL Active)\r\n", ret);
+					controller->bPFLduringRosMove = TRUE;
+				}
+#endif
 				else
 					printf("mpExRcsIncrementMove returned: %d\r\n", ret);
 			}
