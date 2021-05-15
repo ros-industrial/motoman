@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:macro name="motoman_sia10d" params="prefix">
+		<xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 		<!-- link list -->
 		<link name="world">
     		<origin xyz="0 0 0" rpy="0 0 0"/>
@@ -10,17 +11,13 @@
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/visual/MOTOMAN_BASE.stl" />
 				</geometry>
-				<material name="blue">
-					<color rgba="0 0 1 1"/>
-				</material>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/collision/MOTOMAN_BASE.stl" />
 				</geometry>
-				<material name="yellow">
-					<color rgba="0 1 1 1"/>
-				</material>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 			<inertial>
       				<mass value="400" /> 	<!-- Arbitrarily large value, to simulate bolting down in case of absence of fixed joint -->
@@ -39,15 +36,13 @@
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/visual/MOTOMAN_AXIS_S.stl"/>
 				</geometry>
-				<material name="silver">
-					<color rgba="0.8 0.8 0.8 1"/>
-				</material>
+				<xacro:material_yaskawa_silver/>
 			</visual>
 			<collision>
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/collision/MOTOMAN_AXIS_S.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 			<inertial>
       				<mass value="13.746057" />
@@ -68,14 +63,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/visual/MOTOMAN_AXIS_L.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<origin rpy="1.57 3.1416 0" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/collision/MOTOMAN_AXIS_L.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 			<inertial>
       				<mass value="5.227999" />
@@ -96,14 +91,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/visual/MOTOMAN_AXIS_E.stl"/>
 				</geometry>
-				<material name="silver"/>
+				<xacro:material_yaskawa_silver/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 3.1415" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/collision/MOTOMAN_AXIS_E.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 			<inertial>
       				<mass value="4.7092004" />
@@ -124,14 +119,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/visual/MOTOMAN_AXIS_U.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<origin rpy="1.57 -3.1415 0" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/collision/MOTOMAN_AXIS_U.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 			<inertial>
       				<mass value="3.1488649" />
@@ -152,14 +147,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/visual/MOTOMAN_AXIS_R.stl"/>
 				</geometry>
-				<material name="silver"/>
+				<xacro:material_yaskawa_silver/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 3.1416" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/collision/MOTOMAN_AXIS_R.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 			<inertial>
       				<mass value="3.0270943" />
@@ -180,14 +175,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/visual/MOTOMAN_AXIS_B.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<origin rpy="-1.57 0 3.1416" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/collision/MOTOMAN_AXIS_B.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 			<inertial>
       				<mass value="2.3902999" />
@@ -207,13 +202,13 @@
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/visual/MOTOMAN_AXIS_T.stl" />
 				</geometry>
-				<material name="silver"/>
+				<xacro:material_yaskawa_silver/>
 			</visual>
 			<collision>
 				<geometry>
 					<mesh filename="package://motoman_sia10d_support/meshes/sia10d/collision/MOTOMAN_AXIS_T.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 			<inertial>
       				<mass value="0.63670412" />

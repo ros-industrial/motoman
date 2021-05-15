@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="color_yaskawa_blue" value="${33/255} ${38/255} ${191/255} 1.0"/>
+
+  <xacro:property name="color_yaskawa_white" value="0.99 0.99 0.99 1"/>
+
+  <!-- not an official colour, but used in some old xacro:macros -->
+  <xacro:property name="color_yaskawa_yellow" value="0 1 1 1"/>
+
+  <!-- not an official colour, but used in some old xacro:macros -->
+  <xacro:property name="color_yaskawa_silver" value="0.8 0.8 0.8 1"/>
+</robot>

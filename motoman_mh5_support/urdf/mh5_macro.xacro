@@ -1,6 +1,8 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:macro name="motoman_mh5" params="prefix">
+		<xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
+
 		<!-- link list -->
 		<link name="${prefix}base_link">
 			<visual>
@@ -8,18 +10,14 @@
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/visual/MH5_BASE_AXIS.stl" />
 				</geometry>
-				<material name="blue">
-					<color rgba="0 0 1 1"/>
-				</material>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 			        <origin rpy="0 0 3.14159"/>
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/collision/MH5_BASE_AXIS.stl" />
 				</geometry>
-				<material name="yellow">
-					<color rgba="0 1 1 1"/>
-				</material>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_s">
@@ -27,15 +25,13 @@
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/visual/MH5_S_AXIS.stl"/>
 				</geometry>
-				<material name="silver">
-					<color rgba="0.8 0.8 0.8 1"/>
-				</material>
+				<xacro:material_yaskawa_white/>
 			</visual>
 			<collision>
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/collision/MH5_S_AXIS.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_l">
@@ -44,14 +40,14 @@
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/visual/MH5_L_AXIS.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<!-- <origin rpy="1.57 3.1416 0" xyz="0 0 0"/> -->
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/collision/MH5_L_AXIS.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_u">
@@ -60,14 +56,14 @@
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/visual/MH5_U_AXIS.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<!-- <origin rpy="1.57 -3.1415 0" xyz="0 0 0"/> -->
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/collision/MH5_U_AXIS.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_r">
@@ -76,14 +72,14 @@
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/visual/MH5_R_AXIS.stl"/>
 				</geometry>
-				<material name="silver"/>
+				<xacro:material_yaskawa_white/>
 			</visual>
 			<collision>
 				<!-- <origin rpy="0 0 3.1416" xyz="0 0 0"/> -->
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/collision/MH5_R_AXIS.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_b">
@@ -92,14 +88,14 @@
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/visual/MH5_B_AXIS.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<!-- <origin rpy="-1.57 0 3.1416" xyz="0 0 0"/> -->
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/collision/MH5_B_AXIS.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_t">
@@ -107,13 +103,13 @@
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/visual/MH5_T_AXIS.stl" />
 				</geometry>
-				<material name="silver"/>
+				<xacro:material_yaskawa_white/>
 			</visual>
 			<collision>
 				<geometry>
 					<mesh filename="package://motoman_mh5_support/meshes/mh5/collision/MH5_T_AXIS.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<!-- end of link list -->

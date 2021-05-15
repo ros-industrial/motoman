@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
   <xacro:include filename="$(find motoman_sda10f_support)/urdf/common_torso_macro.xacro" />
   <xacro:include filename="$(find motoman_sda10f_support)/urdf/arm_macro.xacro" />
 

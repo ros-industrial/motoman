@@ -1,23 +1,21 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:macro name="motoman_sia20d" params="prefix">
+		<xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
+
 		<!-- link list -->
 		<link name="${prefix}base_link">
 			<visual>
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/visual/MOTOMAN_BASE.stl" />
 				</geometry>
-				<material name="blue">
-					<color rgba="0 0 1 1"/>
-				</material>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/collision/MOTOMAN_BASE.stl" />
 				</geometry>
-				<material name="yellow">
-					<color rgba="0 1 1 1"/>
-				</material>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_s">
@@ -26,16 +24,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/visual/MOTOMAN_AXIS_S.stl"/>
 				</geometry>
-				<material name="silver">
-					<color rgba="0.8 0.8 0.8 1"/>
-				</material>
+				<xacro:material_yaskawa_white/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 3.1416" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/collision/MOTOMAN_AXIS_S.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_l">
@@ -44,14 +40,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/visual/MOTOMAN_AXIS_L.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<origin rpy="1.57 3.1416 3.1416" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/collision/MOTOMAN_AXIS_L.stl"/>
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_e">
@@ -60,14 +56,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/visual/MOTOMAN_AXIS_E.stl"/>
 				</geometry>
-				<material name="silver"/>
+				<xacro:material_yaskawa_white/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/collision/MOTOMAN_AXIS_E.stl"/>
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_u">
@@ -76,14 +72,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/visual/MOTOMAN_AXIS_U.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<origin rpy="1.57 -3.1415 3.1416" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/collision/MOTOMAN_AXIS_U.stl"/>
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_r">
@@ -92,14 +88,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/visual/MOTOMAN_AXIS_R.stl"/>
 				</geometry>
-				<material name="silver"/>
+				<xacro:material_yaskawa_white/>
 			</visual>
 			<collision>
 				<origin rpy="0 0 0" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/collision/MOTOMAN_AXIS_R.stl"/>
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_b">
@@ -108,14 +104,14 @@
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/visual/MOTOMAN_AXIS_B.stl"/>
 				</geometry>
-				<material name="blue"/>
+				<xacro:material_yaskawa_blue/>
 			</visual>
 			<collision>
 				<origin rpy="-1.57 0 0" xyz="0 0 0"/>
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/collision/MOTOMAN_AXIS_B.stl"/>
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
 		<link name="${prefix}link_t">
@@ -123,13 +119,13 @@
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/visual/MOTOMAN_AXIS_T.stl" />
 				</geometry>
-				<material name="silver"/>
+				<xacro:material_yaskawa_white/>
 			</visual>
 			<collision>
 				<geometry>
 					<mesh filename="package://motoman_sia20d_support/meshes/sia20d/collision/MOTOMAN_AXIS_T.stl" />
 				</geometry>
-				<material name="yellow"/>
+				<xacro:material_yaskawa_yellow/>
 			</collision>
 		</link>
     <link name="${prefix}tool0" />
