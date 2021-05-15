@@ -27,6 +27,7 @@
   <exec_depend>motoman_mh5_support</exec_depend>
   <exec_depend>motoman_motomini_support</exec_depend>
   <exec_depend>motoman_msgs</exec_depend>
+  <exec_depend>motoman_resources</exec_depend>
   <exec_depend>motoman_sda10f_moveit_config</exec_depend>
   <exec_depend>motoman_sda10f_support</exec_depend>
   <exec_depend>motoman_sia10d_support</exec_depend>
