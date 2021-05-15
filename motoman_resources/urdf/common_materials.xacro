@@ -13,4 +13,18 @@
       <color rgba="${color_yaskawa_white}"/>
     </material>
   </xacro:macro>
+
+  <!-- not an official colour, but used in some old xacro:macros -->
+  <xacro:macro name="material_yaskawa_yellow">
+    <material name="">
+      <color rgba="${color_yaskawa_yellow}"/>
+    </material>
+  </xacro:macro>
+
+  <!-- not an official colour, but used in some old xacro:macros -->
+  <xacro:macro name="material_yaskawa_silver">
+    <material name="">
+      <color rgba="${color_yaskawa_silver}"/>
+    </material>
+  </xacro:macro>
 </robot>
