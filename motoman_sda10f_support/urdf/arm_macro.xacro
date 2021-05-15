@@ -7,9 +7,7 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_s.stl"/>
         </geometry>
-        <material name="blue">
-          <color rgba="0.8 0.8 0.8 1"/>
-        </material>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -24,7 +22,7 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_l.stl"/>
         </geometry>
-        <material name="silver"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -39,7 +37,7 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_e.stl"/>
         </geometry>
-        <material name="blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -54,7 +52,7 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_u.stl"/>
         </geometry>
-        <material name="silver"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -69,7 +67,7 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_r.stl"/>
         </geometry>
-        <material name="blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -84,7 +82,7 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_b.stl"/>
         </geometry>
-        <material name="silver"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -98,7 +96,7 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_t.stl" />
         </geometry>
-        <material name="blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>

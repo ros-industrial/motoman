@@ -5,6 +5,8 @@
 	
 	<xacro:macro name="motoman_sia5d" params="prefix">
 
+  <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
+
   <link name="${prefix}base_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />

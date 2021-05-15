@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="motoman_motopos_d500" params="prefix">
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
     <link name="${prefix}base_link">
@@ -8,7 +9,7 @@
         <geometry>
           <mesh filename="package://motoman_motopos_d500_support/meshes/motopos_d500/visual/base_link.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -21,7 +22,7 @@
         <geometry>
           <mesh filename="package://motoman_motopos_d500_support/meshes/motopos_d500/visual/link_1.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -34,7 +35,7 @@
         <geometry>
           <mesh filename="package://motoman_motopos_d500_support/meshes/motopos_d500/visual/link_2.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="motoman_ma2010" params="prefix">
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
     <link name="${prefix}base_link">
@@ -8,7 +9,7 @@
         <geometry>
           <mesh filename="package://motoman_ma2010_support/meshes/ma2010/visual/base_link.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -21,7 +22,7 @@
         <geometry>
           <mesh filename="package://motoman_ma2010_support/meshes/ma2010/visual/link_1_s.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -34,7 +35,7 @@
         <geometry>
           <mesh filename="package://motoman_ma2010_support/meshes/ma2010/visual/link_2_l.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -47,7 +48,7 @@
         <geometry>
           <mesh filename="package://motoman_ma2010_support/meshes/ma2010/visual/link_3_u.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -60,7 +61,7 @@
         <geometry>
           <mesh filename="package://motoman_ma2010_support/meshes/ma2010/visual/link_4_r.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -73,7 +74,7 @@
         <geometry>
           <mesh filename="package://motoman_ma2010_support/meshes/ma2010/visual/link_5_b.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -86,7 +87,7 @@
         <geometry>
           <mesh filename="package://motoman_ma2010_support/meshes/ma2010/visual/link_6_t.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>

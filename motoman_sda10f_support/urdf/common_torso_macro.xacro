@@ -7,9 +7,7 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/base.stl" />
         </geometry>
-        <material name="blue">
-          <color rgba="0 0 1 1"/>
-        </material>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -23,9 +21,7 @@
         <geometry>
           <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_b1.stl"/>
         </geometry>
-        <material name="silver">
-          <color rgba="0.8 0.8 0.8 1"/>
-        </material>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin rpy="0 0 0" xyz="0 0 0"/>
