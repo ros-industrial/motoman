@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="motoman_gp88" params="prefix">
-
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
