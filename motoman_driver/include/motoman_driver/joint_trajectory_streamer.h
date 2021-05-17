@@ -32,6 +32,8 @@
 #ifndef MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 #define MOTOMAN_DRIVER_JOINT_TRAJECTORY_STREAMER_H
 
+#include <mutex>  // NOLINT(build/c++11): Google doesn't approve of mutex
+                  // see https://github.com/google/styleguide/issues/194
 #include <map>
 #include <string>
 #include <vector>
@@ -132,6 +134,12 @@ public:
 protected:
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
+
+  // used to enforce serialisation of all access to the single, shared SmplMsgConnection.
+  // The MotomanMotionCtrl instances can access the shared SmplMsgConnection
+  // concurrently, and SimpleMessage is not thread-safe, so we enforce here in
+  // in this class.
+  std::mutex smpl_msg_conx_mutex_;
 
   std::map<int, MotomanMotionCtrl> motion_ctrl_map_;
 
