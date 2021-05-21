@@ -60,7 +60,7 @@ namespace joint_trajectory_streamer
 namespace
 {
   constexpr double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
-  constexpr double start_pos_tol_  = 1e-4;  // max difference btwn start & current position, for validation (rad)
+  constexpr double start_pos_tol_  = 5e-4;  // max difference btwn start & current position, for validation (rad)
 }
 
 #define ROS_ERROR_RETURN(rtn, ...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while (0)  // NOLINT(whitespace/braces)
@@ -442,7 +442,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
   ROS_INFO("Starting Motoman joint trajectory streamer thread");
   while (ros::ok())
   {
-    ros::Duration(0.005).sleep();
+    ros::Duration(0.001).sleep();
 
     // automatically re-establish connection, if required
     if (connectRetryCount-- > 0)
@@ -483,7 +483,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     switch (this->state_)
     {
     case TransferStates::IDLE:
-      ros::Duration(0.250).sleep();  //  slower loop while waiting for new trajectory
+      ros::Duration(0.02).sleep();  //  slower loop while waiting for new trajectory
       break;
 
     case TransferStates::STREAMING:
@@ -560,7 +560,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         if (this->dt_ptstreaming_points_ < this->ptstreaming_timeout_)
         {
           this->dt_ptstreaming_points_ = ros::Time::now().toSec() - this->time_ptstreaming_last_point_;
-          ros::Duration(0.005).sleep();
+          ros::Duration(0.0005).sleep();
           ROS_DEBUG("Time since last point: %f", this->dt_ptstreaming_points_);
           break;
         }

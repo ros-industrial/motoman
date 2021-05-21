@@ -385,7 +385,7 @@ void JointTrajectoryStreamer::streamingThread()
   ROS_INFO("Starting joint trajectory streamer thread");
   while (ros::ok())
   {
-    ros::Duration(0.005).sleep();
+    ros::Duration(0.001).sleep();
 
     // automatically re-establish connection, if required
     if (connectRetryCount-- > 0)

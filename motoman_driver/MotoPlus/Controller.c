@@ -408,7 +408,7 @@ void Ros_Controller_ConnectionServer_Start(Controller* controller)
 					printf("Failed to set TCP_NODELAY.\r\n");
 				}
 				
-				Ros_IoServer_StartNewConnection(controller, sdAccepted);
+//				Ros_IoServer_StartNewConnection(controller, sdAccepted);
 			}
 		}
 	}
