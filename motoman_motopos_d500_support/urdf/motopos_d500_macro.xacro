@@ -53,7 +53,7 @@
     <parent link="${prefix}base_link"/>
     <child link="${prefix}link_1"/>
     <origin xyz="${0 + kinematic_offsets['link_1']['x']} ${0 + kinematic_offsets['link_1']['y']} ${0.380 + kinematic_offsets['link_1']['z']}"
-            rpy="${0 + kinematic_offsets['link_1']['roll']} ${0 + kinematic_offsets['link_1']['pitch']} ${0.380 + kinematic_offsets['link_1']['yaw']}" />
+            rpy="${0 + kinematic_offsets['link_1']['roll']} ${0 + kinematic_offsets['link_1']['pitch']} ${0 + kinematic_offsets['link_1']['yaw']}" />
     <axis xyz="0 -1 0" />
     <limit lower="-2.3561" upper="2.3561" effort="1274" velocity="1.3962"/>
   </joint>
@@ -61,7 +61,7 @@
     <parent link="${prefix}link_1"/>
     <child link="${prefix}link_2"/>
     <origin xyz="${0 + kinematic_offsets['link_2']['x']} ${0 + kinematic_offsets['link_2']['y']} ${0 + kinematic_offsets['link_2']['z']}"
-            rpy="${0 + kinematic_offsets['link_2']['roll']} ${0 + kinematic_offsets['link_2']['pitch']} ${0.380 + kinematic_offsets['link_2']['yaw']}" />
+            rpy="${0 + kinematic_offsets['link_2']['roll']} ${0 + kinematic_offsets['link_2']['pitch']} ${0 + kinematic_offsets['link_2']['yaw']}" />
     <axis xyz="0 0 -1" />
     <limit lower="-3.4906" upper="3.4906" effort="392" velocity="2.7925"/>
   </joint>
