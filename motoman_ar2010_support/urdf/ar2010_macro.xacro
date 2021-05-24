@@ -143,7 +143,7 @@
     <joint name="${prefix}joint_6_t" type="revolute">
       <parent link="${prefix}link_5_b"/>
       <child link="${prefix}link_6_t"/>
-      <origin xyz="${0 + kinematic_offsets['6_t']['x']} ${0 + kinematic_offsets['6_t']['y']} ${0 + kinematic_offsets['6_t']['z']}"
+      <origin xyz="${0 + kinematic_offsets['6_t']['x']} ${-0.1 + kinematic_offsets['6_t']['y']} ${0 + kinematic_offsets['6_t']['z']}"
               rpy="${radians(-90) + kinematic_offsets['6_t']['roll']} ${0 + kinematic_offsets['6_t']['pitch']} ${0 + kinematic_offsets['6_t']['yaw']}"/>
       <axis xyz="0 0 1"/>
       <limit lower="${radians(-210)}" upper="${radians(210)}" effort="33.3" velocity="${radians(700)}"/>
@@ -161,7 +161,7 @@
     <!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
     <link name="${prefix}flange"/>
     <joint name="${prefix}joint_6_t-flange" type="fixed">
-      <origin xyz="0 0 -0.100" rpy="0 ${pi/2} 0"/>
+      <origin xyz="0 0 0" rpy="0 ${pi/2} 0"/>
       <parent link="${prefix}link_6_t"/>
       <child link="${prefix}flange"/>
     </joint>
