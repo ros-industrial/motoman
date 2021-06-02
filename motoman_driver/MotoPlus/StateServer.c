@@ -34,9 +34,9 @@
 //-----------------------
 // Function Declarations
 //-----------------------
-void Ros_StateServer_StartNewConnection(Controller* controller, int sd);
-void Ros_StateServer_SendState(Controller* controller);
-BOOL Ros_StateServer_SendMsgToAllClient(Controller* controller, SimpleMsg* sendMsg, int msgSize);
+void Ros_StateServer_SendState(Controller* controller, int connectionIndex);
+BOOL Ros_StateServer_SendMsgToAllClient(Controller* controller, int connectionIndex, SimpleMsg* sendMsg, int msgSize);
+void Ros_StateServer_StopConnection(Controller* controller, int connectionIndex);
 
 //-----------------------
 // Function implementation
@@ -49,43 +49,79 @@ BOOL Ros_StateServer_SendMsgToAllClient(Controller* controller, SimpleMsg* sendM
 void Ros_StateServer_StartNewConnection(Controller* controller, int sd)
 {
 	int connectionIndex;
+	int sockOpt;
 
 	printf("Starting new connection to the State Server\r\n");
 	
+ATTEMPT_STATE_CONNECTION:
 	//look for next available connection slot
 	for (connectionIndex = 0; connectionIndex < MAX_STATE_CONNECTIONS; connectionIndex++)
 	{
 		if (controller->sdStateConnections[connectionIndex] == INVALID_SOCKET)
 		{
-			//Start the new connection in a different task.
-			//Each task's memory will be unique IFF the data is on the stack.
-			//Any global or heap stuff will not be unique.
-			controller->sdStateConnections[connectionIndex] = sd;
-			
-			// If not started
-			if(controller->tidStateSendState == INVALID_TASK)
-			{
-				//start task that will send the controller state
-				controller->tidStateSendState = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE, 
-											(FUNCPTR)Ros_StateServer_SendState,
-											(int)controller, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-				
-				//set feedback signal
-				if(controller->tidStateSendState != INVALID_TASK)
-					Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, TRUE);
-				else
-					mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 3);
-			}
-			
+			controller->sdStateConnections[connectionIndex] = sd;			
 			break;
 		}
 	}
 	
 	if (connectionIndex == MAX_STATE_CONNECTIONS)
 	{
-		printf("Too many State server connections... not accepting last attempt.\r\n");
-		mpClose(sd);
+		if (Ros_MotionServer_HasDataInQueue(controller)) //another client is actively controlling motion; likely monitoring the state also
+		{
+			puts("Too many State server connections... not accepting last attempt.");
+			mpClose(sd);
+			return;
+		}
+		else
+		{
+			puts("Too many State server connections... closing old connection.");
+			Ros_StateServer_StopConnection(controller, 0); //close socket, cleanup resources, and delete tasks
+			goto ATTEMPT_STATE_CONNECTION;
+		}
 	}
+
+	sockOpt = 1;
+	mpSetsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char*)&sockOpt, sizeof(sockOpt));
+
+	//start task that will send the controller state
+	controller->tidStateSendState[connectionIndex] = mpCreateTask(MP_PRI_TIME_NORMAL, MP_STACK_SIZE,
+																	(FUNCPTR)Ros_StateServer_SendState,
+																	(int)controller, connectionIndex, 0, 0, 0, 0, 0, 0, 0, 0);
+
+	//set feedback signal
+	if (controller->tidStateSendState[connectionIndex] != INVALID_TASK)
+		Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, TRUE);
+	else
+	{
+		mpSetAlarm(8004, "MOTOROS FAILED TO CREATE TASK", 3);
+		Ros_StateServer_StopConnection(controller, connectionIndex);
+	}
+}
+
+void Ros_StateServer_StopConnection(Controller* controller, int connectionIndex)
+{
+	int tid, i;
+	BOOL bAtLeastOne;
+
+	//close this connection
+	mpClose(controller->sdStateConnections[connectionIndex]);
+	//mark connection as invalid
+	controller->sdStateConnections[connectionIndex] = INVALID_SOCKET;
+
+	// Stop message receiption task
+	tid = controller->tidStateSendState[connectionIndex];
+	controller->tidStateSendState[connectionIndex] = INVALID_TASK;
+
+	//update I/O bit that indicates if any state connections are active
+	bAtLeastOne = FALSE;
+	for (i = 0; i < MAX_STATE_CONNECTIONS; i++)
+	{
+		if (controller->sdStateConnections[i] != INVALID_SOCKET)
+			bAtLeastOne = TRUE;
+	}
+	Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, bAtLeastOne);
+
+	mpDeleteTask(tid);
 }
 
 
@@ -93,23 +129,19 @@ void Ros_StateServer_StartNewConnection(Controller* controller, int sd)
 // Send state (robot position and controller status) as long as there is
 // an active connection
 //-----------------------------------------------------------------------
-void Ros_StateServer_SendState(Controller* controller)
+void Ros_StateServer_SendState(Controller* controller, int connectionIndex)
 {
 	int groupNo;
 	SimpleMsg sendMsg;
 	SimpleMsg sendMsgFEx;
 	int msgSize, fexMsgSize = 0;
 	BOOL bOkToSendExFeedback;
-	BOOL bHasConnections;
 	BOOL bSuccesfulSend;
 	
 	printf("Starting State Server Send State task\r\n");
 	printf("Controller number of group = %d\r\n", controller->numGroup);
 	
-	bHasConnections = FALSE;
-
-	//Thread for state server should never terminate
-	while(TRUE)
+	while(TRUE) //loop will break when there is a transmission error
 	{
 		Ros_SimpleMsg_JointFeedbackEx_Init(controller->numGroup, &sendMsgFEx);
 		bOkToSendExFeedback = TRUE;
@@ -121,12 +153,9 @@ void Ros_StateServer_SendState(Controller* controller)
 			fexMsgSize = Ros_SimpleMsg_JointFeedbackEx_Build(groupNo, &sendMsg, &sendMsgFEx);
 			if(msgSize > 0)
 			{
-				bSuccesfulSend = Ros_StateServer_SendMsgToAllClient(controller, &sendMsg, msgSize);
-				if (bSuccesfulSend != bHasConnections)
-				{
-					bHasConnections = bSuccesfulSend;
-					Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, bHasConnections);
-				}
+				bSuccesfulSend = Ros_StateServer_SendMsgToAllClient(controller, connectionIndex, &sendMsg, msgSize);
+				if (!bSuccesfulSend)
+					break;
 			}
 			else
 			{
@@ -139,22 +168,25 @@ void Ros_StateServer_SendState(Controller* controller)
 			bOkToSendExFeedback = FALSE;
 
 		if (bOkToSendExFeedback) //send extended-feedback message
-			Ros_StateServer_SendMsgToAllClient(controller, &sendMsgFEx, fexMsgSize);
+		{
+			bSuccesfulSend = Ros_StateServer_SendMsgToAllClient(controller, connectionIndex, &sendMsgFEx, fexMsgSize);
+			if (!bSuccesfulSend)
+				break;
+		}
 
 		// Send controller/robot status
 		msgSize = Ros_Controller_StatusToMsg(controller, &sendMsg);
 		if(msgSize > 0)
 		{
-			Ros_StateServer_SendMsgToAllClient(controller, &sendMsg, msgSize);
+			bSuccesfulSend = Ros_StateServer_SendMsgToAllClient(controller, connectionIndex, &sendMsg, msgSize);
+			if (!bSuccesfulSend)
+				break;
 		}
 		Ros_Sleep(STATE_UPDATE_MIN_PERIOD);
 	}
 	
-	// Terminate this task
-	controller->tidStateSendState = INVALID_TASK;
-	Ros_Controller_SetIOState(IO_FEEDBACK_STATESERVERCONNECTED, FALSE);
 	printf("State Server Send State task was terminated\r\n");
-	mpDeleteSelf;
+	Ros_StateServer_StopConnection(controller, connectionIndex);
 }
 
 
@@ -162,29 +194,16 @@ void Ros_StateServer_SendState(Controller* controller)
 // Send state message to all active connections
 // return TRUE if message was send to at least one client
 //-----------------------------------------------------------------------
-BOOL Ros_StateServer_SendMsgToAllClient(Controller* controller, SimpleMsg* sendMsg, int msgSize)
+BOOL Ros_StateServer_SendMsgToAllClient(Controller* controller, int connectionIndex, SimpleMsg* sendMsg, int msgSize)
 {
-	int index;
 	int ret;
-	BOOL bSuccessfulSend = FALSE;
 	
-	// Check all active connections
-	for(index = 0; index < MAX_STATE_CONNECTIONS; index++)
+	ret = mpSend(controller->sdStateConnections[connectionIndex], (char*)(sendMsg), msgSize, 0);
+	if(ret <= 0)
 	{
-		if(controller->sdStateConnections[index] != INVALID_SOCKET)
-		{
-			ret = mpSend(controller->sdStateConnections[index], (char*)(sendMsg), msgSize, 0);
-			if(ret <= 0)
-			{
-				printf("StateServer Send failure.  Closing state server connection.\r\n");
-				mpClose(controller->sdStateConnections[index]);
-				controller->sdStateConnections[index] = INVALID_SOCKET;
-			}
-			else
-			{
-				bSuccessfulSend = TRUE;
-			}
-		}
+		printf("StateServer Send failure.  Closing state server connection.\r\n");
+		return FALSE;
 	}
-	return bSuccessfulSend;
+
+	return TRUE;
 }

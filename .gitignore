@@ -40,3 +40,22 @@ motoman_driver/MotoPlus/_buildLog/MotoROSYRC1000.log
 motoman_driver/MotoPlus/_buildLog/MotoROSYRC1000u.log
 *.cache
 *.user
+/motoman/out/build/x64-Debug (default)
+/.vs
+/motoman_driver/MotoPlus/.vs/MpRosAllControllers/v16
+/motoman_driver/out/build/x64-Debug (default)
+/motoman_gp12_support/out/build/x64-Debug (default)
+/motoman_gp180_support/out/build/x64-Debug (default)
+/motoman_gp25_support/out/build/x64-Debug (default)
+/motoman_gp50_support/out/build/x64-Debug (default)
+/motoman_sia5d_support/out/build/x64-Debug (default)
+/motoman_mh5_support/out/build/x64-Debug (default)
+/motoman_mh50_support/out/build/x64-Debug (default)
+/motoman_mh12_support/out/build/x64-Debug (default)
+/motoman_ma2010_support/out/build/x64-Debug (default)
+/motoman_ma2010_moveit_config/out/build/x64-Debug (default)
+/motoman_hc20_support/out/build/x64-Debug (default)
+/motoman_hc10_support/out/build/x64-Debug (default)
+/motoman_gp8_support/out/build/x64-Debug (default)
+/motoman_gp88_support/out/build/x64-Debug (default)
+/motoman_gp7_support/out/build/x64-Debug (default)

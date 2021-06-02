@@ -199,10 +199,10 @@ BOOL Ros_Controller_Init(Controller* controller)
 		controller->tidIoConnections[i] = INVALID_TASK;
 	}
 
-	controller->tidStateSendState = INVALID_TASK;
 	for (i = 0; i < MAX_STATE_CONNECTIONS; i++)
 	{
 		controller->sdStateConnections[i] = INVALID_SOCKET;
+		controller->tidStateSendState[i] = INVALID_TASK;
 	}
 
 	for (i = 0; i < MAX_MOTION_CONNECTIONS; i++)
