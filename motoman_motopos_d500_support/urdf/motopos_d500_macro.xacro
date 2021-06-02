@@ -63,7 +63,7 @@
     <origin xyz="${0 + kinematic_offsets['link_2']['x']} ${0 + kinematic_offsets['link_2']['y']} ${0 + kinematic_offsets['link_2']['z']}"
             rpy="${0 + kinematic_offsets['link_2']['roll']} ${0 + kinematic_offsets['link_2']['pitch']} ${0 + kinematic_offsets['link_2']['yaw']}" />
     <axis xyz="0 0 -1" />
-    <limit lower="-3.4906" upper="3.4906" effort="392" velocity="2.7925"/>
+    <limit lower="-10" upper="10" effort="392" velocity="2.7925"/>
   </joint>
 
   <joint name="${prefix}joint_2-flange" type="fixed">
