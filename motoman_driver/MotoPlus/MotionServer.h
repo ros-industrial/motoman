@@ -42,6 +42,14 @@
 #define MIN_VALID_TOOL_INDEX		0
 #define MAX_VALID_TOOL_INDEX		63
 
+#ifndef E_EXRCS_PFL_FUNC_BUSY
+#define E_EXRCS_PFL_FUNC_BUSY (-19)
+#endif
+
+#ifndef E_EXRCS_UNDER_ENERGY_SAVING
+#define E_EXRCS_UNDER_ENERGY_SAVING (-20)
+#endif
+
 extern void Ros_MotionServer_StartNewConnection(Controller* controller, int sd);
 extern BOOL Ros_MotionServer_HasDataInQueue(Controller* controller);
 extern BOOL Ros_MotionServer_ClearQ_All(Controller* controller);

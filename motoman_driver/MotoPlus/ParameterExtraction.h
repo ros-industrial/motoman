@@ -187,8 +187,8 @@ extern STATUS 	GP_isBaxisSlave(int ctrlGrp, BOOL* bBaxisIsSlave);
 /* Parameter	 : int ctrlGrp - Robot control group (zero based index) [IN]  */
 /*				   BOOL bActivateIfNotEnabled - TRUE to enable feature [IN]   */
 /*				   BOOL bForceRebootAfterActivation - TRUE to force the user  */
-/*				   to reboot if this feature gets activated. Set to FALSE if  */
-/*				   you plan to enable for additional control groups. [IN]     */
+/*                 to reboot if this feature gets activated. Set to FALSE if  */
+/*                 you plan to enable for additional control groups. [IN]     */
 /*				   JOINT_FEEDBACK_SPEED_ADDRESSES* registerAddresses -		  */
 /*				   Obtains the CIO register address for the feedback data [OUT]*/
 /* Return value	 : Success = OK 											  */
@@ -227,6 +227,17 @@ extern STATUS 	GP_isSharedBaseAxis(BOOL* bIsSharedBaseAxis);
 /*				 : Failure = NG												  */
 /******************************************************************************/
 extern STATUS 	GP_getDhParameters(int ctrlGrp, DH_PARAMETERS* dh);
+
+/******************************************************************************/
+/* << 25 >>                                                              	  */
+/* Function name : STATUS GP_isPflEnabled()								      */
+/* Functionality : Determines if the robot is currently supporting the PFL    */
+/* function			                                                          */
+/* Parameter	 : BOOL* bIsPflEnabled [OUT]			                 	  */
+/* Return value	 : Success = OK 											  */
+/*				 : Failure = NG												  */
+/******************************************************************************/
+extern STATUS GP_isPflEnabled(BOOL* bIsPflEnabled);
 
 #ifdef __cplusplus
 }
