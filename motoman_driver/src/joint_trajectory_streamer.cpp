@@ -60,7 +60,7 @@ namespace joint_trajectory_streamer
 namespace
 {
   constexpr double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
-  constexpr double start_pos_tol_  = 5e-4;  // max difference btwn start & current position, for validation (rad)
+  constexpr double start_pos_tol_  = 3e-3;  // max difference btwn start & current position, for validation (rad)
 }
 
 #define ROS_ERROR_RETURN(rtn, ...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while (0)  // NOLINT(whitespace/braces)

@@ -134,7 +134,7 @@ public:
 
 protected:
   static constexpr double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
-  static constexpr double start_pos_tol_  = 5e-4; // max difference btwn start & current position, for validation (rad)
+  static constexpr double start_pos_tol_  = 3e-3; // max difference btwn start & current position, for validation (rad)
 
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
