@@ -121,7 +121,9 @@ typedef struct
 	int alarmCode;											// Alarm number currently active
 	BOOL bRobotJobReady;									// Indicates the robot job is on the WAIT command (ready for motion)
 	BOOL bStopMotion;										// Flag to stop motion
+	BOOL bPFLEnabled;										// Flag indicating that the controller has the PFL option enabled
 	BOOL bPFLduringRosMove;									// Flag to keep track PFL activation during RosMotion
+	BOOL bMpIncMoveError;									// Flag indicating that the incremental motion API failed
 
 	// Connection Server
 	int tidConnectionSrv;

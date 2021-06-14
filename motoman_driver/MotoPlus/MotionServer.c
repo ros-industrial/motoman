@@ -752,6 +752,9 @@ BOOL Ros_MotionServer_StopMotion(Controller* controller)
 	// All motion should be stopped at this point, so turn of the flag
 	controller->bStopMotion = FALSE;
 	
+	if (checkCnt >= MOTION_STOP_TIMEOUT)
+		printf("WARNING: Message processing not stopped before clearing queue\r\n");
+
 	return(bStopped && bRet);
 }
 
@@ -897,8 +900,12 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	Ros_Controller_StatusUpdate(controller);
 
 	// Reset PFL Activation Flag
-	if (controller->bPFLduringRosMove)
+	if(controller->bPFLduringRosMove)
 		controller->bPFLduringRosMove = FALSE;
+
+	// Reset Inc Move Error
+	if (controller->bMpIncMoveError)
+		controller->bMpIncMoveError = FALSE;
 
 	// Check if already in the proper mode
 	if(Ros_Controller_IsMotionReady(controller))
@@ -994,6 +1001,16 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 		}
 	}
 #endif
+	// make sure that there is no data in the queues
+	if (Ros_MotionServer_HasDataInQueue(controller)) {
+#ifdef DEBUG
+		printf("StartTrajMode clearing leftover data in queue\r\n");
+#endif
+		Ros_MotionServer_ClearQ_All(controller);
+
+		if (Ros_MotionServer_HasDataInQueue(controller))
+			printf("WARNING: StartTrajMode has data in queue\r\n");
+	}
 
 	// have to initialize the prevPulsePos that will be used when interpolating the traj
 	for(grpNo = 0; grpNo < MP_GRP_NUM; ++grpNo)
@@ -1568,7 +1585,9 @@ BOOL Ros_MotionServer_ClearQ_All(Controller* controller)
 	{
 		bRet &= Ros_MotionServer_ClearQ(controller, groupNo);
 	}
-		
+#ifdef DEBUG
+	printf("All buffers cleared\r\n");
+#endif
 	return bRet;
 }
 
@@ -1750,6 +1769,8 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 			ret = mpMeiIncrementMove(MP_SL_ID1, &moveData);
 			if(ret != 0)
 			{
+				controller->bMpIncMoveError = TRUE;
+				Ros_MotionServer_StopMotion(controller);
 				if(ret == -3)
 					printf("mpMeiIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
 				else
@@ -1762,6 +1783,8 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 				ret = mpMeiIncrementMove(MP_SL_ID2, &moveData);
 				if(ret != 0)
 				{
+					controller->bMpIncMoveError = TRUE;
+					Ros_MotionServer_StopMotion(controller);
 					if(ret == -3)
 						printf("mpMeiIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
 					else
@@ -1772,17 +1795,52 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 			ret = mpExRcsIncrementMove(&moveData);
 			if(ret != 0)
 			{
+				// Update controller status to help identify cause
+				Ros_Controller_StatusUpdate(controller);
+
 				if(ret == E_EXRCS_CTRL_GRP)
 					printf("mpExRcsIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
 #if (YRC1000||YRC1000u)
-				else if (ret == E_EXRCS_IMOV_UNREADY)
+				else if (ret == E_EXRCS_IMOV_UNREADY && controller->bPFLEnabled )
 				{
-					printf("mpExRcsIncrementMove returned UNREADY: %d (Could be PFL Active)\r\n", ret);
-					controller->bPFLduringRosMove = TRUE;
+					// Check if this is caused by a known cause (E-Stop, Hold, Alarm, Error)
+					if ( !Ros_Controller_IsEStop(controller) && !Ros_Controller_IsHold(controller) 
+						&& !Ros_Controller_IsAlarm(controller) && !Ros_Controller_IsError(controller) ) {
+						printf("mpExRcsIncrementMove returned UNREADY: %d (Could be PFL Active)\r\n", E_EXRCS_IMOV_UNREADY);
+						controller->bPFLduringRosMove = TRUE;
+					}
+				}
+				else if (ret == E_EXRCS_PFL_FUNC_BUSY && controller->bPFLEnabled)
+				{
+					printf("mpExRcsIncrementMove returned PFL Active\r\n");
+					controller->bPFLduringRosMove = TRUE;	
+				}
+				else if (ret == E_EXRCS_UNDER_ENERGY_SAVING)
+				{
+					// retry until servos turn on and motion is accepted
+					int checkCount;
+					for (checkCount = 0; checkCount < MOTION_START_TIMEOUT; checkCount += MOTION_START_CHECK_PERIOD)
+					{
+						ret = mpExRcsIncrementMove(&moveData);
+						if (ret != E_EXRCS_UNDER_ENERGY_SAVING) 
+							break;
+
+						Ros_Sleep(MOTION_START_CHECK_PERIOD);
+					}
+					if(controller->bMpIncMoveError)
+						printf("mpExRcsIncrementMove returned Eco mode enabled\r\n");
 				}
 #endif
 				else
 					printf("mpExRcsIncrementMove returned: %d\r\n", ret);
+
+				// Stop motion if motion was rejected
+				if (ret != 0) 
+				{
+					// Flag to prevent further motion until Trajectory mode is reenabled
+					controller->bMpIncMoveError = TRUE;
+					Ros_MotionServer_StopMotion(controller);
+				}
 			}
 #endif
 			
