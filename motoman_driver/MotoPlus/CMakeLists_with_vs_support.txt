@@ -1,0 +1,44 @@
+#With Visual Studio support: existing .vcxproj (created by Visual Studio) and linked mps files (created by hand?) in git repository
+#Note: remove "_with_vs_support" in filename to normally use this file with CMake
+
+cmake_minimum_required(VERSION 3.0)
+
+project(MpRosAllControllers NONE)
+
+set(PROJECT_VERSION v192)
+
+FILE(GLOB_RECURSE SOURCES "*.c")
+FILE(GLOB_RECURSE HEADERS "*.h")
+FILE(GLOB_RECURSE LIBS "*.*ib")
+FILE(GLOB_RECURSE MPS "*.mps")
+
+set(MPBUILDER_DIR "C:/Program Files (x86)/Yaskawa/MotoPlus for Visual Studio")
+set(MPBUILDER_PATH ${MPBUILDER_DIR}/mpbuilder.exe)
+
+macro(PROJECT_CONFIG name controller suffix)
+    set(path ${CMAKE_SOURCE_DIR}/output/${controller}/${name}${suffix})
+    string(REPLACE / \\ path ${path})
+    add_custom_target(${name}${suffix} ALL
+                      SOURCES
+                      ${SOURCES}
+                      ${HEADERS}
+                      ${controller}CompilerArguments.mps
+                      ${controller}LinkerArguments.mps
+                      COMMAND ${MPBUILDER_PATH}
+                      -c ${controller}
+                      -p ${CMAKE_SOURCE_DIR}
+                      -n ${name}${suffix}
+                      -l N
+                      -d T
+                      -o build
+                      COMMAND rename
+                      ${path}\\${name}${suffix}.out
+                      ${name}${suffix}${PROJECT_VERSION}.out)
+endmacro(PROJECT_CONFIG)
+
+#Adding support for the application on several controllers
+project_config(MotoRos DX100 DX1_)
+project_config(MotoRos DX200 DX2_)
+project_config(MotoRos FS100 FS_)
+project_config(MotoRos YRC1000 YRC1u_)
+project_config(MotoRos YRC1000u YRC1_)
