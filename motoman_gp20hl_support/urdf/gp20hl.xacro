@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+
+<robot name="motoman_gp20hl" xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:include filename="$(find motoman_gp20hl_support)/urdf/gp20hl_macro.xacro" />
+	<xacro:property name="kinematics_offsets" value="${load_yaml('$(find motoman_gp20hl_support)' + '/config/default_kinematic_offsets.yaml')}"/>
+	<xacro:motoman_gp20hl prefix="" kinematic_offsets="${kinematics_offsets['kinematic_offsets']}"/>
+</robot>
+
+
