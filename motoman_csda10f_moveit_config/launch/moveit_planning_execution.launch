@@ -1,0 +1,56 @@
+<launch>
+  <!--<env name="ROSCONSOLE_FORMAT" value="[${severity}] [${node}]: ${message}"/> -->
+
+  
+  <!-- The planning and execution components of MoveIt! configured to run -->
+  <!-- using the ROS-Industrial interface. -->
+  <rosparam command="load" file="$(find motoman_csda10f_support)/config/joint_names_csda10f.yaml"/>
+ 
+  <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
+  <!--  - if sim=false, a robot_ip and controller(fs100|dx100) arguments is required -->
+  <arg name="sim" default="false" />
+  <arg name="robot_enable" default="false" doc="Set to true if you want to enable robot at start"/>
+  <arg name="robot_ip" unless="$(arg sim)" doc="IP of controller" />
+  <arg name="controller" unless="$(arg sim)" default="fs100" doc="Series of the controller (dx100, fs100)" />
+ 
+  <!-- load the robot_description parameter before launching ROS-I nodes -->
+  <include file="$(find motoman_csda10f_moveit_config)/launch/planning_context.launch" >
+    <arg name="load_robot_description" value="true" />
+  </include>
+ 
+  <!-- run the robot simulator and action interface nodes -->
+  <group if="$(arg sim)">
+    <include file="$(find industrial_robot_simulator)/launch/robot_interface_simulator.launch" />
+  </group>
+
+  <!-- run the "real robot" interface nodes -->
+  <!--   - this typically includes: robot_state, motion_interface, and joint_7_trajectory_action nodes -->
+  <!--   - replace these calls with appropriate robot-specific calls or launch files -->
+  <group unless="$(arg sim)">
+    <include file="$(find motoman_csda10f_support)/launch/robot_interface_streaming_csda10f.launch" >
+      <arg name="robot_ip" value="$(arg robot_ip)"/>
+      <arg name="controller" value="$(arg controller)"/>
+    </include>
+  </group>
+
+  <!-- publish the robot state (tf transforms) -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <include file="$(find motoman_csda10f_moveit_config)/launch/move_group.launch">
+    <arg name="publish_monitored_planning_scene" value="true"/>
+    <arg name="fake_execution" if="$(arg sim)" value="true"/>
+  </include>
+
+  <include file="$(find motoman_csda10f_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="config" value="true"/>
+  </include>
+  
+  <!--<include file="$(find motoman_csda10f_moveit_config)/launch/default_warehouse_db.launch" />-->
+  
+  <!-- Enable robot if requested -->
+  <group if="$(arg robot_enable)">
+    <include file="$(find motoman_csda10f_support)/launch/robot_enable.launch" />
+  </group>
+  
+</launch>
+
