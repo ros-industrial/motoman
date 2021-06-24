@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">	
+        <!--Import torso and arm macros-->
+        <xacro:include filename="$(find motoman_csda10f_support)/urdf/common_torso_macro.xacro" />
+        <xacro:include filename="$(find motoman_csda10f_support)/urdf/arm_macro.xacro" />
+        <!--Robot instance-->
+        <xacro:macro name="motoman_csda10f" params="prefix">
+            <!--Torso instance-->
+            <xacro:torso name="torso" prefix="torso_"/>
+            <!--Arm instance joint parameters-->
+            <xacro:motoman_arm name="arm_left" prefix="arm_left_" parent="torso_link_b1" reflect="1">
+                <origin xyz="0.1 0.023 0.3381" rpy="1.57 0 0" />
+            </xacro:motoman_arm>      
+            <!--Arm instance joint parameters-->
+            <xacro:motoman_arm name="arm_right" prefix="arm_right_" parent="torso_link_b1" reflect="-1">
+                <origin xyz="0.1 -0.023 0.3381" rpy="1.57 0 0" />
+            </xacro:motoman_arm>       
+        </xacro:macro>
+</robot>

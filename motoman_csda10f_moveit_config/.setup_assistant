@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: motoman_csda10f_support
+    relative_path: urdf/csda10f.xacro
+  SRDF:
+    relative_path: config/motoman_csda10f.srdf
+  CONFIG:
+    author_name: Amrith Ganesh
+    author_email: amrith1007@gmail.com
+    generated_timestamp: 1518465357
