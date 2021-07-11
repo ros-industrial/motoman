@@ -22,7 +22,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" 
     type="robot_state_publisher" />
 
-  <include file="$(find motoman_hc10_support)/launch/load_hc10dt.launch" />
+  <include file="$(find motoman_hc10_support)/launch/load_hc10dt_b10.launch" />
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
 </launch>
