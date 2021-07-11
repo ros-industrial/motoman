@@ -14,8 +14,9 @@
       <b>Specifications</b>
     </p>
     <ul>
-      <li>HC10 - Default</li>
-      <li>HC10DT - Default</li>
+      <li>HC10 - model 1-06VXHC10-A00</li>
+      <li>HC10DT - model 1-06VXHC10-A10</li>
+      <li>HC10DT-B10 - model 1-06VXHC10-B10</li>
    </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
@@ -26,7 +27,10 @@
         <em>180571-1CD, rev 2</em>.
       </li>
       <li><em>YASKAWA MOTOMAN-HC10DT INSTRUCTIONS (HW1485083)</em> version
-        <em>180572-1CD, rev 2</em>.
+        <em>184672-1CD, rev 2</em>.
+      </li>
+	  <li><em>YASKAWA MOTOMAN-HC10DT INSTRUCTIONS DUST-PROOF/DRIP-PROOF (HW1485083)</em> version
+        <em>188669-1CD, rev 1</em>.
       </li>
     </ul>
     <p>
