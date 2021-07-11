@@ -1,0 +1,21 @@
+<!--
+  Manipulator specific version of 'robot_interface_streaming.launch'.
+
+  Defaults provided for HC10DT IP67 (B10):
+   - 6 joints
+
+  Usage:
+    robot_interface_streaming_hc10dt_b10.launch robot_ip:=<value> controller:=<yrc1000>
+-->
+<launch>
+  <arg name="robot_ip" />
+
+  <!-- controller: Controller name (yrc1000) -->
+  <arg name="controller"/>
+
+  <rosparam command="load" file="$(find motoman_hc10_support)/config/joint_names_hc10dt_b10.yaml" />
+
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+  </include>
+</launch>
