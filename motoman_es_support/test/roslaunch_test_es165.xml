@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="ip_str" value="127.0.0.1" />
+  <arg name="dx100" value="dx100"/>
+  <arg name="dx200" value="dx200"/>
+
+  <group ns="load_es_165_rd_ii__">
+    <group ns="$(arg dx100)">
+      <include file="$(find motoman_es_support)/launch/load_es165.launch">
+        <arg name="controller" value="$(arg dx100)"/>
+      </include>
+    </group>
+    <group ns="$(arg dx200)">
+      <include file="$(find motoman_es_support)/launch/load_es165.launch">
+        <arg name="controller" value="$(arg dx200)"/>
+      </include>
+    </group>
+  </group>
+
+  <group ns="test_es_165_rd_ii__">
+    <group ns="$(arg dx100)">
+      <include file="$(find motoman_es_support)/launch/test_es165.launch">
+        <arg name="controller" value="$(arg dx100)"/>
+      </include>
+    </group>
+    <group ns="$(arg dx200)">
+      <include file="$(find motoman_es_support)/launch/test_es165.launch">
+        <arg name="controller" value="$(arg dx200)"/>
+      </include>
+    </group>
+  </group>
+
+  <group ns="robot_interface_download_es_165_rd_ii__">
+    <group ns="$(arg dx100)">
+      <include file="$(find motoman_es_support)/launch/robot_interface_streaming_es165.launch">
+        <arg name="robot_ip" value="$(arg ip_str)" />
+        <arg name="controller" value="$(arg dx100)"/>
+      </include>
+    </group>
+    <group ns="$(arg dx200)">
+      <include file="$(find motoman_es_support)/launch/robot_interface_streaming_es165.launch">
+        <arg name="robot_ip" value="$(arg ip_str)" />
+        <arg name="controller" value="$(arg dx200)"/>
+      </include>
+    </group>
+  </group>
+
+  <group ns="robot_state_visualize_es165__">
+    <group ns="$(arg dx100)">
+      <include file="$(find motoman_es_support)/launch/robot_state_visualize_es165.launch">
+        <arg name="robot_ip" value="$(arg ip_str)" />
+        <arg name="controller" value="$(arg dx100)"/>
+      </include>
+    </group>
+    <group ns="$(arg dx200)">
+      <include file="$(find motoman_es_support)/launch/robot_state_visualize_es165.launch">
+        <arg name="robot_ip" value="$(arg ip_str)" />
+        <arg name="controller" value="$(arg dx200)"/>
+      </include>
+    </group>
+  </group>
+</launch>

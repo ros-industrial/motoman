@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="motoman_es165" params="prefix joint_velocities_file">
+    <!-- link list -->
+    <link name="${prefix}base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://motoman_es_support/meshes/es/visual/base_link.stl"/>
+          </geometry>
+          <material name="blue">
+            <color rgba="0 0 1 1"/>
+          </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/collision/base_link.stl"/>
+        </geometry>
+        <material name="yellow">
+          <color rgba="0 1 1 1"/>
+        </material>
+      </collision>
+    </link>
+    <link name="${prefix}link_s">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/visual/link_s.stl"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/collision/link_s.stl"/>
+        </geometry>
+        <material name="yellow"/>
+      </collision>
+    </link>
+    <link name="${prefix}link_l">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/visual/link_l.stl"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/collision/link_l.stl"/>
+        </geometry>
+        <material name="yellow"/>
+      </collision>
+    </link>
+    <link name="${prefix}link_u">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/visual/link_u.stl"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/collision/link_u.stl"/>
+        </geometry>
+        <material name="yellow"/>
+      </collision>
+    </link>
+    <link name="${prefix}link_r">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://motoman_es_support/meshes/es165/visual/link_r.stl"/>
+      </geometry>
+      <material name="blue"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es165/collision/link_r.stl"/>
+        </geometry>
+        <material name="yellow"/>
+      </collision>
+    </link>
+    <link name="${prefix}link_b">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/visual/link_b.stl"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/collision/link_b.stl"/>
+        </geometry>
+        <material name="yellow"/>
+      </collision>
+    </link>
+    <link name="${prefix}link_t">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="package://motoman_es_support/meshes/es/visual/link_t.stl"/>
+          </geometry>
+          <material name="black">
+            <color rgba="0 0 0 1"/>
+          </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/collision/link_t.stl"/>
+        </geometry>
+        <material name="black"/>
+      </collision>
+    </link>
+    <link name="${prefix}tool0"/>
+
+    <!--
+
+      Balancer and rod are disabled as without a mimic joint they will not update
+      their pose properly, leading to MoveIt detecting collisions which cannot
+      happen with the real robot (as the balancer is essentially a passive element
+      and cannot come into collision with anything due to joint limits).
+
+    <link name="${prefix}balancer_piston">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/visual/balancer_piston.stl"/>
+        </geometry>
+        <material name="blue"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/collision/balancer_piston.stl"/>
+        </geometry>
+        <material name="yellow"/>
+      </collision>
+    </link>
+    <link name="${prefix}balancer_rod">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/visual/balancer_rod.stl"/>
+        </geometry>
+        <material name="blue">
+          <color rgba="1 1 1 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_es_support/meshes/es/collision/balancer_rod.stl"/>
+        </geometry>
+        <material name="yellow"/>
+      </collision>
+    </link>
+    -->
+    <!-- end of link list -->
+
+    <!-- joint list -->
+    <xacro:property name="velocities" value="${load_yaml(joint_velocities_file)}" />
+
+    <joint name="${prefix}joint_1_s" type="revolute">
+      <origin xyz="0 0 0.450" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}link_s"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="${radians(-180)}" upper="${radians(180)}" effort="0" velocity="${radians(velocities['joint_1_s'])}"/>
+    </joint>
+    <joint name="${prefix}joint_2_l" type="revolute">
+      <origin xyz="0.740 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}link_s"/>
+      <child link="${prefix}link_l"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="${radians(-130)}" upper="${radians(80)}" effort="0" velocity="${radians(velocities['joint_2_l'])}"/>
+    </joint>
+    <joint name="${prefix}joint_3_u" type="revolute">
+      <origin xyz="1.150 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}link_l"/>
+      <child link="${prefix}link_u"/>
+      <axis xyz="0 -1 0"/>
+      <limit lower="${radians(-112)}" upper="${radians(208)}" effort="0" velocity="${radians(velocities['joint_3_u'])}"/>
+    </joint>
+    <joint name="${prefix}joint_4_r" type="revolute">
+      <origin xyz="0.250 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}link_u"/>
+      <child link="${prefix}link_r"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="${radians(-360)}" upper="${radians(360)}" effort="0" velocity="${radians(velocities['joint_4_r'])}"/>
+    </joint>
+    <joint name="${prefix}joint_5_b" type="revolute">
+      <origin xyz="0 0 -1.225" rpy="0 0 0"/>
+      <parent link="${prefix}link_r"/>
+      <child link="${prefix}link_b"/>
+      <axis xyz="0 -1 0"/>
+      <limit lower="${radians(-130)}" upper="${radians(130)}" effort="0" velocity="${radians(velocities['joint_5_b'])}"/>
+    </joint>
+    <joint name="${prefix}joint_6_t" type="revolute">
+      <origin xyz="0 0 -0.225" rpy="0 0 0"/>
+      <parent link="${prefix}link_b"/>
+      <child link="${prefix}link_t"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="${radians(-360)}" upper="${radians(360)}" effort="0" velocity="${radians(velocities['joint_6_t'])}"/>
+    </joint>
+    <joint name="${prefix}joint_t-tool0" type="fixed">
+      <origin xyz="0 0 0" rpy="0 ${pi} 0"/>
+      <parent link="${prefix}link_t"/>
+      <child link="${prefix}tool0"/>
+    </joint>
+
+    <!--
+
+      See earlier comment about balancer and piston.
+
+    <joint name="${prefix}joint_balancer_piston" type="fixed">
+      <origin xyz="-0.260 0 0.320" rpy="0 0 0"/>
+      <parent link="${prefix}link_s"/>
+      <child link="${prefix}balancer_piston"/>
+    </joint>
+    <joint name="${prefix}joint_balancer_rod" type="fixed">
+      <origin xyz="${0.740 + 0.220 * cos(radians(55))} 0 ${0.220 * sin(radians(55))}" rpy="0 0 0"/>
+      <parent link="${prefix}link_s"/>
+      <child link="${prefix}balancer_rod"/>
+    </joint>
+    -->
+    <!-- end of joint list -->
+
+    <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
+    <link name="${prefix}base" />
+    <joint name="${prefix}base_link-base" type="fixed">
+      <origin xyz="0 0 0.450" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}base"/>
+    </joint>
+  </xacro:macro>
+</robot>
