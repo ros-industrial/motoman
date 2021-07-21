@@ -55,7 +55,7 @@
     <origin xyz="${0 + kinematic_offsets['link_1']['x']} ${0 + kinematic_offsets['link_1']['y']} ${0.380 + kinematic_offsets['link_1']['z']}"
             rpy="${0 + kinematic_offsets['link_1']['roll']} ${0 + kinematic_offsets['link_1']['pitch']} ${0 + kinematic_offsets['link_1']['yaw']}" />
     <axis xyz="0 -1 0" />
-    <limit lower="-2.3561" upper="2.3561" effort="1274" velocity="1.3962"/>
+    <limit lower="-1.50" upper="1.50" effort="1274" velocity="1.3962"/>
   </joint>
   <joint name="${prefix}joint_2" type="revolute">
     <parent link="${prefix}link_1"/>
