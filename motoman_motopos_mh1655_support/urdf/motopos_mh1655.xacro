@@ -8,6 +8,5 @@
 
   <xacro:include filename="$(find motoman_motopos_mh1655_support)/urdf/motopos_mh1655_macro.xacro" />
   <xacro:property name="kinematics_offsets" value="${load_yaml('$(find motoman_motopos_mh1655_support)' + '/config/default_kinematic_offsets.yaml')}"/>
-  <xacro:motoman_motopos_d500 prefix="" kinematic_offsets="${kinematics_offsets['kinematic_offsets']}"/>
-  <xacro:motoman_motopos_mh1655 prefix="" use_pedestal="false"/>
+  <xacro:motoman_motopos_mh1655 prefix="" use_pedestal="false" kinematic_offsets="${kinematics_offsets['kinematic_offsets']}"/>
 </robot>
