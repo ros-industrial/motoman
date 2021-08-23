@@ -1,8 +1,9 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:macro name="motoman_motopos_mh1655" params="prefix use_pedestal:=false">
+  <xacro:macro name="motoman_motopos_mh1655" params="prefix use_pedestal:=false kinematic_offsets">
 
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
+    <xacro:property name="pedestal_offset" value="0.695" />
 
     <!-- link list -->
     <link name="${prefix}base_link">
@@ -10,12 +11,18 @@
         <geometry>
           <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/visual/base_link.stl"/>
         </geometry>
+        <xacro:if value="${use_pedestal}">
+          <origin xyz="0 0 ${pedestal_offset}" rpy="0 0 0"/>
+        </xacro:if>
         <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
           <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/collision/base_link.stl"/>
         </geometry>
+        <xacro:if value="${use_pedestal}">
+          <origin xyz="0 0 ${pedestal_offset}" rpy="0 0 0"/>
+        </xacro:if>
       </collision>
       <xacro:if value="${use_pedestal}">
         <!-- Pedestal is 0.695m high -->
@@ -23,12 +30,14 @@
           <geometry>
             <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/visual/pedestal.stl"/>
           </geometry>
+          <origin xyz="0 0 ${pedestal_offset}" rpy="0 0 0"/>
           <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
           <geometry>
             <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655/collision/pedestal.stl"/>
           </geometry>
+          <origin xyz="0 0 ${pedestal_offset}" rpy="0 0 0"/>
         </collision>
       </xacro:if>
     </link>
@@ -53,8 +62,9 @@
     <joint name="${prefix}joint_1" type="revolute">
       <parent link="${prefix}base_link"/>
       <child link="${prefix}link_1"/>
-      <origin xyz="0 0 0.305" rpy="0 0 0"/>
-      <axis xyz="1 0 0"/>
+      <origin xyz="${0 + kinematic_offsets['link_1']['x']} ${0 + kinematic_offsets['link_1']['y']} ${pedestal_offset + 0.305 + kinematic_offsets['link_1']['z']}"
+              rpy="${pi + kinematic_offsets['link_1']['roll']} ${-pi/2 + kinematic_offsets['link_1']['pitch']} ${0 + kinematic_offsets['link_1']['yaw']}"/>
+      <axis xyz="0 0 1"/>
       <limit lower="${-2*pi}" upper="${2*pi}" effort="1274" velocity="1.3962"/>
     </joint>
     <!-- end of joint list -->
@@ -70,7 +80,7 @@
     <!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
     <link name="${prefix}flange"/>
     <joint name="${prefix}joint_1-flange" type="fixed">
-      <origin xyz="0.2768 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0.2768" rpy="0 0 0"/>
       <parent link="${prefix}link_1"/>
       <child link="${prefix}flange"/>
     </joint>
@@ -78,7 +88,7 @@
     <!-- ROS-Industrial 'tool0' frame: all-zeros tool frame -->
     <link name="${prefix}tool0"/>
     <joint name="${prefix}flange-tool0" type="fixed">
-      <origin xyz="0 0 0" rpy="${pi} ${-pi/2} 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <parent link="${prefix}flange"/>
       <child link="${prefix}tool0"/>
     </joint>
