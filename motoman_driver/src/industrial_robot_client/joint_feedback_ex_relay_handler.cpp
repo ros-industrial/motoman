@@ -106,6 +106,7 @@ bool JointFeedbackExRelayHandler::create_messages(SimpleMessage& msg_in,
   dynamic_control_state.header.stamp = ros::Time::now();
   dynamic_control_state.num_groups = tmp_msg.getGroupsNumber();
   this->dynamic_pub_joint_control_state_.publish(dynamic_control_state);
+  return true;
 }
 
 bool JointFeedbackExRelayHandler::create_messages(JointFeedbackMessage& msg_in,
