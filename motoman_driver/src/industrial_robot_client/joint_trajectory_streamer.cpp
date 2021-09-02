@@ -386,6 +386,9 @@ void JointTrajectoryStreamer::streamingThread()
   while (ros::ok())
   {
     ros::Duration(0.001).sleep();
+    ROS_INFO("QUEUE SIZE: %d", ptstreaming_queue_.size());
+    ros::Time start = ros::Time::now();
+    ROS_INFO("JOINT STREAMER THREAD START TIME: %lf", start.sec + ((double) start.nsec / pow(10, 9)));
 
     // automatically re-establish connection, if required
     if (connectRetryCount-- > 0)
@@ -490,6 +493,10 @@ void JointTrajectoryStreamer::streamingThread()
     }
 
     this->mutex_.unlock();
+    ros::Time end = ros::Time::now();
+    ros::Duration elapsed = end - start;
+    ROS_INFO("JOINT STREAMER THREAD END TIME: %lf", start.sec + ((double) start.nsec / pow(10, 9)));
+    ROS_INFO("JOINT STREAMER THREAD ELAPSED TIME: %lf", elapsed.sec + ((double) elapsed.nsec / pow(10, 9)));
   }
 
   ROS_WARN("Exiting trajectory streamer thread");
