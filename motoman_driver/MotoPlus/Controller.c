@@ -728,7 +728,10 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 					case IO_ROBOTSTATUS_ALARM_SYSTEM: // alarm
 					case IO_ROBOTSTATUS_ALARM_USER: // alarm
 					{
-						if(ioStatus[IO_ROBOTSTATUS_ALARM_USER] == 0)
+						if ((ioStatus[IO_ROBOTSTATUS_ALARM_MAJOR] == 0) &&
+							(ioStatus[IO_ROBOTSTATUS_ALARM_MINOR] == 0) &&
+							(ioStatus[IO_ROBOTSTATUS_ALARM_SYSTEM] == 0) &&
+							(ioStatus[IO_ROBOTSTATUS_ALARM_USER] == 0))
 							controller->alarmCode = 0;
 						else
 							controller->alarmCode = Ros_Controller_GetAlarmCode();
