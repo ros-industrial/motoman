@@ -454,7 +454,7 @@ BOOL Ros_CtrlGroup_GetTorque(CtrlGroup* ctrlGroup, double torqueValues[MAX_PULSE
   	LONG status = 0;
   	int i;
 
-	memset(torqueValues, 0, sizeof(torqueValues)); // clear result, in case of error
+	memset(torqueValues, 0, sizeof(double [MAX_PULSE_AXES])); // clear result, in case of error
 	memset(dst_trq.data, 0, sizeof(MP_TRQCTL_DATA));
 	dst_trq.unit = TRQ_NEWTON_METER; //request data in Nm
 
