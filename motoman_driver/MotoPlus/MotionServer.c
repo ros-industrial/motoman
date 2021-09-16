@@ -1514,7 +1514,8 @@ BOOL Ros_MotionServer_AddPulseIncPointToQ(Controller* controller, int groupNo, I
 		Ros_Sleep(controller->interpolPeriod);
 		
 		//make sure we don't get stuck in infinite loop
-		if (!Ros_Controller_IsMotionReady(controller)) //<- they probably pressed HOLD or ESTOP
+		if (!Ros_Controller_IsMotionReady(controller)  //<- they probably pressed HOLD or ESTOP
+			|| controller->bStopMotion)		//<- Ros sent a stop motion request
 		{
 			return FALSE;
 		}
