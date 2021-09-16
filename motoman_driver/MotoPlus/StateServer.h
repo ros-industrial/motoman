@@ -32,7 +32,7 @@
 #ifndef STATESERVER_H
 #define STATESERVER_H
 
-#define STATE_UPDATE_MIN_PERIOD 4   // Time delay between each state update
+#define STATE_UPDATE_MIN_PERIOD 25   // Time delay between each state update
 
 extern void Ros_StateServer_StartNewConnection(Controller* controller, int sd);
 
