@@ -351,6 +351,8 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 	MP_GRP_AXES_T dst_vel;
 	LONG status;
 
+	memset(pulseSpeed, 0x00, sizeof(long[MAX_PULSE_AXES]));
+
 	if (ctrlGroup->groupNo >= MAX_CONTROLLABLE_GROUPS)
 		return FALSE;
 	
@@ -386,6 +388,8 @@ BOOL Ros_CtrlGroup_GetFBServoSpeed(CtrlGroup* ctrlGroup, long pulseSpeed[MAX_PUL
 	USHORT registerValues[MAX_PULSE_AXES * 2];
 	UINT32 registerValuesLong[MAX_PULSE_AXES * 2];
 	double dblRegister;
+
+	memset(pulseSpeed, 0x00, sizeof(long[MAX_PULSE_AXES]));
 
 	if (!ctrlGroup->speedFeedbackRegisterAddress.bFeedbackSpeedEnabled)
 		return FALSE;
@@ -454,7 +458,7 @@ BOOL Ros_CtrlGroup_GetTorque(CtrlGroup* ctrlGroup, double torqueValues[MAX_PULSE
   	LONG status = 0;
   	int i;
 
-	memset(torqueValues, 0, sizeof(torqueValues)); // clear result, in case of error
+	memset(torqueValues, 0, sizeof(double [MAX_PULSE_AXES])); // clear result, in case of error
 	memset(dst_trq.data, 0, sizeof(MP_TRQCTL_DATA));
 	dst_trq.unit = TRQ_NEWTON_METER; //request data in Nm
 
