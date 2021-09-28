@@ -17,6 +17,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <exec_depend>motoman_driver</exec_depend>
+  <exec_depend>motoman_es_support</exec_depend>
   <exec_depend>motoman_gp12_support</exec_depend>
   <exec_depend>motoman_gp7_support</exec_depend>
   <exec_depend>motoman_gp8_support</exec_depend>
