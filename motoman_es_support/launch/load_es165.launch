@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="controller" doc="Controller name (dx100, dx200) used to determine joint velocity limits"/>
+  <param name="robot_description" command="$(find xacro)/xacro '$(find motoman_es_support)/urdf/es165.xacro'
+    joint_velocities_file:=$(find motoman_es_support)/config/joint_velocities_$(arg controller).yaml" />
+</launch>
