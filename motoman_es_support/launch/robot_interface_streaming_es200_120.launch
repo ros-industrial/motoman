@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<!--
+  Manipulator specific version of motoman driver's 'robot_interface_streaming_<controller>.launch'.
+
+  Usage:
+    robot_interface_download_es200_120.launch robot_ip:=<value> controller:=<value>
+-->
+<launch>
+  <arg name="robot_ip" />
+
+  <!-- controller: Controller name (fs100 or dx100) -->
+  <arg name="controller"/>
+
+  <rosparam command="load" file="$(find motoman_es_support)/config/joint_names.yaml" />
+
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+  </include>
+</launch>

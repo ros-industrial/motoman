@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<robot name="motoman_es200_120" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find motoman_es_support)/urdf/es200_120_macro.xacro"/>
+  <xacro:arg name="joint_velocities_file" default=""/>
+  <xacro:motoman_es200_120 prefix="" joint_velocities_file="$(arg joint_velocities_file)"/>
+</robot>
