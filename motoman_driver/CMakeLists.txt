@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(motoman_driver)
 
 # require C++11
@@ -108,6 +108,7 @@ target_link_libraries(motoman_industrial_robot_client
   industrial_robot_client
   industrial_utils)
 add_dependencies(motoman_industrial_robot_client ${catkin_EXPORTED_TARGETS})
+target_compile_definitions(motoman_industrial_robot_client PUBLIC ${industrial_robot_client_DEFINITIONS})
 
 # Robot state node
 add_executable(motoman_robot_state
@@ -163,6 +164,7 @@ target_link_libraries(motoman_industrial_robot_client_bswap
   industrial_robot_client_bswap
   industrial_utils)
 add_dependencies(motoman_industrial_robot_client_bswap ${catkin_EXPORTED_TARGETS})
+target_compile_definitions(motoman_industrial_robot_client_bswap PUBLIC ${industrial_robot_client_bswap_DEFINITIONS})
 
 # Robot state node
 add_executable(motoman_robot_state_bswap

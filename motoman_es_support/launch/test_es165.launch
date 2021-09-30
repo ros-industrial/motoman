@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="controller" doc="Controller name (dx100, dx200) used to determine joint velocity limits"/>
+  <include file="$(find motoman_es_support)/launch/load_es165.launch" >
+    <arg name="controller" value="$(arg controller)"/>
+  </include>
+  <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
+</launch>
