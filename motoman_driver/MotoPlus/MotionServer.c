@@ -1430,7 +1430,7 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 		timeInc_ms = ctrlGroup->timeLeftover_ms;
 		
 	// While interpolation time is smaller than new ROS point time
-	while( (curTrajData->time < endTrajData->time) && Ros_Controller_IsMotionReady(controller) && !controller->bStopMotion)
+	while( (curTrajData->time < endTrajData->time) && Ros_Controller_IsMotionReady(controller))
 	{
 		// Increment calculation time by next time increment
 		calculationTime_ms += timeInc_ms;
@@ -1514,7 +1514,7 @@ BOOL Ros_MotionServer_AddPulseIncPointToQ(Controller* controller, int groupNo, I
 		Ros_Sleep(controller->interpolPeriod);
 		
 		//make sure we don't get stuck in infinite loop
-		if (!Ros_Controller_IsMotionReady(controller)) //<- they probably pressed HOLD or ESTOP
+		if (!Ros_Controller_IsMotionReady(controller))  //<- they probably pressed HOLD or ESTOP or stop motion request
 		{
 			return FALSE;
 		}
