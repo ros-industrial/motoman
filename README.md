@@ -24,7 +24,7 @@ Older releases may be found in the Github mirror of the old ROS-Industrial [subv
 
 ### On newer (or older) versions of ROS
 
-Building the packages on newer (or older) versions of ROS is in most cases possible and supported. For example: building the packages in this repository on Ubuntu Xenial/ROS Kinetic or Ubuntu Bionic/ROS Melodic systems is supported. This will require creating a Catkin workspace, cloning this repository, installing all required dependencies and finally building the workspace.
+Building the packages on newer (or older) versions of ROS is in most cases possible and supported. For example: building the packages in this repository on Ubuntu Xenial/ROS Kinetic, Ubuntu Bionic/ROS Melodic or Ubuntu Focal/ROS Noetic systems is supported. This will require creating a Catkin workspace, cloning this repository, installing all required dependencies and finally building the workspace.
 
 ### Catkin tools
 
