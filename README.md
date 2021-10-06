@@ -20,22 +20,6 @@ Branch naming follows the ROS distribution they are compatible with. `-devel` br
 Older releases may be found in the Github mirror of the old ROS-Industrial [subversion repository][].
 
 
-## ROS Distro Support
-
-|         | Kinetic |
-|:-------:|:-------:|
-| Branch  | [`kinetic-devel`](https://github.com/ros-industrial/motoman/tree/kinetic-devel) |
-| Status  | supported |
-| Version | [version](http://repositories.ros.org/status_page/ros_kinetic_default.html?q=motoman) |
-
-
-## ROS Buildfarm
-
-|         |  Kinetic Source  |  Kinetic Debian  |
-|:-------:|:----------------:|:-----------------|
-| motoman | [![not released](http://build.ros.org/buildStatus/icon?job=Ksrc_uX__motoman__ubuntu_xenial__source)](http://build.ros.org/view/Ksrc_uX/job/Ksrc_uX__motoman__ubuntu_xenial__source/) | [![not released](http://build.ros.org/buildStatus/icon?job=Kbin_uX64__motoman__ubuntu_xenial_amd64__binary)](http://build.ros.org/view/Kbin_uX64/job/Kbin_uX64__motoman__ubuntu_xenial_amd64__binary/) |
-
-
 ## Building
 
 ### On newer (or older) versions of ROS
