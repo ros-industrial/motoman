@@ -40,8 +40,7 @@ These instructions build the `kinetic-devel` branch on a ROS Kinetic system:
 # change to the root of the Catkin workspace
 $ cd $HOME/catkin_ws
 
-# retrieve the latest development version of motoman. If you'd rather
-# use the latest released version, replace 'kinetic-devel' with 'kinetic'
+# retrieve the latest development version of motoman.
 $ git clone -b kinetic-devel https://github.com/ros-industrial/motoman.git src/motoman
 
 # check build dependencies. Note: this may install additional packages,
