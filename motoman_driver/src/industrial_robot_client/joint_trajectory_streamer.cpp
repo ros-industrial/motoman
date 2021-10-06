@@ -212,7 +212,7 @@ bool JointTrajectoryStreamer::trajectory_to_msgs(const motoman_msgs::DynamicJoin
 
 void JointTrajectoryStreamer::streamingThread()
 {
-  int connectRetryCount = 1;
+  int connectRetryCount = 10;
 
   ROS_INFO("Starting joint trajectory streamer thread");
   while (ros::ok())
