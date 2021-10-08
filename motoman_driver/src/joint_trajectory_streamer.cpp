@@ -378,7 +378,7 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
 // override streamingThread, to provide check/retry of MotionReply.result=BUSY
 void MotomanJointTrajectoryStreamer::streamingThread()
 {
-  int connectRetryCount = 1;
+  int connectRetryCount = 10;
 
   ROS_INFO("Starting Motoman joint trajectory streamer thread");
   while (ros::ok())
