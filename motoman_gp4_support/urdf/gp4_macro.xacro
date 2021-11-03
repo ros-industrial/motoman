@@ -7,91 +7,91 @@
     <link name="${prefix}base_link">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/base_link.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/base_link.stl"/>
         </geometry>
-        <xacro:material_yaskawa_white/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/base_link.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/base_link.stl"/>
         </geometry>
       </collision>
     </link>
     <link name="${prefix}link_1_s">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_1_s.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_1_s.stl"/>
         </geometry>
-        <xacro:material_yaskawa_white/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_1_s.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_1_s.stl"/>
         </geometry>
       </collision>
     </link>
     <link name="${prefix}link_2_l">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_2_l.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_2_l.stl"/>
         </geometry>
-        <xacro:material_yaskawa_white/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_2_l.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_2_l.stl"/>
         </geometry>
       </collision>
     </link>
     <link name="${prefix}link_3_u">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_3_u.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_3_u.stl"/>
         </geometry>
-        <xacro:material_yaskawa_white/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_3_u.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_3_u.stl"/>
         </geometry>
       </collision>
     </link>
     <link name="${prefix}link_4_r">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_4_r.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_4_r.stl"/>
         </geometry>
-        <xacro:material_yaskawa_white/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_4_r.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_4_r.stl"/>
         </geometry>
       </collision>
     </link>
     <link name="${prefix}link_5_b">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_5_b.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_5_b.stl"/>
         </geometry>
-        <xacro:material_yaskawa_white/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_5_b.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_5_b.stl"/>
         </geometry>
       </collision>
     </link>
     <link name="${prefix}link_6_t">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_6_t.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/visual/link_6_t.stl"/>
         </geometry>
-        <xacro:material_yaskawa_white/>
+        <xacro:material_yaskawa_silver/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_6_t.dae"/>
+          <mesh filename="package://motoman_gp4_support/meshes/gp4/collision/link_6_t.stl"/>
         </geometry>
       </collision>
     </link>
