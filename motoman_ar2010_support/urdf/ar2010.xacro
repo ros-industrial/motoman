@@ -2,7 +2,7 @@
 
 <robot name="motoman_ar2010" xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:include filename="$(find motoman_ar2010_support)/urdf/ar2010_macro.xacro" />
-	<xacro:property name="kinematics_offsets" value="${load_yaml('$(find motoman_ar2010_support)' + '/config/default_kinematic_offsets.yaml')}"/>
+	<xacro:property name="kinematics_offsets" value="${xacro.load_yaml('$(find motoman_ar2010_support)' + '/config/default_kinematic_offsets.yaml')}"/>
 	<xacro:motoman_ar2010 prefix="" kinematic_offsets="${kinematics_offsets['kinematic_offsets']}"/>
 </robot>
 
