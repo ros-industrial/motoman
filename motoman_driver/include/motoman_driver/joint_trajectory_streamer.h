@@ -145,8 +145,8 @@ protected:
   std::map<int, MotomanMotionCtrl> motion_ctrl_map_;
 
   void trajectoryStop();
-  bool is_valid(const trajectory_msgs::JointTrajectory &traj);
-  bool is_valid(const motoman_msgs::DynamicJointTrajectory &traj);
+  bool is_valid(trajectory_msgs::JointTrajectory &traj);
+  bool is_valid(motoman_msgs::DynamicJointTrajectory &traj);
 
   static bool VectorToJointData(const std::vector<double> &vec,
                                 industrial::joint_data::JointData &joints);

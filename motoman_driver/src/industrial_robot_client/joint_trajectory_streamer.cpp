@@ -116,7 +116,9 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJoint
 
   // calc new trajectory
   std::vector<SimpleMessage> new_traj_msgs;
-  if (!trajectory_to_msgs(msg, &new_traj_msgs))
+  motoman_msgs::DynamicJointTrajectoryPtr trajs = boost::make_shared<motoman_msgs::DynamicJointTrajectory>(
+    *boost::const_pointer_cast<motoman_msgs::DynamicJointTrajectory>(msg));
+  if (!trajectory_to_msgs(trajs, &new_traj_msgs))
     return;
 
   // send command messages to robot
@@ -152,7 +154,9 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
 
   // calc new trajectory
   std::vector<SimpleMessage> new_traj_msgs;
-  if (!trajectory_to_msgs(msg, &new_traj_msgs))
+  trajectory_msgs::JointTrajectoryPtr traj = boost::make_shared<trajectory_msgs::JointTrajectory>(
+    *boost::const_pointer_cast<trajectory_msgs::JointTrajectory>(msg));
+  if (!trajectory_to_msgs(traj, &new_traj_msgs))
     return;
 
   // send command messages to robot
@@ -175,7 +179,7 @@ bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& me
   return true;
 }
 
-bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj,
+bool JointTrajectoryStreamer::trajectory_to_msgs(trajectory_msgs::JointTrajectoryPtr& traj,
                                                  std::vector<SimpleMessage>* msgs)
 {
   // use base function to transform points
@@ -193,7 +197,7 @@ bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTra
   return true;
 }
 
-bool JointTrajectoryStreamer::trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr& traj,
+bool JointTrajectoryStreamer::trajectory_to_msgs(motoman_msgs::DynamicJointTrajectoryPtr& traj,
                                                  std::vector<SimpleMessage>* msgs)
 {
   // use base function to transform points

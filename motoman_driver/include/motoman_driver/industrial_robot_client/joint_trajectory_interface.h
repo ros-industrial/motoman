@@ -151,7 +151,7 @@ protected:
    *
    * \return true on success, false otherwise
    */
-  virtual bool trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryConstPtr& traj,
+  virtual bool trajectory_to_msgs(motoman_msgs::DynamicJointTrajectoryPtr& traj,
                                   std::vector<SimpleMessage>* msgs);
 
   /**
@@ -163,7 +163,7 @@ protected:
    *
    * \return true on success, false otherwise
    */
-  virtual bool trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj,
+  virtual bool trajectory_to_msgs(trajectory_msgs::JointTrajectoryPtr& traj,
                                   std::vector<SimpleMessage>* msgs);
 
   /**
@@ -318,7 +318,7 @@ protected:
    * \param traj incoming trajectory
    * \return true if trajectory is valid, false otherwise
    */
-  virtual bool is_valid(const motoman_msgs::DynamicJointTrajectory &traj);
+  virtual bool is_valid(motoman_msgs::DynamicJointTrajectory &traj);
 
   /**
    * \brief Validate that trajectory command meets minimum requirements
@@ -326,7 +326,7 @@ protected:
    * \param traj incoming trajectory
    * \return true if trajectory is valid, false otherwise
    */
-  virtual bool is_valid(const trajectory_msgs::JointTrajectory &traj);
+  virtual bool is_valid(trajectory_msgs::JointTrajectory &traj);
 
   /*
    * \brief Callback for JointState topic

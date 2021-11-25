@@ -239,8 +239,9 @@ void JointTrajectoryInterface::jointTrajectoryExCB(
   }
 
   // convert trajectory into robot-format
+  motoman_msgs::DynamicJointTrajectoryPtr trajs = boost::make_shared<motoman_msgs::DynamicJointTrajectory>(*msg);
   std::vector<SimpleMessage> robot_msgs;
-  if (!trajectory_to_msgs(msg, &robot_msgs))
+  if (!trajectory_to_msgs(trajs, &robot_msgs))
     return;
 
   // send command messages to robot
@@ -262,8 +263,9 @@ void JointTrajectoryInterface::jointTrajectoryCB(
   }
 
   // convert trajectory into robot-format
+  trajectory_msgs::JointTrajectoryPtr traj = boost::make_shared<trajectory_msgs::JointTrajectory>(*msg);
   std::vector<SimpleMessage> robot_msgs;
-  if (!trajectory_to_msgs(msg, &robot_msgs))
+  if (!trajectory_to_msgs(traj, &robot_msgs))
     return;
 
   // send command messages to robot
@@ -271,7 +273,7 @@ void JointTrajectoryInterface::jointTrajectoryCB(
 }
 
 bool JointTrajectoryInterface::trajectory_to_msgs(
-  const motoman_msgs::DynamicJointTrajectoryConstPtr& traj,
+  motoman_msgs::DynamicJointTrajectoryPtr& traj,
   std::vector<SimpleMessage>* msgs)
 {
   msgs->clear();
@@ -322,7 +324,7 @@ bool JointTrajectoryInterface::trajectory_to_msgs(
 }
 
 bool JointTrajectoryInterface::trajectory_to_msgs(
-  const trajectory_msgs::JointTrajectoryConstPtr& traj,
+  trajectory_msgs::JointTrajectoryPtr& traj,
   std::vector<SimpleMessage>* msgs)
 {
   msgs->clear();
@@ -663,7 +665,7 @@ bool JointTrajectoryInterface::stopMotionCB(
   return true;  // always return true.  To distinguish between call-failed and service-unavailable.
 }
 
-bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &traj)
+bool JointTrajectoryInterface::is_valid(trajectory_msgs::JointTrajectory &traj)
 {
   for (size_t i = 0; i < traj.points.size(); ++i)
   {
@@ -692,7 +694,7 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
   return true;
 }
 
-bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajectory &traj)
+bool JointTrajectoryInterface::is_valid(motoman_msgs::DynamicJointTrajectory &traj)
 {
   for (size_t i = 0; i < traj.points.size(); ++i)
   {

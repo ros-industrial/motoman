@@ -61,6 +61,7 @@ namespace
 {
   const double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
   const double start_pos_tol_  = 1e-4;  // max difference btwn start & current position, for validation (rad)
+  const double replace_start_pos_tol_  = 0.02;  // default tolerance 1e-4 found to be too strict for some manipulators
 }
 
 #define ROS_ERROR_RETURN(rtn, ...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while (0)  // NOLINT(whitespace/braces)
@@ -574,7 +575,7 @@ void MotomanJointTrajectoryStreamer::trajectoryStop()
 }
 
 // override is_valid to include FS100-specific checks
-bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajectory &traj)
+bool MotomanJointTrajectoryStreamer::is_valid(trajectory_msgs::JointTrajectory &traj)
 {
   if (!JointTrajectoryInterface::is_valid(traj))
     return false;
@@ -597,12 +598,32 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
                                 traj.joint_names, traj.points[0].positions,
                                 start_pos_tol_))
   {
-    ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position. cur_joint_pos_.name.size: %lu, traj.joint_names.size: %lu", cur_joint_pos_.name.size(), traj.joint_names.size());
+    if (IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
+                                traj.joint_names, traj.points[0].positions,
+                                replace_start_pos_tol_))
+    {
+      ROS_INFO("Trajectory is close enough, replacing first point.");
+      for (int i=0; i < traj.points[0].positions.size(); i++)
+      {
+        if (std::fabs(traj.points[0].positions[i] - cur_joint_pos_.position[i]) > 0.000001)
+        {
+          ROS_INFO("ros.motoman_driver: Changing first trajectory point from: %f to %f for joint: %s",
+                   traj.points[0].positions[i], cur_joint_pos_.position[i], cur_joint_pos_.name[i].c_str());
+        }
+        traj.points[0].positions[i] = cur_joint_pos_.position[i];
+      }
+    }
+    else
+    {
+      ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position. "
+        "cur_joint_pos_.name.size: %lu, traj.joint_names.size: %lu",
+        cur_joint_pos_.name.size(), traj.joint_names.size());
+    }
   }
   return true;
 }
 
-bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTrajectory &traj)
+bool MotomanJointTrajectoryStreamer::is_valid(motoman_msgs::DynamicJointTrajectory &traj)
 {
   if (!JointTrajectoryInterface::is_valid(traj))
     return false;
@@ -627,7 +648,9 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
                                     traj.joint_names, traj.points[0].groups[gr].positions,
                                     start_pos_tol_))
       {
-        ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position. group: %d, cur_joint_pos_.name.size: %lu, traj.joint_names.size: %lu", group_number, cur_joint_pos_.name.size(), traj.joint_names.size());
+        ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position. group: %d, "
+            "cur_joint_pos_.name.size: %lu, traj.joint_names.size: %lu",
+            group_number, cur_joint_pos_.name.size(), traj.joint_names.size());
       }
     }
   }
