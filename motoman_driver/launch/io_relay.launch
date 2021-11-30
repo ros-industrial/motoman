@@ -13,7 +13,14 @@
 
   <!-- load the correct version of the io relay node -->
   <node if="$(arg use_bswap)" name="io_relay"
-        pkg="motoman_driver" type="io_relay_bswap" />
+        pkg="motoman_driver" type="io_relay_bswap">
+    <!-- set default TCP port for the controller -->
+    <param name="port" value="50242" />
+  </node>
+
   <node unless="$(arg use_bswap)" name="io_relay"
-        pkg="motoman_driver" type="io_relay" />
+        pkg="motoman_driver" type="io_relay">
+    <!-- set default TCP port for the controller -->
+    <param name="port" value="50242" />
+  </node>
 </launch>
