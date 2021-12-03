@@ -1,7 +1,7 @@
 <!--
   Manipulator specific version of the state visualizer.
 
-  Defaults provided for HC10:
+  Defaults provided for HC10DT:
    - 6 joints
 
   Usage:
