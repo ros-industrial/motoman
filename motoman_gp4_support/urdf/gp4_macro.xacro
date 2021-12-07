@@ -95,7 +95,6 @@
         </geometry>
       </collision>
     </link>
-    <link name="${prefix}tool0"/>
     <!-- end of link list -->
 
     <!-- joint list -->
@@ -141,13 +140,22 @@
       <axis xyz="-1 0 0" />
       <limit lower="${radians(-455)}" upper="${radians(455)}" effort="16.46" velocity="${radians(1000)}"/>
     </joint>
-    <joint name="${prefix}joint_6_t-tool0" type="fixed">
+	<link name="${prefix}flange"/>
+    <joint name="${prefix}joint_6_t-flange" type="fixed">
       <origin xyz="0.072 0 0" rpy="${radians(180)} ${radians(-90)} 0"/>
       <parent link="${prefix}link_6_t"/>
-      <child link="${prefix}tool0"/>
+      <child link="${prefix}flange"/>
     </joint>
     <!-- end of joint list -->
-
+	
+	<!-- default tool -->
+	<link name="${prefix}tool0"/>
+    <joint name="${prefix}flange-tool0" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}flange"/>
+      <child link="${prefix}tool0"/>
+    </joint>
+    
     <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
     <link name="${prefix}base" />
     <joint name="${prefix}base_link-base" type="fixed">
