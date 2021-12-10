@@ -32,6 +32,7 @@
 #include "motoman_driver/motion_ctrl.h"
 #include "motoman_driver/simple_message/messages/motoman_motion_ctrl_message.h"
 #include "motoman_driver/simple_message/messages/motoman_motion_reply_message.h"
+#include "motoman_driver/simple_message/messages/motoman_select_tool_message.h"
 #include "ros/ros.h"
 #include "simple_message/simple_message.h"
 #include <string>
@@ -41,6 +42,7 @@ namespace MotionReplyResults = motoman::simple_message::motion_reply::MotionRepl
 using motoman::simple_message::motion_ctrl::MotionCtrl;
 using motoman::simple_message::motion_ctrl_message::MotionCtrlMessage;
 using motoman::simple_message::motion_reply_message::MotionReplyMessage;
+using motoman::simple_message::misc::SelectToolMessage;
 using industrial::simple_message::SimpleMessage;
 
 namespace motoman
@@ -109,6 +111,37 @@ bool MotomanMotionCtrl::stopTrajectory()
   return true;
 }
 
+bool MotomanMotionCtrl::selectToolFile(industrial::shared_types::shared_int group_number,
+  industrial::shared_types::shared_int tool_number, std::string& err_msg)
+{
+  SelectToolReq req;
+  MotionReply reply;
+
+  // initialise the request data structure
+  req.setGroupNumber(group_number);
+  req.setToolNumber(tool_number);
+
+  // attempt to send the SimpleMessage service request to the controller
+  if (!sendAndReceive(req, reply))
+  {
+    // provide caller with failure indication
+    // NOTE: we cannot use 'reply' to get a more detailed error message,
+    //       as 'req' has not actually been sent
+    err_msg = "Failed to send Select Tool command (failure in sending message)";
+    ROS_ERROR_STREAM(err_msg);
+    return false;
+  }
+
+  if (reply.getResult() != MotionReplyResults::SUCCESS)
+  {
+    err_msg = getErrorString(reply);
+    ROS_ERROR_STREAM("Failed to select tool: " << err_msg);
+    return false;
+  }
+
+  return true;
+}
+
 bool MotomanMotionCtrl::sendAndReceive(MotionControlCmd command, MotionReply &reply)
 {
   SimpleMessage req, res;
@@ -128,6 +161,37 @@ bool MotomanMotionCtrl::sendAndReceive(MotionControlCmd command, MotionReply &re
 
   ctrl_reply.init(res);
   reply.copyFrom(ctrl_reply.reply_);
+
+  return true;
+}
+
+bool MotomanMotionCtrl::sendAndReceive(SelectToolReq& request, MotionReply &reply)
+{
+  SimpleMessage req, res;
+
+  // the message which wraps the request data structure
+  SelectToolMessage select_tool_msg;
+
+  // MotoROS sends back a regular MotionControl reply message, not a special
+  // Select Tool reply, so we use a MotionReplyMessage instance here
+  MotionReplyMessage select_tool_reply;
+
+  // copy the request into the message
+  select_tool_msg.init(request);
+
+  // convert the SelectToolMessage into a generic SimpleMessage
+  select_tool_msg.toRequest(req);
+
+  // send the request to the controller and wait for the response
+  if (!this->connection_->sendAndReceiveMsg(req, res))
+  {
+    ROS_ERROR("Failed to send SelectTool message");
+    return false;
+  }
+
+  // process the reply
+  select_tool_reply.init(res);
+  reply.copyFrom(select_tool_reply.reply_);
 
   return true;
 }
