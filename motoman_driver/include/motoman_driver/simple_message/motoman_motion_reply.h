@@ -93,7 +93,9 @@ enum InvalidCode
   DATA_POSITION,
   DATA_SPEED,
   DATA_ACCEL,
-  DATA_INSUFFICIENT
+  DATA_INSUFFICIENT,
+  DATA_TIME,
+  DATA_TOOLNO
 };
 }  // namespace Invalid
 
@@ -111,7 +113,9 @@ enum NotReadyCode
   HOLD,
   NOT_STARTED,
   WAITING_ROS,
-  SKILLSEND
+  SKILLSEND,
+  PFL_ACTIVE,
+  INC_MOVE_ERROR
 };
 }  // namespace NotReady
 }  // namespace MotionReplySubcodes

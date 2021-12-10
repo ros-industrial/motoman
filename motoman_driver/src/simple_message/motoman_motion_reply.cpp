@@ -134,6 +134,10 @@ std::string MotionReply::getSubcodeString(shared_int code)
     return "Invalid acceleration data";
   case MotionReplySubcodes::Invalid::DATA_INSUFFICIENT:
     return "Insufficient trajectory data.  Must supply valid time, pos, and velocity fields.";
+  case MotionReplySubcodes::Invalid::DATA_TIME:
+    return "Invalid time data: exceeded maximum trajectory duration of 14400 sec (ros-industrial/motoman#244)";
+  case MotionReplySubcodes::Invalid::DATA_TOOLNO:
+    return "Invalid tool file specified";
 
   case MotionReplySubcodes::NotReady::UNSPECIFIED:
     return "Unknown";
@@ -157,6 +161,10 @@ std::string MotionReply::getSubcodeString(shared_int code)
     return "Waiting on ROS";
   case MotionReplySubcodes::NotReady::SKILLSEND:
     return "Waiting on SkillSend";
+  case MotionReplySubcodes::NotReady::PFL_ACTIVE:
+    return "PFL is active";
+  case MotionReplySubcodes::NotReady::INC_MOVE_ERROR:
+    return "Incremental move rejected on MotoROS side";
 
   default:
     return "Unknown";
