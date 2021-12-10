@@ -1,0 +1,24 @@
+
+# Update the selected tool file on the controller.
+#
+# Legal values for the group and tool (file) number fields in this message
+# correspond to legal values on the INFORM side.
+#
+# The controller can and will refuse to change the selected tool file under all
+# circumstances it would refuse to do so when not using MotoROS (ie: MotoROS
+# does not use any special access or circumvent any of the normal functionality
+# or safety checks present on the controller). Invocations of this service
+# will be unsuccessful in the exact same situations as attempts to change the
+# active tool file would fail on the controller via INFORM for instance.
+#
+# Note: there is currently no way to retrieve the active tool file.
+#
+# Refer also the general Yaskawa Motoman documentation on tool file
+# configuration, selection and use.
+
+int32 group_number
+int32 tool_number
+# TODO: might want to expose sequence_number here as well
+---
+string message
+bool success

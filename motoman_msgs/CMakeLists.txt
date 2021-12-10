@@ -26,6 +26,7 @@ add_service_files(
   FILES
     CmdJointTrajectoryEx.srv
     ReadSingleIO.srv
+    SelectTool.srv
     WriteSingleIO.srv
 )
 
