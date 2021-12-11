@@ -31,6 +31,7 @@ add_service_files(
     SelectTool.srv
     WriteMRegister.srv
     WriteSingleIO.srv
+    WriteGroupIO.srv
 )
 
 generate_messages(
