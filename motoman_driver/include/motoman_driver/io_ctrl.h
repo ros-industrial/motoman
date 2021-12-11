@@ -46,6 +46,8 @@
 #include "motoman_driver/simple_message/motoman_write_mregister_reply.h"
 #include "motoman_driver/simple_message/motoman_write_single_io.h"
 #include "motoman_driver/simple_message/motoman_write_single_io_reply.h"
+#include "motoman_driver/simple_message/motoman_write_group_io.h"
+#include "motoman_driver/simple_message/motoman_write_group_io_reply.h"
 
 namespace motoman
 {
@@ -57,6 +59,7 @@ using motoman::simple_message::io_ctrl_reply::ReadSingleIOReply;
 using motoman::simple_message::io_ctrl_reply::ReadGroupIOReply;
 using motoman::simple_message::io_ctrl_reply::WriteMRegisterReply;
 using motoman::simple_message::io_ctrl_reply::WriteSingleIOReply;
+using motoman::simple_message::io_ctrl_reply::WriteGroupIOReply;
 
 /**
  * \brief Wrapper class around Motoman-specific io control commands
@@ -134,6 +137,17 @@ public:
   bool writeSingleIO(industrial::shared_types::shared_int address,
     industrial::shared_types::shared_int value, std::string& err_msg);
 
+  /**
+   * \brief Writes to a group IO on the controller.
+   *
+   * \param address The address (index) of the group IO
+   * \param value The value to set the group IO to
+   * \param err_msg [out] A descriptive error message in case of failure
+   * \return True IFF writing was successful
+   */
+  bool writeGroupIO(industrial::shared_types::shared_int address,
+    industrial::shared_types::shared_int value, std::string& err_msg);
+
 protected:
   SmplMsgConnection* connection_;
 
@@ -149,6 +163,9 @@ protected:
   bool sendAndReceive(industrial::shared_types::shared_int address,
     industrial::shared_types::shared_int value,
     WriteSingleIOReply &reply);
+  bool sendAndReceive(industrial::shared_types::shared_int address,
+    industrial::shared_types::shared_int value,
+    WriteGroupIOReply &reply);
 };
 
 }  // namespace io_ctrl
