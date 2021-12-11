@@ -40,6 +40,8 @@
 #include "motoman_driver/simple_message/motoman_read_mregister_reply.h"
 #include "motoman_driver/simple_message/motoman_read_single_io.h"
 #include "motoman_driver/simple_message/motoman_read_single_io_reply.h"
+#include "motoman_driver/simple_message/motoman_read_group_io.h"
+#include "motoman_driver/simple_message/motoman_read_group_io_reply.h"
 #include "motoman_driver/simple_message/motoman_write_mregister.h"
 #include "motoman_driver/simple_message/motoman_write_mregister_reply.h"
 #include "motoman_driver/simple_message/motoman_write_single_io.h"
@@ -52,6 +54,7 @@ namespace io_ctrl
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using motoman::simple_message::io_ctrl_reply::ReadMRegisterReply;
 using motoman::simple_message::io_ctrl_reply::ReadSingleIOReply;
+using motoman::simple_message::io_ctrl_reply::ReadGroupIOReply;
 using motoman::simple_message::io_ctrl_reply::WriteMRegisterReply;
 using motoman::simple_message::io_ctrl_reply::WriteSingleIOReply;
 
@@ -97,6 +100,19 @@ public:
     industrial::shared_types::shared_int &value, std::string& err_msg);
 
   /**
+   * \brief Reads a group IO on the controller.
+   *
+   * Note: if reading was unsuccessful, the value of value is undefined.
+   *
+   * \param address The address (index) of the group IO
+   * \param value [out] Will contain the value of the group IO
+   * \param err_msg [out] A descriptive error message in case of failure
+   * \return True IFF reading was successful
+   */
+  bool readGroupIO(industrial::shared_types::shared_int address,
+    industrial::shared_types::shared_int &value, std::string& err_msg);
+
+  /**
    * \brief Writes to a single M register on the controller.
    *
    * \param address The address (index) of the M register
@@ -125,6 +141,8 @@ protected:
     ReadMRegisterReply &reply);
   bool sendAndReceive(industrial::shared_types::shared_int address,
     ReadSingleIOReply &reply);
+  bool sendAndReceive(industrial::shared_types::shared_int address,
+    ReadGroupIOReply &reply);
   bool sendAndReceive(industrial::shared_types::shared_int address,
     industrial::shared_types::shared_int value,
     WriteMRegisterReply &reply);
