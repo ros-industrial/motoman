@@ -68,7 +68,7 @@ protected:
   io_ctrl::MotomanIoCtrl io_ctrl_;
 
   ros::ServiceServer srv_read_mregister;    // handle for read_mregister service
-  ros::ServiceServer srv_read_single_io;   // handle for read_single_io service
+  ros::ServiceServer srv_read_single_io;    // handle for read_single_io service
   ros::ServiceServer srv_read_group_io;     // handle for read_group_io service
   ros::ServiceServer srv_write_mregister;   // handle for write_mregister service
   ros::ServiceServer srv_write_single_io;   // handle for write_single_io service
