@@ -36,6 +36,7 @@
 #include "motoman_driver/io_ctrl.h"
 #include "motoman_msgs/ReadMRegister.h"
 #include "motoman_msgs/ReadSingleIO.h"
+#include "motoman_msgs/ReadGroupIO.h"
 #include "motoman_msgs/WriteMRegister.h"
 #include "motoman_msgs/WriteSingleIO.h"
 #include <boost/thread.hpp>
@@ -66,6 +67,7 @@ protected:
 
   ros::ServiceServer srv_read_mregister;    // handle for read_mregister service
   ros::ServiceServer srv_read_single_io;   // handle for read_single_io service
+  ros::ServiceServer srv_read_group_io;     // handle for read_group_io service
   ros::ServiceServer srv_write_mregister;   // handle for write_mregister service
   ros::ServiceServer srv_write_single_io;   // handle for write_single_io service
 
@@ -77,6 +79,8 @@ protected:
                             motoman_msgs::ReadMRegister::Response &res);
   bool readSingleIoCB(motoman_msgs::ReadSingleIO::Request &req,
                             motoman_msgs::ReadSingleIO::Response &res);
+  bool readGroupIoCB(motoman_msgs::ReadGroupIO::Request &req,
+                            motoman_msgs::ReadGroupIO::Response &res);
   bool writeMRegisterCB(motoman_msgs::WriteMRegister::Request &req,
                             motoman_msgs::WriteMRegister::Response &res);
   bool writeSingleIoCB(motoman_msgs::WriteSingleIO::Request &req,
