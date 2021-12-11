@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- * Copyright (c) 2016, Delft Robotics Institute
+ * Copyright (c) 2016, 2021, Delft Robotics Institute
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

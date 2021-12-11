@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2016, Delft Robotics Institute
  * Copyright (c) 2020, Southwest Research Institute
+ * Copyright (c) 2021, Delft Robotics Institute
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
