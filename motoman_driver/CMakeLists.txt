@@ -87,6 +87,8 @@ set(MSG_SRC_FILES
   src/simple_message/motoman_write_mregister_reply.cpp
   src/simple_message/motoman_write_single_io.cpp
   src/simple_message/motoman_write_single_io_reply.cpp
+  src/simple_message/motoman_write_group_io.cpp
+  src/simple_message/motoman_write_group_io_reply.cpp
 )
 
 set(CLIENT_SRC_FILES
