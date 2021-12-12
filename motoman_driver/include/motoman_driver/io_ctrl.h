@@ -40,6 +40,8 @@
 #include "motoman_driver/simple_message/motoman_read_mregister_reply.h"
 #include "motoman_driver/simple_message/motoman_read_single_io.h"
 #include "motoman_driver/simple_message/motoman_read_single_io_reply.h"
+#include "motoman_driver/simple_message/motoman_write_mregister.h"
+#include "motoman_driver/simple_message/motoman_write_mregister_reply.h"
 #include "motoman_driver/simple_message/motoman_write_single_io.h"
 #include "motoman_driver/simple_message/motoman_write_single_io_reply.h"
 
@@ -50,6 +52,7 @@ namespace io_ctrl
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using motoman::simple_message::io_ctrl_reply::ReadMRegisterReply;
 using motoman::simple_message::io_ctrl_reply::ReadSingleIOReply;
+using motoman::simple_message::io_ctrl_reply::WriteMRegisterReply;
 using motoman::simple_message::io_ctrl_reply::WriteSingleIOReply;
 
 /**
@@ -94,6 +97,17 @@ public:
     industrial::shared_types::shared_int &value, std::string& err_msg);
 
   /**
+   * \brief Writes to a single M register on the controller.
+   *
+   * \param address The address (index) of the M register
+   * \param value The value to set the M register to
+   * \param err_msg [out] A descriptive error message in case of failure
+   * \return True IFF writing was successful
+   */
+  bool writeMRegister(industrial::shared_types::shared_int address,
+    industrial::shared_types::shared_int value, std::string& err_msg);
+
+  /**
    * \brief Writes to a single IO point on the controller.
    *
    * \param address The address (index) of the IO point
@@ -111,6 +125,9 @@ protected:
     ReadMRegisterReply &reply);
   bool sendAndReceive(industrial::shared_types::shared_int address,
     ReadSingleIOReply &reply);
+  bool sendAndReceive(industrial::shared_types::shared_int address,
+    industrial::shared_types::shared_int value,
+    WriteMRegisterReply &reply);
   bool sendAndReceive(industrial::shared_types::shared_int address,
     industrial::shared_types::shared_int value,
     WriteSingleIOReply &reply);

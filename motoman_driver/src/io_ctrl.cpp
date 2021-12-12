@@ -36,6 +36,8 @@
 #include "motoman_driver/simple_message/messages/motoman_read_mregister_reply_message.h"
 #include "motoman_driver/simple_message/messages/motoman_read_single_io_message.h"
 #include "motoman_driver/simple_message/messages/motoman_read_single_io_reply_message.h"
+#include "motoman_driver/simple_message/messages/motoman_write_mregister_message.h"
+#include "motoman_driver/simple_message/messages/motoman_write_mregister_reply_message.h"
 #include "motoman_driver/simple_message/messages/motoman_write_single_io_message.h"
 #include "motoman_driver/simple_message/messages/motoman_write_single_io_reply_message.h"
 #include "ros/ros.h"
@@ -45,6 +47,7 @@
 
 namespace ReadMRegisterReplyResultCodes = motoman::simple_message::io_ctrl_reply::ReadMRegisterReplyResultCodes;
 namespace ReadSingleIOReplyResultCodes = motoman::simple_message::io_ctrl_reply::ReadSingleIOReplyResultCodes;
+namespace WriteMRegisterReplyResultCodes = motoman::simple_message::io_ctrl_reply::WriteMRegisterReplyResultCodes;
 namespace WriteSingleIOReplyResultCodes = motoman::simple_message::io_ctrl_reply::WriteSingleIOReplyResultCodes;
 
 using motoman::simple_message::io_ctrl::ReadMRegister;
@@ -53,6 +56,9 @@ using motoman::simple_message::io_ctrl_reply_message::ReadMRegisterReplyMessage;
 using motoman::simple_message::io_ctrl::ReadSingleIO;
 using motoman::simple_message::io_ctrl_message::ReadSingleIOMessage;
 using motoman::simple_message::io_ctrl_reply_message::ReadSingleIOReplyMessage;
+using motoman::simple_message::io_ctrl::WriteMRegister;
+using motoman::simple_message::io_ctrl_message::WriteMRegisterMessage;
+using motoman::simple_message::io_ctrl_reply_message::WriteMRegisterReplyMessage;
 using motoman::simple_message::io_ctrl::WriteSingleIO;
 using motoman::simple_message::io_ctrl_message::WriteSingleIOMessage;
 using motoman::simple_message::io_ctrl_reply_message::WriteSingleIOReplyMessage;
@@ -111,6 +117,25 @@ bool MotomanIoCtrl::readSingleIO(shared_int address, shared_int &value, std::str
   }
 
   return read_success;
+}
+
+bool MotomanIoCtrl::writeMRegister(shared_int address, shared_int value, std::string &err_msg)
+{
+  WriteMRegisterReply reply;
+
+  if (!sendAndReceive(address, value, reply))
+  {
+    ROS_ERROR("Failed to send WRITE_MREGISTER command");
+    return false;
+  }
+
+  bool write_success = reply.getResultCode() == WriteMRegisterReplyResultCodes::SUCCESS;
+  if (!write_success)
+  {
+    err_msg = reply.getResultString();
+  }
+
+  return write_success;
 }
 
 bool MotomanIoCtrl::writeSingleIO(shared_int address, shared_int value, std::string &err_msg)
@@ -174,6 +199,29 @@ bool MotomanIoCtrl::sendAndReceive(shared_int address, ReadSingleIOReply &reply)
 
   read_io_reply.init(res);
   reply.copyFrom(read_io_reply.reply_);
+
+  return true;
+}
+
+bool MotomanIoCtrl::sendAndReceive(shared_int address, shared_int value, WriteMRegisterReply &reply)
+{
+  SimpleMessage req, res;
+  WriteMRegister data;
+  WriteMRegisterMessage write_mreg_msg;
+  WriteMRegisterReplyMessage write_mreg_reply;
+
+  data.init(address, value);
+  write_mreg_msg.init(data);
+  write_mreg_msg.toRequest(req);
+
+  if (!this->connection_->sendAndReceiveMsg(req, res))
+  {
+    ROS_ERROR("Failed to send WriteMRegister message");
+    return false;
+  }
+
+  write_mreg_reply.init(res);
+  reply.copyFrom(write_mreg_reply.reply_);
 
   return true;
 }
