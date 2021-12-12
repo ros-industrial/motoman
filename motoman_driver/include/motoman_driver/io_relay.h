@@ -34,6 +34,7 @@
 
 #include "simple_message/socket/tcp_client.h"
 #include "motoman_driver/io_ctrl.h"
+#include "motoman_msgs/ReadMRegister.h"
 #include "motoman_msgs/ReadSingleIO.h"
 #include "motoman_msgs/WriteSingleIO.h"
 #include <boost/thread.hpp>
@@ -62,6 +63,7 @@ public:
 protected:
   io_ctrl::MotomanIoCtrl io_ctrl_;
 
+  ros::ServiceServer srv_read_mregister;    // handle for read_mregister service
   ros::ServiceServer srv_read_single_io;   // handle for read_single_io service
   ros::ServiceServer srv_write_single_io;   // handle for write_single_io service
 
@@ -69,6 +71,8 @@ protected:
   boost::mutex mutex_;
   TcpClient default_tcp_connection_;
 
+  bool readMRegisterCB(motoman_msgs::ReadMRegister::Request &req,
+                            motoman_msgs::ReadMRegister::Response &res);
   bool readSingleIoCB(motoman_msgs::ReadSingleIO::Request &req,
                             motoman_msgs::ReadSingleIO::Response &res);
   bool writeSingleIoCB(motoman_msgs::WriteSingleIO::Request &req,
