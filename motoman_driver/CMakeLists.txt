@@ -70,6 +70,8 @@ set(MSG_SRC_FILES
   src/simple_message/messages/motoman_write_single_io_reply_message.cpp
   src/simple_message/motoman_motion_ctrl.cpp
   src/simple_message/motoman_motion_reply.cpp
+  src/simple_message/motoman_read_mregister.cpp
+  src/simple_message/motoman_read_mregister_reply.cpp
   src/simple_message/motoman_read_single_io.cpp
   src/simple_message/motoman_read_single_io_reply.cpp
   src/simple_message/motoman_select_tool.cpp
