@@ -63,6 +63,8 @@ catkin_package(
 set(MSG_SRC_FILES
   src/simple_message/messages/motoman_motion_ctrl_message.cpp
   src/simple_message/messages/motoman_motion_reply_message.cpp
+  src/simple_message/messages/motoman_read_mregister_message.cpp
+  src/simple_message/messages/motoman_read_mregister_reply_message.cpp
   src/simple_message/messages/motoman_read_single_io_message.cpp
   src/simple_message/messages/motoman_read_single_io_reply_message.cpp
   src/simple_message/messages/motoman_select_tool_message.cpp
