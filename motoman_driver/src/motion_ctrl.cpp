@@ -30,8 +30,8 @@
  */
 
 #include "motoman_driver/motion_ctrl.h"
-#include "motoman_driver/simple_message/motoman_motion_ctrl_message.h"
-#include "motoman_driver/simple_message/motoman_motion_reply_message.h"
+#include "motoman_driver/simple_message/messages/motoman_motion_ctrl_message.h"
+#include "motoman_driver/simple_message/messages/motoman_motion_reply_message.h"
 #include "ros/ros.h"
 #include "simple_message/simple_message.h"
 #include <string>
