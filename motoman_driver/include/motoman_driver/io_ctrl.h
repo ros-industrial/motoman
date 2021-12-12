@@ -36,6 +36,8 @@
 
 #include <string>
 #include "simple_message/smpl_msg_connection.h"
+#include "motoman_driver/simple_message/motoman_read_mregister.h"
+#include "motoman_driver/simple_message/motoman_read_mregister_reply.h"
 #include "motoman_driver/simple_message/motoman_read_single_io.h"
 #include "motoman_driver/simple_message/motoman_read_single_io_reply.h"
 #include "motoman_driver/simple_message/motoman_write_single_io.h"
@@ -46,6 +48,7 @@ namespace motoman
 namespace io_ctrl
 {
 using industrial::smpl_msg_connection::SmplMsgConnection;
+using motoman::simple_message::io_ctrl_reply::ReadMRegisterReply;
 using motoman::simple_message::io_ctrl_reply::ReadSingleIOReply;
 using motoman::simple_message::io_ctrl_reply::WriteSingleIOReply;
 
@@ -64,6 +67,19 @@ public:
   bool init(SmplMsgConnection* connection);
 
 public:
+  /**
+   * \brief Reads a single M register on the controller.
+   *
+   * Note: if reading was unsuccessful, the value of value is undefined.
+   *
+   * \param address The address (index) of the M register
+   * \param value [out] Will contain the value of the M register
+   * \param err_msg [out] A descriptive error message in case of failure
+   * \return True IFF reading was successful
+   */
+  bool readMRegister(industrial::shared_types::shared_int address,
+    industrial::shared_types::shared_int &value, std::string& err_msg);
+
   /**
    * \brief Reads a single IO point on the controller.
    *
@@ -91,6 +107,8 @@ public:
 protected:
   SmplMsgConnection* connection_;
 
+  bool sendAndReceive(industrial::shared_types::shared_int address,
+    ReadMRegisterReply &reply);
   bool sendAndReceive(industrial::shared_types::shared_int address,
     ReadSingleIOReply &reply);
   bool sendAndReceive(industrial::shared_types::shared_int address,
