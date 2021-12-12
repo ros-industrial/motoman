@@ -28,6 +28,7 @@ add_service_files(
     ReadMRegister.srv
     ReadSingleIO.srv
     SelectTool.srv
+    WriteMRegister.srv
     WriteSingleIO.srv
 )
 
