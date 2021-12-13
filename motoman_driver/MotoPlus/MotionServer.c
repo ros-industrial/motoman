@@ -1968,6 +1968,11 @@ int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg
 
 int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 {
+#if !(DX100 || FS100)
+	MP_SET_TOOL_NO_SEND_DATA setToolData;
+	MP_STD_RSP_DATA responseData;
+#endif
+
 	int groupNo = receiveMsg->body.selectTool.groupNo;
 	int tool = receiveMsg->body.selectTool.tool;
 
@@ -1975,7 +1980,17 @@ int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveM
 	{	
 		if (tool >= MIN_VALID_TOOL_INDEX && tool <= MAX_VALID_TOOL_INDEX)
 		{
+			//set tool that will be used by motion API
 			controller->ctrlGroups[receiveMsg->body.selectTool.groupNo]->tool = tool;
+
+#if !(DX100 || FS100)
+			//set jogging tool on the pendant
+			setToolData.sRobotNo = controller->ctrlGroups[receiveMsg->body.selectTool.groupNo]->groupId;
+			setToolData.sToolNo = tool;
+			mpSetToolNo(&setToolData, &responseData);
+#endif
+
+			//We don't care if mpSetToolNo fails. It won't affect the actual motion.
 			Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_SUCCESS, 0, replyMsg, groupNo);
 		}
 		else
