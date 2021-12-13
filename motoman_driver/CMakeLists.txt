@@ -61,14 +61,14 @@ catkin_package(
 
 
 set(MSG_SRC_FILES
+  src/simple_message/messages/motoman_motion_ctrl_message.cpp
+  src/simple_message/messages/motoman_motion_reply_message.cpp
   src/simple_message/messages/motoman_read_single_io_message.cpp
   src/simple_message/messages/motoman_read_single_io_reply_message.cpp
   src/simple_message/messages/motoman_write_single_io_message.cpp
   src/simple_message/messages/motoman_write_single_io_reply_message.cpp
   src/simple_message/motoman_motion_ctrl.cpp
-  src/simple_message/motoman_motion_ctrl_message.cpp
   src/simple_message/motoman_motion_reply.cpp
-  src/simple_message/motoman_motion_reply_message.cpp
   src/simple_message/motoman_read_single_io.cpp
   src/simple_message/motoman_read_single_io_reply.cpp
   src/simple_message/motoman_write_single_io.cpp

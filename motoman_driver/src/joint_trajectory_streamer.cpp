@@ -30,7 +30,7 @@
  */
 
 #include "motoman_driver/joint_trajectory_streamer.h"
-#include "motoman_driver/simple_message/motoman_motion_reply_message.h"
+#include "motoman_driver/simple_message/messages/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
 #include "motoman_driver/simple_message/messages/joint_traj_pt_full_ex_message.h"
 #include "industrial_robot_client/utils.h"
