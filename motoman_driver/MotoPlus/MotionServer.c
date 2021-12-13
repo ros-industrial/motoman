@@ -1968,7 +1968,7 @@ int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg
 
 int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg)
 {
-#if !(DX100 || FS100)
+#ifndef FS100
 	MP_SET_TOOL_NO_SEND_DATA setToolData;
 	MP_STD_RSP_DATA responseData;
 #endif
@@ -1983,7 +1983,7 @@ int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveM
 			//set tool that will be used by motion API
 			controller->ctrlGroups[receiveMsg->body.selectTool.groupNo]->tool = tool;
 
-#if !(DX100 || FS100)
+#ifndef FS100
 			//set jogging tool on the pendant
 			setToolData.sRobotNo = controller->ctrlGroups[receiveMsg->body.selectTool.groupNo]->groupId;
 			setToolData.sToolNo = tool;
