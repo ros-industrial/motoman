@@ -1400,6 +1400,7 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 	memset(newPulsePos, 0x00, sizeof(newPulsePos));
 	memset(&incData, 0x00, sizeof(incData));
 	incData.frame = MP_INC_PULSE_DTYPE;
+	// also prevents ROS_MSG_MOTO_SELECT_TOOL from changing the active tool while processing
 	incData.tool = ctrlGroup->tool;
 	
 	// Calculate an acceleration coefficients
