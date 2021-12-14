@@ -1,52 +1,67 @@
 
-# Changes the tool file used by the controller for (Moto)ROS-controlled motions.
+# Change the active tool file on the controller.
 #
-# NOTE 1: this changes the active tool for (Moto)ROS-controlled motions ONLY.
+# This changes the tool definition used for both (Moto)ROS-controlled motions
+# and manual jogging.
 #
-#         Regular INFORM programs, jogging or any other (programmed) motions
-#         executed by the controller will NOT use the new tool.
 #
-# NOTE 2: any tool switch initiated by invoking this service WILL however be
-#         taken into account by safety systems such as the FSU and PFL while
-#         executing (Moto)ROS-initiated motions.
+# ## FSU and PFL
 #
-# NOTE 3: active tool will be switched AFTER the controller has completed
-#         execution of the last trajectory segment that was sent to the
-#         controller BEFORE this service was called.
+# Tool switches through this service will be taken into account by the FSU and
+# PFL safety systems if the controller has these options and they are enabled.
 #
-#         The motion queue internal to MotoROS caches a number of segments in
-#         a FIFO. Only segments received AFTER this service was invoked will
-#         be executed with the new tool. Any segments received before a tool
-#         switch was invoked will use the old tool.
+# Tool interference files, if associated with certain tool file definitions,
+# will therefore also switch.
 #
-#         To guarantee motion will be executed using the new tool, applications
-#         should check the 'in_motion' field (part of the RobotStatus message
-#         published on the 'robot_status' topic by the driver) and invoke the
-#         service when the robot has come to a stop (and the motion queue of
-#         MotoROS is empty). Any subsequent trajectories will use the new tool.
 #
-# NOTE 4: as MotoROS currently only executes joint space trajectories, changing
-#         tool file with this service DOES NOT affect TCP poses while executing
-#         trajectories.
+# ## Tool switch timing
 #
-#         To clarify: the TCP definition part of the tool file is NOT taken
-#         into account when calculating manipulator motion based on incoming
-#         ROS JointTrajectoryAction goals (as JointTrajectory goals do not
-#         include any Cartesian poses, only absolute joint space coordinates
-#         for each axis).
+# The active tool will be switched AFTER the controller has completed execution
+# of the last trajectory segment that was sent to MotoROS BEFORE this service
+# was called.
 #
-#         Instead, ROS applications should use different TF frames to define
-#         tool frames on the ROS side and plan their motions with the
-#         appropriate TF frame as the active tool.
+# The motion queue internal to MotoROS caches a number of segments in a FIFO.
+# Only segments received AFTER this service was invoked will be executed with
+# the new tool. Any segments received before a tool switch was invoked will use
+# the old tool.
 #
-#         This service could then be used to notify the controller of other
-#         tool characteristics, such as weight, CoG and inertia by switching
-#         to a tool file configured with those parameters.
+# To ensure motion will be executed using a certain tool, applications should
+# check the 'in_motion' field (part of the RobotStatus message published on the
+# 'robot_status' topic by the driver) and invoke the service when the robot has
+# come to a stop (and the motion queue of MotoROS is empty). Any subsequent
+# trajectories will use the new tool.
 #
-# NOTE 5: there is currently no way to retrieve the active tool file.
 #
-# Refer also the general Yaskawa Motoman documentation on tool file
-# configuration, selection and use.
+# ## Effect on trajectory execution
+#
+# As MotoROS currently only executes joint space trajectories, changing tool
+# file with this service DOES NOT affect the execution of those trajectories.
+#
+# As noted earlier though, the active tool file definition will affect FSU and
+# PFL performance (see "FSU and PFL" above).
+#
+# To clarify: the TCP definition of the tool file is NOT taken into account when
+# calculating manipulator motion based on incoming ROS JointTrajectoryAction
+# goals (as JointTrajectory goals do not include any Cartesian poses, only
+# absolute joint space coordinates for each axis).
+#
+# Instead, ROS applications should use different TF frames to define tool frames
+# on the ROS side and plan their motions with the appropriate TF frame as the
+# active tool.
+#
+# This service could then be used to notify the controller of other tool
+# characteristics, such as weight, CoG and inertia by switching to a tool file
+# configured with those parameters.
+#
+#
+# ## Retrieving the active tool file
+#
+# MotoROS does not currently support retrieving the active tool file.
+#
+#
+#
+# For more information about tool file configuration, selection and use on
+# Yaskawa controllers, refer to the relevant Yaskawa Motoman documentation.
 
 
 # Numeric ID of the group the tool file is defined for.
