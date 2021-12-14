@@ -66,13 +66,14 @@
 
 # Numeric ID of the group the tool file is defined for.
 #
-# NOTE: this MUST correspond to a group ID currently defined and active on the
-#       controller. The ROS service does not check whether the value specified
-#       here is legal. The MotoROS server will however check this, will refuse
-#       to switch to an illegal value and will report this to the ROS driver.
-#       Callers will be notified by 'success' set to 'false' and an appropriate
-#       error message being provided via the 'message' field of the service
-#       response.
+# This MUST correspond to a group ID currently defined and active on the
+# controller. The ROS service does not check whether the value specified here
+# is legal. The MotoROS server will however check this, and will refuse to
+# switch to an illegal value and will report this to the ROS driver.
+#
+# Callers will be notified of such failures by 'success' being set to 'false'
+# and an appropriate error message being provided via the 'message' field of
+# the service response.
 #
 # NOTE: this field is 0-based, with 0 corresponding to the first motion group,
 #       1 the second, etc.
@@ -84,9 +85,9 @@ uint32 group_number
 
 # Numeric ID of the tool file to switch to for the specified group.
 #
-# NOTE: see the NOTE for the 'group_number' field above. Illegal values for
-#       this field will result in failed service invocations similar to what
-#       is described for that field.
+# Identical to 'group_number', specification of illegal values will result
+# in failure to invoke the MotoROS service, and an unsuccessful service result
+# being returned.
 #
 # NOTE: this field is 0-based, with 0 corresponding to the first tool file,
 #       1 the second, etc.
