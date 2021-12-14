@@ -85,7 +85,7 @@ uint32 group_number
 #       this field will result in failed service invocations similar to what
 #       is described for that field.
 #
-# legal-values: [0, total_nr_of_defined_tool_files)
+# legal-values: [0, 63]
 # required: yes (absence-causes-service-failure)
 # default: no-default
 uint32 tool_number
