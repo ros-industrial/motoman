@@ -38,7 +38,8 @@
 # file with this service DOES NOT affect the execution of those trajectories.
 #
 # As noted earlier though, the active tool file definition will affect FSU and
-# PFL performance (see "FSU and PFL" above).
+# PFL behaviour, as the tool definition is used in calculation of dynamics and
+# safety (see "FSU and PFL" above).
 #
 # To clarify: the TCP definition of the tool file is NOT taken into account when
 # calculating manipulator motion based on incoming ROS JointTrajectoryAction
