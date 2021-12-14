@@ -74,6 +74,9 @@
 #       error message being provided via the 'message' field of the service
 #       response.
 #
+# NOTE: this field is 0-based, with 0 corresponding to the first motion group,
+#       1 the second, etc.
+#
 # legal-values: [0, total_nr_of_groups)
 # required: yes (absence-causes-service-failure)
 # default: no-default
@@ -84,6 +87,9 @@ uint32 group_number
 # NOTE: see the NOTE for the 'group_number' field above. Illegal values for
 #       this field will result in failed service invocations similar to what
 #       is described for that field.
+#
+# NOTE: this field is 0-based, with 0 corresponding to the first tool file,
+#       1 the second, etc.
 #
 # legal-values: [0, 63]
 # required: yes (absence-causes-service-failure)
