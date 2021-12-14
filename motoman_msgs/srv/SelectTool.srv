@@ -62,8 +62,7 @@
 # legal-values: [0, total_nr_of_groups)
 # required: yes (absence-causes-service-failure)
 # default: no-default
-int32 group_number
-
+uint32 group_number
 
 # Numeric ID of the tool file to switch to for the specified group.
 #
@@ -74,7 +73,7 @@ int32 group_number
 # legal-values: [0, total_nr_of_defined_tool_files)
 # required: yes (absence-causes-service-failure)
 # default: no-default
-int32 tool_number
+uint32 tool_number
 
 # TODO: might want to expose 'sequence_number' here as well
 
