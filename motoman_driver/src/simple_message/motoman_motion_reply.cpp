@@ -162,7 +162,9 @@ std::string MotionReply::getSubcodeString(shared_int code)
   case MotionReplySubcodes::NotReady::SKILLSEND:
     return "Waiting on SkillSend";
   case MotionReplySubcodes::NotReady::PFL_ACTIVE:
-    return "PFL is active";
+    return "Power and Force Limiting (PFL) was activated: "
+      "please reset PFL on the robot, re-enable the driver (call the service) "
+      "and send a new trajectory";
   case MotionReplySubcodes::NotReady::INC_MOVE_ERROR:
     return "Incremental move rejected on MotoROS side";
 
