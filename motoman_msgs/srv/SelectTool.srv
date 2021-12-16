@@ -5,6 +5,24 @@
 # and manual jogging.
 #
 #
+# ## Controller support
+#
+# This service wraps two distinct (but related) actions:
+#
+#  1. changing the tool file used for execution of (Moto)ROS-controlled motions
+#  2. changing the tool file used for jogging
+#
+# Action 1 is supported by all controllers supported by MotoROS (ie: DX100,
+# FS100, DX200 and YRC1000(u)).
+#
+# Action 2 is NOT supported on FS100 controllers. This is a limitation of
+# MotoPlus, not of MotoROS.
+#
+# In all cases, make sure to read the following sections carefully to be aware
+# of the behaviour of this service and of the Yaskawa controller after calling
+# this service.
+#
+#
 # ## FSU and PFL
 #
 # Tool switches through this service will be taken into account by the FSU and
