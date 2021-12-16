@@ -11,6 +11,10 @@
 #  - 2701 and up : Network Inputs (2501 and up on DX100 and FS100)
 #  - 1001 and up : Universal/General Outputs
 #
+# NOTE: many programming languages will parse literals starting with '0' as
+#       octal numbers. Do not add leading zeros to group addresses to avoid
+#       specifying the wrong address to write to.
+
 # Refer also the Yaskawa Motoman documentation on IO addressing and
 # configuration.
 
