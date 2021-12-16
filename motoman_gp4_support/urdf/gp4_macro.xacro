@@ -140,13 +140,14 @@
       <axis xyz="-1 0 0" />
       <limit lower="${radians(-455)}" upper="${radians(455)}" effort="16.46" velocity="${radians(1000)}"/>
     </joint>
-     <link name="${prefix}flange"/>
+    <!-- end of joint list -->
+
+    <link name="${prefix}flange"/>
     <joint name="${prefix}joint_6_t-flange" type="fixed">
       <origin xyz="0.072 0 0" rpy="${radians(180)} ${radians(-90)} 0"/>
       <parent link="${prefix}link_6_t"/>
       <child link="${prefix}flange"/>
     </joint>
-    <!-- end of joint list -->
 
     <!-- default tool -->
     <link name="${prefix}tool0"/>
