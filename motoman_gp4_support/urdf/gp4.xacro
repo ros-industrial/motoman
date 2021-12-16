@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<robot name="motoman_gp4" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find motoman_gp4_support)/urdf/gp4_macro.xacro" />
+  <xacro:motoman_gp4 prefix=""/>
+</robot>
