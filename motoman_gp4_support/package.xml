@@ -1,24 +1,27 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
-  <name>motoman_sia10d_support</name>
-  <version>0.3.5</version>
+  <name>motoman_gp4_support</name>
+  <version>0.1.0</version>
   <description>
-    <p>ROS-Industrial support for the Motoman SIA10D (and variants).</p>
+    <p>ROS-Industrial support for the Motoman GP4 (and variants).</p>
     <p>
       This package contains configuration data, 3D models and launch files
-      for Motoman SIA10D manipulators.
+      for Motoman GP4 manipulators. This currently includes the base model
+      which also supports the DT and XP variants.
     </p>
     <p>
       <b>Specifications</b>
     </p>
     <ul>
-      <li>SIA10D - Default</li>
-    </ul>
+      <li>GP4 - Default</li>
+   </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
-      found in the online 
-      http://www.motoman.com/datasheets/sia10d.pdf
+      found in <em>YASKAWA MOTOMAN-GP4 INSTRUCTIONS (HW2480085)</em>
+      version <em>192633-1CD, rev 1</em>.
+    </p>
+    <p>
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
@@ -28,12 +31,12 @@
       robot model and configuration you intend to use them with.
     </p>
   </description>
-  <author>Shaun Edwards</author>
-  <maintainer email="shaun.edwards@gmail.com">Shaun Edwards</maintainer>
+  <author>Eric Marcil</author>
+  <maintainer email="eric.marcil@motoman.com">Eric Marcil</maintainer>
   <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
   <license>BSD</license>
 
-  <url type="website">http://wiki.ros.org/motoman_sia10d_support</url>
+  <url type="website">http://wiki.ros.org/motoman_gp4_support</url>
   <url type="bugtracker">https://github.com/ros-industrial/motoman/issues</url>
   <url type="repository">https://github.com/ros-industrial/motoman</url>
 

@@ -50,10 +50,5 @@
 
   <export>
     <architecture_independent/>
-    <deprecated>
-      This package will be removed in ROS Kinetic. The configuration data and
-      models included in this package can now be found in the motoman_sia_support
-      package in ROS Jade.
-    </deprecated>
   </export>
 </package>

@@ -30,88 +30,88 @@
  */
 
 #ifdef ROS
-#include "motoman_driver/simple_message/motoman_motion_ctrl_message.h"
+#include "motoman_driver/simple_message/messages/motoman_motion_reply_message.h"
 #include "simple_message/byte_array.h"
 #include "simple_message/log_wrapper.h"
 #endif
 
 #ifdef MOTOPLUS
-#include "motoman_motion_ctrl_message.h"  // NOLINT(build/include)
-#include "byte_array.h"                   // NOLINT(build/include)
-#include "log_wrapper.h"                  // NOLINT(build/include)
+#include "motoman_motion_reply_message.h"  // NOLINT(build/include)
+#include "byte_array.h"                    // NOLINT(build/include)
+#include "log_wrapper.h"                   // NOLINT(build/include)
 #endif
 
 using industrial::byte_array::ByteArray;
 using industrial::simple_message::SimpleMessage;
-using motoman::simple_message::motion_ctrl::MotionCtrl;
+using motoman::simple_message::motion_reply::MotionReply;
 
 namespace motoman
 {
 namespace simple_message
 {
-namespace motion_ctrl_message
+namespace motion_reply_message
 {
-MotionCtrlMessage::MotionCtrlMessage(void)
+
+MotionReplyMessage::MotionReplyMessage(void)
 {
   this->init();
 }
 
-MotionCtrlMessage::~MotionCtrlMessage(void)
+MotionReplyMessage::~MotionReplyMessage(void)
 {
 }
 
-bool MotionCtrlMessage::init(SimpleMessage & msg)
+bool MotionReplyMessage::init(SimpleMessage & msg)
 {
   ByteArray data = msg.getData();
   this->init();
 
-  if (!data.unload(this->cmd_))
+  if (!data.unload(this->reply_))
   {
-    LOG_ERROR("Failed to unload MotionCtrl data");
+    LOG_ERROR("Failed to unload MotionReplyMessage data");
     return false;
   }
-
   return true;
 }
 
-void MotionCtrlMessage::init(MotionCtrl & cmd)
+void MotionReplyMessage::init(MotionReply & reply)
 {
   this->init();
-  this->cmd_.copyFrom(cmd);
+  this->reply_.copyFrom(reply);
 }
 
-void MotionCtrlMessage::init()
+void MotionReplyMessage::init()
 {
-  this->setMessageType(MotomanMsgTypes::MOTOMAN_MOTION_CTRL);
-  this->cmd_.init();
+  this->setMessageType(MotomanMsgTypes::MOTOMAN_MOTION_REPLY);
+  this->reply_.init();
 }
 
-bool MotionCtrlMessage::load(ByteArray *buffer)
+bool MotionReplyMessage::load(ByteArray *buffer)
 {
-  LOG_COMM("Executing MotionCtrl message load");
-  if (!buffer->load(this->cmd_))
+  LOG_COMM("Executing MotionReply message load");
+  if (!buffer->load(this->reply_))
   {
-    LOG_ERROR("Failed to load MotionCtrl message");
+    LOG_ERROR("Failed to load MotionReply message");
     return false;
   }
 
   return true;
 }
 
-bool MotionCtrlMessage::unload(ByteArray *buffer)
+bool MotionReplyMessage::unload(ByteArray *buffer)
 {
-  LOG_COMM("Executing MotionCtrl message unload");
+  LOG_COMM("Executing MotionReply message unload");
 
-  if (!buffer->unload(this->cmd_))
+  if (!buffer->unload(this->reply_))
   {
-    LOG_ERROR("Failed to unload MotionCtrl message");
+    LOG_ERROR("Failed to unload MotionReply message");
     return false;
   }
 
   return true;
 }
 
-}  // namespace motion_ctrl_message
+}  // namespace motion_reply_message
 }  // namespace simple_message
 }  // namespace motoman
 
