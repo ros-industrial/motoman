@@ -734,8 +734,10 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 							(ioStatus[IO_ROBOTSTATUS_ALARM_USER] == 0))
 							controller->alarmCode = 0;
 						else
+						{
 							controller->alarmCode = Ros_Controller_GetAlarmCode();
-
+							Ros_MotionServer_ClearQ_All(controller);
+						}
 						break;
 					}
 
