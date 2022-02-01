@@ -153,12 +153,12 @@
     <!-- end of joint list -->
 
     <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
-    <!-- <link name="${prefix}base" />
+    <link name="${prefix}base" />
     <joint name="${prefix}base_link-base" type="fixed">
         <origin xyz="0 0 0.650" rpy="0 0 0"/>
         <parent link="${prefix}base_link"/>
         <child link="${prefix}base"/>
-    </joint> -->
+    </joint>
 
 </xacro:macro>
 </robot>
