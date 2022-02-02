@@ -1,22 +1,15 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="motoman_sia30d" params="prefix">
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
-    <!-- Properties -->
-    <material name="yaskawa_blue">
-      <color rgba="0.12941 0.14902 0.74902 1" />
-    </material>
-      <material name="silver">
-      <color rgba="0.8 0.8 0.8 1"/>
-    </material>
-    
     <!-- link list -->
     <link name="${prefix}base_link">
       <visual>
         <geometry>
           <mesh filename="package://motoman_sia30d_support/meshes/visual/base_link.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -29,7 +22,7 @@
         <geometry>
           <mesh filename="package://motoman_sia30d_support/meshes/visual/link_1_s.stl"/>
         </geometry>
-        <material name="silver"/>
+        <xacro:material_yaskawa_silver/>
       </visual>
       <collision>
         <geometry>
@@ -42,7 +35,7 @@
         <geometry>
           <mesh filename="package://motoman_sia30d_support/meshes/visual/link_2_l.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -55,7 +48,7 @@
         <geometry>
           <mesh filename="package://motoman_sia30d_support/meshes/visual/link_3_e.stl"/>
         </geometry>
-        <material name="silver"/>
+        <xacro:material_yaskawa_silver/>
       </visual>
       <collision>
         <geometry>
@@ -68,7 +61,7 @@
         <geometry>
           <mesh filename="package://motoman_sia30d_support/meshes/visual/link_4_u.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -81,7 +74,7 @@
         <geometry>
           <mesh filename="package://motoman_sia30d_support/meshes/visual/link_5_r.stl"/>
         </geometry>
-        <material name="silver"/>
+        <xacro:material_yaskawa_silver/>
       </visual>
       <collision>
         <geometry>
@@ -94,7 +87,7 @@
         <geometry>
           <mesh filename="package://motoman_sia30d_support/meshes/visual/link_6_b.stl"/>
         </geometry>
-        <material name="yaskawa_blue"/>
+        <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
@@ -107,7 +100,7 @@
         <geometry>
           <mesh filename="package://motoman_sia30d_support/meshes/visual/link_7_t.stl"/>
         </geometry>
-        <material name="silver"/>
+        <xacro:material_yaskawa_silver/>
       </visual>
       <collision>
         <geometry>
