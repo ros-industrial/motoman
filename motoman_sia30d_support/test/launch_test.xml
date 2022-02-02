@@ -26,32 +26,32 @@
   testing multpile launch files
 -->
 <launch>
-	<arg name="req_arg" value="default"/>
+  <arg name="req_arg" value="default"/>
   <arg name="dx100" value="dx100"/>
 
   <group ns="load_sia30d">
-	  <include file="$(find motoman_sia30d_support)/launch/load_sia30d.launch"/>
+    <include file="$(find motoman_sia30d_support)/launch/load_sia30d.launch"/>
   </group>
 
   <group ns="test_sia30d">
-	  <include file="$(find motoman_sia30d_support)/launch/test_sia30d.launch"/>
+    <include file="$(find motoman_sia30d_support)/launch/test_sia30d.launch"/>
   </group>
 
   <group ns="robot_interface_streaming_sia30d">
     <group ns="dx100" >
-	    <include file="$(find motoman_sia30d_support)/launch/robot_interface_streaming_sia30d.launch">
-		    <arg name="robot_ip"   value="$(arg req_arg)" />
+      <include file="$(find motoman_sia30d_support)/launch/robot_interface_streaming_sia30d.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg dx100)"/>
-	    </include>
+      </include>
     </group>
   </group>
 
   <group ns="robot_state_visualize_sia30d">
     <group ns="dx100" >
-	    <include file="$(find motoman_sia30d_support)/launch/robot_state_visualize_sia30d.launch">
-		    <arg name="robot_ip"   value="$(arg req_arg)" />
+      <include file="$(find motoman_sia30d_support)/launch/robot_state_visualize_sia30d.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg dx100)"/>
-	    </include>
+      </include>
     </group>
 
   </group>
