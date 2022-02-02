@@ -1,8 +1,6 @@
 
 # Write 'value' to the M register at 'address'.
 #
-# This service does not return anything.
-#
 # Addresses are plain, base-10 integers, as used and displayed by the controller
 # (on the teach pendant for instance).
 #
