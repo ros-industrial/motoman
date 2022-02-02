@@ -179,7 +179,7 @@ public:
    *
    * \return true if equal
    */
-  bool operator==(SelectTool &rhs);
+  bool operator==(const SelectTool &rhs) const;
 
   // Overrides - SimpleSerialize
   bool load(industrial::byte_array::ByteArray *buffer) override;

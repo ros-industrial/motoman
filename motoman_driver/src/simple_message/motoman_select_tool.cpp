@@ -82,7 +82,7 @@ void SelectTool::copyFrom(SelectTool &src)
   this->setSequenceNumber(src.getSequenceNumber());
 }
 
-bool SelectTool::operator==(SelectTool &rhs)
+bool SelectTool::operator==(const SelectTool &rhs) const
 {
   bool rslt = this->group_number_ == rhs.group_number_
     && this->tool_number_ == rhs.tool_number_
