@@ -1555,6 +1555,9 @@ BOOL Ros_MotionServer_ClearQ(Controller* controller, int groupNo)
 	if(!Ros_Controller_IsValidGroupNo(controller, groupNo))
 		return FALSE;
 
+	// Stop addtional items from being added to the queue
+	controller->ctrlGroups[groupNo]->hasDataToProcess = FALSE;
+
 	// Set pointer to specified queue
 	q = &controller->ctrlGroups[groupNo]->inc_q;
 
