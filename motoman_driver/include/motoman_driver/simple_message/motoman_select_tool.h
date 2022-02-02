@@ -182,9 +182,9 @@ public:
   bool operator==(SelectTool &rhs);
 
   // Overrides - SimpleSerialize
-  bool load(industrial::byte_array::ByteArray *buffer);
-  bool unload(industrial::byte_array::ByteArray *buffer);
-  unsigned int byteLength()
+  bool load(industrial::byte_array::ByteArray *buffer) override;
+  bool unload(industrial::byte_array::ByteArray *buffer) override;
+  unsigned int byteLength() override
   {
     return 3 * sizeof(industrial::shared_types::shared_int);
   }

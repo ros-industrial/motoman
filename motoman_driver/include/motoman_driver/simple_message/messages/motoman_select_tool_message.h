@@ -90,7 +90,7 @@ public:
    *
    * \return true if message successfully initialized, otherwise false
    */
-  bool init(industrial::simple_message::SimpleMessage & msg);
+  bool init(industrial::simple_message::SimpleMessage & msg) override;
 
   /**
    * \brief Initializes message from a select tool structure
@@ -104,13 +104,13 @@ public:
    * \brief Initializes a new message
    *
    */
-  void init();
+  void init() override;
 
   // Overrides - SimpleSerialize
-  bool load(industrial::byte_array::ByteArray *buffer);
-  bool unload(industrial::byte_array::ByteArray *buffer);
+  bool load(industrial::byte_array::ByteArray *buffer) override;
+  bool unload(industrial::byte_array::ByteArray *buffer) override;
 
-  unsigned int byteLength()
+  unsigned int byteLength() override
   {
     return this->cmd_.byteLength();
   }
