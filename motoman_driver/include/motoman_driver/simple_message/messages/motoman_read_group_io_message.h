@@ -93,7 +93,7 @@ public:
   bool init(industrial::simple_message::SimpleMessage & msg);
 
   /**
-   * \brief Initializes message from a read single io structure
+   * \brief Initializes message from a read group io structure
    *
    * \param cmd read single io data structure
    *

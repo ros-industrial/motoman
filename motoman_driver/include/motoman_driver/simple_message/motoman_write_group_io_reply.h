@@ -110,7 +110,7 @@ public:
   void init();
 
   /**
-   * \brief Initializes a complete read single io reply
+   * \brief Initializes a complete read group io reply
    *
    */
   void init(WriteGroupIOReplyResultCode result_code);
