@@ -91,6 +91,8 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
 
+  srv_select_tool_ = node_.advertiseService("select_tool", &MotomanJointTrajectoryStreamer::selectToolCB, this);
+
   return rtn;
 }
 
@@ -113,6 +115,8 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
   disabler_ = node_.advertiseService("robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
 
   enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
+
+  srv_select_tool_ = node_.advertiseService("select_tool", &MotomanJointTrajectoryStreamer::selectToolCB, this);
 
   return rtn;
 }
@@ -172,6 +176,39 @@ bool MotomanJointTrajectoryStreamer::enableRobotCB(std_srvs::Trigger::Request& r
     ROS_WARN_STREAM(res.message);
   }
 
+  return true;
+}
+
+bool MotomanJointTrajectoryStreamer::selectToolCB(motoman_msgs::SelectTool::Request &req,
+  motoman_msgs::SelectTool::Response &res)
+{
+  std::string err_msg;
+
+  {
+    // SmplMsgConnection is not thread safe, so lock first
+    // NOTE: motion_ctrl_ uses the SmplMsgConnection here
+    const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
+    res.success = motion_ctrl_.selectToolFile(req.group_number, req.tool_number, err_msg);
+  }
+
+  if (!res.success)
+  {
+    // provide caller with failure indication
+    // TODO( ): should we also return the result code?
+    std::stringstream message;
+    message << "Tool file change failed (grp: " << req.group_number
+      << ", tool: " << req.tool_number << "): " << err_msg;
+    res.message = message.str();
+    ROS_ERROR_STREAM(res.message);
+  }
+  else
+  {
+    ROS_DEBUG_STREAM("Tool file changed to: " << req.tool_number
+      << ", for group: " << req.group_number);
+  }
+
+  // the ROS service was successfully invoked, so return true (even if the
+  // MotoROS service was not successfully invoked)
   return true;
 }
 

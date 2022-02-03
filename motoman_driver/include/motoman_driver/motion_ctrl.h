@@ -35,6 +35,7 @@
 #include "simple_message/smpl_msg_connection.h"
 #include "motoman_driver/simple_message/motoman_motion_ctrl.h"
 #include "motoman_driver/simple_message/motoman_motion_reply.h"
+#include "motoman_driver/simple_message/motoman_select_tool.h"
 #include <string>
 namespace motoman
 {
@@ -43,6 +44,7 @@ namespace motion_ctrl
 using industrial::smpl_msg_connection::SmplMsgConnection;
 using motoman::simple_message::motion_reply::MotionReply;
 typedef motoman::simple_message::motion_ctrl::MotionControlCmd MotionControlCmd;
+typedef motoman::simple_message::misc::SelectTool SelectToolReq;
 
 /**
  * \brief Wrapper class around Motoman-specific motion control commands
@@ -63,6 +65,17 @@ public:
   bool setTrajMode(bool enable);
   bool stopTrajectory();
 
+  /**
+   * \brief Change the active tool file on the controller.
+   *
+   * \param group_number The motion group for which the tool file is defined
+   * \param tool_number The tool file to activate
+   * \param err_msg [out] A descriptive error message in case of failure
+   * \return True IFF the tool file was changed successfully
+   */
+  bool selectToolFile(industrial::shared_types::shared_int group_number,
+    industrial::shared_types::shared_int tool_number, std::string& err_msg);
+
   static std::string getErrorString(const MotionReply &reply);
 
 protected:
@@ -70,6 +83,9 @@ protected:
   int robot_id_;
 
   bool sendAndReceive(MotionControlCmd command, MotionReply &reply);
+
+  // special overload for sending and receiving Select Tool requests
+  bool sendAndReceive(SelectToolReq& request, MotionReply &reply);
 };
 
 }  // namespace motion_ctrl
