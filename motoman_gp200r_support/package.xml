@@ -19,7 +19,7 @@
       Joint limits and maximum joint velocities are based on the information 
       found in the online documentation files for the robot (GP200R_2D.zip
       and GP200R_3D.zip from
-      https://www.cz.yaskawa.eu.com/en/products/robotics/motoman-robots/productdetail/product/gp200R/)
+      https://www.motoman.com/en-us/products/robots/industrial/assembly-handling/gp-series/gp200r)
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
@@ -29,9 +29,9 @@
       robot model and configuration you intend to use them with.
     </p>
   </description>
-  <author>Jakub Marsik</author>
-  <maintainer email="jakub@km-robotics.cz">Jakub Marsik (KM Robotics)</maintainer>
-  <maintainer email="g.a.vanderhoorn@tudelft.nl">G.A. vd. Hoorn (TU Delft Robotics Institute)</maintainer>
+  <author>Dylan Rolleigh</author>
+  <maintainer email="drolleigh@bastiansolutions.com">Dylan Rolleigh (Bastian Solutions)</maintainer>
+  <maintainer email="ajinandra@bastiansolutions.com">Akash Jinandra (Bastian Solutions)</maintainer>
   <license>BSD</license>
 
   <url type="website">http://wiki.ros.org/motoman_gp200r_support</url>
