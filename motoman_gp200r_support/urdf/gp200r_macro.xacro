@@ -142,11 +142,6 @@
         <axis xyz="1 0 0" />
         <limit lower="${radians(-180)}" upper="${radians(180)}" effort="1765.19" velocity="${radians(190)}"/>
     </joint>
-    <joint name="${prefix}joint_6_t-tool0" type="fixed">
-        <origin xyz="0 0 0" rpy="${radians(180)} ${radians(-90)} 0"/>
-        <parent link="${prefix}link_6_t"/>
-        <child link="${prefix}flange"/>
-    </joint>
     <!-- end of joint list -->
 
     <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
