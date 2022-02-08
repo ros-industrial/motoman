@@ -483,7 +483,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     switch (this->state_)
     {
     case TransferStates::IDLE:
-      ros::Duration(0.250).sleep();  //  slower loop while waiting for new trajectory
+      ros::Duration(0.010).sleep();  //  slower loop while waiting for new trajectory
       break;
 
     case TransferStates::STREAMING:
@@ -640,4 +640,3 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
 
 }  // namespace joint_trajectory_streamer
 }  // namespace motoman
-

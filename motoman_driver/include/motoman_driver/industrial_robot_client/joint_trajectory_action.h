@@ -95,8 +95,6 @@ private:
    */
   ros::Publisher pub_trajectory_command_;
 
-  std::map<int, ros::Publisher> pub_trajectories_;
-
   std::map<int, RobotGroup> robot_groups_;
 
   /**
@@ -105,44 +103,43 @@ private:
    */
   ros::Subscriber sub_trajectory_state_;
 
-  std::map<int, ros::Subscriber> sub_trajectories_;
-
   /**
    * \brief Subscribes to the robot status (typically published by the
    * robot driver).
    */
   ros::Subscriber sub_robot_status_;
 
-  std::map<int, ros::Subscriber> sub_status_;
-
-  std::map<int, JointTractoryActionServer*> act_servers_;
   /**
    * \brief Watchdog time used to fail the action request if the robot
    * driver is not responding.
    */
   ros::Timer watchdog_timer_;
 
-  std::map<int, ros::Timer>watchdog_timer_map_;
+  /**
+   * \brief Indicates whether a motion has been started
+   */
+  bool motion_started_;
 
   /**
    * \brief Indicates action has an active goal
    */
   bool has_active_goal_;
 
-  std::map<int, bool> has_active_goal_map_;
+  /**
+   * \brief Indicates which groups are active on `multi-group` action goals,
+   * Note: independant of `has_active_goal_map_` which handles single group goals.
+   */
+  std::map<int, bool> has_active_goals_map_;
 
   /**
    * \brief Cache of the current active goal
    */
   JointTractoryActionServer::GoalHandle active_goal_;
 
-  std::map<int, JointTractoryActionServer::GoalHandle> active_goal_map_;
   /**
    * \brief Cache of the current active trajectory
    */
   trajectory_msgs::JointTrajectory current_traj_;
-
-  std::map<int, trajectory_msgs::JointTrajectory> current_traj_map_;
 
   std::vector<std::string> all_joint_names_;
 
@@ -162,13 +159,6 @@ private:
   double goal_threshold_;
 
   /**
-   * \brief The joint names associated with the robot the action is
-   * interfacing with.  The joint names must be the same as expected
-   * by the robot driver.
-   */
-  std::vector<std::string> joint_names_;
-
-  /**
    * \brief Cache of the last subscribed feedback message
    */
   control_msgs::FollowJointTrajectoryFeedbackConstPtr last_trajectory_state_;
@@ -179,8 +169,6 @@ private:
    * \brief Indicates trajectory state has been received.  Used by
    * watchdog to determine if the robot driver is responding.
    */
-  bool trajectory_state_recvd_;
-
   std::map<int, bool> trajectory_state_recvd_map_;
 
   /**
@@ -191,7 +179,7 @@ private:
   /**
    * \brief The watchdog period (seconds)
    */
-  static const double WATCHD0G_PERIOD_;  // = 1.0;
+  static const double WATCHDOG_PERIOD_;  // = 1.0;
 
   /**
    * \brief Watch dog callback, used to detect robot driver failures
@@ -200,8 +188,6 @@ private:
    *
    */
   void watchdog(const ros::TimerEvent &e);
-
-  void watchdog(const ros::TimerEvent &e, int group_number);
 
   /**
    * \brief Action server goal callback method
@@ -220,24 +206,7 @@ private:
    */
 
   void cancelCB(JointTractoryActionServer::GoalHandle gh);
-  /**
-   * \brief Controller state callback (executed when feedback message
-   * received)
-   *
-   * \param msg joint trajectory feedback message
-   *
-   */
 
-  void goalCB(JointTractoryActionServer::GoalHandle gh, int group_number);
-
-  /**
-   * \brief Action server cancel callback method
-   *
-   * \param gh goal handle
-   *
-   */
-
-  void cancelCB(JointTractoryActionServer::GoalHandle gh, int group_number);
   /**
    * \brief Controller state callback (executed when feedback message
    * received)
@@ -246,9 +215,6 @@ private:
    *
    */
   void controllerStateCB(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg);
-
-  void controllerStateCB(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg, int robot_id);
-
 
   /**
    * \brief Controller status callback (executed when robot status
@@ -260,6 +226,12 @@ private:
   void robotStatusCB(const industrial_msgs::RobotStatusConstPtr &msg);
 
   /**
+   * \brief Marks the current action goal as succeeded.
+   *
+   */
+  void setGoalSuccess();
+
+  /**
    * \brief Aborts the current action goal and sends a stop command
    * (empty message) to the robot driver.
    *
@@ -267,7 +239,12 @@ private:
    */
   void abortGoal();
 
-  void abortGoal(int robot_id);
+  /**
+   * \brief Cancels the current action goal and sends a stop command
+   * (empty message) to the robot driver.
+   *
+   */
+  void cancelGoal();
 
   /**
    * \brief Controller status callback (executed when robot status
@@ -279,15 +256,10 @@ private:
    * \return true if all joints are within goal contraints
    *
    */
-  bool withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
-                             const trajectory_msgs::JointTrajectory & traj);
-
-  bool withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
-                             const trajectory_msgs::JointTrajectory & traj, int robot_id);
+  bool withinGoalConstraints(const trajectory_msgs::JointTrajectory & traj);
 };
 
 }  // namespace joint_trajectory_action
 }  // namespace industrial_robot_client
 
 #endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_JOINT_TRAJECTORY_ACTION_H
-
