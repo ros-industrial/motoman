@@ -1,0 +1,25 @@
+
+# Write 'value' to the M register at 'address'.
+#
+# Addresses are plain, base-10 integers, as used and displayed by the controller
+# (on the teach pendant for instance).
+#
+# Only the following addresses can be written to:
+#
+#  - 0 to 559
+#
+# NOTE 1: do not add 1000000 to the address, MotoROS will do this when
+#         necessary.
+#
+# NOTE 2: many programming languages will parse literals starting with '0' as
+#         octal numbers. Do not add leading zeros to register addresses to avoid
+#         specifying the wrong register to write to.
+#
+# Refer also the Yaskawa Motoman documentation on IO addressing and
+# configuration.
+
+uint32 address
+uint16 value
+---
+string message
+bool success
