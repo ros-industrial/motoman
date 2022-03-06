@@ -17,7 +17,7 @@
 # configuration.
 
 uint32 address
-uint32 value
+uint8 value
 ---
 string message
 bool success
