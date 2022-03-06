@@ -1,0 +1,21 @@
+
+# Read (and return) the current value of the Group IO element at 'address'.
+#
+# Addresses are plain, base-10 integers, as used and displayed by the controller
+# (on the teach pendant for instance).
+#
+# There are no restrictions as to which group IO elements can be read, but they
+# have to exist on the controller and be configured correctly.
+#
+# NOTE: many programming languages will parse literals starting with '0' as
+#       octal numbers. Do not add leading zeros to group addresses to avoid
+#       specifying the wrong address to read.
+#
+# Refer also the Yaskawa Motoman documentation on IO addressing and
+# configuration.
+
+uint32 address
+---
+string message
+bool success
+uint8 value

@@ -67,22 +67,30 @@ set(MSG_SRC_FILES
   src/simple_message/messages/motoman_read_mregister_reply_message.cpp
   src/simple_message/messages/motoman_read_single_io_message.cpp
   src/simple_message/messages/motoman_read_single_io_reply_message.cpp
+  src/simple_message/messages/motoman_read_group_io_message.cpp
+  src/simple_message/messages/motoman_read_group_io_reply_message.cpp
   src/simple_message/messages/motoman_select_tool_message.cpp
   src/simple_message/messages/motoman_write_mregister_message.cpp
   src/simple_message/messages/motoman_write_mregister_reply_message.cpp
   src/simple_message/messages/motoman_write_single_io_message.cpp
   src/simple_message/messages/motoman_write_single_io_reply_message.cpp
+  src/simple_message/messages/motoman_write_group_io_message.cpp
+  src/simple_message/messages/motoman_write_group_io_reply_message.cpp
   src/simple_message/motoman_motion_ctrl.cpp
   src/simple_message/motoman_motion_reply.cpp
   src/simple_message/motoman_read_mregister.cpp
   src/simple_message/motoman_read_mregister_reply.cpp
   src/simple_message/motoman_read_single_io.cpp
   src/simple_message/motoman_read_single_io_reply.cpp
+  src/simple_message/motoman_read_group_io.cpp
+  src/simple_message/motoman_read_group_io_reply.cpp
   src/simple_message/motoman_select_tool.cpp
   src/simple_message/motoman_write_mregister.cpp
   src/simple_message/motoman_write_mregister_reply.cpp
   src/simple_message/motoman_write_single_io.cpp
   src/simple_message/motoman_write_single_io_reply.cpp
+  src/simple_message/motoman_write_group_io.cpp
+  src/simple_message/motoman_write_group_io_reply.cpp
 )
 
 set(CLIENT_SRC_FILES

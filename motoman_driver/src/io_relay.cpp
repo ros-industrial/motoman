@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2016, Delft Robotics Institute
  * Copyright (c) 2020, Southwest Research Institute
+ * Copyright (c) 2021, Delft Robotics Institute
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,10 +98,14 @@ bool MotomanIORelay::init(int default_port)
       &MotomanIORelay::readMRegisterCB, this);
   this->srv_read_single_io = this->node_.advertiseService("read_single_io",
       &MotomanIORelay::readSingleIoCB, this);
+  this->srv_read_group_io = this->node_.advertiseService("read_group_io",
+      &MotomanIORelay::readGroupIoCB, this);
   this->srv_write_mregister = this->node_.advertiseService("write_mregister",
       &MotomanIORelay::writeMRegisterCB, this);
   this->srv_write_single_io = this->node_.advertiseService("write_single_io",
       &MotomanIORelay::writeSingleIoCB, this);
+  this->srv_write_group_io = this->node_.advertiseService("write_group_io",
+      &MotomanIORelay::writeGroupIoCB, this);
 
   return true;
 }
@@ -175,6 +180,41 @@ bool MotomanIORelay::readSingleIoCB(
   return true;
 }
 
+// Service to read a group IO
+bool MotomanIORelay::readGroupIoCB(
+  motoman_msgs::ReadGroupIO::Request &req,
+  motoman_msgs::ReadGroupIO::Response &res)
+{
+  shared_int io_val = -1;
+  std::string err_msg;
+
+  // send message and release mutex as soon as possible
+  this->mutex_.lock();
+  bool result = io_ctrl_.readGroupIO(req.address, io_val, err_msg);
+  this->mutex_.unlock();
+
+  if (!result)
+  {
+    res.success = false;
+
+    // provide caller with failure indication
+    // TODO( ): should we also return the result code?
+    std::stringstream message;
+    message << "Group read failed (address: " << req.address << "): " << err_msg;
+    res.message = message.str();
+    ROS_ERROR_STREAM_NAMED("io.read", res.message);
+
+    return true;
+  }
+
+  ROS_DEBUG_STREAM_NAMED("io.read", "Address " << req.address << ", value: " << io_val);
+
+  // no failure, so no need for an additional message
+  res.value = io_val;
+  res.success = true;
+  return true;
+}
+
 // Service to write an M register
 bool MotomanIORelay::writeMRegisterCB(
   motoman_msgs::WriteMRegister::Request &req,
@@ -228,6 +268,39 @@ bool MotomanIORelay::writeSingleIoCB(
     // TODO( ): should we also return the result code?
     std::stringstream message;
     message << "Write failed (address: " << req.address << "): " << err_msg;
+    res.message = message.str();
+    ROS_ERROR_STREAM_NAMED("io.write", res.message);
+
+    return true;
+  }
+
+  ROS_DEBUG_STREAM_NAMED("io.write", "Element " << req.address << " set to: " << req.value);
+
+  // no failure, so no need for an additional message
+  res.success = true;
+  return true;
+}
+
+// Service to write Group IO
+bool MotomanIORelay::writeGroupIoCB(
+  motoman_msgs::WriteGroupIO::Request &req,
+  motoman_msgs::WriteGroupIO::Response &res)
+{
+  std::string err_msg;
+
+  // send message and release mutex as soon as possible
+  this->mutex_.lock();
+  bool result = io_ctrl_.writeGroupIO(req.address, req.value, err_msg);
+  this->mutex_.unlock();
+
+  if (!result)
+  {
+    res.success = false;
+
+    // provide caller with failure indication
+    // TODO( ): should we also return the result code?
+    std::stringstream message;
+    message << "Group write failed (address: " << req.address << "): " << err_msg;
     res.message = message.str();
     ROS_ERROR_STREAM_NAMED("io.write", res.message);
 

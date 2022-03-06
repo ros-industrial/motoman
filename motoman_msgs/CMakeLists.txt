@@ -27,9 +27,11 @@ add_service_files(
     CmdJointTrajectoryEx.srv
     ReadMRegister.srv
     ReadSingleIO.srv
+    ReadGroupIO.srv
     SelectTool.srv
     WriteMRegister.srv
     WriteSingleIO.srv
+    WriteGroupIO.srv
 )
 
 generate_messages(
