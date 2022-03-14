@@ -39,11 +39,11 @@ robot manipulator variant of the `meshes` directory of this package. Use correct
 You can use MeshLab to process visual meshes (created in previous step) to collision meshes automatically.
 Unfortunately it's not as simple as processing visual meshes mentioned above. There are more versions of
 MeshLab and they use different names and in some cases parameters for some of the filters used to do this
-conversion. Newer versions of MeshLab are not so easy to get on Ubuntu. Meshlab 2016.12 from this Ubuntu PPA
-works: https://launchpad.net/~zarquon42/+archive/ubuntu/meshlab.
+conversion. Newer versions of MeshLab are not so easy to get on Ubuntu. 
 
-Even with the right version of MeshLab some of the filters coredump when used from command line (through
-meshlabserver) :(
+Meshlab 2020.03 from this Ubuntu PPA works: https://launchpad.net/ubuntu/+source/meshlab
+
+If meshlabserver coredumps some filter parameters have changed since the script was created.
 
 Originally I was planning to do a convex hull, some simplification, inversion of faces orientation (sometimes
 needed, depends probably on the location of the origin point, if it's on the inside of the mesh body or not)
