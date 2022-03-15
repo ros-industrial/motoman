@@ -18,6 +18,7 @@ add_message_files(
     DynamicJointTrajectory.msg
     DynamicJointTrajectoryFeedback.msg
     DynamicJointsGroup.msg
+    MotorosError.msg
 )
 
 add_service_files(

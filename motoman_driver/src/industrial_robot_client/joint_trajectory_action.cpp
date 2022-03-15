@@ -115,6 +115,20 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
   this->robot_groups_ = robot_groups;
 
+  sub_trajectory_state_  = node_.subscribe<control_msgs::FollowJointTrajectoryFeedback>(
+                              "feedback_states", 1,
+                              boost::bind(&JointTrajectoryAction::controllerStateCB, this, _1));
+
+  sub_robot_status_ = node_.subscribe("robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
+
+  sub_motoros_errors_ = node_.subscribe("motoros_error", 1, &JointTrajectoryAction::motorosErrorCB, this);
+
+  // Set watchdog timer for entire robot state.
+  watchdog_timer_ = node_.createTimer(ros::Duration(WATCHDOG_PERIOD_),
+                              boost::bind(&JointTrajectoryAction::watchdog, this, _1));
+
+  has_active_goal_ = false;
+
   action_server_.start();
 }
 
@@ -529,6 +543,17 @@ void JointTrajectoryAction::controllerStateCB(
       active_goal_map_[robot_id].setSucceeded();
       has_active_goal_map_[robot_id] = false;
     }
+  }
+}
+
+void JointTrajectoryAction::motorosErrorCB(const motoman_msgs::MotorosError &msg)
+{
+  ROS_WARN_STREAM(
+    "Encountered motoros error " << msg.code << "-" << msg.subcode << ": "
+    << msg.code_description << " " << msg.subcode_description);
+  if (has_active_goal_)
+  {
+    abortGoal();
   }
 }
 
