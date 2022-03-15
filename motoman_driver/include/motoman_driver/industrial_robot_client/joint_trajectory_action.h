@@ -116,9 +116,10 @@ private:
   ros::Timer watchdog_timer_;
 
   /**
-   * \brief Indicates whether a motion has been started
+   * \brief The time that the active trajectory is expected to end execution.
+   * Used to determine when to begin checking for goal completion.
    */
-  bool motion_started_;
+  ros::Time expected_traj_end_;
 
   /**
    * \brief Indicates action has an active goal

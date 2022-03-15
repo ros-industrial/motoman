@@ -89,7 +89,6 @@ JointTrajectoryAction::JointTrajectoryAction() :
                               boost::bind(&JointTrajectoryAction::watchdog, this, _1));
 
   has_active_goal_ = false;
-  motion_started_ = false;
 
   action_server_.start();
 }
@@ -102,7 +101,6 @@ void JointTrajectoryAction::robotStatusCB(
   const industrial_msgs::RobotStatusConstPtr &msg)
 {
   last_robot_status_ = msg;  // caching robot status for later use.
-  motion_started_ |= (msg->in_motion.val != industrial_msgs::TriState::FALSE);
 }
 
 void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
@@ -309,8 +307,9 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh)
     // Publishing the joint names for the 4 groups
     dyn_traj.joint_names = all_joint_names_;
 
-    motion_started_ = false;
     this->pub_trajectory_command_.publish(dyn_traj);
+
+    expected_traj_end_ = ros::Time::now() + gh.getGoal()->trajectory.points.back().time_from_start;
   }
   else
   {
@@ -400,9 +399,9 @@ void JointTrajectoryAction::controllerStateCB(
     return;
   }
 
-  if (!motion_started_)
+  if (ros::Time::now() < expected_traj_end_)
   {
-    ROS_DEBUG("Motion has not started, ignoring feedback");
+    ROS_DEBUG("Motion has not ended, ignoring feedback");
     return;
   }
 
