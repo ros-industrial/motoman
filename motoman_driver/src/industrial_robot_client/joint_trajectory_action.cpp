@@ -84,6 +84,8 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
   sub_robot_status_ = node_.subscribe("robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
 
+  sub_motoros_errors_ = node_.subscribe("motoros_error", 1, &JointTrajectoryAction::motorosErrorCB, this);
+
   // Set watchdog timer for entire robot state.
   watchdog_timer_ = node_.createTimer(ros::Duration(WATCHDOG_PERIOD_),
                               boost::bind(&JointTrajectoryAction::watchdog, this, _1));
@@ -444,6 +446,17 @@ void JointTrajectoryAction::controllerStateCB(
   else if (last_robot_status_->in_motion.val == industrial_msgs::TriState::FALSE)
   {
     ROS_WARN("Outside goal constraints, aborting trajectory");
+    abortGoal();
+  }
+}
+
+void JointTrajectoryAction::motorosErrorCB(const motoman_msgs::MotorosError &msg)
+{
+  ROS_WARN_STREAM(
+    "Encountered motoros error " << msg.code << "-" << msg.subcode << ": "
+    << msg.code_description << " " << msg.subcode_description);
+  if (has_active_goal_)
+  {
     abortGoal();
   }
 }

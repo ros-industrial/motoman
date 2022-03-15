@@ -47,6 +47,7 @@
 #include <industrial_msgs/RobotStatus.h>
 #include <motoman_driver/industrial_robot_client/robot_group.h>
 #include <motoman_msgs/DynamicJointTrajectory.h>
+#include <motoman_msgs/MotorosError.h>
 namespace industrial_robot_client
 {
 namespace joint_trajectory_action
@@ -108,6 +109,11 @@ private:
    * robot driver).
    */
   ros::Subscriber sub_robot_status_;
+
+  /**
+   * \brief Subscribes to motoros error messages to abort trajectories.
+   */
+  ros::Subscriber sub_motoros_errors_;
 
   /**
    * \brief Watchdog time used to fail the action request if the robot
@@ -225,6 +231,15 @@ private:
    *
    */
   void robotStatusCB(const industrial_msgs::RobotStatusConstPtr &msg);
+
+  /**
+   * \brief Motoross error callback (executed when motoros error
+   * message received)
+   *
+   * \param msg Motoros error message
+   *
+   */
+  void motorosErrorCB(const motoman_msgs::MotorosError &msg);
 
   /**
    * \brief Marks the current action goal as succeeded.
