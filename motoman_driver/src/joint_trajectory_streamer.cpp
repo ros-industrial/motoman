@@ -415,6 +415,13 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
   return true;
 }
 
+void MotomanJointTrajectoryStreamer::shutdown()
+{
+  std_srvs::Trigger::Request req;
+  std_srvs::Trigger::Response res;
+  disableRobotCB(req, res);
+}
+
 // override send_to_robot to provide controllerReady() calls
 bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
