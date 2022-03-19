@@ -132,6 +132,11 @@ public:
 
   virtual void streamingThread();
 
+  /**
+   * \brief Safely disable Yaskawa arm before system shutdown.
+   */
+  void shutdown();
+
 protected:
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
