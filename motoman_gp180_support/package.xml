@@ -8,11 +8,13 @@
     <p>
       This package contains configuration data, 3D models and launch files
       for Motoman GP180 series of manipulators.
+      This currently includes the base model and the -120 variant.
     </p>
     <p>
       <b>Specifications</b>
     </p>
     <ul>
+      <li>GP180 - Default</li>
       <li>GP180-120 - Default</li>
     </ul>
     <p>
