@@ -17,8 +17,8 @@
     </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
-      found in the online documentation files for the robot (GP110_2D.zip
-      and GP110_3D.zip from
+      found in the online documentation files for the robot (CAD model GP110_SP100_3D.zip
+      and drawing datasheet HW1385705.01 from
       https://www.yaskawa.eu.com/products/robots/handling-mounting/productdetail/product/gp110_704 )
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
