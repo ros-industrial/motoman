@@ -30,6 +30,11 @@
       in this package, be sure to check they are correct for the particular
       robot model and configuration you intend to use them with.
     </p>
+    <p>
+      NOTE: the base model xacro macro has all joints oriented such that they
+      rotate around the Z+ axis. As a consequence, link frames in this model
+      do not follow REP-103 wrt frame orientation.
+    </p>
   </description>
   <author>Jakub Marsik</author>
   <maintainer email="jakub@km-robotics.cz">Jakub Marsik (KM Robotics)</maintainer>
