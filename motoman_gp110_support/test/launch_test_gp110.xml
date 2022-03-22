@@ -1,11 +1,11 @@
 <!--
-  launch_test.xml - ROSlaunch tests
+  launch_test_gp110.xml - ROSlaunch tests
   Usage Instructions:
   1. Add the following to your CMakeLists.txt:
     find_package(roslaunch)
-    roslaunch_add_file_check(test/launch_test.xml)
+    roslaunch_add_file_check(test/launch_test_gp110.xml)
   2. Create a test directory under your package
-  3. Add the "launch_text.xml" file and fill out the test below.  Use the
+  3. Add the "launch_text_gp110.xml" file and fill out the test below.  Use the
      following conventions:
     a. Encapsulate each launch file test in it's own namespace.  By
        convention the namespace should have the same name as the launch
