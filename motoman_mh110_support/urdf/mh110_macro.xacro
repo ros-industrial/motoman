@@ -7,6 +7,7 @@
     <link name="${prefix}base_link">
       <visual>
         <geometry>
+          <!-- this package reuses the meshes included in motoman_gp110_support, gp110 and mh110 have identical dimensions -->
           <mesh filename="package://motoman_gp110_support/meshes/gp110/visual/base_link.stl"/>
         </geometry>
         <xacro:material_yaskawa_blue/>
