@@ -19,8 +19,7 @@
       Visual appearance, joint limits and maximum joint velocities are 
       identical to the successor GP110 model, the only differences being
       joint effort limits and DX200 vs YRC1000 controller connection.
-      Information on the MH110 can be found in <em>HW1482741 (169859-1CD Rev. 2)</em>
-      at the <a href="https://www.motoman.com/en-us/service-training/product-documentation">Yaskawa Motoman product documentation site</a>.
+      Information on the MH110 can be found in <em>HW1482741 (169859-1CD Rev. 2)</em>.
       The GP110 online documentation files (CAD model GP110_SP100_3D.zip and 
       drawing datasheet <em>HW1385705.01</em>) can be found <a href="https://www.yaskawa.eu.com/products/robots/handling-mounting/productdetail/product/gp110_704">here</a>.
     </p>
