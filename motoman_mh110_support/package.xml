@@ -16,9 +16,11 @@
       <li>MH110 - Default</li>
     </ul>
     <p>
-      Joint limits and maximum joint velocities are based on the information 
-      found in the online documentation files for the mostly identical successor GP110 model from
-      https://www.yaskawa.eu.com/products/robots/handling-mounting/productdetail/product/gp110_704 )
+      Visual appearance, joint limits and maximum joint velocities are 
+      identical to the successor GP110 model, the only differences being
+      joint effort limits and DX200 vs YRC1000 controller connection.
+      The GP110 online documentation files (CAD model GP110_SP100_3D.zip and 
+      drawing datasheet <em>HW1385705.01</em> can be found <a href="https://www.yaskawa.eu.com/products/robots/handling-mounting/productdetail/product/gp110_704">here</a>).
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
