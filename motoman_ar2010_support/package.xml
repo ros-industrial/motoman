@@ -4,20 +4,20 @@
   <name>motoman_ar2010_support</name>
   <version>0.1.0</version>
   <description>
-    <p>ROS-Industrial support for the Motoman ar2010 (and variants).</p>
+    <p>ROS-Industrial support for the Motoman AR2010 (and variants).</p>
     <p>
       This package contains configuration data, 3D models and launch files
-      for Motoman ar2010 manipulators.
+      for Motoman AR2010 manipulators.
     </p>
     <p>
       <b>Specifications</b>
     </p>
     <ul>
-      <li>ar2010 - Default</li>
+      <li>AR2010 - Default</li>
     </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
-      found in <em>YASKAWA MOTOMAN-AR2010 INSTRUCTIONS (HW1484892)</em> version
+      found in <em>YASKAWA MOTOMAN AR2010 INSTRUCTIONS (HW1484892)</em> version
       <em>182442-1CD, rev 0</em>.
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
