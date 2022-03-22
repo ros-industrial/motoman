@@ -167,45 +167,5 @@
       <parent link="${prefix}flange"/>
       <child link="${prefix}tool0"/>
     </joint>
-
-
-    <!-- Gazebo -->
-    <gazebo reference="${prefix}base_link">
-      <turnGravityOff>false</turnGravityOff>
-      <selfCollide>true</selfCollide>
-      <material>Gazebo/Blue</material>
-    </gazebo>
-    <gazebo reference="${prefix}link_s">
-      <turnGravityOff>false</turnGravityOff>
-      <selfCollide>true</selfCollide>
-      <material>Gazebo/Blue</material>
-    </gazebo>
-    <gazebo reference="${prefix}link_l">
-      <turnGravityOff>false</turnGravityOff>
-      <selfCollide>true</selfCollide>
-      <material>Gazebo/Blue</material>
-    </gazebo>
-    <gazebo reference="${prefix}link_u">
-      <turnGravityOff>false</turnGravityOff>
-      <selfCollide>true</selfCollide>
-      <material>Gazebo/Blue</material>
-    </gazebo>
-    <gazebo reference="${prefix}link_r">
-      <turnGravityOff>false</turnGravityOff>
-      <selfCollide>true</selfCollide>
-      <material>Gazebo/White</material>
-    </gazebo>
-    <gazebo reference="${prefix}link_b">
-      <turnGravityOff>false</turnGravityOff>
-      <selfCollide>true</selfCollide>
-      <material>Gazebo/Blue</material>
-    </gazebo>
-    <gazebo reference="${prefix}link_t">
-      <turnGravityOff>false</turnGravityOff>
-      <selfCollide>true</selfCollide>
-      <material>Gazebo/White</material>
-    </gazebo>
-
   </xacro:macro>
 </robot>
-
