@@ -116,7 +116,7 @@ bool getJointGroups(const std::string topic_param, std::map<int, RobotGroup> & r
   }
   else
   {
-    ROS_ERROR_STREAM("Failed to find " << topic_param << " parameter");
+    ROS_INFO_STREAM("Failed to find " << topic_param << " parameter");
     return false;
   }
 }
