@@ -60,7 +60,15 @@ JointTrajectoryAction::JointTrajectoryAction() :
   pn.param("constraints/goal_threshold", goal_threshold_, DEFAULT_GOAL_THRESHOLD_);
 
   std::map<int, RobotGroup> robot_groups;
-  getJointGroups("topic_list", robot_groups);
+  if (!getJointGroups("topic_list", robot_groups))
+  {
+    // this is a WARN as this class is the multi-group version of the regular JTA,
+    // and we're actually expecting to find the 'topic_list' parameter, as using
+    // this multi-group version with a single-group system is unnecessary and also
+    // doesn't make much sense.
+    // It probably also won't work.
+    ROS_WARN("Expecting/assuming single motion-group controller configuration");
+  }
 
   for (size_t i = 0; i < robot_groups.size(); i++)
   {
