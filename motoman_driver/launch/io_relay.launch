@@ -5,6 +5,9 @@
   <!-- IP of robot (or PC running simulation) -->
   <arg name="robot_ip" doc="IP of controller" />
 
+  <!-- TCP port the IO server is listening on -->
+  <arg name="tcp_port" default="50242" doc="TCP port the IO server is listening on" />
+
   <!-- Load the byte-swapping version of io_relay if required -->
   <arg name="use_bswap" doc="If true, robot driver will byte-swap all incoming and outgoing data" />
 
@@ -13,7 +16,12 @@
 
   <!-- load the correct version of the io relay node -->
   <node if="$(arg use_bswap)" name="io_relay"
-        pkg="motoman_driver" type="io_relay_bswap" />
+        pkg="motoman_driver" type="io_relay_bswap">
+    <param name="port" value="$(arg tcp_port)" />
+  </node>
+
   <node unless="$(arg use_bswap)" name="io_relay"
-        pkg="motoman_driver" type="io_relay" />
+        pkg="motoman_driver" type="io_relay">
+    <param name="port" value="$(arg tcp_port)" />
+  </node>
 </launch>
