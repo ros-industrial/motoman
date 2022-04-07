@@ -183,6 +183,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     if (num_msg_points != 1)
     {
       ROS_ERROR("JointTrajectory command must contain a single point, ignoring message and maintaining IDLE state");
+//      Publish error: Command must contain a single point
       return;
     }
 
@@ -213,6 +214,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
       {
         ROS_ERROR("Starting joint point must contain zero velocity for each joint,"
                   " unable to transition to on-the-fly streaming");
+//        Publish error: Command must contain zero velocity for each joint
         return;
       }
     }
@@ -251,6 +253,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     else if (num_msg_points != 1)  // Check for invalid number of trajectory points
     {
       ROS_ERROR("JointTrajectory command must contain a single point");
+//      Publish error: Command must contain a single point
       stop_trajectory = true;
     }
     else  // We have at one point, let check for timing if we are not the start point
@@ -260,6 +263,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
       {
         ROS_ERROR("JointTrajectory point must have a time from start duration that is greater than the previously "
                   "processes point");
+//        Publish error: Incorrect time from start
         stop_trajectory = true;
       }
     }
@@ -267,6 +271,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     if (ptstreaming_queue_.size() > max_ptstreaming_queue_elements)  // Check for max queue size
     {
       ROS_ERROR("Point streaming queue has reached max allowed elements");
+//      Publish error: point streamer queue overflow
       stop_trajectory = true;
     }
 
@@ -315,8 +320,10 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
   {
     if (msg->points.empty())
       ROS_INFO("Empty trajectory received, canceling current trajectory");
-    else
-      ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+    else {
+        ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+//        Publish error: Splicing not allowed (state is not IDLE or STREAMING
+    }
 
     this->mutex_.lock();
     trajectoryStop();

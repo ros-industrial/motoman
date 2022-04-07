@@ -610,6 +610,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                            << " (#" << this->current_point_ << "): "
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
+//          Publish error: failed to stream point
           break;
         }
       }
