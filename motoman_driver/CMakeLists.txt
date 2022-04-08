@@ -130,7 +130,7 @@ add_library(motoman_industrial_robot_client ${CLIENT_SRC_FILES})
 target_link_libraries(motoman_industrial_robot_client
   industrial_robot_client
   industrial_utils)
-add_dependencies(motoman_industrial_robot_client ${catkin_EXPORTED_TARGETS})
+add_dependencies(motoman_industrial_robot_client ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_compile_definitions(motoman_industrial_robot_client PUBLIC ${industrial_robot_client_DEFINITIONS})
 
 # Robot state node
@@ -186,7 +186,7 @@ set_target_properties(motoman_industrial_robot_client_bswap PROPERTIES COMPILE_D
 target_link_libraries(motoman_industrial_robot_client_bswap
   industrial_robot_client_bswap
   industrial_utils)
-add_dependencies(motoman_industrial_robot_client_bswap ${catkin_EXPORTED_TARGETS})
+add_dependencies(motoman_industrial_robot_client_bswap ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_compile_definitions(motoman_industrial_robot_client_bswap PUBLIC ${industrial_robot_client_bswap_DEFINITIONS})
 
 # Robot state node
