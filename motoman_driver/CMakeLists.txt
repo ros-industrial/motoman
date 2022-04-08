@@ -16,6 +16,7 @@ find_package(
     industrial_msgs
     industrial_robot_client
     industrial_utils
+    message_generation
     motoman_msgs
     roscpp
     sensor_msgs
@@ -39,6 +40,9 @@ include_directories(
 add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
 add_definitions(-DROS=1)
 
+add_message_files(FILES MotomanErrors.msg)
+generate_messages(DEPENDENCIES std_msgs)
+
 catkin_package(
   CATKIN_DEPENDS
     actionlib
@@ -47,6 +51,7 @@ catkin_package(
     industrial_msgs
     industrial_robot_client
     industrial_utils
+    message_runtime
     motoman_msgs
     roscpp
     sensor_msgs

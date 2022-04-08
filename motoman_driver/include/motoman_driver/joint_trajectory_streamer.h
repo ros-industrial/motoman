@@ -39,6 +39,7 @@
 #include <vector>
 #include "motoman_driver/motion_ctrl.h"
 #include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
+#include <motoman_driver/MotomanErrors.h>
 #include "motoman_msgs/SelectTool.h"
 #include "simple_message/joint_data.h"
 #include "simple_message/simple_message.h"
@@ -175,6 +176,11 @@ protected:
    * \brief Service used to select a specific tool file on the robot controller.
    */
   ros::ServiceServer srv_select_tool_;
+
+    /**
+     * \brief Topic used to broadcast specific errors from motoman nodes.
+     */
+    ros::Publisher motoman_errors_pub_;
 
   /**
    * \brief Disable the robot. Response is true if the state was flipped or

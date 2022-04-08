@@ -33,6 +33,7 @@
 #include "motoman_driver/simple_message/messages/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
 #include "motoman_driver/simple_message/messages/joint_traj_pt_full_ex_message.h"
+#include <motoman_driver/MotomanErrors.h>
 #include "industrial_robot_client/utils.h"
 #include "industrial_utils/param_utils.h"
 #include <map>
@@ -92,6 +93,8 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
   enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
 
   srv_select_tool_ = node_.advertiseService("select_tool", &MotomanJointTrajectoryStreamer::selectToolCB, this);
+
+  motoman_errors_pub_ = node_.advertise<motoman_driver::MotomanErrors>("motoman_errors", 1);
 
   return rtn;
 }
@@ -611,6 +614,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
 //          Publish error: failed to stream point
+          motoman_error_pub_.publish(motoman_driver::MotomanErrors::FAILED_TO_STREAM_POINT);
           break;
         }
       }

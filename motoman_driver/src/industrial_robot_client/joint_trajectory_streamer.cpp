@@ -30,6 +30,7 @@
  */
 
 #include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
+#include <motoman_driver/MotomanErrors.h>
 #include <algorithm>
 #include <queue>
 #include <map>
@@ -80,6 +81,8 @@ bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vec
     new boost::thread(boost::bind(&JointTrajectoryStreamer::streamingThread, this));
   ROS_INFO("Unlocking mutex");
   this->mutex_.unlock();
+
+  motoman_errors_pub_ = node_.advertise<motoman_driver::MotomanErrors>("motoman_errors", 1);
 
   return rtn;
 }
@@ -183,7 +186,8 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     if (num_msg_points != 1)
     {
       ROS_ERROR("JointTrajectory command must contain a single point, ignoring message and maintaining IDLE state");
-//      Publish error: Command must contain a single point
+//      Publish error: Command must contain single point
+      motoman_error_pub_.publish(motoman_driver::MotomanErrors::CMD_MUST_HAVE_SINGLE_POINT);
       return;
     }
 
@@ -215,6 +219,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
         ROS_ERROR("Starting joint point must contain zero velocity for each joint,"
                   " unable to transition to on-the-fly streaming");
 //        Publish error: Command must contain zero velocity for each joint
+        motoman_error_pub_.publish(motoman_driver::MotomanErrors::CMD_MUST_HAVE_ZERO_VELOCITY);
         return;
       }
     }
@@ -254,6 +259,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     {
       ROS_ERROR("JointTrajectory command must contain a single point");
 //      Publish error: Command must contain a single point
+      motoman_error_pub_.publish(motoman_driver::MotomanErrors::CMD_MUST_HAVE_SINGLE_POINT);
       stop_trajectory = true;
     }
     else  // We have at one point, let check for timing if we are not the start point
@@ -264,6 +270,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
         ROS_ERROR("JointTrajectory point must have a time from start duration that is greater than the previously "
                   "processes point");
 //        Publish error: Incorrect time from start
+        motoman_error_pub_.publish(motoman_driver::MotomanErrors::CMD_HAS_INCORRECT_TIME_FROM_START);
         stop_trajectory = true;
       }
     }
@@ -272,6 +279,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     {
       ROS_ERROR("Point streaming queue has reached max allowed elements");
 //      Publish error: point streamer queue overflow
+      motoman_error_pub_.publish(motoman_driver::MotomanErrors::STREAMING_QUEUE_OVERFLOW);
       stop_trajectory = true;
     }
 
@@ -323,6 +331,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     else {
         ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
 //        Publish error: Splicing not allowed (state is not IDLE or STREAMING
+        motoman_error_pub_.publish(motoman_driver::MotomanErrors::SPLICING_NOT_ALLOWED);
     }
 
     this->mutex_.lock();

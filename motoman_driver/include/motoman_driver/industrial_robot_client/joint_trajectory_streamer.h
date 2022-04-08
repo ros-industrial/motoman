@@ -34,6 +34,7 @@
 
 #include <boost/thread/thread.hpp>
 #include "motoman_driver/industrial_robot_client/joint_trajectory_interface.h"
+#include <motoman_driver/MotomanErrors.h>
 #include <map>
 #include <vector>
 #include <string>
@@ -140,6 +141,10 @@ protected:
   TransferState state_;
   ros::Time streaming_start_;
   int min_buffer_size_;
+    /**
+     * \brief Topic used to broadcast specific errors from motoman nodes.
+     */
+  ros::Publisher motoman_errors_pub_;
 
   ros::Duration ptstreaming_last_time_from_start_;   // last valid point streaming point time from start
   int ptstreaming_seq_count_; // sequence count for point streaming (--> JointTrajPtFull::sequence_)
