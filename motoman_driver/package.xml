@@ -27,6 +27,9 @@
   <depend>industrial_msgs</depend>
   <depend>industrial_robot_client</depend>
   <depend>industrial_utils</depend>
+  <build_depend>message_generation</build_depend>
+  <build_export_depend>message_runtime</build_export_depend>
+  <exec_depend>message_runtime</exec_depend>
   <depend>motoman_msgs</depend>
   <depend>roscpp</depend>
   <depend>sensor_msgs</depend>
