@@ -614,7 +614,9 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
 //          Publish error: failed to stream point
-          motoman_errors_pub_.publish(motoman_driver::MotomanErrors::FAILED_TO_STREAM_POINT);
+          motoman_driver::MotomanErrors error;
+          error.code = motoman_driver::MotomanErrors::FAILED_TO_STREAM_POINT;
+          motoman_errors_pub_.publish(error);
           break;
         }
       }
