@@ -94,8 +94,6 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   srv_select_tool_ = node_.advertiseService("select_tool", &MotomanJointTrajectoryStreamer::selectToolCB, this);
 
-  motoman_errors_pub_ = node_.advertise<motoman_driver::MotomanErrors>("motoman_errors", 1);
-
   return rtn;
 }
 
@@ -616,7 +614,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 //          Publish error: failed to stream point
           motoman_driver::MotomanErrors error;
           error.code = motoman_driver::MotomanErrors::FAILED_TO_STREAM_POINT;
-          motoman_errors_pub_.publish(error);
+          this->motoman_errors_pub_.publish(error);
           break;
         }
       }

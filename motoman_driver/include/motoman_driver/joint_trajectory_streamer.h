@@ -177,11 +177,6 @@ protected:
    */
   ros::ServiceServer srv_select_tool_;
 
-    /**
-     * \brief Topic used to broadcast specific errors from motoman nodes.
-     */
-  ros::Publisher motoman_errors_pub_;
-
   /**
    * \brief Disable the robot. Response is true if the state was flipped or
    * false if the state has not changed.
