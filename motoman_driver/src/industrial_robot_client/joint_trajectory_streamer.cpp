@@ -82,7 +82,7 @@ bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vec
   ROS_INFO("Unlocking mutex");
   this->mutex_.unlock();
 
-  motoman_errors_pub_ = node_.advertise<motoman_driver::MotomanErrors>("motoman_errors", 1);
+  this->motoman_errors_pub_ = node_.advertise<motoman_driver::MotomanErrors>("motoman_errors", 1);
 
   return rtn;
 }
@@ -189,7 +189,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
 //      Publish error: Command must contain single point
       motoman_driver::MotomanErrors error;
       error.code = motoman_driver::MotomanErrors::CMD_MUST_HAVE_SINGLE_POINT;
-      motoman_errors_pub_.publish(error);
+      this->motoman_errors_pub_.publish(error);
       return;
     }
 
@@ -223,7 +223,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
 //        Publish error: Command must contain zero velocity for each joint
         motoman_driver::MotomanErrors error;
         error.code = motoman_driver::MotomanErrors::CMD_MUST_HAVE_ZERO_VELOCITY;
-        motoman_errors_pub_.publish(error);
+        this->motoman_errors_pub_.publish(error);
         return;
       }
     }
@@ -265,7 +265,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
 //      Publish error: Command must contain a single point
       motoman_driver::MotomanErrors error;
       error.code = motoman_driver::MotomanErrors::CMD_MUST_HAVE_SINGLE_POINT;
-      motoman_errors_pub_.publish(error);
+      this->motoman_errors_pub_.publish(error);
       stop_trajectory = true;
     }
     else  // We have at one point, let check for timing if we are not the start point
@@ -278,7 +278,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
 //        Publish error: Incorrect time from start
         motoman_driver::MotomanErrors error;
         error.code = motoman_driver::MotomanErrors::CMD_HAS_INCORRECT_TIME_FROM_START;
-        motoman_errors_pub_.publish(error);
+        this->motoman_errors_pub_.publish(error);
         stop_trajectory = true;
       }
     }
@@ -289,7 +289,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
 //      Publish error: point streamer queue overflow
       motoman_driver::MotomanErrors error;
       error.code = motoman_driver::MotomanErrors::STREAMING_QUEUE_OVERFLOW;
-      motoman_errors_pub_.publish(error);
+      this->motoman_errors_pub_.publish(error);
       stop_trajectory = true;
     }
 
@@ -343,7 +343,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
 //        Publish error: Splicing not allowed (state is not IDLE or STREAMING
         motoman_driver::MotomanErrors error;
         error.code = motoman_driver::MotomanErrors::SPLICING_NOT_ALLOWED;
-        motoman_errors_pub_.publish(error);
+        this->motoman_errors_pub_.publish(error);
     }
 
     this->mutex_.lock();
