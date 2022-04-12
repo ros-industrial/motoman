@@ -183,7 +183,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
   {
     // Check to see if the message contains more than one trajectory point, currently the
     // POINT_STREAMING state only accepts a single point
-    if (num_msg_points != 1)
+    if (num_msg_points > 1)
     {
       ROS_ERROR("JointTrajectory command must contain a single point, ignoring message and maintaining IDLE state");
 //      Publish error: Command must contain single point
