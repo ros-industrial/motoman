@@ -95,7 +95,6 @@
         </geometry>
       </collision>
     </link>
-    <link name="${prefix}tool0"/>
     <!-- end of link list -->
 
     <!-- joint list -->
