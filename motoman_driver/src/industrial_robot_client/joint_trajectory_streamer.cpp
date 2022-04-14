@@ -193,6 +193,8 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
       return;
     }
 
+    if (num_msg_points == 0) return;
+
     // Get the message point and select
     const trajectory_msgs::JointTrajectoryPoint msg_pt = msg->points[0];
 
