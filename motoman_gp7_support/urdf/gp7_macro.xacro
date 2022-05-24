@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-<xacro:macro name="motoman_gp7" params="prefix">
+    <xacro:macro name="motoman_gp7" params="prefix">
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
@@ -95,7 +95,6 @@
             </geometry>
         </collision>
     </link>
-    <link name="${prefix}tool0"/>
     <!-- end of link list -->
 
     <!-- joint list -->
@@ -141,12 +140,23 @@
         <axis xyz="-1 0 0" />
         <limit lower="-6.2831" upper="6.2831" effort="22.54" velocity="17.4533"/>
     </joint>
-    <joint name="${prefix}joint_6_t-tool0" type="fixed">
-        <origin xyz="0.080 0 0" rpy="3.1415926 -1.570796 0"/>
+    <!-- end of joint list -->
+
+    <!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
+    <link name="${prefix}flange"/>
+    <joint name="${prefix}joint_6_t-flange" type="fixed">
+        <origin xyz="0.080 0 0" rpy="0 0 0"/>
         <parent link="${prefix}link_6_t"/>
+        <child link="${prefix}flange"/>
+    </joint>
+
+    <!-- ROS-Industrial 'tool0' frame: all-zeros tool frame -->
+    <link name="${prefix}tool0"/>
+    <joint name="${prefix}flange-tool0" type="fixed">
+        <origin xyz="0 0 0" rpy="${radians(180)} ${radians(-90)} 0"/>
+        <parent link="${prefix}flange"/>
         <child link="${prefix}tool0"/>
     </joint>
-    <!-- end of joint list -->
 
     <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
     <link name="${prefix}base" />
