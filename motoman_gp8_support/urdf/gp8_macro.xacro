@@ -138,7 +138,7 @@
       <child link="${prefix}link_6_t"/>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <axis xyz="-1 0 0" />
-      <limit lower="-6.2944" upper="6.2944" effort="22.54" velocity="17.4533"/>
+      <limit lower="-6.2831" upper="6.2831" effort="22.54" velocity="17.4533"/>
     </joint>
     <!-- end of joint list -->
 
