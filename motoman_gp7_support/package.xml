@@ -17,8 +17,8 @@
     </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
-      found in the online 
-      https://www.motoman.com/hubfs/Robots/gp7.pdf
+      found in the online documentation files for the robot (CAD model GP7_3D.zip
+      and drawing datasheet <em>HW1384164</em> from <a href="https://www.yaskawa.eu.com/products/robots/handling-mounting/productdetail/product/gp7_692">here</a>).
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
