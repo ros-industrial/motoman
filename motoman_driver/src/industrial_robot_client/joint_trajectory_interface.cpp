@@ -518,7 +518,6 @@ bool JointTrajectoryInterface::calc_velocity(const motoman_msgs::DynamicJointsGr
     return true;
   }
 
-  robot_groups_[pt.group_number].get_joint_names();
   for (size_t i = 0; i < robot_groups_[pt.group_number].get_joint_names().size(); ++i)
   {
     const std::string &jnt_name = robot_groups_[pt.group_number].get_joint_names()[i];
@@ -727,12 +726,32 @@ bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajecto
 void JointTrajectoryInterface::jointStateCB(
   const sensor_msgs::JointStateConstPtr &msg)
 {
+  if (msg->name.size() != this->all_joint_names_.size())
+    return;
+
+  // compare all names, reject message if a name is not in both lists
+  for (size_t i=0; i<msg->name.size(); i++)
+    if (std::find(msg->name.begin(), msg->name.end(), this->all_joint_names_[i]) == msg->name.end())
+      return;
+
   this->cur_joint_pos_ = *msg;
 }
 
 void JointTrajectoryInterface::jointStateCB(
   const sensor_msgs::JointStateConstPtr &msg, int robot_id)
 {
+  if (msg->name.size() != this->robot_groups_[robot_id].get_joint_names().size())
+  {
+    return;
+  }
+
+  // compare all names, reject message if a name is not in both lists
+  for (size_t i=0; i<msg->name.size(); i++)
+  {
+    if (std::find(msg->name.begin(), msg->name.end(), this->robot_groups_[robot_id].get_joint_names()[i]) == msg->name.end())
+      return;
+  }
+
   this->cur_joint_pos_map_[robot_id] = *msg;
 }
 
