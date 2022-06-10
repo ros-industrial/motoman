@@ -597,7 +597,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
                                 traj.joint_names, traj.points[0].positions,
                                 start_pos_tol_))
   {
-    ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+    ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position. cur_joint_pos_.name.size: %lu, traj.joint_names.size: %lu", cur_joint_pos_.name.size(), traj.joint_names.size());
   }
   return true;
 }
@@ -627,7 +627,7 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
                                     traj.joint_names, traj.points[0].groups[gr].positions,
                                     start_pos_tol_))
       {
-        ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+        ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position. group: %d, cur_joint_pos_.name.size: %lu, traj.joint_names.size: %lu", group_number, cur_joint_pos_.name.size(), traj.joint_names.size());
       }
     }
   }
