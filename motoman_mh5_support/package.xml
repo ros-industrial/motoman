@@ -44,7 +44,7 @@
 
   <test_depend>roslaunch</test_depend>
 
-  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher_gui</exec_depend>
   <exec_depend>motoman_driver</exec_depend>
   <exec_depend>motoman_resources</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
