@@ -1,11 +1,7 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:macro name="motoman_mh5" params="prefix">
-
-    <!-- Properties -->
-    <material name="yaskawa_white">
-      <color rgba="0.9 0.9 0.9 1" />
-    </material>
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
     <link name="${prefix}base_link">
@@ -14,7 +10,7 @@
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/base_link.stl" />
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -29,7 +25,7 @@
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_1_s.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -44,7 +40,7 @@
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_2_l.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -60,7 +56,7 @@
           <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_3_u.stl"/>
           <!-- <mesh filename="package://motoman_mh5_support/meshes/mh5_old_variants/visual/link_3_u.stl"/> --><!-- Uncomment & switch with above to use alternative U-link. -->
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -76,7 +72,7 @@
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_4_r.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -91,7 +87,7 @@
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_5_b.stl"/>
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -106,7 +102,7 @@
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_6_t.stl" />
         </geometry>
-        <material name="yaskawa_white"/>
+        <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
