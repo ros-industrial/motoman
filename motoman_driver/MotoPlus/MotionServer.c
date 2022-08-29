@@ -1196,12 +1196,13 @@ int Ros_MotionServer_InitTrajPointFull(Controller* controller, CtrlGroup* ctrlGr
 	int i;
 
     //It's possible for energy-saving mode to activate between /robot_enable and the first trajectory point.
-    //If motion is not ready and it's because eco-mode is active, then automatically invoke a /robot_enable.
-    if (!Ros_Controller_IsMotionReady(controller) && Ros_Controller_IsEcoMode(controller))
+    //If eco-mode is active, then automatically invoke a /robot_enable.
+    if (Ros_Controller_IsEcoMode(controller))
     {
-        printf("Energy Saving Function is active. Clearing with automatic robot_enable.");
+        printf("Energy Saving Function is active. Clearing with automatic robot_enable.\n");
 
         Ros_MotionServer_StopTrajMode(controller);
+        Ros_Sleep(100); //give time for Ros_Controller_StatusUpdate on other task
         Ros_MotionServer_StartTrajMode(controller);
 
         //Give time for the controller to recognize that the INFORM cursor is sitting on
