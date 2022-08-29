@@ -529,7 +529,7 @@ BOOL Ros_Controller_IsMotionReady(Controller* controller)
 	
 #ifndef DUMMY_SERVO_MODE	
 	bMotionReady = controller->bRobotJobReady && Ros_Controller_IsOperating(controller) && Ros_Controller_IsRemote(controller)
-		&& !Ros_Controller_IsPflActive(controller) && !controller->bMpIncMoveError && !controller->bStopMotion;
+		&& !Ros_Controller_IsPflActive(controller) && !controller->bMpIncMoveError && !controller->bStopMotion && !Ros_Controller_IsEcoMode(controller);
 #else
 	bMotionReady = controller->bRobotJobReady && Ros_Controller_IsOperating(controller);
 #endif
