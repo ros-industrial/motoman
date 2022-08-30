@@ -48,13 +48,14 @@ BOOL Ros_MotionServer_ResetAlarm(Controller* controller);
 BOOL Ros_MotionServer_StartTrajMode(Controller* controller);
 BOOL Ros_MotionServer_StopTrajMode(Controller* controller);
 int Ros_MotionServer_JointTrajDataProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
-int Ros_MotionServer_InitTrajPointFull(Controller* controller, CtrlGroup* ctrlGroup, SmBodyJointTrajPtFull* jointTrajData);
-int Ros_MotionServer_InitTrajPointFullEx(Controller* controller, CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence);
+int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFull* jointTrajData);
+int Ros_MotionServer_InitTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence);
 int Ros_MotionServer_AddTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFull* jointTrajData);
 int Ros_MotionServer_AddTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence);
 int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg);
 int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+void Ros_MotionServer_EnsureEcoModeIsDisabled(Controller* controller);
 
 // AddToIncQueue Task:
 void Ros_MotionServer_AddToIncQueueProcess(Controller* controller, int groupNo);
@@ -564,8 +565,11 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 		// Check the trajectory sequence code
 		if(msgBody->sequence == 0) // First trajectory point
 		{
+            //It's possible for energy-saving mode to activate between /robot_enable and the first trajectory point.
+            Ros_MotionServer_EnsureEcoModeIsDisabled(controller); //make sure that Ros_Controller_IsMotionReady gets called above before calling this
+
 			// Initialize first point variables
-			ret = Ros_MotionServer_InitTrajPointFullEx(controller, ctrlGroup, &msgBody->jointTrajPtData[i], msgBody->sequence);
+			ret = Ros_MotionServer_InitTrajPointFullEx(ctrlGroup, &msgBody->jointTrajPtData[i], msgBody->sequence);
 		
 			// set reply
 			if(ret == 0)
@@ -1137,8 +1141,11 @@ int Ros_MotionServer_JointTrajDataProcess(Controller* controller, SimpleMsg* rec
 	// Check the trajectory sequence code
 	if(trajData->sequence == 0) // First trajectory point
 	{
+        //It's possible for energy-saving mode to activate between /robot_enable and the first trajectory point.
+        Ros_MotionServer_EnsureEcoModeIsDisabled(controller); //make sure that Ros_Controller_IsMotionReady gets called above before calling this
+
 		// Initialize first point variables
-		ret = Ros_MotionServer_InitTrajPointFull(controller, ctrlGroup, trajData);
+		ret = Ros_MotionServer_InitTrajPointFull(ctrlGroup, trajData);
 		
 		// set reply
 		if(ret == 0)
@@ -1170,7 +1177,7 @@ int Ros_MotionServer_JointTrajDataProcess(Controller* controller, SimpleMsg* rec
 //-----------------------------------------------------------------------
 // Convert SmBodyMotoJointTrajPtExData data to SmBodyJointTrajPtFull
 //-----------------------------------------------------------------------
-int Ros_MotionServer_InitTrajPointFullEx(Controller* controller, CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence)
+int Ros_MotionServer_InitTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPtExData* jointTrajDataEx, int sequence)
 {
 	SmBodyJointTrajPtFull jointTrajData;
 
@@ -1183,33 +1190,17 @@ int Ros_MotionServer_InitTrajPointFullEx(Controller* controller, CtrlGroup* ctrl
 	memcpy(jointTrajData.vel, jointTrajDataEx->vel, sizeof(float)*ROS_MAX_JOINT);
 	memcpy(jointTrajData.acc, jointTrajDataEx->acc, sizeof(float)*ROS_MAX_JOINT);
 
-	return Ros_MotionServer_InitTrajPointFull(controller, ctrlGroup, &jointTrajData);
+	return Ros_MotionServer_InitTrajPointFull(ctrlGroup, &jointTrajData);
 }
 
 //-----------------------------------------------------------------------
 // Setup the first point of a trajectory
 //-----------------------------------------------------------------------
-int Ros_MotionServer_InitTrajPointFull(Controller* controller, CtrlGroup* ctrlGroup, SmBodyJointTrajPtFull* jointTrajData)
+int Ros_MotionServer_InitTrajPointFull(CtrlGroup* ctrlGroup, SmBodyJointTrajPtFull* jointTrajData)
 {
 	long pulsePos[MAX_PULSE_AXES];
 	long curPos[MAX_PULSE_AXES];
 	int i;
-
-    //It's possible for energy-saving mode to activate between /robot_enable and the first trajectory point.
-    //If eco-mode is active, then automatically invoke a /robot_enable.
-    if (Ros_Controller_IsEcoMode(controller))
-    {
-        printf("Energy Saving Function is active. Clearing with automatic robot_enable.\n");
-
-        Ros_MotionServer_StopTrajMode(controller);
-        Ros_Sleep(100); //give time for Ros_Controller_StatusUpdate on other task
-        Ros_MotionServer_StartTrajMode(controller);
-
-        //Give time for the controller to recognize that the INFORM cursor is sitting on
-        //a WAIT instructions. Without this delay, the first call to mpExRcsIncrementMove
-        //will fail with a (-1).
-        Ros_Sleep(100);
-    }
 
 	if(ctrlGroup->groupNo == jointTrajData->groupNo)
 	{
@@ -2020,4 +2011,23 @@ int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveM
 		Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_GROUPNO, replyMsg, groupNo);
 
 	return 0;
+}
+
+void Ros_MotionServer_EnsureEcoModeIsDisabled(Controller* controller)
+{
+    //It's possible for energy-saving mode to activate between /robot_enable and the first trajectory point.
+    //If eco-mode is active, then automatically invoke a /robot_enable.
+    if (Ros_Controller_IsEcoMode(controller))
+    {
+        printf("Energy Saving Function is active. Clearing with automatic robot_enable.\n");
+
+        Ros_MotionServer_StopTrajMode(controller);
+        Ros_Sleep(100); //give time for Ros_Controller_StatusUpdate on other task
+        Ros_MotionServer_StartTrajMode(controller);
+
+        //Give time for the controller to recognize that the INFORM cursor is sitting on
+        //a WAIT instructions. Without this delay, the first call to mpExRcsIncrementMove
+        //will fail with a (-1).
+        Ros_Sleep(100);
+    }
 }
