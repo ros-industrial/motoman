@@ -475,7 +475,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         this->state_ = TransferStates::IDLE;
         motoman_driver::MotomanStatus status;
         status.status = motoman_driver::MotomanStatus::IDLE;
-        this->motoman_status_pub_.Publish(status);
+        this->motoman_status_pub_.publish(status);
       }
       continue;
     }
@@ -498,7 +498,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         this->state_ = TransferStates::IDLE;
         motoman_driver::MotomanStatus status;
         status.status = motoman_driver::MotomanStatus::IDLE;
-        this->motoman_status_pub_.Publish(status);
+        this->motoman_status_pub_.publish(status);
         break;
       }
 
@@ -541,7 +541,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           this->state_ = TransferStates::IDLE;
           motoman_driver::MotomanStatus status;
           status.status = motoman_driver::MotomanStatus::IDLE;
-          this->motoman_status_pub_.Publish(status);
+          this->motoman_status_pub_.publish(status);
           break;
         }
 
@@ -561,7 +561,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           this->state_ = TransferStates::IDLE;
           motoman_driver::MotomanStatus status;
           status.status = motoman_driver::MotomanStatus::IDLE;
-          this->motoman_status_pub_.Publish(status);
+          this->motoman_status_pub_.publish(status);
           break;
         }
       }
@@ -584,7 +584,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           this->state_ = TransferStates::IDLE;
           motoman_driver::MotomanStatus status;
           status.status = motoman_driver::MotomanStatus::IDLE;
-          this->motoman_status_pub_.Publish(status);
+          this->motoman_status_pub_.publish(status);
           break;
         }
       }
@@ -609,7 +609,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           this->state_ = TransferStates::IDLE;
           motoman_driver::MotomanStatus status;
           status.status = motoman_driver::MotomanStatus::IDLE;
-          this->motoman_status_pub_.Publish(status);
+          this->motoman_status_pub_.publish(status);
           break;
         }
         if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
@@ -632,7 +632,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           this->state_ = TransferStates::IDLE;
           motoman_driver::MotomanStatus status;
           status.status = motoman_driver::MotomanStatus::IDLE;
-          this->motoman_status_pub_.Publish(status);
+          this->motoman_status_pub_.publish(status);
           motoman_driver::MotomanErrors error;
           error.code = motoman_driver::MotomanErrors::FAILED_TO_STREAM_POINT;
           this->motoman_errors_pub_.publish(error);
@@ -649,7 +649,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       this->state_ = TransferStates::IDLE;
       motoman_driver::MotomanStatus status;
       status.status = motoman_driver::MotomanStatus::IDLE;
-      this->motoman_status_pub_.Publish(status);
+      this->motoman_status_pub_.publish(status);
       break;
     }
     // this does not unlock smpl_msg_conx_mutex_, but the mutex from JointTrajectoryStreamer
@@ -664,7 +664,7 @@ void MotomanJointTrajectoryStreamer::trajectoryStop()
   this->state_ = TransferStates::IDLE;  // stop sending trajectory points
   motoman_driver::MotomanStatus status;
   status.status = motoman_driver::MotomanStatus::IDLE;
-  this->motoman_status_pub_.Publish(status);
+  this->motoman_status_pub_.publish(status);
   // SmplMsgConnection is not thread safe, so lock first
   // NOTE: motion_ctrl_ uses the SmplMsgConnection here
   const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};

@@ -250,7 +250,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     this->state_ = TransferStates::POINT_STREAMING;
     motoman_driver::MotomanStatus status;
     status.status = motoman_driver::MotomanStatus::POINT_STREAMING;
-    motoman_status_pub_.Publish(status);
+    motoman_status_pub_.publish(status);
     this->ptstreaming_seq_count_ = 0;
     this->ptstreaming_queue_ = std::queue<SimpleMessage>();
     this->mutex_.unlock();
@@ -375,7 +375,7 @@ bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& me
     this->state_ = TransferStates::STREAMING;
     motoman_driver::MotomanStatus status;
     status.status = motoman_driver::MotomanStatus::TRAJECTORY_STREAMING;
-    motoman_status_pub_.Publish(status);
+    motoman_status_pub_.publish(status);
     this->streaming_start_ = ros::Time::now();
   }
   this->mutex_.unlock();
@@ -447,7 +447,7 @@ void JointTrajectoryStreamer::streamingThread()
         this->state_ = TransferStates::IDLE;
         motoman_driver::MotomanStatus status;
         status.status = motoman_driver::MotomanStatus::IDLE;
-        motoman_status_pub_.Publish(status);
+        motoman_status_pub_.publish(status);
       }
       continue;
     }
@@ -469,7 +469,7 @@ void JointTrajectoryStreamer::streamingThread()
         this->state_ = TransferStates::IDLE;
         motoman_driver::MotomanStatus status;
         status.status = motoman_driver::MotomanStatus::IDLE;
-        motoman_status_pub_.Publish(status);
+        motoman_status_pub_.publish(status);
         break;
       }
 
@@ -505,7 +505,7 @@ void JointTrajectoryStreamer::streamingThread()
         this->state_ = TransferStates::IDLE;
         motoman_driver::MotomanStatus status;
         status.status = motoman_driver::MotomanStatus::IDLE;
-        motoman_status_pub_.Publish(status);
+        motoman_status_pub_.publish(status);
         break;
       }
       // if not connected, reconnect.
@@ -542,7 +542,7 @@ void JointTrajectoryStreamer::streamingThread()
       this->state_ = TransferStates::IDLE;
       motoman_driver::MotomanStatus status;
       status.status = motoman_driver::MotomanStatus::IDLE;
-      motoman_status_pub_.Publish(status);
+      motoman_status_pub_.publish(status);
       break;
     }
 
@@ -564,7 +564,7 @@ void JointTrajectoryStreamer::trajectoryStop()
   this->state_ = TransferStates::IDLE;
   motoman_driver::MotomanStatus status;
   status.status = motoman_driver::MotomanStatus::IDLE;
-  motoman_status_pub_.Publish(status);
+  motoman_status_pub_.publish(status);
 }
 
 }  // namespace joint_trajectory_streamer
