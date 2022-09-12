@@ -40,7 +40,7 @@ include_directories(
 add_definitions(-DLINUXSOCKETS=1)  #use linux sockets for communication
 add_definitions(-DROS=1)
 
-add_message_files(FILES MotomanErrors.msg)
+add_message_files(FILES MotomanErrors.msg MotomanStatus.msg)
 generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(

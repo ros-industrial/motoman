@@ -40,6 +40,7 @@
 #include "motoman_driver/motion_ctrl.h"
 #include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
 #include <motoman_driver/MotomanErrors.h>
+#include <motoman_driver/MotomanStatus.h>
 #include "motoman_msgs/SelectTool.h"
 #include "simple_message/joint_data.h"
 #include "simple_message/simple_message.h"
