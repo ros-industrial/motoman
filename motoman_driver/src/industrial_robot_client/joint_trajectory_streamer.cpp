@@ -57,6 +57,7 @@ bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::map
   this->mutex_.lock();
   this->current_point_ = 0;
   this->state_ = TransferStates::IDLE;
+    // TODO: publish here motoman_status IDLE
   this->streaming_thread_ =
     new boost::thread(boost::bind(&JointTrajectoryStreamer::streamingThread, this));
   ROS_INFO("Unlocking mutex");
@@ -77,6 +78,7 @@ bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vec
   this->mutex_.lock();
   this->current_point_ = 0;
   this->state_ = TransferStates::IDLE;
+    // TODO: publish here motoman_status IDLE
   this->streaming_thread_ =
     new boost::thread(boost::bind(&JointTrajectoryStreamer::streamingThread, this));
   ROS_INFO("Unlocking mutex");
@@ -104,8 +106,10 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJoint
   {
     if (msg->points.empty())
       ROS_INFO("Empty trajectory received, canceling current trajectory");
-    else
-      ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+    else {
+        ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+        // TODO: publish here motoman_errors SPLICING_NOT_ALLOWED
+    }
 
     this->mutex_.lock();
     trajectoryStop();
@@ -140,8 +144,10 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   {
     if (msg->points.empty())
       ROS_INFO("Empty trajectory received, canceling current trajectory");
-    else
-      ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+    else {
+        ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+        // TODO: publish here motoman_errors SPLICING_NOT_ALLOWED
+    }
 
     this->mutex_.lock();
     trajectoryStop();
@@ -238,6 +244,7 @@ void JointTrajectoryStreamer::jointCommandCB(const trajectory_msgs::JointTraject
     // Update point streaming sequence count, empty the point queue and set internal state to point streaming
     this->mutex_.lock();
     this->state_ = TransferStates::POINT_STREAMING;
+      // TODO: publish here motoman_status POINT_STREAMING
     this->ptstreaming_seq_count_ = 0;
     this->ptstreaming_queue_ = std::queue<SimpleMessage>();
     this->mutex_.unlock();
@@ -364,6 +371,7 @@ bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& me
     this->current_traj_ = messages;
     this->current_point_ = 0;
     this->state_ = TransferStates::STREAMING;
+      // TODO: publish here motoman_status TRAJECTORY_STREAMING
     this->streaming_start_ = ros::Time::now();
   }
   this->mutex_.unlock();
@@ -433,6 +441,7 @@ void JointTrajectoryStreamer::streamingThread()
       {
         ROS_ERROR("Timeout connecting to robot controller.  Send new motion command to retry.");
         this->state_ = TransferStates::IDLE;
+          // TODO: publish here motoman_status IDLE
       }
       continue;
     }
@@ -452,6 +461,7 @@ void JointTrajectoryStreamer::streamingThread()
       {
         ROS_INFO("Trajectory streaming complete, setting state to IDLE");
         this->state_ = TransferStates::IDLE;
+          // TODO: publish here motoman_status IDLE
         break;
       }
 
@@ -485,6 +495,7 @@ void JointTrajectoryStreamer::streamingThread()
       {
         ROS_INFO("Point streaming complete, setting state to IDLE");
         this->state_ = TransferStates::IDLE;
+          // TODO: publish here motoman_status IDLE
         break;
       }
       // if not connected, reconnect.
@@ -519,6 +530,7 @@ void JointTrajectoryStreamer::streamingThread()
     default:
       ROS_ERROR("Joint trajectory streamer: unknown state, %d", this->state_);
       this->state_ = TransferStates::IDLE;
+            // TODO: publish here motoman_status IDLE
       break;
     }
 
@@ -538,6 +550,7 @@ void JointTrajectoryStreamer::trajectoryStop()
 
   ROS_DEBUG("Stop command sent, entering idle mode");
   this->state_ = TransferStates::IDLE;
+    // TODO: publish here motoman_status IDLE
 }
 
 }  // namespace joint_trajectory_streamer

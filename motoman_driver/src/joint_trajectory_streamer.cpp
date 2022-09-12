@@ -472,6 +472,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       {
         ROS_ERROR("Timeout connecting to robot controller.  Send new motion command to retry.");
         this->state_ = TransferStates::IDLE;
+          // TODO: publish here motoman_status IDLE
       }
       continue;
     }
@@ -492,6 +493,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       {
         ROS_INFO("Trajectory streaming complete, setting state to IDLE");
         this->state_ = TransferStates::IDLE;
+          // TODO: publish here motoman_status IDLE
         break;
       }
 
@@ -532,6 +534,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         {
           ROS_ERROR("Aborting trajectory: Unable to parse JointTrajectoryPoint reply");
           this->state_ = TransferStates::IDLE;
+            // TODO: publish here motoman_status IDLE
           break;
         }
 
@@ -549,6 +552,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                            << " (#" << this->current_point_ << "): "
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
+            // TODO: publish here motoman_status IDLE
           break;
         }
       }
@@ -569,6 +573,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         {
           ROS_INFO("Point streaming complete,  setting state to IDLE");
           this->state_ = TransferStates::IDLE;
+          // TODO: publish here motoman_status IDLE.
           break;
         }
       }
@@ -591,6 +596,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         {
           ROS_ERROR("Aborting point stream operation.");
           this->state_ = TransferStates::IDLE;
+            // TODO: publish here motoman_status IDLE
           break;
         }
         if (reply_status.reply_.getResult() == MotionReplyResults::SUCCESS)
@@ -611,6 +617,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                            << " (#" << this->current_point_ << "): "
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
+            // TODO: publish here motoman_status IDLE
 //          Publish error: failed to stream point
           motoman_driver::MotomanErrors error;
           error.code = motoman_driver::MotomanErrors::FAILED_TO_STREAM_POINT;
@@ -626,6 +633,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     default:
       ROS_ERROR("Joint trajectory streamer: unknown state");
       this->state_ = TransferStates::IDLE;
+            // TODO: publish here motoman_status IDLE
       break;
     }
     // this does not unlock smpl_msg_conx_mutex_, but the mutex from JointTrajectoryStreamer
@@ -638,6 +646,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 void MotomanJointTrajectoryStreamer::trajectoryStop()
 {
   this->state_ = TransferStates::IDLE;  // stop sending trajectory points
+    // TODO: publish here motoman_status IDLE
   // SmplMsgConnection is not thread safe, so lock first
   // NOTE: motion_ctrl_ uses the SmplMsgConnection here
   const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
