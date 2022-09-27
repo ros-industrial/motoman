@@ -159,7 +159,7 @@ protected:
   // variables for point streaming
   double time_ptstreaming_last_point_;  // time at which the last point was received
   double dt_ptstreaming_points_;        // elapsed time between two received points
-  static constexpr double ptstreaming_timeout_ = 3.0; // seconds
+  static constexpr double ptstreaming_timeout_ = 0.2; // seconds
 
   /**
    * \brief Service used to disable the robot controller.  When disabled,
