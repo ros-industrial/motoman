@@ -170,7 +170,7 @@
     <None Include="ParameterExtraction.fsLib" />
     <None Include="ParameterExtraction.mpLib" />
     <None Include="ParameterExtraction.yrcLib" />
-    <None Include="ParameterExtraction.yrcmlib" />
+    <None Include="ParameterExtraction.yrcmLib" />
     <None Include="YRC1000CompilerArguments.mps" />
     <None Include="YRC1000LinkerArguments.mps" />
     <None Include="YRC1000uCompilerArguments.mps" />
