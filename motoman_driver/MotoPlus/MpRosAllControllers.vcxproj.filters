@@ -55,7 +55,7 @@
     <None Include="ParameterExtraction.yrcLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
-    <None Include="ParameterExtraction.yrcmlib">
+    <None Include="ParameterExtraction.yrcmLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
     <None Include="YRC1000uCompilerArguments.mps">
