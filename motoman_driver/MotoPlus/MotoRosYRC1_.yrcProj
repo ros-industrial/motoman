@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<MotoPlusProject>
+  <ProjectName>MotoRosYRC1_</ProjectName>
+  <FilesInProject>
+    <FileForProject>Controller.c</FileForProject>
+    <FileForProject>Controller.h</FileForProject>
+    <FileForProject>CtrlGroup.c</FileForProject>
+    <FileForProject>CtrlGroup.h</FileForProject>
+    <FileForProject>IoServer.c</FileForProject>
+    <FileForProject>IoServer.h</FileForProject>
+    <FileForProject>MotionServer.c</FileForProject>
+    <FileForProject>MotionServer.h</FileForProject>
+    <FileForProject>MotoROS.h</FileForProject>
+    <FileForProject>mpMain.c</FileForProject>
+    <FileForProject>ParameterExtraction.h</FileForProject>
+    <FileForProject>ParameterExtraction.yrcmLib</FileForProject>
+    <FileForProject>ParameterTypes.h</FileForProject>
+    <FileForProject>SimpleMessage.c</FileForProject>
+    <FileForProject>SimpleMessage.h</FileForProject>
+    <FileForProject>StateServer.c</FileForProject>
+    <FileForProject>StateServer.h</FileForProject>
+  </FilesInProject>
+  <LastFileOpened>StateServer.h</LastFileOpened>
+  <UsrInit>False</UsrInit>
+  <ProjectType>Executable</ProjectType>
+  <Debug>
+    <DebugIP>
+    </DebugIP>
+    <DebugUser>MOTOMANrobot</DebugUser>
+    <DebugPass>MOTOMANrobot</DebugPass>
+  </Debug>
+  <Build>
+    <CompileCommand>mpbuilder\gnu\4.3.3-vxworks-6.9\x86-win32\bin\ccpentium.exe -march=atom -nostdlib -fno-builtin -fno-defer-pop -fno-implicit-fp -fno-zero-initialized-in-bss -Wall -Werror-implicit-function-declaration -g -MD -MP -DCPU=_VX_ATOM -DTOOL_FAMILY=gnu -DTOOL=gnu -D_WRS_KERNEL -DYRC1000 -I"~ProjectDir~" -I"~IncludeDir~" -c "~FilePath~" -o "~OutputPath~" 
+</CompileCommand>
+    <BuildCommand>mpbuilder\gnu\4.3.3-vxworks-6.9\x86-win32\bin\ccpentium.exe -nostdlib -r -WI,-X -WI~FileList~ -o "~OutputPath~"
+</BuildCommand>
+    <IncludeDir>C:\Program Files (x86)\Yaskawa\MotoPlusIDE_YRC\mpbuilder\inc</IncludeDir>
+  </Build>
+  <ProjectFileVersion>v2.4.0</ProjectFileVersion>
+  <ConvertTabs>False</ConvertTabs>
+</MotoPlusProject>
