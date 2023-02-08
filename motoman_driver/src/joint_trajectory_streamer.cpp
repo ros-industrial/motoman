@@ -484,7 +484,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     switch (this->state_)
     {
     case TransferStates::IDLE:
-      ros::Duration(0.050).sleep();  //  slower loop while waiting for new trajectory
+      ros::Duration(0.01).sleep();  //  slower loop while waiting for new trajectory
       break;
 
     case TransferStates::STREAMING:
@@ -546,7 +546,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         else
         {
           ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point"
-                           << " (#" << this->current_point_ << "): "
+                           << " (#" << this->current_point_ << " of " << static_cast<int>(this->current_traj_.size()) << "): "
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
           break;

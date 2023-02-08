@@ -249,7 +249,7 @@ void JointTrajectoryStreamer::streamingThread()
     switch (this->state_)
     {
     case TransferStates::IDLE:
-      ros::Duration(0.050).sleep();  //  slower loop while waiting for new trajectory
+      ros::Duration(0.005).sleep();  //  slower loop while waiting for new trajectory
       break;
 
     case TransferStates::STREAMING:
