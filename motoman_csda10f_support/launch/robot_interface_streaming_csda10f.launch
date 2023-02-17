@@ -1,0 +1,21 @@
+<!--
+  Manipulator specific version of 'robot_interface_streaming.launch'.
+
+  Defaults provided for csda10f:
+   - 15 joints
+
+  Usage:
+    robot_interface_streaming_cda10f.launch robot_ip:=<value> controller:=<fs100|dx100>
+-->
+<launch>
+  <arg name="robot_ip" doc="IP of controller"/>
+	
+  <!-- controller: Controller name (fs100 or dx100) -->
+  <arg name="controller"/>
+
+  <rosparam command="load" file="$(find motoman_csda10f_support)/config/csda10f_motion_interface.yaml" />
+
+  <include file="$(find motoman_driver)/launch/robot_multigroup_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip"   value="$(arg robot_ip)" />
+	</include>
+</launch>

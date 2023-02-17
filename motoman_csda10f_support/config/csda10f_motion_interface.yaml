@@ -1,0 +1,18 @@
+# Ordering from 0 to 4 is required due to FS100 controller configuration, but it can be that ordering starting from 1 works for you.
+topic_list:
+    - name: csda10f_r1_controller
+      ns: csda10f
+      group: 0
+      joints: ['arm_left_joint_1_s','arm_left_joint_2_l','arm_left_joint_3_e','arm_left_joint_4_u','arm_left_joint_5_r','arm_left_joint_6_b','arm_left_joint_7_t']
+    - name: csda10f_r2_controller
+      ns: csda10f
+      group: 1
+      joints: ['arm_right_joint_1_s','arm_right_joint_2_l','arm_right_joint_3_e','arm_right_joint_4_u','arm_right_joint_5_r','arm_right_joint_6_b','arm_right_joint_7_t']
+    - name: csda10f_b1_controller
+      ns: csda10f
+      group: 2
+      joints: ['torso_joint_b1']
+    - name: csda10f_b2_controller
+      ns: csda10f
+      group: 3
+      joints: ['torso_joint_b2']
