@@ -73,6 +73,20 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   ROS_INFO("MotomanJointTrajectoryStreamer: init");
 
+  std::string controller_name = "";
+  ros::param::param<std::string>("robot_controller", controller_name, "fs100");
+  if (controller_name == "dx100") {
+    robot_controller_type_ = MotomanControllerType::DX100;
+  } else if (controller_name == "dx200") {
+    robot_controller_type_ = MotomanControllerType::DX200;
+  } else if (controller_name == "fs100") {
+    robot_controller_type_ = MotomanControllerType::FS100;
+  } else if (controller_name == "yrc1000") {
+    robot_controller_type_ = MotomanControllerType::YRC1000;
+  } else {
+    ROS_ERROR("MotomanJointTrajectoryStreamer: Robot controller have unknown type %s!", controller_name.c_str());
+  }
+
   this->robot_groups_ = robot_groups;
   rtn &= JointTrajectoryStreamer::init(connection, robot_groups, velocity_limits);
 
@@ -593,7 +607,8 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
 
   // FS100 requires trajectory start at current position
   namespace IRC_utils = industrial_robot_client::utils;
-  if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
+  if (robot_controller_type_ == MotomanControllerType::FS100 &&
+      !IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
                                 traj.joint_names, traj.points[0].positions,
                                 start_pos_tol_))
   {
@@ -622,8 +637,8 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
 
       // FS100 requires trajectory start at current position
       namespace IRC_utils = industrial_robot_client::utils;
-
-      if (!IRC_utils::isWithinRange(cur_joint_pos_map_[group_number].name, cur_joint_pos_map_[group_number].position,
+      if (robot_controller_type_ == MotomanControllerType::FS100 &&
+          !IRC_utils::isWithinRange(cur_joint_pos_map_[group_number].name, cur_joint_pos_map_[group_number].position,
                                     traj.joint_names, traj.points[0].groups[gr].positions,
                                     start_pos_tol_))
       {

@@ -54,6 +54,8 @@ using industrial_robot_client::joint_trajectory_streamer::JointTrajectoryStreame
 using industrial::simple_message::SimpleMessage;
 using industrial::smpl_msg_connection::SmplMsgConnection;
 
+enum class MotomanControllerType { DX100, DX200, FS100, YRC1000 };
+
 /**
  * \brief Message handler that streams joint trajectories to the robot controller.
  *        Contains FS100-specific motion control commands.
@@ -134,6 +136,7 @@ public:
 
 protected:
   int robot_id_;
+  MotomanControllerType robot_controller_type_;
   MotomanMotionCtrl motion_ctrl_;
 
   // used to enforce serialisation of all access to the single, shared SmplMsgConnection.
