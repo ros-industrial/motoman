@@ -40,6 +40,7 @@
 */ 
 
 #include "MotoROS.h"
+#include "debug.h"
 
 
 #ifdef DEBUG
@@ -57,6 +58,7 @@ void mpUsrRoot(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int a
 #ifdef DX100
 	Ros_Sleep(10000);  // 10 sec. delay to enable DX100 system to complete initialization
 #endif
+	Ros_Debug_Init();
 	
 	//Creates and starts a new task in a seperate thread of execution.
 	//All arguments will be passed to the new task if the function
