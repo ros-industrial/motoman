@@ -30,7 +30,10 @@
 */ 
 
 #include "MotoROS.h"
+
+#ifdef DEBUG
 #include "debug.h"
+#endif
 
 //-----------------------
 // Function Declarations
@@ -1672,35 +1675,32 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 	MP_PULSE_POS_RSP_DATA prevPulsePosData, pulsePosData;
 	MP_CTRL_GRP_SEND_DATA ctrlGrpData;
 	
-	LONG newPulseInc[MP_GRP_AXES_NUM];
-	LONG toProcessPulses[MP_GRP_AXES_NUM];
-	LONG sentPulseInc[MP_GRP_AXES_NUM];
-	LONG processedPulses[MP_GRP_AXES_NUM];
-	LONG unsentPulses[MP_GRP_AXES_NUM];
-	LONG prevMaxSpeed[MP_GRP_AXES_NUM];
-	LONG prevMaxSpeedRemain[MP_GRP_AXES_NUM];
-	LONG maxSpeed[MP_GRP_AXES_NUM];
-	LONG maxSpeedRemain[MP_GRP_AXES_NUM];
+	LONG newPulseInc[MAX_CONTROLLABLE_GROUPS][MP_GRP_AXES_NUM];		// Pulse increments that we just retrieved from the incQueue
+	LONG toProcessPulses[MAX_CONTROLLABLE_GROUPS][MP_GRP_AXES_NUM];	// Total pulses that still need to be sent to the command
+	LONG processedPulses[MP_GRP_AXES_NUM];							// Amount of pulses from the last command that were actually processed (accepted) 
+	LONG prevMaxSpeed[MAX_CONTROLLABLE_GROUPS][MP_GRP_AXES_NUM];
+	LONG prevMaxSpeedRemain[MAX_CONTROLLABLE_GROUPS][MP_GRP_AXES_NUM];
+	LONG maxSpeed[MAX_CONTROLLABLE_GROUPS][MP_GRP_AXES_NUM];
+	LONG maxSpeedRemain[MAX_CONTROLLABLE_GROUPS][MP_GRP_AXES_NUM];
+	BOOL skipReadingQ[MAX_CONTROLLABLE_GROUPS];
+	BOOL queueRead[MAX_CONTROLLABLE_GROUPS];
 	BOOL isMissingPulse;
-	BOOL skipReadingQ;
-	BOOL queueRead;
 	BOOL hasUnprocessedData;
 
 	ctrlGrpData.sCtrlGrp = 0;
 	mpGetPulsePos(&ctrlGrpData, &prevPulsePosData);
 
-	memset(newPulseInc, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
-	memset(toProcessPulses, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
-	memset(sentPulseInc, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
+	memset(newPulseInc, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM * MAX_CONTROLLABLE_GROUPS);
+	memset(toProcessPulses, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM * MAX_CONTROLLABLE_GROUPS);
 	memset(processedPulses, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
-	memset(unsentPulses, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
-	memset(prevMaxSpeed, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
-	memset(prevMaxSpeedRemain, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
-	memset(maxSpeed, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
-	memset(maxSpeedRemain, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
+	memset(prevMaxSpeed, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM * MAX_CONTROLLABLE_GROUPS);
+	memset(prevMaxSpeedRemain, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM * MAX_CONTROLLABLE_GROUPS);
+	memset(maxSpeed, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM * MAX_CONTROLLABLE_GROUPS);
+	memset(maxSpeedRemain, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM * MAX_CONTROLLABLE_GROUPS);
+	memset(skipReadingQ, 0x00, sizeof(BOOL) * MAX_CONTROLLABLE_GROUPS);
+	memset(queueRead, 0x00, sizeof(BOOL) * MAX_CONTROLLABLE_GROUPS);
+
 	isMissingPulse = FALSE;
-	skipReadingQ = FALSE;
-	queueRead = FALSE;
 	hasUnprocessedData = FALSE;
 
 	printf("IncMoveTask Started\r\n");
@@ -1716,22 +1716,23 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 	FOREVER
 	{
 		mpClkAnnounce(MP_INTERPOLATION_CLK);
-		queueRead = FALSE;
 		
 		if (Ros_Controller_IsMotionReady(controller) 
 			&& (Ros_MotionServer_HasDataInQueue(controller) || hasUnprocessedData)
 			&& !controller->bStopMotion)
 		{
 			//bNoData = FALSE;   // for testing
-			if (skipReadingQ) 
+			
+			for (i = 0; i < controller->numGroup; i++)
 			{
-				skipReadingQ = FALSE;
-				for (i = 0; i < controller->numGroup; i++)
+				queueRead[i] = FALSE;
+
+				if (skipReadingQ[i])
+				{
+					skipReadingQ[i] = FALSE;
 					memset(&moveData.grp_pos_info[i].pos, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
-			}
-			else 
-			{
-				for (i = 0; i < controller->numGroup; i++)
+				}
+				else
 				{
 					q = &controller->ctrlGroups[i]->inc_q;
 
@@ -1747,11 +1748,12 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 							moveData.grp_pos_info[i].pos_tag.data[4] = q->data[q->idx].user;
 
 							memcpy(&moveData.grp_pos_info[i].pos, &q->data[q->idx].inc, sizeof(LONG) * MP_GRP_AXES_NUM);
-							queueRead = TRUE;
+							queueRead[i] = TRUE;
+#ifdef DEBUG
 							Debug_BroadcastMsg("New Inc from Buffer: %d, %d, %d, %d, %d, %d\r\n", 
 								moveData.grp_pos_info[i].pos[0], moveData.grp_pos_info[i].pos[1], moveData.grp_pos_info[i].pos[2],
 								moveData.grp_pos_info[i].pos[3], moveData.grp_pos_info[i].pos[4], moveData.grp_pos_info[i].pos[5]);
-
+#endif
 							// increment index in the queue and decrease the count
 							q->idx = Q_OFFSET_IDX(q->idx, 1, Q_SIZE);
 							q->cnt--;
@@ -1848,14 +1850,15 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 
 			for (i = 0; i < controller->numGroup; i++) 
 			{
-				memcpy(newPulseInc, moveData.grp_pos_info[i].pos, sizeof(LONG) * MP_GRP_AXES_NUM);
+				memcpy(newPulseInc[i], moveData.grp_pos_info[i].pos, sizeof(LONG)* MP_GRP_AXES_NUM);
+
 				// record the speed associate with the next amount of pulses
-				if (queueRead) 
+				if (queueRead[i])
 				{
 					for (axis = 0; axis < MP_GRP_AXES_NUM; axis++)
 					{
-						maxSpeed[axis] = abs(newPulseInc[axis]);
-						maxSpeedRemain[axis] = abs(newPulseInc[axis]);
+						maxSpeed[i][axis] = abs(newPulseInc[i][axis]);
+						maxSpeedRemain[i][axis] = abs(newPulseInc[i][axis]);
 					}
 				}
 
@@ -1868,19 +1871,19 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 					processedPulses[axis] = pulsePosData.lPos[axis] - prevPulsePosData.lPos[axis];
 					// Remove those pulses from the amount to process.  
 					// If everything was processed, then there should by 0 pulses left. Otherwise FSU Speed limit prevented processing
-					toProcessPulses[axis] -= processedPulses[axis];
-					if (toProcessPulses[axis] != 0)
+					toProcessPulses[i][axis] -= processedPulses[axis];
+					if (toProcessPulses[i][axis] != 0)
 						isMissingPulse = TRUE;
 					
 					// Add the new pulses to be processed for this iteration 
-					toProcessPulses[axis] += newPulseInc[axis];
+					toProcessPulses[i][axis] += newPulseInc[i][axis];
 
-					if(toProcessPulses[axis] != 0)
+					if(toProcessPulses[i][axis] != 0)
 						hasUnprocessedData = TRUE;
 				}
 
 				//BroadcastF("Processed: %d  Missing: %d  New: %d  ToProcess %d\r\n",
-				//	processedPulses[0], toProcessPulses[0] - newPulseInc[0], newPulseInc[0], toProcessPulses[0]);
+				//	processedPulses[0], toProcessPulses[i][0] - newPulseInc[i][0], newPulseInc[i][0], toProcessPulses[i][0]);
 
 				if (isMissingPulse) 
 				{
@@ -1894,100 +1897,82 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 					for (axis = 0; axis < MP_GRP_AXES_NUM; axis++)
 					{
 						// Check if has pulses to process
-						if (toProcessPulses[axis] == 0)
-							prevMaxSpeedRemain[axis] = 0;
+						if (toProcessPulses[i][axis] == 0)
+							prevMaxSpeedRemain[i][axis] = 0;
 						else
-							prevMaxSpeedRemain[axis] = abs(prevMaxSpeedRemain[axis]) - abs(processedPulses[axis]);
+							prevMaxSpeedRemain[i][axis] = abs(prevMaxSpeedRemain[i][axis]) - abs(processedPulses[axis]);
 					}
 
 					// Check if still have data to process from previous iteration
-					skipReadingQ = FALSE;
+					skipReadingQ[i] = FALSE;
 					for (axis = 0; axis < MP_GRP_AXES_NUM; axis++)
 					{
-						if (prevMaxSpeedRemain[axis] > 0)
-							skipReadingQ = TRUE;
+						if (prevMaxSpeedRemain[i][axis] > 0)
+							skipReadingQ[i] = TRUE;
 					}
-
+#ifdef DEBUG
 					Debug_BroadcastMsg("Remain: %d, %d, %d, %d, %d, %d Skip: %d\r\n",
-						prevMaxSpeedRemain[0], prevMaxSpeedRemain[1], prevMaxSpeedRemain[2],
-						prevMaxSpeedRemain[3], prevMaxSpeedRemain[4], prevMaxSpeedRemain[5], skipReadingQ);
-
-					if (!skipReadingQ) {
+						prevMaxSpeedRemain[i][0], prevMaxSpeedRemain[i][1], prevMaxSpeedRemain[i][2],
+						prevMaxSpeedRemain[i][3], prevMaxSpeedRemain[i][4], prevMaxSpeedRemain[i][5], skipReadingQ[i]);
+#endif
+					if (!skipReadingQ[i]) {
 						for (axis = 0; axis < MP_GRP_AXES_NUM; axis++) {
 							// Transfer the current speed as the new prevSpeed
-							prevMaxSpeed[axis] = maxSpeed[axis];
-							prevMaxSpeedRemain[axis] += maxSpeedRemain[axis];
+							prevMaxSpeed[i][axis] = maxSpeed[i][axis];
+							prevMaxSpeedRemain[i][axis] += maxSpeedRemain[i][axis];
 						}
-
-						Debug_BroadcastMsg("New Remain: %d, %d, %d, %d, %d, %d \r\n",
-							prevMaxSpeedRemain[0], prevMaxSpeedRemain[1], prevMaxSpeedRemain[2],
-							prevMaxSpeedRemain[3], prevMaxSpeedRemain[4], prevMaxSpeedRemain[5]);
 					}
 
 					// Set the number of pulse that can be sent without exceeding speed
 					for (axis = 0; axis < MP_GRP_AXES_NUM; axis++)
 					{
 						// Check if has pulses to process
-						if (toProcessPulses[axis] == 0)
+						if (toProcessPulses[i][axis] == 0)
 							continue;
 
 						// Maximum inc that should be send ()
-						if (prevMaxSpeed[axis] > 0)
+						if (prevMaxSpeed[i][axis] > 0)
 							// if previous speed is defined use it
-							max_inc = prevMaxSpeed[axis]; 
+							max_inc = prevMaxSpeed[i][axis]; 
 						else
 						{
-							if (maxSpeed[axis] > 0)
+							if (maxSpeed[i][axis] > 0)
 								// else fallback on current speed if defined
-								max_inc = maxSpeed[axis];
-							else if (newPulseInc[axis] != 0)
+								max_inc = maxSpeed[i][axis];
+							else if (newPulseInc[i][axis] != 0)
 								// use the current speed if none zero.
-								max_inc = abs(newPulseInc[axis]);
+								max_inc = abs(newPulseInc[i][axis]);
 							else
 								// otherwise use the axis max speed
 								max_inc = controller->ctrlGroups[i]->maxInc.maxIncrement[axis];
-
+#ifdef DEBUG
 							Debug_BroadcastMsg("Warning undefined speed: Axis%d Defaulting Max Inc: %d (prevSpeed: %d curSpeed %d)\r\n", 
-								axis, max_inc, prevMaxSpeed[axis], maxSpeed[axis]);
+								axis, max_inc, prevMaxSpeed[i][axis], maxSpeed[i][axis]);
+#endif
 						}
 
 						// Set new increment and recalculate unsent pulses
-						if (abs(toProcessPulses[axis]) <= max_inc)
+						if (abs(toProcessPulses[i][axis]) <= max_inc)
 						{
 							// Pulses to send is small than max, so send everything
-							moveData.grp_pos_info[i].pos[axis] = toProcessPulses[axis];
-							sentPulseInc[axis] = toProcessPulses[axis];
-							unsentPulses[axis] = 0;
+							moveData.grp_pos_info[i].pos[axis] = toProcessPulses[i][axis];
 						}
 						else {
 							// Pulses to send is too high, so send the amount matching the maximum speed
-							if (toProcessPulses[axis] >= 0)
-							{
+							if (toProcessPulses[i][axis] >= 0)
 								moveData.grp_pos_info[i].pos[axis] = max_inc;
-								sentPulseInc[axis] = max_inc;
-							}
 							else
-							{
 								moveData.grp_pos_info[i].pos[axis] = -max_inc;
-								sentPulseInc[axis] = -max_inc;
-							}
-
-							unsentPulses[axis] = toProcessPulses[axis] - sentPulseInc[axis];
-							//if (axis == 0)
-							//	BroadcastF("Axis %d unsent: %d = toProcess: %d - send: %d \r\n",
-							//		axis, unsentPulses[axis], toProcessPulses[axis], sentPulseInc[axis]);
 						}
 					}
 				}
 				else
 				{
 					// No PFL Speed Limit detected
-					memcpy(sentPulseInc, moveData.grp_pos_info[i].pos, sizeof(LONG) * MP_GRP_AXES_NUM);
-					memset(unsentPulses, 0x00, sizeof(LONG) * MP_GRP_AXES_NUM);
 					for (axis = 0; axis < MP_GRP_AXES_NUM; axis++)
 					{
-						prevMaxSpeed[axis] = abs(sentPulseInc[axis]);
-						prevMaxSpeedRemain[axis] = abs(sentPulseInc[axis]);
+						prevMaxSpeed[i][axis] = abs(moveData.grp_pos_info[i].pos[axis]);
+						prevMaxSpeedRemain[i][axis] = abs(moveData.grp_pos_info[i].pos[axis]);
 					}
 				}
 			}
@@ -2043,11 +2028,14 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 				}
 			}
 
+#ifdef DEBUG
+			i = 0;
 			for(axis=0; axis<2; axis++)
-			Debug_BroadcastMsg("Axis %d: New: %d ToProcess: %d Sent: %d Unsent: %d Skip: %d\r\n",
-				axis, newPulseInc[axis], toProcessPulses[axis],
-				moveData.grp_pos_info[0].pos[axis], unsentPulses[axis], skipReadingQ);
 			
+			Debug_BroadcastMsg("Axis %d: New: %d ToProcess: %d Sent: %d  Skip: %d\r\n",
+				axis, newPulseInc[i][axis], toProcessPulses[i][axis],
+				moveData.grp_pos_info[i].pos[axis], skipReadingQ[i]);
+#endif
 			memcpy(&prevPulsePosData, &pulsePosData, sizeof(MP_PULSE_POS_RSP_DATA));
 #endif
 			
