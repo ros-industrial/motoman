@@ -11,6 +11,7 @@ if (CATKIN_ENABLE_TESTING)
   roslaunch_add_file_check(test/roslaunch_test_hc10.xml)
   roslaunch_add_file_check(test/roslaunch_test_hc10dt.xml)
   roslaunch_add_file_check(test/roslaunch_test_hc10dt_b10.xml)
+  roslaunch_add_file_check(test/roslaunch_test_hc10dtp_b10.xml)
 endif()
 
 install(DIRECTORY config launch meshes urdf

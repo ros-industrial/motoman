@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>motoman_hc10_support</name>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <description>
     <p>ROS-Industrial support for the Motoman HC10 (and variants).</p>
     <p>
@@ -14,9 +14,10 @@
       <b>Specifications</b>
     </p>
     <ul>
-      <li>HC10 - model 1-06VXHC10-A00</li>
-      <li>HC10DT - model 1-06VXHC10-A10</li>
-      <li>HC10DT-B10 - model 1-06VXHC10-B10</li>
+      <li>HC10 - model 1-06VXHC10-A0*</li>
+      <li>HC10DT - model 1-06VXHC10-A1*</li>
+      <li>HC10DT-B10 - model 1-06VXHC10-B1*</li>
+	  <li>HC10DT-B10 - model 1-06VXCP10-B0*</li>
    </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
@@ -31,6 +32,9 @@
       </li>
       <li><em>YASKAWA MOTOMAN-HC10DT INSTRUCTIONS DUST-PROOF/DRIP-PROOF (HW1485083)</em> version
         <em>188669-1CD, rev 1</em>.
+      </li>
+	  <li><em>YASKAWA MOTOMAN-HC10DTP INSTRUCTIONS DUST-PROOF/DRIP-PROOF (HW2480392)</em> version
+        <em>193887-1CD, rev 1</em>.
       </li>
     </ul>
     <p>
