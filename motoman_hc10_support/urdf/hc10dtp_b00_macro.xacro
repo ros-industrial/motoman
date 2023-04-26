@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:macro name="motoman_hc10dtp_b10" params="prefix">
+  <xacro:macro name="motoman_hc10dtp_b00" params="prefix">
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
@@ -85,13 +85,13 @@
     <link name="${prefix}link_6_t">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_hc10_support/meshes/hc10dtp_b10/visual/link_6_t.dae"/>
+          <mesh filename="package://motoman_hc10_support/meshes/hc10dtp_b00/visual/link_6_t.dae"/>
         </geometry>
         <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_hc10_support/meshes/hc10dtp_b10/collision/link_6_t.stl"/>
+          <mesh filename="package://motoman_hc10_support/meshes/hc10dtp_b00/collision/link_6_t.stl"/>
        </geometry>
       </collision>
     </link>
