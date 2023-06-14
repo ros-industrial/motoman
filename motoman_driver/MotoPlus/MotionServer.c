@@ -1814,38 +1814,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 				}
 			}
 
-#if DX100
-			// first robot
-			if (controller->bIsDx100Sda)
-				moveData.ctrl_grp = 1 | (1 << 2); //R1 + B1
-			else
-				moveData.ctrl_grp = 1; //R1 only
-			ret = mpMeiIncrementMove(MP_SL_ID1, &moveData);
-			if(ret != 0)
-			{
-				controller->bMpIncMoveError = TRUE;
-				Ros_MotionServer_StopMotion(controller);
-				if(ret == -3)
-					printf("mpMeiIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
-				else
-					printf("mpMeiIncrementMove returned: %d\r\n", ret);
-			}
-			// if second robot
-			moveData.ctrl_grp = 2; //R2 only
-			if(controller->numRobot > 1)
-			{
-				ret = mpMeiIncrementMove(MP_SL_ID2, &moveData);
-				if(ret != 0)
-				{
-					controller->bMpIncMoveError = TRUE;
-					Ros_MotionServer_StopMotion(controller);
-					if(ret == -3)
-						printf("mpMeiIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
-					else
-						printf("mpMeiIncrementMove returned: %d\r\n", ret);
-				}
-			}			
-#else
+
 			// --- FSU Speed Limit Check ---
 			hasUnprocessedData = FALSE;
 
@@ -1973,6 +1942,38 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 				}
 			}
 
+#if DX100
+			// first robot
+			if (controller->bIsDx100Sda)
+				moveData.ctrl_grp = 1 | (1 << 2); //R1 + B1
+			else
+				moveData.ctrl_grp = 1; //R1 only
+			ret = mpMeiIncrementMove(MP_SL_ID1, &moveData);
+			if (ret != 0)
+			{
+				controller->bMpIncMoveError = TRUE;
+				Ros_MotionServer_StopMotion(controller);
+				if (ret == -3)
+					printf("mpMeiIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
+				else
+					printf("mpMeiIncrementMove returned: %d\r\n", ret);
+			}
+			// if second robot
+			moveData.ctrl_grp = 2; //R2 only
+			if (controller->numRobot > 1)
+			{
+				ret = mpMeiIncrementMove(MP_SL_ID2, &moveData);
+				if (ret != 0)
+				{
+					controller->bMpIncMoveError = TRUE;
+					Ros_MotionServer_StopMotion(controller);
+					if (ret == -3)
+						printf("mpMeiIncrementMove returned: %d (ctrl_grp = %d)\r\n", ret, moveData.ctrl_grp);
+					else
+						printf("mpMeiIncrementMove returned: %d\r\n", ret);
+				}
+			}
+#else
 			ret = mpExRcsIncrementMove(&moveData);
 			if(ret != 0)
 			{
@@ -2023,18 +2024,16 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 					Ros_MotionServer_StopMotion(controller);
 				}
 			}
+#endif
 
 #ifdef DEBUG
 			i = 0;
-			for(axis=0; axis<6; axis++)
-			
-			Debug_BroadcastMsg("Axis %d: New: %d ToProcess: %d Sent: %d MaxSpeed: %d for remaining %d  Skip: %d\r\n",
-				axis, newPulseInc[i][axis], toProcessPulses[i][axis],
-				moveData.grp_pos_info[i].pos[axis], prevMaxSpeed[i][axis], prevMaxSpeedRemain[i][axis], skipReadingQ[i]);
-#endif
+			for (axis = 0; axis < 6; axis++)
 
-#endif
-			
+				Debug_BroadcastMsg("Axis %d: New: %d ToProcess: %d Sent: %d MaxSpeed: %d for remaining %d  Skip: %d\r\n",
+					axis, newPulseInc[i][axis], toProcessPulses[i][axis],
+					moveData.grp_pos_info[i].pos[axis], prevMaxSpeed[i][axis], prevMaxSpeedRemain[i][axis], skipReadingQ[i]);
+#endif		
 		}
 		//else  // for testing
 		//{
