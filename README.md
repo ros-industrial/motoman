@@ -9,14 +9,15 @@
 
 [![support level: consortium / vendor](https://img.shields.io/badge/support%20level-consortium%20/%20vendor-brightgreen.svg)](http://rosindustrial.org/news/2016/10/7/better-supporting-a-growing-ros-industrial-software-platform)
 
----
-**NOTE:** This repository is for the **ROS 1** interface. If you are looking for ROS 2 support, please visit [Yaskawa-Global/motoros2](https://github.com/yaskawa-global/motoros2).
-
----
 
 [ROS-Industrial][] Motoman metapackage. See the [ROS wiki][] page for more information.
 
 The [motoman_experimental][] repository contains additional packages.
+
+## ROS 2
+
+This repository hosts the **ROS 1** version of MotoROS.
+If you are looking for ROS 2 support, please visit [Yaskawa-Global/motoros2](https://github.com/yaskawa-global/motoros2).
 
 
 ## Contents
