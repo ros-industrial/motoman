@@ -85,12 +85,14 @@
     <link name="${prefix}link_6_t">
       <visual>
         <geometry>
+          <!-- HC10 DTP reuses HC10DT-B10 meshes of all links, except for link 6 (T) -->
           <mesh filename="package://motoman_hc10_support/meshes/hc10dtp_b00/visual/link_6_t.dae"/>
         </geometry>
         <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
         <geometry>
+          <!-- HC10 DTP reuses HC10DT-B10 meshes of all links, except for link 6 (T) -->
           <mesh filename="package://motoman_hc10_support/meshes/hc10dtp_b00/collision/link_6_t.stl"/>
        </geometry>
       </collision>
