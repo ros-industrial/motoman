@@ -8,7 +8,7 @@
     <p>
       This package contains configuration data, 3D models and launch files
       for Motoman HC10 manipulators. This currently includes the base model
-      and the DT variant.
+      and the DT and DTP variants.
     </p>
     <p>
       <b>Specifications</b>
@@ -17,7 +17,7 @@
       <li>HC10 - model 1-06VXHC10-A0*</li>
       <li>HC10DT - model 1-06VXHC10-A1*</li>
       <li>HC10DT-B10 - model 1-06VXHC10-B1*</li>
-	  <li>HC10DT-B10 - model 1-06VXCP10-B0*</li>
+      <li>HC10DTP-B00 - model 1-06VXCP10-B0*</li>
    </ul>
     <p>
       Joint limits and maximum joint velocities are based on the information 
@@ -33,7 +33,7 @@
       <li><em>YASKAWA MOTOMAN-HC10DT INSTRUCTIONS DUST-PROOF/DRIP-PROOF (HW1485083)</em> version
         <em>188669-1CD, rev 1</em>.
       </li>
-	  <li><em>YASKAWA MOTOMAN-HC10DTP INSTRUCTIONS DUST-PROOF/DRIP-PROOF (HW2480392)</em> version
+      <li><em>YASKAWA MOTOMAN-HC10DTP INSTRUCTIONS DUST-PROOF/DRIP-PROOF (HW2480392)</em> version
         <em>193887-1CD, rev 1</em>.
       </li>
     </ul>
