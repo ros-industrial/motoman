@@ -55,6 +55,7 @@ int Ros_MotionServer_AddTrajPointFullEx(CtrlGroup* ctrlGroup, SmBodyJointTrajPtE
 int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
 int Ros_MotionServer_GetDhParameters(Controller* controller, SimpleMsg* replyMsg);
 int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveMsg, SimpleMsg* replyMsg);
+void Ros_MotionServer_EnsureEcoModeIsDisabled(Controller* controller);
 
 // AddToIncQueue Task:
 void Ros_MotionServer_AddToIncQueueProcess(Controller* controller, int groupNo);
@@ -564,6 +565,9 @@ int Ros_MotionServer_JointTrajPtFullExProcess(Controller* controller, SimpleMsg*
 		// Check the trajectory sequence code
 		if(msgBody->sequence == 0) // First trajectory point
 		{
+            //It's possible for energy-saving mode to activate between /robot_enable and the first trajectory point.
+            Ros_MotionServer_EnsureEcoModeIsDisabled(controller); //make sure that Ros_Controller_IsMotionReady gets called above before calling this
+
 			// Initialize first point variables
 			ret = Ros_MotionServer_InitTrajPointFullEx(ctrlGroup, &msgBody->jointTrajPtData[i], msgBody->sequence);
 		
@@ -1137,6 +1141,9 @@ int Ros_MotionServer_JointTrajDataProcess(Controller* controller, SimpleMsg* rec
 	// Check the trajectory sequence code
 	if(trajData->sequence == 0) // First trajectory point
 	{
+        //It's possible for energy-saving mode to activate between /robot_enable and the first trajectory point.
+        Ros_MotionServer_EnsureEcoModeIsDisabled(controller); //make sure that Ros_Controller_IsMotionReady gets called above before calling this
+
 		// Initialize first point variables
 		ret = Ros_MotionServer_InitTrajPointFull(ctrlGroup, trajData);
 		
@@ -2004,4 +2011,23 @@ int Ros_MotionServer_SetSelectedTool(Controller* controller, SimpleMsg* receiveM
 		Ros_SimpleMsg_MotionReply(receiveMsg, ROS_RESULT_INVALID, ROS_RESULT_INVALID_GROUPNO, replyMsg, groupNo);
 
 	return 0;
+}
+
+void Ros_MotionServer_EnsureEcoModeIsDisabled(Controller* controller)
+{
+    //It's possible for energy-saving mode to activate between /robot_enable and the first trajectory point.
+    //If eco-mode is active, then automatically invoke a /robot_enable.
+    if (Ros_Controller_IsEcoMode(controller))
+    {
+        printf("Energy Saving Function is active. Clearing with automatic robot_enable.\n");
+
+        Ros_MotionServer_StopTrajMode(controller);
+        Ros_Sleep(100); //give time for Ros_Controller_StatusUpdate on other task
+        Ros_MotionServer_StartTrajMode(controller);
+
+        //Give time for the controller to recognize that the INFORM cursor is sitting on
+        //a WAIT instructions. Without this delay, the first call to mpExRcsIncrementMove
+        //will fail with a (-1).
+        Ros_Sleep(100);
+    }
 }

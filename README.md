@@ -14,6 +14,11 @@
 
 The [motoman_experimental][] repository contains additional packages.
 
+## ROS 2
+
+This repository hosts the **ROS 1** version of MotoROS.
+If you are looking for ROS 2 support, please visit [Yaskawa-Global/motoros2](https://github.com/yaskawa-global/motoros2).
+
 
 ## Contents
 
