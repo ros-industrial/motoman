@@ -1850,7 +1850,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 					// Add the new pulses to be processed for this iteration 
 					toProcessPulses[i][axis] += newPulseInc[i][axis];
 
-					if(toProcessPulses[i][axis] != 0)
+					if (toProcessPulses[i][axis] != 0)
 						hasUnprocessedData = TRUE;
 				}
 
@@ -2035,14 +2035,15 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 					moveData.grp_pos_info[i].pos[axis], prevMaxSpeed[i][axis], prevMaxSpeedRemain[i][axis], skipReadingQ[i]);
 #endif		
 		}
-		//else  // for testing
-		//{
-		//	if(!bNoData)
-		//	{
-		//		printf("INFO: No data in queue.\r\n");
-		//		bNoData = TRUE;
-		//	}
-		//}
+		else  
+		{
+			// Reset previous position in case the robot is moved externally
+			memset(toProcessPulses, 0x00, sizeof(LONG)* MP_GRP_AXES_NUM* MAX_CONTROLLABLE_GROUPS);
+			for (i = 0; i < controller->numGroup; i++)
+			{
+				mpGetPulsePos(&ctrlGrpData, &prevPulsePosData[i]);
+			}
+		}
 	}
 }
 
