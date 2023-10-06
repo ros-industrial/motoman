@@ -2039,6 +2039,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 		{
 			// Reset previous position in case the robot is moved externally
 			memset(toProcessPulses, 0x00, sizeof(LONG)* MP_GRP_AXES_NUM* MAX_CONTROLLABLE_GROUPS);
+			hasUnprocessedData = FALSE;
 			for (i = 0; i < controller->numGroup; i++)
 			{
 				mpGetPulsePos(&ctrlGrpData, &prevPulsePosData[i]);
