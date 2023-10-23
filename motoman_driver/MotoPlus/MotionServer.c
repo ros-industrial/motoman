@@ -1853,7 +1853,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 				// Get the current controller command position and substract the previous command position
 				// and check if it matches the amount if increment sent last cycle.  If it doesn't then
 				// some pulses are missing and the amount of unprocessed pulses needs to be added to this cycle.
-				moveData.grp_pos_info[i].pos_tag.data[0] = Ros_CtrlGroup_GetAxisConfig(controller->ctrlGroups[i]);
+				ctrlGrpData.sCtrlGrp = controller->ctrlGroups[i]->groupId;
 				mpGetPulsePos(&ctrlGrpData, &pulsePosData);
 				isMissingPulse = FALSE;
 				for (axis = 0; axis < MP_GRP_AXES_NUM; axis++)
@@ -2066,7 +2066,7 @@ void Ros_MotionServer_IncMoveLoopStart(Controller* controller) //<-- IP_CLK prio
 			hasUnprocessedData = FALSE;
 			for (i = 0; i < controller->numGroup; i++)
 			{
-				moveData.grp_pos_info[i].pos_tag.data[0] = Ros_CtrlGroup_GetAxisConfig(controller->ctrlGroups[i]);
+				ctrlGrpData.sCtrlGrp = controller->ctrlGroups[i]->groupId;
 				mpGetPulsePos(&ctrlGrpData, &prevPulsePosData[i]);
 			}
 		}
