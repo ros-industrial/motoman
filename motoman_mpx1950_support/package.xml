@@ -7,8 +7,7 @@
     <p>ROS-Industrial support for the Motoman MPX1950 (and variants).</p>
     <p>
       This package contains configuration data, 3D models and launch files
-      for Motoman MPX1950 manipulators. This currently includes the base model
-      which also supports the DT and XP variants.
+      for Motoman MPX1950 manipulators.
     </p>
     <p>
       <b>Specifications</b>
