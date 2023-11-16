@@ -19,7 +19,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <color sid="diffuse">0.1 0.1 0.1 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1</float>
@@ -36,7 +36,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <color sid="diffuse">0.1 0.1 0.1 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1</float>
@@ -53,7 +53,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <color sid="diffuse">0.1 0.1 0.1 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1</float>
@@ -70,7 +70,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <color sid="diffuse">0.1 0.1 0.1 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1</float>
@@ -87,7 +87,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <color sid="diffuse">0.1 0.1 0.1 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1</float>
@@ -104,7 +104,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <color sid="diffuse">0.1 0.1 0.1 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1</float>
@@ -121,7 +121,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <color sid="diffuse">0.1 0.1 0.1 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1</float>
@@ -155,7 +155,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <color sid="diffuse">0.1 0.1 0.1 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1</float>
@@ -189,7 +189,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <color sid="diffuse">0.1 0.1 0.1 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1</float>
