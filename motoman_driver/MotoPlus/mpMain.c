@@ -40,9 +40,9 @@
 */ 
 
 #include "MotoROS.h"
+#include "debug.h"
 
 #ifdef DEBUG
-	#include "debug.h"
 	#warning Debug messages in MotoPlus *will* affect application performance (disable this in SimpleMessage.h)
 #endif
 
@@ -56,9 +56,6 @@ void mpUsrRoot(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int a
 
 #ifdef DX100
 	Ros_Sleep(10000);  // 10 sec. delay to enable DX100 system to complete initialization
-#endif
-#ifdef DEBUG
-	Ros_Debug_Init();
 #endif
 	
 	//Creates and starts a new task in a seperate thread of execution.

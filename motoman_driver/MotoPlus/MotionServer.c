@@ -30,10 +30,7 @@
 */ 
 
 #include "MotoROS.h"
-
-#ifdef DEBUG
 #include "debug.h"
-#endif
 
 //-----------------------
 // Function Declarations
