@@ -1,0 +1,30 @@
+<launch>
+  <arg name="req_arg" value="default"/>
+  <arg name="dx200" value="dx200"/>
+  
+  <group ns="load_mpx1950">
+    <include file="$(find motoman_mpx1950_support)/launch/load_mpx1950.launch"/>
+  </group>
+
+  <group ns="test_mpx1950">
+    <include file="$(find motoman_mpx1950_support)/launch/test_mpx1950.launch"/>
+  </group>
+
+  <group ns="robot_interface_streaming_mpx1950">
+    <group ns="dx200" >
+      <include file="$(find motoman_mpx1950_support)/launch/robot_interface_streaming_mpx1950.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
+        <arg name="controller" value="$(arg dx200)"/>
+      </include>
+    </group>
+  </group>
+
+  <group ns="robot_state_visualize_mpx1950">
+    <group ns="dx200" >
+      <include file="$(find motoman_mpx1950_support)/launch/robot_state_visualize_mpx1950.launch">
+        <arg name="robot_ip"   value="$(arg req_arg)" />
+        <arg name="controller" value="$(arg dx200)"/>
+      </include>
+    </group>
+  </group>
+</launch>
