@@ -132,6 +132,11 @@ public:
 
   virtual void streamingThread();
 
+  /**
+   * \brief Safely disable Yaskawa arm before system shutdown.
+   */
+  void shutdown();
+
 protected:
   int robot_id_;
   MotomanMotionCtrl motion_ctrl_;
@@ -167,6 +172,12 @@ protected:
    * \brief Service used to select a specific tool file on the robot controller.
    */
   ros::ServiceServer srv_select_tool_;
+
+  /**
+   * \brief Publisher to announce motoros failures. This allows higher-level
+   * drivers to retry certain actions.
+   */
+  ros::Publisher motoros_error_pub_;
 
   /**
    * \brief Disable the robot. Response is true if the state was flipped or
