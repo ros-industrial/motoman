@@ -19,6 +19,7 @@
   <exec_depend>motoman_driver</exec_depend>
   <exec_depend>motoman_es_support</exec_depend>
   <exec_depend>motoman_gp8_support</exec_depend>
+  <exec_depend>motoman_gp25_support</exec_depend>
   <exec_depend>motoman_msgs</exec_depend>
   <exec_depend>motoman_resources</exec_depend>
 
