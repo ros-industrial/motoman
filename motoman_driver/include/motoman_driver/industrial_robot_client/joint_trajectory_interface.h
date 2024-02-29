@@ -301,6 +301,8 @@ protected:
    */
   virtual void jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
 
+  virtual void jointCommandExCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg) = 0;
+
   /**
    * \brief Callback function registered to joint_command topic subscriber.
    *   Specific method is implemented in JointTrajectoryStreamer class.

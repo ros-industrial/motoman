@@ -155,6 +155,8 @@ bool JointTrajectoryInterface::init(
   this->srv_stop_motion_ = this->node_.advertiseService(
                              "stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
 
+  this->sub_joint_command_ = this->node_.subscribe("joint_command", 0, &JointTrajectoryInterface::jointCommandExCB, this);
+
   for (it_type iterator = this->robot_groups_.begin(); iterator != this->robot_groups_.end(); iterator++)
   {
     std::string name_str, ns_str;
