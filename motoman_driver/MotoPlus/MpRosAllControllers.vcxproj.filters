@@ -55,7 +55,7 @@
     <None Include="ParameterExtraction.yrcLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
-    <None Include="ParameterExtraction.yrcmlib">
+    <None Include="ParameterExtraction.yrcmLib">
       <Filter>MotoPlus Libraries</Filter>
     </None>
     <None Include="YRC1000uCompilerArguments.mps">
@@ -87,6 +87,9 @@
     <ClCompile Include="IoServer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="debug.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller.h">
@@ -114,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MotoROS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

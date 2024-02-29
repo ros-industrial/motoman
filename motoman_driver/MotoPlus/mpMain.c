@@ -40,7 +40,7 @@
 */ 
 
 #include "MotoROS.h"
-
+#include "debug.h"
 
 #ifdef DEBUG
 	#warning Debug messages in MotoPlus *will* affect application performance (disable this in SimpleMessage.h)

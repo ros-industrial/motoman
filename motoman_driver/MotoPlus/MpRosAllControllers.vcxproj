@@ -170,7 +170,7 @@
     <None Include="ParameterExtraction.fsLib" />
     <None Include="ParameterExtraction.mpLib" />
     <None Include="ParameterExtraction.yrcLib" />
-    <None Include="ParameterExtraction.yrcmlib" />
+    <None Include="ParameterExtraction.yrcmLib" />
     <None Include="YRC1000CompilerArguments.mps" />
     <None Include="YRC1000LinkerArguments.mps" />
     <None Include="YRC1000uCompilerArguments.mps" />
@@ -179,6 +179,7 @@
   <ItemGroup>
     <ClCompile Include="Controller.c" />
     <ClCompile Include="CtrlGroup.c" />
+    <ClCompile Include="debug.c" />
     <ClCompile Include="IoServer.c" />
     <ClCompile Include="MotionServer.c" />
     <ClCompile Include="mpMain.c" />
@@ -188,6 +189,7 @@
   <ItemGroup>
     <ClInclude Include="Controller.h" />
     <ClInclude Include="CtrlGroup.h" />
+    <ClInclude Include="debug.h" />
     <ClInclude Include="IoServer.h" />
     <ClInclude Include="MotionServer.h" />
     <ClInclude Include="MotoROS.h" />

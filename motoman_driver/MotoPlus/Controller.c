@@ -741,6 +741,18 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 						break;
 					}
 
+					case IO_ROBOTSTATUS_PLAY:
+					case IO_ROBOTSTATUS_TEACH:
+					case IO_ROBOTSTATUS_REMOTE:
+					case IO_ROBOTSTATUS_OPERATING:
+					case IO_ROBOTSTATUS_SERVO:
+						if ((ioStatus[IO_ROBOTSTATUS_REMOTE] != 1) ||
+							(ioStatus[IO_ROBOTSTATUS_PLAY] != 1) ||
+							(ioStatus[IO_ROBOTSTATUS_OPERATING] == 0) ||
+							(ioStatus[IO_ROBOTSTATUS_SERVO] == 0))
+							Ros_MotionServer_ClearQ_All(controller);
+						break;
+
 					case IO_ROBOTSTATUS_WAITING_ROS: // Job input signaling ready for external motion
 					{
 						if(ioStatus[IO_ROBOTSTATUS_WAITING_ROS] == 0)  // signal turned OFF
@@ -753,6 +765,7 @@ BOOL Ros_Controller_StatusUpdate(Controller* controller)
 							controller->bRobotJobReady = TRUE; //job is ready (even if other factors will prevent motion)
 						break;
 					}
+
 #if (YRC1000||YRC1000u)
 					case IO_ROBOTSTATUS_PFL_STOP: // PFL Stop
 					case IO_ROBOTSTATUS_PFL_ESCAPE: //  PFL Escaping
