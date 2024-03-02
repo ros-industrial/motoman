@@ -122,12 +122,12 @@ public:
   virtual bool trajectory_to_msgs(motoman_msgs::DynamicJointTrajectoryPtr& traj,
                                   std::vector<SimpleMessage>* msgs);
 
-  virtual void streamingThread();
+  virtual void streamingThread() = 0;
 
-  bool send_to_robot(const std::vector<SimpleMessage>& messages);
+  virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
 protected:
-  void trajectoryStop();
+  void trajectoryStop() = 0;
 
   boost::thread* streaming_thread_;
   boost::mutex mutex_;

@@ -415,7 +415,7 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
   return true;
 }
 
-// override send_to_robot to provide controllerReady() and setTrajMode() calls
+// override send_to_robot to provide controllerReady() calls
 bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
   bool motion_ctrl_result = false;

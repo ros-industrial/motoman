@@ -128,9 +128,9 @@ public:
 
   virtual bool create_message_ex(int seq, const motoman_msgs::DynamicJointPoint &point, SimpleMessage* msg);
 
-  virtual bool send_to_robot(const std::vector<SimpleMessage>& messages);
+  virtual bool send_to_robot(const std::vector<SimpleMessage>& messages) override;
 
-  virtual void streamingThread();
+  virtual void streamingThread() override;
 
 protected:
   int robot_id_;
@@ -144,7 +144,7 @@ protected:
 
   std::map<int, MotomanMotionCtrl> motion_ctrl_map_;
 
-  void trajectoryStop();
+  void trajectoryStop() override;
   bool is_valid(trajectory_msgs::JointTrajectory &traj);
   bool is_valid(motoman_msgs::DynamicJointTrajectory &traj);
 
