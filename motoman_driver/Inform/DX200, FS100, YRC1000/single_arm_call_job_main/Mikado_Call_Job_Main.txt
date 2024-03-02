@@ -1,0 +1,7 @@
+This INIT_ROS.JBI allows to either call another Yaskawa Job by setting some Input signals, or to give Mikado control over the robot.
+
+Whenever this job is started (e.g. by setting In #20012 "CALL MASTER JOB") and Input#1871=ON and Input#1872=OFF, then Mikado will not gain control of the robot and instead call "JOB:MAIN".
+
+When Mikado is in control of the robot and then instructed to release robot control, Output#890 will become true and this job will end.
+Mikado releases control when executing a "Run Robot Program" task with program name "robot_disable".
+It will try to regain control and re-start this job when the same task is run with program name "robot_enable".
