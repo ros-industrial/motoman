@@ -18,10 +18,33 @@
 
   <exec_depend>motoman_driver</exec_depend>
   <exec_depend>motoman_es_support</exec_depend>
-  <exec_depend>motoman_gp8_support</exec_depend>
+  <exec_depend>motoman_gp12_support</exec_depend>
+  <exec_depend>motoman_gp180_support</exec_depend>
   <exec_depend>motoman_gp25_support</exec_depend>
+  <exec_depend>motoman_gp50_support</exec_depend>
+  <exec_depend>motoman_gp7_support</exec_depend>
+  <exec_depend>motoman_gp8_support</exec_depend>
+  <exec_depend>motoman_gp88_support</exec_depend>
+  <exec_depend>motoman_hc10_support</exec_depend>
+  <exec_depend>motoman_hc20_support</exec_depend>
+  <exec_depend>motoman_ma2010_support</exec_depend>
+  <exec_depend>motoman_ma2010_moveit_config</exec_depend>
+  <exec_depend>motoman_mh12_support</exec_depend>
+  <exec_depend>motoman_mh50_support</exec_depend>
+  <exec_depend>motoman_mh5_support</exec_depend>
+  <exec_depend>motoman_motomini_support</exec_depend>
+  <exec_depend>motoman_motopos_d500_support</exec_depend>
+  <exec_depend>motoman_ms210_moveit_config</exec_depend>
+  <exec_depend>motoman_ms210_support</exec_depend>
   <exec_depend>motoman_msgs</exec_depend>
   <exec_depend>motoman_resources</exec_depend>
+  <exec_depend>motoman_sda10f_moveit_config</exec_depend>
+  <exec_depend>motoman_sda10f_support</exec_depend>
+  <exec_depend>motoman_sia10d_support</exec_depend>
+  <exec_depend>motoman_sia10f_support</exec_depend>
+  <exec_depend>motoman_sia20d_moveit_config</exec_depend>
+  <exec_depend>motoman_sia20d_support</exec_depend>
+  <exec_depend>motoman_sia5d_support</exec_depend>
 
   <export>
     <metapackage/>

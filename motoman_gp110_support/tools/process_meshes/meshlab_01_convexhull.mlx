@@ -1,0 +1,11 @@
+<!DOCTYPE FilterScript>
+<FilterScript>
+ <filter name="Remove Duplicate Vertices"/>
+ <filter name="Convex Hull"/>
+ <filter name="Change the current layer">
+  <Param name="layer" tooltip="The name of the current layer" value="0" description="Layer Name" type="RichMesh"/>
+ </filter>
+ <filter name="Delete Current Mesh"/>
+ <filter name="Re-Compute Face Normals"/>
+ <filter name="Normalize Face Normals"/>
+</FilterScript>

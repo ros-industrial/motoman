@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="torso" params="name prefix">
+    <!-- link list -->
+    <link name="${prefix}base_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/base.stl" />
+        </geometry>
+        <xacro:material_yaskawa_blue/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/base.stl" />
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_b1">
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_sda10f_support/meshes/sda10f/visual/link_b1.stl"/>
+        </geometry>
+        <xacro:material_yaskawa_white/>
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://motoman_sda10f_support/meshes/sda10f/collision/link_b1.stl" />
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_b2"/>
+
+    <!-- joint list -->
+    <joint name="${prefix}joint_b1" type="revolute">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}link_b1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1" />
+      <limit lower="${radians(-170)}" upper="${radians(170)}" effort="100" velocity="${radians(130)}" />
+    </joint>
+    <joint name="${prefix}joint_b2" type="revolute">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}link_b2"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1" />
+      <limit lower="${radians(-170)}" upper="${radians(170)}" effort="100" velocity="${radians(130)}" />
+      <mimic joint="${prefix}joint_b1" multiplier="1" offset="0"/>
+    </joint>
+    <!-- end of joint list -->
+  </xacro:macro>
+</robot>

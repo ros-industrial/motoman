@@ -1,0 +1,169 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="motoman_gp70l" params="prefix">
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
+
+    <!-- link list -->
+    <link name="${prefix}base_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/visual/base_link.dae"/>
+        </geometry>
+        <xacro:material_yaskawa_blue/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/collision/base_link.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_1_s">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/visual/link_1_s.dae"/>
+        </geometry>
+        <xacro:material_yaskawa_blue/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/collision/link_1_s.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_2_l">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/visual/link_2_l.dae"/>
+        </geometry>
+        <xacro:material_yaskawa_blue/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/collision/link_2_l.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_3_u">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/visual/link_3_u.dae"/>
+        </geometry>
+        <xacro:material_yaskawa_blue/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/collision/link_3_u.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_4_r">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/visual/link_4_r.dae"/>
+        </geometry>
+        <xacro:material_yaskawa_blue/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/collision/link_4_r.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_5_b">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/visual/link_5_b.dae"/>
+        </geometry>
+        <xacro:material_yaskawa_blue/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/collision/link_5_b.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <link name="${prefix}link_6_t">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/visual/link_6_t.dae"/>
+        </geometry>
+        <xacro:material_yaskawa_silver/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_gp70l_support/meshes/gp70l/collision/link_6_t.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- end of link list -->
+
+    <!-- joint list -->
+    <joint name="${prefix}joint_1_s" type="revolute">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}link_1_s"/>
+      <origin xyz="0 0 0.540" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <limit lower="${radians(-180)}" upper="${radians(180)}" effort="3983.9" velocity="${radians(180.0)}"/>
+    </joint>
+    <joint name="${prefix}joint_2_l" type="revolute">
+      <parent link="${prefix}link_1_s"/>
+      <child link="${prefix}link_2_l"/>
+      <origin xyz="0.320 0 0" rpy="0 0 0" />
+      <axis xyz="0 1 0" />
+      <limit lower="${radians(-90)}" upper="${radians(155)}" effort="10174.4" velocity="${radians(123.0)}"/>
+    </joint>
+    <joint name="${prefix}joint_3_u" type="revolute">
+      <parent link="${prefix}link_2_l"/>
+      <child link="${prefix}link_3_u"/>
+      <origin xyz="0 0 1.165" rpy="0 0 0" />
+      <axis xyz="0 -1 0" />
+      <limit lower="${radians(-80)}" upper="${radians(90)}" effort="5148.4" velocity="${radians(160.0)}"/>
+    </joint>
+    <joint name="${prefix}joint_4_r" type="revolute">
+      <parent link="${prefix}link_3_u"/>
+      <child link="${prefix}link_4_r"/>
+      <origin xyz="1.225 0 0.235" rpy="0 0 0" />
+      <axis xyz="-1 0 0" />
+      <limit lower="${radians(-360)}" upper="${radians(360)}" effort="823.7" velocity="${radians(230)}"/>
+    </joint>
+    <joint name="${prefix}joint_5_b" type="revolute">
+      <parent link="${prefix}link_4_r"/>
+      <child link="${prefix}link_5_b"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <axis xyz="0 -1 0" />
+      <limit lower="${radians(-125)}" upper="${radians(125)}" effort="794.3" velocity="${radians(230)}"/>
+    </joint>
+    <joint name="${prefix}joint_6_t" type="revolute">
+      <parent link="${prefix}link_5_b"/>
+      <child link="${prefix}link_6_t"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <axis xyz="-1 0 0" />
+      <limit lower="${radians(-360)}" upper="${radians(360)}" effort="333.4" velocity="${radians(350)}"/>
+    </joint>
+    <!-- end of joint list -->
+
+    <!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
+    <link name="${prefix}flange"/>
+    <joint name="${prefix}joint_6_t-flange" type="fixed">
+      <origin xyz="0.175 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}link_6_t"/>
+      <child link="${prefix}flange"/>
+    </joint>
+
+    <!-- ROS-Industrial 'tool0' frame: all-zeros tool frame -->
+    <link name="${prefix}tool0"/>
+    <joint name="${prefix}flange-tool0" type="fixed">
+      <origin xyz="0 0 0" rpy="${radians(180)} ${radians(-90)} 0"/>
+      <parent link="${prefix}flange"/>
+      <child link="${prefix}tool0"/>
+    </joint>
+
+    <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
+    <link name="${prefix}base" />
+    <joint name="${prefix}base_link-base" type="fixed">
+      <origin xyz="0 0 0.540" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}base"/>
+    </joint>
+  </xacro:macro>
+</robot>
