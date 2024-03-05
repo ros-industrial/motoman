@@ -93,7 +93,7 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJoint
 
   motoman_msgs::DynamicJointTrajectoryPtr trajs = boost::make_shared<motoman_msgs::DynamicJointTrajectory>(*msg);
 
-  // read current state value (should be atomic)
+  // read current state value (std::atomic)
   int state = this->state_;
 
   ROS_DEBUG("Current state is: %d", state);
@@ -167,7 +167,7 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
 
   trajectory_msgs::JointTrajectoryPtr traj = boost::make_shared<trajectory_msgs::JointTrajectory>(*msg);
 
-  // read current state value (should be atomic)
+  // read current state value (std::atomic)
   int state = this->state_;
 
   ROS_DEBUG("Current state is: %d", state);

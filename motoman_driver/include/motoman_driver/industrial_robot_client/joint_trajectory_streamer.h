@@ -37,6 +37,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <atomic>
 
 namespace industrial_robot_client
 {
@@ -49,7 +50,7 @@ using industrial::smpl_msg_connection::SmplMsgConnection;
 
 namespace TransferStates
 {
-enum TransferState
+enum TransferState : int
 {
   IDLE = 0, STREAMING = 1  // ,STARTING, //, STOPPING
 };
@@ -137,7 +138,7 @@ protected:
   // used for sending retries with modified start on invalid starting position (3011)
   trajectory_msgs::JointTrajectoryPtr current_joint_traj_;
 
-  TransferState state_;
+  std::atomic<TransferState> state_;
   ros::Time streaming_start_;
   int min_buffer_size_;
 };
