@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:macro name="motoman_mh5" params="prefix">
+  <xacro:macro name="motoman_mh5l" params="prefix">
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
@@ -38,14 +38,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_2_l.stl"/>
+          <mesh filename="package://motoman_mh5_support/meshes/mh5l/visual/link_2_l.stl"/>
         </geometry>
         <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5/collision/link_2_l.stl" />
+          <mesh filename="package://motoman_mh5_support/meshes/mh5l/collision/link_2_l.stl" />
         </geometry>
       </collision>
     </link>
@@ -54,7 +54,6 @@
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_3_u.stl"/>
-          <!-- <mesh filename="package://motoman_mh5_support/meshes/mh5_old_variants/visual/link_3_u.stl"/> --><!-- Uncomment & switch with above to use alternative U-link. -->
         </geometry>
         <xacro:material_yaskawa_white/>
       </visual>
@@ -62,7 +61,6 @@
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
           <mesh filename="package://motoman_mh5_support/meshes/mh5/collision/link_3_u.stl" />
-          <!-- <mesh filename="package://motoman_mh5_support/meshes/mh5_old_variants/collision/link_3_u.stl" /> --><!-- Uncomment & switch with above to use alternative U-link. -->
         </geometry>
       </collision>
     </link>
@@ -70,14 +68,14 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5/visual/link_4_r.stl"/>
+          <mesh filename="package://motoman_mh5_support/meshes/mh5l/visual/link_4_r.stl"/>
         </geometry>
         <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://motoman_mh5_support/meshes/mh5/collision/link_4_r.stl" />
+          <mesh filename="package://motoman_mh5_support/meshes/mh5l/collision/link_4_r.stl" />
         </geometry>
       </collision>
     </link>
@@ -119,21 +117,21 @@
       <child link="${prefix}link_1_s"/>
       <origin xyz="0 0 0.330" rpy="0 0 0"/>
       <axis xyz="0 0 1" />
-      <limit lower="-${radians(170)}" upper="${radians(170)}" effort="215.6" velocity="${radians(376)}" />
+      <limit lower="-${radians(170)}" upper="${radians(170)}" effort="303.8" velocity="${radians(270)}" />
     </joint>
     <joint name="${prefix}joint_2_l" type="revolute">
       <parent link="${prefix}link_1_s"/>
       <child link="${prefix}link_2_l"/>
       <origin xyz="0.0880 0 0.00" rpy="0 0 0"/>
       <axis xyz="0 1 0" />
-      <limit lower="-${radians(65)}" upper="${radians(150)}" effort="176.4" velocity="${radians(350)}" />
+      <limit lower="-${radians(65)}" upper="${radians(150)}" effort="205.8" velocity="${radians(280)}" />
     </joint>
     <joint name="${prefix}joint_3_u" type="revolute">
       <parent link="${prefix}link_2_l"/>
       <child link="${prefix}link_3_u"/>
-      <origin xyz="0 0 0.310" rpy="0 0 0"/>
+      <origin xyz="0 0 0.400" rpy="0 0 0"/>
       <axis xyz="0 -1 0" />
-      <limit lower="-${radians(70)}" upper="${radians(190)}" effort="76.8" velocity="${radians(400)}" />
+      <limit lower="-${radians(70)}" upper="${radians(190)}" effort="85.5" velocity="${radians(300)}" />
     </joint>
     <joint name="${prefix}joint_4_r" type="revolute">
       <parent link="${prefix}link_3_u"/>
@@ -145,7 +143,7 @@
     <joint name="${prefix}joint_5_b" type="revolute">
       <parent link="${prefix}link_4_r"/>
       <child link="${prefix}link_5_b"/>
-      <origin xyz="0.305 0 0" rpy="0 0 0"/>
+      <origin xyz="0.405 0 0" rpy="0 0 0"/>
       <axis xyz="0 -1 0" />
       <limit lower="-${radians(135)}" upper="${radians(135)}" effort="18.0" velocity="${radians(450)}" />
     </joint>
