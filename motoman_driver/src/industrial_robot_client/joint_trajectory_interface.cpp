@@ -180,7 +180,7 @@ bool JointTrajectoryInterface::init(
 
     this->sub_cur_pos_ = this->node_.subscribe<sensor_msgs::JointState>(
                            ns_str + "/" + name_str + "/joint_states", 1,
-                           boost::bind(&JointTrajectoryInterface::jointStateCB, this, _1, robot_id));
+                           boost::bind(&JointTrajectoryInterface::jointStateCB, this, boost::placeholders::_1, robot_id));
 
     this->sub_cur_positions_[robot_id] = this->sub_cur_pos_;
   }

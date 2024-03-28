@@ -52,8 +52,8 @@ const double JointTrajectoryAction::DEFAULT_GOAL_THRESHOLD_ = 0.01;
 
 JointTrajectoryAction::JointTrajectoryAction() :
   action_server_(node_, "joint_trajectory_action",
-                 boost::bind(&JointTrajectoryAction::goalCB, this, _1),
-                 boost::bind(&JointTrajectoryAction::cancelCB, this, _1), false)
+                 boost::bind(&JointTrajectoryAction::goalCB, this, boost::placeholders::_1),
+                 boost::bind(&JointTrajectoryAction::cancelCB, this, boost::placeholders::_1), false)
 {
   ros::NodeHandle pn("~");
 
@@ -82,17 +82,17 @@ JointTrajectoryAction::JointTrajectoryAction() :
       node_, joint_path_action_name + "/joint_trajectory_action" , false);
     actionServer_->registerGoalCallback(
       boost::bind(&JointTrajectoryAction::goalCB,
-                  this, _1, group_number_int));
+                  this, boost::placeholders::_1, group_number_int));
     actionServer_->registerCancelCallback(
       boost::bind(&JointTrajectoryAction::cancelCB,
-                  this, _1, group_number_int));
+                  this, boost::placeholders::_1, group_number_int));
 
     pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
                                 joint_path_action_name + "/joint_path_command", 1);
     sub_trajectory_state_  = this->node_.subscribe<control_msgs::FollowJointTrajectoryFeedback>(
                                joint_path_action_name + "/feedback_states", 1,
                                boost::bind(&JointTrajectoryAction::controllerStateCB,
-                                           this, _1, group_number_int));
+                                           this, boost::placeholders::_1, group_number_int));
     sub_robot_status_ = node_.subscribe(
                           "robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
 
@@ -106,7 +106,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
     this->watchdog_timer_map_[group_number_int] = node_.createTimer(
           ros::Duration(WATCHD0G_PERIOD_), boost::bind(
-            &JointTrajectoryAction::watchdog, this, _1, group_number_int));
+            &JointTrajectoryAction::watchdog, this, boost::placeholders::_1, group_number_int));
   }
 
   pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
