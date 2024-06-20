@@ -1,0 +1,33 @@
+
+<!--
+  Manipulator specific version of the state visualizer.
+
+  Defaults provided for csda10f:
+   - 15 joints
+
+  Usage:
+    robot_state_visualize_csda10f.launch robot_ip:=<value> controller:=<fs100|dx100>
+-->
+<launch>
+	<arg name="robot_ip" doc="IP of controller" />
+
+  <!-- controller: Controller name (fs100 or dx100) -->
+  <arg name="controller" default="fs100" doc="Series of the controller (dx100, fs100)"/>
+
+  <!-- Load the custom naming of robot joints (param name = controller_joint_names)-->
+  <rosparam command="load" file="$(find motoman_csda10f_support)/config/joint_names_csda10f.yaml" />
+  <!-- Load the topic_list parapemeter containing the definition of the motion groups and joints mapping to the real controller ros application-->
+  <rosparam command="load" file="$(find motoman_csda10f_support)/config/csda10f_motion_interface.yaml" />
+
+  <!-- Obtain the robot state from the robot controller-->
+	<include file="$(find motoman_driver)/launch/robot_state_$(arg controller).launch">
+		<arg name="robot_ip"   value="$(arg robot_ip)" />
+	</include>
+
+	<node name="robot_state_publisher" pkg="robot_state_publisher" 
+		type="robot_state_publisher" />
+
+	<include file="$(find motoman_csda10f_support)/launch/load_csda10f.launch" />
+
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find industrial_robot_client)/config/robot_state_visualize.rviz" required="true" />
+</launch>
