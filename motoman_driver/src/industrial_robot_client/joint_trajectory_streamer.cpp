@@ -30,12 +30,14 @@
  */
 
 #include "motoman_driver/industrial_robot_client/joint_trajectory_streamer.h"
+#include "motoman_driver/simple_message/motoman_motion_reply.h"
 #include <map>
 #include <vector>
 #include <string>
 
 namespace CommTypes = industrial::simple_message::CommTypes;
 namespace ReplyTypes = industrial::simple_message::ReplyTypes;
+using motoman::simple_message::motion_reply::MotionReplyResult;
 
 namespace industrial_robot_client
 {
@@ -90,6 +92,7 @@ JointTrajectoryStreamer::~JointTrajectoryStreamer()
 void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg)
 {
   ROS_INFO("Receiving joint trajectory message");
+  ROS_INFO("JointTrajectoryStreamer::jointTrajectoryCB DynamicJointTrajectoryConstPtr");
 
   // read current state value (should be atomic)
   int state = this->state_;
@@ -126,6 +129,7 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJoint
 void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg)
 {
   ROS_INFO("Receiving joint trajectory message");
+  ROS_INFO("JointTrajectoryStreamer::jointTrajectoryCB JointTrajectoryConstPtr");
 
   // read current state value (should be atomic)
   int state = this->state_;
@@ -135,8 +139,10 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   {
     if (msg->points.empty())
       ROS_INFO("Empty trajectory received, canceling current trajectory");
-    else
+    else{
       ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+      sendMotionReplyResult(pub_motion_reply_, MotionReplyResult::NOT_READY);
+    }
 
     this->mutex_.lock();
     trajectoryStop();
@@ -153,10 +159,23 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   // calc new trajectory
   std::vector<SimpleMessage> new_traj_msgs;
   if (!trajectory_to_msgs(msg, &new_traj_msgs))
+  {
+    // The trajectory is not valid, or failed to be converted into appropriate robot messages.
+    sendMotionReplyResult(pub_motion_reply_, MotionReplyResult::INVALID);
     return;
+  }
 
   // send command messages to robot
-  send_to_robot(new_traj_msgs);
+  if (!send_to_robot(new_traj_msgs))
+  {
+    // Send to robot will fail if the robot is not ready yet.
+    sendMotionReplyResult(pub_motion_reply_, MotionReplyResult::NOT_READY);
+    return;
+  }
+
+  // Successfully send the motion to the robot.
+  // It may still get aborted/interrupted while the motion is streaming,
+  // but the input trajectory should be executing now.
 }
 
 bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)

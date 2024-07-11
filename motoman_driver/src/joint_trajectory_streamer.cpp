@@ -491,6 +491,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
       {
         ROS_INFO("Trajectory streaming complete, setting state to IDLE");
         this->state_ = TransferStates::IDLE;
+        sendMotionReplyResult(pub_motion_reply_, MotionReplyResults::SUCCESS);
         break;
       }
 
@@ -548,6 +549,8 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                            << " (#" << this->current_point_ << "): "
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
+          // TODO Determine if the reply should be published into pub_motion_replies_ or pub_motion_reply_.
+          sendMotionReplyResult(pub_motion_reply_, reply_status.reply_.getResult());
           break;
         }
       }
@@ -555,6 +558,8 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     default:
       ROS_ERROR("Joint trajectory streamer: unknown state");
       this->state_ = TransferStates::IDLE;
+      // TODO: What MotionReplyResults should this be?
+      sendMotionReplyResult(pub_motion_reply_, MotionReplyResults::FAILURE);
       break;
     }
     // this does not unlock smpl_msg_conx_mutex_, but the mutex from JointTrajectoryStreamer

@@ -39,6 +39,7 @@
 #include "ros/ros.h"
 #include "industrial_msgs/CmdJointTrajectory.h"
 #include "motoman_msgs/CmdJointTrajectoryEx.h"
+#include "motoman_msgs/MotionReplyResult.h"
 #include "industrial_msgs/StopMotion.h"
 #include "sensor_msgs/JointState.h"
 #include "simple_message/simple_message.h"
@@ -337,10 +338,20 @@ protected:
 
   virtual void jointStateCB(const sensor_msgs::JointStateConstPtr &msg, int robot_id);
 
+  /**
+   * \brief Publish a motion reply result.
+   *
+   * @param pub publisher object to use
+   * @param res respond to the input trajectory, according to motoman::simple_message::motion_reply::MotionReplyResult
+   *            values.
+   */
+  void sendMotionReplyResult(ros::Publisher& pub, int res);
+
   TcpClient default_tcp_connection_;
 
   ros::NodeHandle node_;
   SmplMsgConnection* connection_;
+  ros::Publisher pub_motion_reply_; // publishes motion reply code in response to the incoming joint-trajectory.
   ros::Subscriber sub_cur_pos_;  // handle for joint-state topic subscription
   ros::Subscriber sub_joint_trajectory_;  // handle for joint-trajectory topic subscription
   ros::ServiceServer srv_joint_trajectory_;  // handle for joint-trajectory service
@@ -348,6 +359,7 @@ protected:
   ros::ServiceServer srv_joint_trajectory_ex_;  // handle for joint-trajectory service
   ros::ServiceServer srv_stop_motion_;   // handle for stop_motion service
 
+  std::map<int, ros::Publisher> pub_motion_replies_;
   std::map<int, ros::ServiceServer> srv_stops_;
   std::map<int, ros::ServiceServer> srv_joints_;
   std::map<int, ros::Subscriber> sub_joint_trajectories_;

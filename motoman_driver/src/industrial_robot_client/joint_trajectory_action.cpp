@@ -47,13 +47,8 @@ namespace industrial_robot_client
 namespace joint_trajectory_action
 {
 
-const double JointTrajectoryAction::WATCHD0G_PERIOD_ = 1.0;
-const double JointTrajectoryAction::DEFAULT_GOAL_THRESHOLD_ = 0.01;
-
 JointTrajectoryAction::JointTrajectoryAction() :
-  action_server_(node_, "joint_trajectory_action",
-                 boost::bind(&JointTrajectoryAction::goalCB, this, _1),
-                 boost::bind(&JointTrajectoryAction::cancelCB, this, _1), false)
+  JointTrajectoryActionV0(false)
 {
   ros::NodeHandle pn("~");
 
@@ -78,37 +73,48 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
     all_joint_names_.insert(all_joint_names_.end(), rg_joint_names.begin(), rg_joint_names.end());
 
-    actionServer_ = new actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction>(
+    actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction>* action_server =
+      new actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction>(
       node_, joint_path_action_name + "/joint_trajectory_action" , false);
-    actionServer_->registerGoalCallback(
+    action_server->registerGoalCallback(
       boost::bind(&JointTrajectoryAction::goalCB,
                   this, _1, group_number_int));
-    actionServer_->registerCancelCallback(
+    action_server->registerCancelCallback(
       boost::bind(&JointTrajectoryAction::cancelCB,
                   this, _1, group_number_int));
 
+    ros::Subscriber sub_motion_reply = node_.subscribe<motoman_msgs::MotionReplyResult>(
+      joint_path_action_name + "/joint_path_motion_reply", 1,
+      boost::bind(&JointTrajectoryAction::motionReplyCB,
+                  this, _1, group_number_int));
+    sub_motion_replies_[group_number_int] = sub_motion_reply;
+
     pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
                                 joint_path_action_name + "/joint_path_command", 1);
-    sub_trajectory_state_  = this->node_.subscribe<control_msgs::FollowJointTrajectoryFeedback>(
+    sub_trajectory_state_  = node_.subscribe<control_msgs::FollowJointTrajectoryFeedback>(
                                joint_path_action_name + "/feedback_states", 1,
                                boost::bind(&JointTrajectoryAction::controllerStateCB,
                                            this, _1, group_number_int));
     sub_robot_status_ = node_.subscribe(
-                          "robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
+                          "robot_status", 1, &JointTrajectoryAction::robotStatusCB,
+                          static_cast<JointTrajectoryActionV0*>(this));
 
     pub_trajectories_[group_number_int] = pub_trajectory_command_;
     sub_trajectories_[group_number_int] = (sub_trajectory_state_);
     sub_status_[group_number_int] = (sub_robot_status_);
 
-    this->act_servers_[group_number_int] = actionServer_;
+    this->act_servers_[group_number_int] = action_server;
 
     this->act_servers_[group_number_int]->start();
 
     this->watchdog_timer_map_[group_number_int] = node_.createTimer(
-          ros::Duration(WATCHD0G_PERIOD_), boost::bind(
+          ros::Duration(WATCHDOG_PERIOD_), boost::bind(
             &JointTrajectoryAction::watchdog, this, _1, group_number_int));
   }
 
+  sub_motion_reply_ = node_.subscribe(
+                               "joint_path_motion_reply", 1, &JointTrajectoryAction::motionReplyCB,
+                               static_cast<JointTrajectoryActionV0*>(this));
   pub_trajectory_command_ = node_.advertise<motoman_msgs::DynamicJointTrajectory>(
                               "joint_path_command", 1);
 
@@ -117,15 +123,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
   action_server_.start();
 }
 
-JointTrajectoryAction::~JointTrajectoryAction()
-{
-}
-
-void JointTrajectoryAction::robotStatusCB(
-  const industrial_msgs::RobotStatusConstPtr &msg)
-{
-  last_robot_status_ = msg;  // caching robot status for later use.
-}
+JointTrajectoryAction::~JointTrajectoryAction() = default;
 
 void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
 {
@@ -152,7 +150,7 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
       else
       {
         ROS_WARN_STREAM(
-          "Aborting goal because we haven't heard from the controller in " << WATCHD0G_PERIOD_ << " seconds");
+          "Aborting goal because we haven't heard from the controller in " << WATCHDOG_PERIOD_ << " seconds");
       }
       abortGoal();
     }
@@ -187,7 +185,7 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e, int group_number)
       else
       {
         ROS_WARN_STREAM(
-          "Aborting goal because we haven't heard from the controller in " << WATCHD0G_PERIOD_ << " seconds");
+          "Aborting goal because we haven't heard from the controller in " << WATCHDOG_PERIOD_ << " seconds");
       }
       abortGoal(group_number);
     }
@@ -316,7 +314,7 @@ void JointTrajectoryAction::cancelCB(JointTractoryActionServer::GoalHandle gh)
   // The interface is provided, but it is recommended to use
   //  void JointTrajectoryAction::cancelCB(JointTractoryActionServer::GoalHandle & gh, int group_number)
 
-  ROS_DEBUG("Received action cancel request");
+  ROS_DEBUG("Received action cancel request, but no action is done.");
 }
 
 void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh, int group_number)
@@ -524,76 +522,30 @@ void JointTrajectoryAction::controllerStateCB(
 void JointTrajectoryAction::controllerStateCB(
   const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg)
 {
-  ROS_DEBUG("Checking controller state feedback");
-  last_trajectory_state_ = msg;
   trajectory_state_recvd_ = true;
-
-  if (!has_active_goal_)
-  {
-    ROS_DEBUG("No active goal, ignoring feedback");
-    return;
-  }
-  if (current_traj_.points.empty())
-  {
-    ROS_DEBUG("Current trajectory is empty, ignoring feedback");
-    return;
-  }
-
-  if (!industrial_utils::isSimilar(all_joint_names_, msg->joint_names))
-  {
-    ROS_ERROR("Joint names from the controller don't match our joint names.");
-    return;
-  }
-
-  // Checking for goal constraints
-  // Checks that we have ended inside the goal constraints and has motion stopped
-
-  ROS_DEBUG("Checking goal constraints");
-  if (withinGoalConstraints(last_trajectory_state_, current_traj_))
-  {
-    if (last_robot_status_)
-    {
-      // Additional check for motion stoppage since the controller goal may still
-      // be moving.  The current robot driver calls a motion stop if it receives
-      // a new trajectory while it is still moving.  If the driver is not publishing
-      // the motion state (i.e. old driver), this will still work, but it warns you.
-      if (last_robot_status_->in_motion.val == industrial_msgs::TriState::FALSE)
-      {
-        ROS_INFO("Inside goal constraints, stopped moving, return success for action");
-        active_goal_.setSucceeded();
-        has_active_goal_ = false;
-      }
-      else if (last_robot_status_->in_motion.val == industrial_msgs::TriState::UNKNOWN)
-      {
-        ROS_INFO("Inside goal constraints, return success for action");
-        ROS_WARN("Robot status in motion unknown, the robot driver node and controller code should be updated");
-        active_goal_.setSucceeded();
-        has_active_goal_ = false;
-      }
-      else
-      {
-        ROS_DEBUG("Within goal constraints but robot is still moving");
-      }
-    }
-    else
-    {
-      ROS_INFO("Inside goal constraints, return success for action");
-      ROS_WARN("Robot status is not being published the robot driver node and controller code should be updated");
-      active_goal_.setSucceeded();
-      has_active_goal_ = false;
-    }
-  }
+  JointTrajectoryActionV0::controllerStateCB(msg);
 }
 
-void JointTrajectoryAction::abortGoal()
+void JointTrajectoryAction::motionReplyCB(const motoman_msgs::MotionReplyResultConstPtr &msg, int robot_id)
 {
-  // Stops the controller.
-  trajectory_msgs::JointTrajectory empty;
-  pub_trajectory_command_.publish(empty);
+  ROS_INFO("Received motion reply command: %i..", msg->val);
+  if (!has_active_goal_map_[robot_id])
+  {
+    ROS_DEBUG("No active goal, ignoring motion reply feedback");
+    return;
+  }
 
-  // Marks the current goal as aborted.
-  active_goal_.setAborted();
-  has_active_goal_ = false;
+  if (msg->val == motoman_msgs::MotionReplyResult::INVALID ||
+      msg->val == motoman_msgs::MotionReplyResult::NOT_READY)
+  {
+    ROS_INFO("Received motion reply command: %i for robot_id: %i. Preempted goal.", msg->val, robot_id);
+    active_goal_map_[robot_id].setRejected();
+    has_active_goal_map_[robot_id] = false;
+  } else if (msg->val != motoman_msgs::MotionReplyResult::SUCCESS)
+  {
+    ROS_INFO("Received motion reply command: %i for robot_id: %i. Aborted goal.", msg->val, robot_id);
+    abortGoal(robot_id);
+  }
 }
 
 void JointTrajectoryAction::abortGoal(int robot_id)
@@ -605,35 +557,6 @@ void JointTrajectoryAction::abortGoal(int robot_id)
   // Marks the current goal as aborted.
   active_goal_map_[robot_id].setAborted();
   has_active_goal_map_[robot_id] = false;
-}
-
-bool JointTrajectoryAction::withinGoalConstraints(
-  const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
-  const trajectory_msgs::JointTrajectory & traj)
-{
-  bool rtn = false;
-  if (traj.points.empty())
-  {
-    ROS_WARN("Empty joint trajectory passed to check goal constraints, return false");
-    rtn = false;
-  }
-  else
-  {
-    int last_point = traj.points.size() - 1;
-
-    if (industrial_robot_client::utils::isWithinRange(
-          last_trajectory_state_->joint_names,
-          last_trajectory_state_->actual.positions, traj.joint_names,
-          traj.points[last_point].positions, goal_threshold_))
-    {
-      rtn = true;
-    }
-    else
-    {
-      rtn = false;
-    }
-  }
-  return rtn;
 }
 
 bool JointTrajectoryAction::withinGoalConstraints(

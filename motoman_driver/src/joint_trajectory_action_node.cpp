@@ -33,14 +33,26 @@
 
 #include "motoman_driver/industrial_robot_client/joint_trajectory_action.h"
 
-using industrial_robot_client::joint_trajectory_action::JointTrajectoryAction;
-
 int main(int argc, char** argv)
 {
   // initialize node
   ros::init(argc, argv, "joint_trajectory_action");
-  JointTrajectoryAction action;
-  action.run();
+  ros::NodeHandle nh("~");
+  bool v0 = false;
+  if (!nh.getParam("version0", v0)){
+      ROS_ERROR("Fail to find version0 param for joint_trajectory_action.");
+      return EXIT_FAILURE;
+  }
+
+  if (v0) {
+      ROS_INFO("Using version0 JointTrajectoryAction");
+      industrial_robot_client::joint_trajectory_action::JointTrajectoryActionV0 action;
+      action.run();
+  } else {
+      ROS_INFO("Using multi-robot JointTrajectoryAction");
+      industrial_robot_client::joint_trajectory_action::JointTrajectoryAction action;
+      action.run();
+  }
 
   return 0;
 }

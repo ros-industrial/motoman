@@ -224,6 +224,7 @@ set_target_properties(motoman_io_relay_bswap
 
 
 add_executable(${PROJECT_NAME}_joint_trajectory_action
+  src/industrial_robot_client/joint_trajectory_action_v0.cpp
   src/industrial_robot_client/joint_trajectory_action.cpp
   src/joint_trajectory_action_node.cpp)
 target_link_libraries(${PROJECT_NAME}_joint_trajectory_action
