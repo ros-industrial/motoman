@@ -92,7 +92,6 @@ JointTrajectoryStreamer::~JointTrajectoryStreamer()
 void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg)
 {
   ROS_INFO("Receiving joint trajectory message");
-  ROS_INFO("JointTrajectoryStreamer::jointTrajectoryCB DynamicJointTrajectoryConstPtr");
 
   // read current state value (should be atomic)
   int state = this->state_;
@@ -129,7 +128,6 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJoint
 void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg)
 {
   ROS_INFO("Receiving joint trajectory message");
-  ROS_INFO("JointTrajectoryStreamer::jointTrajectoryCB JointTrajectoryConstPtr");
 
   // read current state value (should be atomic)
   int state = this->state_;
@@ -173,9 +171,10 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
     return;
   }
 
-  // Successfully send the motion to the robot.
-  // It may still get aborted/interrupted while the motion is streaming,
+  // Successfully send the motion to the robot. It may still get aborted/interrupted while the motion is streaming,
   // but the input trajectory should be executing now.
+  // Next time motion reply result will be sent will be when the trajectory is finished, or interrupted by
+  // the controller reply code.
 }
 
 bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)

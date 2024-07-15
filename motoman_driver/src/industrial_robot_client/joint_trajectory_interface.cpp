@@ -261,7 +261,6 @@ void JointTrajectoryInterface::jointTrajectoryCB(
   const trajectory_msgs::JointTrajectoryConstPtr &msg)
 {
   ROS_INFO("Receiving joint trajectory message");
-  ROS_INFO("JointTrajectoryInterface::jointTrajectoryCB");
   // check for STOP command
   if (msg->points.empty())
   {
@@ -273,7 +272,6 @@ void JointTrajectoryInterface::jointTrajectoryCB(
   // convert trajectory into robot-format
   std::vector<SimpleMessage> robot_msgs;
   if (!trajectory_to_msgs(msg, &robot_msgs)){
-    ROS_INFO("trajectory_to_msgs false");
     // The trajectory is not valid, or failed to be converted into appropriate robot messages.
     sendMotionReplyResult(pub_motion_reply_, MotionReplyResult::INVALID);
     return;
@@ -282,7 +280,6 @@ void JointTrajectoryInterface::jointTrajectoryCB(
   // send command messages to robot
   if (!send_to_robot(robot_msgs))
   {
-    ROS_INFO("send_to_robot false");
     // Send to robot will fail if the robot is not ready yet.
     sendMotionReplyResult(pub_motion_reply_, MotionReplyResult::NOT_READY);
     return;
