@@ -61,6 +61,7 @@ namespace
 {
   const double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
   const double start_pos_tol_  = 1e-4;  // max difference btwn start & current position, for validation (rad)
+  const double start_pos_close_  = 0.02;  // max difference btwn start & current position, for validation (rad).
 }
 
 #define ROS_ERROR_RETURN(rtn, ...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while (0)  // NOLINT(whitespace/braces)
@@ -598,11 +599,24 @@ bool MotomanJointTrajectoryStreamer::is_valid(const trajectory_msgs::JointTrajec
 
   // FS100 requires trajectory start at current position
   namespace IRC_utils = industrial_robot_client::utils;
+
+  replace_start_state_ = false;
+  // Check if within tolerance. If it is, nothing to do.
   if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
                                 traj.joint_names, traj.points[0].positions,
                                 start_pos_tol_))
   {
-    ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+    // Set a replace with latest joint state if close but not within range of start_pos_tol_.
+    if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
+                                  traj.joint_names, traj.points[0].positions,
+                                  start_pos_close_))
+    {
+      ROS_ERROR_RETURN(false, "Validation failed: Trajectory doesn't start at current position.");
+    } else
+    {
+      ROS_INFO("The start of the trajectory is not within tolerance, but close enough to be replaced.");
+      replace_start_state_ = true;
+    }
   }
   return true;
 }

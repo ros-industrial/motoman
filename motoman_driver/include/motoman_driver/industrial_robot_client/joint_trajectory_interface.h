@@ -72,7 +72,7 @@ public:
   /**
    * \brief Default constructor.
    */
-  JointTrajectoryInterface() : default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0) {}
+  JointTrajectoryInterface() : replace_start_state_(false), default_joint_pos_(0.0), default_vel_ratio_(0.1), default_duration_(10.0) {}
   typedef std::map<int, RobotGroup>::iterator it_type;
 
   /**
@@ -134,7 +134,10 @@ public:
    */
   virtual void run()
   {
-    ros::spin();
+    // Use multi-threaded spinner to enable waiting for jointStateCB update while trying to convert trajectory_to_msgs
+    // when replace_start_state_ is true.
+    ros::MultiThreadedSpinner spinner(2);
+    spinner.spin();
   }
 
 protected:
@@ -368,6 +371,7 @@ protected:
   std::vector<std::string> all_joint_names_;
   std::map<int, RobotGroup> robot_groups_;
   bool version_0_;
+  bool replace_start_state_;
   double default_joint_pos_;  // default position to use for "dummy joints", if none specified
   double default_vel_ratio_;  // default velocity ratio to use for joint commands, if no velocity or max_vel specified
   double default_duration_;   // default duration to use for joint commands, if no

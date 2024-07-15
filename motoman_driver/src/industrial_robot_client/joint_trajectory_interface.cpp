@@ -39,6 +39,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <thread>
 
 using industrial_utils::param::getJointNames;
 using industrial_robot_client::motoman_utils::getJointGroups;
@@ -363,6 +364,31 @@ bool JointTrajectoryInterface::trajectory_to_msgs(
     if (!select(traj->joint_names, traj->points[i],
                 this->all_joint_names_, &rbt_pt))
       return false;
+
+    // Check if the first trajectory point should be replaced with the current joint position.
+    if (i == 0 && replace_start_state_)
+    {
+      double startWait = ros::Time::now().toSec();
+
+      // Wait for the latest joint config to be within 5ms from now before replacing the start of the trajectory.
+      bool needWait = false;
+      double dt = (ros::Time::now() - cur_joint_pos_.header.stamp).toSec();
+      while (dt > 0.005)
+      {
+        needWait = true;
+        std::this_thread::sleep_for(std::chrono::microseconds(500));
+        dt = (ros::Time::now() - cur_joint_pos_.header.stamp).toSec();
+      }
+      rbt_pt.positions = cur_joint_pos_.position;
+      double stopWait = ros::Time::now().toSec();
+      if (needWait)
+      {
+        ROS_INFO("Waited %0.4f seconds for a fresh joint state.",(stopWait-startWait));
+      }
+
+      ROS_INFO("Replaced the initial joint position with the current joint configuration. "
+               "Joint state dt to now: %0.5f seconds.", dt);
+    }
 
     // transform point data (e.g. for joint-coupling)
     if (!transform(rbt_pt, &xform_pt))
