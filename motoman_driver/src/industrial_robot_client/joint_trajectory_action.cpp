@@ -38,6 +38,7 @@
 #include <industrial_utils/utils.h>
 #include <map>
 #include <string>
+#include <sstream>
 #include <vector>
 
 using industrial_robot_client::motoman_utils::getJointGroups;
@@ -405,7 +406,14 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh, int
     }
     else
     {
-      ROS_ERROR("Joint trajectory action failing on invalid joints");
+      std::stringstream robot_joints, goal_joints;
+      for (auto& s : this->robot_groups_[group_number].get_joint_names()) {
+        robot_joints << s << " ";
+      } 
+      for (auto& s : gh.getGoal()->trajectory.joint_names) {
+        goal_joints << s << " ";
+      } 
+      ROS_ERROR_STREAM("Joint trajectory action failing on invalid joints (expected: " << robot_joints.str() << " for group " << group_number << ", received: " << goal_joints.str() << ")");
       control_msgs::FollowJointTrajectoryResult rslt;
       rslt.error_code = control_msgs::FollowJointTrajectoryResult::INVALID_JOINTS;
       gh.setRejected(rslt, "Joint names do not match");
