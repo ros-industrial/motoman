@@ -43,7 +43,7 @@
 #include "motoman_driver/industrial_robot_client/robot_group.h"
 #include "motoman_driver/industrial_robot_client/joint_feedback_relay_handler.h"
 #include "motoman_driver/industrial_robot_client/joint_feedback_ex_relay_handler.h"
-#include "industrial_robot_client/robot_status_relay_handler.h"
+#include "motoman_driver/industrial_robot_client/robot_status_relay_handler.h"
 
 namespace industrial_robot_client
 {
