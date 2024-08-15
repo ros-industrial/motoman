@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:macro name="motoman_hc20" params="prefix">
+  <xacro:macro name="motoman_hc20dtp" params="prefix">
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
@@ -72,26 +72,26 @@
     <link name="${prefix}link_5_b">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/link_5_b.dae"/>
+          <mesh filename="package://motoman_hc20_support/meshes/hc20dtp/visual/link_5_b.dae"/>
         </geometry>
         <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_hc20_support/meshes/hc20/collision/link_5_b.stl"/>
+          <mesh filename="package://motoman_hc20_support/meshes/hc20dtp/collision/link_5_b.stl"/>
         </geometry>
       </collision>
     </link>
     <link name="${prefix}link_6_t">
       <visual>
         <geometry>
-          <mesh filename="package://motoman_hc20_support/meshes/hc20/visual/link_6_t.dae"/>
+          <mesh filename="package://motoman_hc20_support/meshes/hc20dtp/visual/link_6_t.dae"/>
         </geometry>
         <xacro:material_yaskawa_white/>
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://motoman_hc20_support/meshes/hc20/collision/link_6_t.stl"/>
+          <mesh filename="package://motoman_hc20_support/meshes/hc20dtp/collision/link_6_t.stl"/>
         </geometry>
       </collision>
     </link>
@@ -104,7 +104,7 @@
       <child link="${prefix}link_1_s"/>
       <origin xyz="0 0 0.380" rpy="0 0 0" />
       <axis xyz="0 0 1" />
-      <limit lower="${radians(-180)}" upper="${radians(180)}" effort="917.28" velocity="${radians(80)}"/>
+      <limit lower="${radians(-210)}" upper="${radians(210)}" effort="917.28" velocity="${radians(80)}"/>
     </joint>
     <joint name="${prefix}joint_2_l" type="revolute">
       <parent link="${prefix}link_1_s"/>
