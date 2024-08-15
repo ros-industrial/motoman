@@ -169,6 +169,11 @@ protected:
   ros::ServiceServer enabler_;
 
   /**
+   * \brief Service used to check the robot controller status.
+   */
+  ros::ServiceServer checker_;
+
+  /**
    * \brief Service used to select a specific tool file on the robot controller.
    */
   ros::ServiceServer srv_select_tool_;
@@ -188,6 +193,14 @@ protected:
    */
   bool enableRobotCB(std_srvs::Trigger::Request &req,
                      std_srvs::Trigger::Response &res);
+
+  /**
+   * \brief Enable the robot. Response is true if the state was flipped or
+   * false if the state has not changed.
+   *
+   */
+  bool checkRobotReadyCB(std_srvs::Trigger::Request &req,
+                         std_srvs::Trigger::Response &res);
 
   /**
    * \brief Instruct MotoROS to activate a specific tool file on the controller.

@@ -32,6 +32,7 @@
 #include "motoman_driver/motion_ctrl.h"
 #include "motoman_driver/simple_message/messages/motoman_motion_ctrl_message.h"
 #include "motoman_driver/simple_message/messages/motoman_motion_reply_message.h"
+#include "motoman_driver/simple_message/motoman_motion_reply.h"
 #include "motoman_driver/simple_message/messages/motoman_select_tool_message.h"
 #include "ros/ros.h"
 #include "simple_message/simple_message.h"
@@ -44,6 +45,8 @@ using motoman::simple_message::motion_ctrl_message::MotionCtrlMessage;
 using motoman::simple_message::motion_reply_message::MotionReplyMessage;
 using motoman::simple_message::misc::SelectToolMessage;
 using industrial::simple_message::SimpleMessage;
+
+using motoman::simple_message::motion_reply::MotionReplyResult;
 
 namespace motoman
 {
@@ -68,7 +71,25 @@ bool MotomanMotionCtrl::controllerReady()
     return false;
   }
 
-  return (reply.getResult() == MotionReplyResults::TRUE);
+  return (reply.getResult() == MotionReplyResults::SUCCESS);
+}
+
+industrial::shared_types::shared_int MotomanMotionCtrl::controllerReadyCode()
+{
+  std::string err_str;
+  MotionReply reply;
+
+  if (!sendAndReceive(MotionControlCmds::CHECK_MOTION_READY, reply))
+  {
+    ROS_ERROR("Failed to send CHECK_MOTION_READY command");
+    return motoman::simple_message::motion_reply::MotionReplySubcodes::Invalid::UNSPECIFIED;
+  }
+
+  if (reply.getResult() == MotionReplyResults::SUCCESS) {
+    return MotionReplyResults::SUCCESS;
+  } else {
+    return reply.getSubcode();
+  }
 }
 
 

@@ -62,6 +62,7 @@ public:
 
 public:
   bool controllerReady();
+  industrial::shared_types::shared_int controllerReadyCode();
   bool setTrajMode(bool enable);
   bool stopTrajectory();
 

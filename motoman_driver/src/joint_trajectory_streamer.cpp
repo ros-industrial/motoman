@@ -30,6 +30,7 @@
  */
 
 #include "motoman_driver/joint_trajectory_streamer.h"
+#include "motoman_driver/simple_message/motoman_motion_reply.h"
 #include "motoman_driver/simple_message/messages/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
 #include "motoman_driver/simple_message/messages/joint_traj_pt_full_ex_message.h"
@@ -47,6 +48,8 @@ using industrial::joint_traj_pt_full_message::JointTrajPtFullMessage;
 using industrial::joint_traj_pt_full_ex::JointTrajPtFullEx;
 using industrial::joint_traj_pt_full_ex_message::JointTrajPtFullExMessage;
 using industrial::shared_types::shared_int;
+
+using motoman::simple_message::motion_reply::MotionReplySubcodes::NotReady::NotReadyCode;
 
 using motoman::simple_message::motion_reply_message::MotionReplyMessage;
 namespace TransferStates = industrial_robot_client::joint_trajectory_streamer::TransferStates;
@@ -92,6 +95,8 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
 
+  checker_ = node_.advertiseService("check_robot_ready", &MotomanJointTrajectoryStreamer::checkRobotReadyCB, this);
+
   srv_select_tool_ = node_.advertiseService("select_tool", &MotomanJointTrajectoryStreamer::selectToolCB, this);
 
   return rtn;
@@ -116,6 +121,8 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
   disabler_ = node_.advertiseService("robot_disable", &MotomanJointTrajectoryStreamer::disableRobotCB, this);
 
   enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
+
+  checker_ = node_.advertiseService("check_robot_ready", &MotomanJointTrajectoryStreamer::checkRobotReadyCB, this);
 
   srv_select_tool_ = node_.advertiseService("select_tool", &MotomanJointTrajectoryStreamer::selectToolCB, this);
 
@@ -175,6 +182,53 @@ bool MotomanJointTrajectoryStreamer::enableRobotCB(std_srvs::Trigger::Request& r
   {
     res.message = "Motoman robot is now enabled and will accept motion commands.";
     ROS_WARN_STREAM(res.message);
+  }
+
+  return true;
+}
+
+bool MotomanJointTrajectoryStreamer::checkRobotReadyCB(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
+{
+  industrial::shared_types::shared_int status_code = NotReadyCode::UNSPECIFIED;
+  {
+    // SmplMsgConnection is not thread safe, so lock first
+    // NOTE: motion_ctrl_ uses the SmplMsgConnection here
+    const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
+    status_code = motion_ctrl_.controllerReadyCode();
+  }
+
+  bool robot_reply_success = status_code == MotionReplyResults::SUCCESS;
+
+  bool robot_ready_to_start;
+  switch (status_code) {
+    case NotReadyCode::ALARM:
+    case NotReadyCode::ERROR:
+    case NotReadyCode::ESTOP:
+    case NotReadyCode::HOLD:
+    case NotReadyCode::NOT_STARTED:
+    case NotReadyCode::WAITING_ROS:
+    case NotReadyCode::SKILLSEND:
+    case NotReadyCode::PFL_ACTIVE: // PFL active means motion has been stopped because of detected collision
+      robot_ready_to_start = false;
+      break;
+
+    default:
+      robot_ready_to_start = robot_reply_success;
+      break;
+  }
+
+  ROS_INFO_STREAM("MotoROS status check: " << robot_reply_success << ", status code: "  << status_code << ", ready to start: " << robot_ready_to_start);
+
+  res.success = robot_ready_to_start;
+  if (!res.success)
+  {
+    res.message = "Motoman robot is not ready to be enabled. Please re-examine and retry.";
+    ROS_ERROR_STREAM(res.message);
+  }
+  else
+  {
+    res.message = "Motoman robot is ready to be enabled";
+    ROS_INFO_STREAM(res.message);
   }
 
   return true;
