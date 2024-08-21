@@ -199,7 +199,7 @@ protected:
    * false if the state has not changed.
    *
    */
-  bool checkRobotReadyCB(std_srvs::Trigger::Request &req,
+  bool robotCanEnableCB(std_srvs::Trigger::Request &req,
                          std_srvs::Trigger::Response &res);
 
   /**
