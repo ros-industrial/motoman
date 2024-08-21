@@ -384,7 +384,7 @@ bool JointTrajectoryInterface::select(
     // error-chk: required robot joint not found in ROS joint-list
     if (!is_empty && !is_found)
     {
-      ROS_ERROR("Expected joint (%s) not found in JointTrajectory.Aborting command.",
+      ROS_ERROR("Expected joint (%s) not found in JointTrajectory. Aborting command.",
                 rbt_joint_names[rbt_idx].c_str());
       return false;
     }
@@ -433,7 +433,7 @@ bool JointTrajectoryInterface::select(
     // error-chk: required robot joint not found in ROS joint-list
     if (!is_empty && !is_found)
     {
-      ROS_ERROR("Expected joint (%s) not found in JointTrajectory.  Aborting command.",
+      ROS_ERROR("Expected joint (%s) not found in JointTrajectory. Aborting command.",
                 rbt_joint_names[rbt_idx].c_str());
       return false;
     }
