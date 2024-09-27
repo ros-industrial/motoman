@@ -162,6 +162,13 @@ private:
   double goal_threshold_;
 
   /**
+   * \brief The goal joint threshold used for determining if a robot
+   * is near it final destination before a motion in sent to the 
+   * controller.  A single value is used for all joints
+   */
+  double intial_goal_threshold_;
+
+  /**
    * \brief The joint names associated with the robot the action is
    * interfacing with.  The joint names must be the same as expected
    * by the robot driver.
@@ -280,10 +287,12 @@ private:
    *
    */
   bool withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
-                             const trajectory_msgs::JointTrajectory & traj);
+                             const trajectory_msgs::JointTrajectory & traj,
+                             const double threshold);
 
   bool withinGoalConstraints(const control_msgs::FollowJointTrajectoryFeedbackConstPtr &msg,
-                             const trajectory_msgs::JointTrajectory & traj, int robot_id);
+                             const trajectory_msgs::JointTrajectory & traj, int robot_id,
+                             const double threshold);
 };
 
 }  // namespace joint_trajectory_action
