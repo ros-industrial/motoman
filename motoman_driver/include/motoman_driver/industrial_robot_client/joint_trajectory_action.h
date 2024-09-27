@@ -153,6 +153,13 @@ private:
   static const double DEFAULT_GOAL_THRESHOLD_;  // = 0.01;
 
   /**
+   * \brief The default inital goal joint threshold see
+   * (initial_goal_threshold). Unit are joint specific (i.e. radians or
+   * meters).
+   */
+  static const double DEFAULT_INITIAL_GOAL_THRESHOLD_;  // = 1e-3;
+
+  /**
    * \brief The goal joint threshold used for determining if a robot
    * is near it final destination.  A single value is used for all joints
    *
@@ -166,7 +173,7 @@ private:
    * is near it final destination before a motion in sent to the 
    * controller.  A single value is used for all joints
    */
-  double intial_goal_threshold_;
+  double initial_goal_threshold_;
 
   /**
    * \brief The joint names associated with the robot the action is
@@ -194,6 +201,11 @@ private:
    * \brief Cache of the last subscribed status message
    */
   industrial_msgs::RobotStatusConstPtr last_robot_status_;
+
+  /**
+   * \brief Has motion been seen since the start of the trajectory
+   */
+  bool has_seen_motion_;
 
   /**
    * \brief The watchdog period (seconds)
