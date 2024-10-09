@@ -21,7 +21,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <exec_depend>industrial_robot_simulator</exec_depend>
-  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher_gui</exec_depend>
   <exec_depend>motoman_sda10f_support</exec_depend>
   <exec_depend>moveit_planners_ompl</exec_depend>
   <exec_depend>moveit_ros_move_group</exec_depend>
