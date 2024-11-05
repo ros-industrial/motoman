@@ -197,7 +197,7 @@ private:
   /**
    * \brief The watchdog period (seconds)
    */
-  static const double WATCHD0G_PERIOD_;  // = 1.0;
+  static const double WATCHDOG_PERIOD_;  // = 1.0;
 
   /**
    * \brief Watch dog callback, used to detect robot driver failures

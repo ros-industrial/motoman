@@ -48,7 +48,7 @@ namespace industrial_robot_client
 namespace joint_trajectory_action
 {
 
-const double JointTrajectoryAction::WATCHD0G_PERIOD_ = 1.0;
+const double JointTrajectoryAction::WATCHDOG_PERIOD_ = 1.0;
 const double JointTrajectoryAction::DEFAULT_GOAL_THRESHOLD_ = 0.01;
 
 JointTrajectoryAction::JointTrajectoryAction() :
@@ -106,7 +106,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
     this->act_servers_[group_number_int]->start();
 
     this->watchdog_timer_map_[group_number_int] = node_.createTimer(
-          ros::Duration(WATCHD0G_PERIOD_), boost::bind(
+          ros::Duration(WATCHDOG_PERIOD_), boost::bind(
             &JointTrajectoryAction::watchdog, this, boost::placeholders::_1, group_number_int));
   }
 
@@ -117,7 +117,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
   sub_trajectory_state_  = node_.subscribe<control_msgs::FollowJointTrajectoryFeedback>(
                               "feedback_states", 1,
-                              boost::bind(&JointTrajectoryAction::controllerStateCB, this, _1));
+                              boost::bind(&JointTrajectoryAction::controllerStateCB, this, boost::placeholders::_1));
 
   sub_robot_status_ = node_.subscribe("robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
 
@@ -125,7 +125,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
 
   // Set watchdog timer for entire robot state.
   watchdog_timer_ = node_.createTimer(ros::Duration(WATCHDOG_PERIOD_),
-                              boost::bind(&JointTrajectoryAction::watchdog, this, _1));
+                              boost::bind(&JointTrajectoryAction::watchdog, this, boost::placeholders::_1));
 
   has_active_goal_ = false;
 
@@ -167,7 +167,7 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)
       else
       {
         ROS_WARN_STREAM(
-          "Aborting goal because we haven't heard from the controller in " << WATCHD0G_PERIOD_ << " seconds");
+          "Aborting goal because we haven't heard from the controller in " << WATCHDOG_PERIOD_ << " seconds");
       }
       abortGoal();
     }
@@ -202,7 +202,7 @@ void JointTrajectoryAction::watchdog(const ros::TimerEvent &e, int group_number)
       else
       {
         ROS_WARN_STREAM(
-          "Aborting goal because we haven't heard from the controller in " << WATCHD0G_PERIOD_ << " seconds");
+          "Aborting goal because we haven't heard from the controller in " << WATCHDOG_PERIOD_ << " seconds");
       }
       abortGoal(group_number);
     }
