@@ -133,6 +133,10 @@ protected:
   boost::mutex mutex_;
   int current_point_;
   std::vector<SimpleMessage> current_traj_;
+
+  // used for sending retries with modified start on invalid starting position (3011)
+  trajectory_msgs::JointTrajectoryPtr current_joint_traj_;
+
   TransferState state_;
   ros::Time streaming_start_;
   int min_buffer_size_;

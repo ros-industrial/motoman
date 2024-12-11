@@ -50,6 +50,7 @@ using industrial::joint_traj_pt_full_ex::JointTrajPtFullEx;
 using industrial::joint_traj_pt_full_ex_message::JointTrajPtFullExMessage;
 using industrial::shared_types::shared_int;
 
+using motoman::simple_message::motion_reply::MotionReplySubcodes::Invalid::DATA_START_POS;
 using motoman::simple_message::motion_reply::MotionReplySubcodes::NotReady::NotReadyCode;
 
 using motoman::simple_message::motion_reply_message::MotionReplyMessage;
@@ -60,6 +61,8 @@ namespace motoman
 {
 namespace joint_trajectory_streamer
 {
+
+namespace IRC_utils = industrial_robot_client::utils;
 
 namespace
 {
@@ -520,6 +523,8 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
 void MotomanJointTrajectoryStreamer::streamingThread()
 {
   int connectRetryCount = 1;
+  int sendRetryCount = 0;
+  const int sendRetryCountLimit = 3;
   bool is_connected = false;
   bool is_msg_sent = false;
 
@@ -529,7 +534,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     ros::Duration(0.005).sleep();
 
     // automatically re-establish connection, if required
-    if (connectRetryCount-- > 0)
+    if (connectRetryCount-- > 0)  // XXX: will wrap around after 2**31 cycles (@5+ms each), ~2**23s / ~8M seconds, ~100days
     {
       ROS_INFO("Connecting to robot motion server");
       {
@@ -623,15 +628,62 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           ROS_DEBUG("Point[%d of %d] sent to controller",
                     this->current_point_, static_cast<int>(this->current_traj_.size()));
           this->current_point_++;
+          sendRetryCount = 0; // reset
         }
         else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
           break;  // silently retry sending this point
+        else if ((reply_status.reply_.getSubcode() == DATA_START_POS) && (sendRetryCount++ < sendRetryCountLimit))
+        { // catch error "Invalid message (3) : Trajectory start position doesn't match current robot position (3011)"
+
+          // MotomanJointTrajectoryStreamer::is_valid() returned true, but the controller returns error 3011"
+          // cause: controller checks later and also does use encoder value thresholds instead of a radian theshold
+          // solution: try to update start position one or more times, replace with same rules as in is_valid()
+
+          ROS_INFO_STREAM("Retrying Trajectory Start (attempt " << sendRetryCount << " of "<< sendRetryCountLimit
+                           << "). Received error when sending point"
+                           << " (#" << this->current_point_ << " of " << static_cast<int>(this->current_traj_.size()) << "): "
+                           << MotomanMotionCtrl::getErrorString(reply_status.reply_));
+
+          // attempt to update start position, if deviation is within limit, as in MotomanJointTrajectoryStreamer::is_valid
+          if (IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
+                                      this->current_joint_traj_->joint_names, this->current_joint_traj_->points[0].positions,
+                                      replace_start_pos_tol_))
+          {
+            ROS_INFO("Retry: Trajectory is close enough, replacing first point.");
+            for (int i=0; i < this->current_joint_traj_->points[0].positions.size(); i++)
+            {
+              if (std::fabs(this->current_joint_traj_->points[0].positions[i] - cur_joint_pos_.position[i]) > 0.000001)
+              {
+                ROS_INFO("ros.motoman_driver: Changing first trajectory point from: %f to %f for joint: %s",
+                        this->current_joint_traj_->points[0].positions[i], cur_joint_pos_.position[i], cur_joint_pos_.name[i].c_str());
+              } else {
+                ROS_INFO("ros.motoman_driver: not replacing value for joint %d", i);
+              }
+              this->current_joint_traj_->points[0].positions[i] = cur_joint_pos_.position[i];
+            }
+
+            // repack for next stream attempt
+            std::vector<SimpleMessage> new_traj_msgs;
+            if (!trajectory_to_msgs(this->current_joint_traj_, &new_traj_msgs)) {
+              ROS_ERROR("Retry position msgs creation failed");
+            } else {
+              ROS_INFO("Retry position msgs created");
+              this->current_traj_ = new_traj_msgs;
+            }
+          } else {
+            ROS_ERROR("Retry position update failed: Trajectory starting point distance to current position too high.");
+          }
+
+          break; // retry
+        }
         else
         {
           ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point"
                            << " (#" << this->current_point_ << " of " << static_cast<int>(this->current_traj_.size())
                            << "): " << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
+
+          sendRetryCount = 0; // reset
 
           motoman_msgs::MotorosError error;
           error.code = reply_status.reply_.getResult();
@@ -683,7 +735,6 @@ bool MotomanJointTrajectoryStreamer::is_valid(trajectory_msgs::JointTrajectory &
     ROS_ERROR_RETURN(false, "Validation failed: Can't get current robot position.");
 
   // FS100 requires trajectory start at current position
-  namespace IRC_utils = industrial_robot_client::utils;
   if (!IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
                                 traj.joint_names, traj.points[0].positions,
                                 start_pos_tol_))
@@ -699,6 +750,8 @@ bool MotomanJointTrajectoryStreamer::is_valid(trajectory_msgs::JointTrajectory &
         {
           ROS_INFO("ros.motoman_driver: Changing first trajectory point from: %f to %f for joint: %s",
                    traj.points[0].positions[i], cur_joint_pos_.position[i], cur_joint_pos_.name[i].c_str());
+        } else {
+          ROS_INFO("ros.motoman_driver: not replacing value for joint %d", i);
         }
         traj.points[0].positions[i] = cur_joint_pos_.position[i];
       }
@@ -732,8 +785,6 @@ bool MotomanJointTrajectoryStreamer::is_valid(motoman_msgs::DynamicJointTrajecto
         ROS_ERROR_RETURN(false, "Validation failed: Missing velocity data for trajectory pt %lu", i);
 
       // FS100 requires trajectory start at current position
-      namespace IRC_utils = industrial_robot_client::utils;
-
       if (!IRC_utils::isWithinRange(cur_joint_pos_map_[group_number].name, cur_joint_pos_map_[group_number].position,
                                     traj.joint_names, traj.points[0].groups[gr].positions,
                                     start_pos_tol_))

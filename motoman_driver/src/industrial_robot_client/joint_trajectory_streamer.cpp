@@ -160,6 +160,9 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
     return;
 
   // send command messages to robot
+  this->mutex_.lock();
+  this->current_joint_traj_ = traj;
+  this->mutex_.unlock();
   send_to_robot(new_traj_msgs);
 }
 
