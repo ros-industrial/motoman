@@ -1,5 +1,5 @@
 <launch>
-	<arg name="req_arg" value="default"/>
+  <arg name="req_arg" value="default"/>
   <arg name="yrc1000" value="yrc1000"/>
   
   <group ns="load_gp25">

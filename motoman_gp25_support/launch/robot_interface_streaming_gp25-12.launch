@@ -2,11 +2,11 @@
 <!--
   Manipulator specific version of 'robot_interface_streaming.launch'.
 
-  Defaults provided for gp25:
+  Defaults provided for gp25-12:
    - 6 joints
 
   Usage:
-    robot_interface_streaming_gp25.launch robot_ip:=<value> controller:=<yrc1000>
+    robot_interface_streaming_gp25-12.launch robot_ip:=<value> controller:=<yrc1000>
 -->
 <launch>
 	<arg name="robot_ip" />
