@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-<xacro:macro name="motoman_gp25-12" params="prefix">
+<xacro:macro name="motoman_gp25_12" params="prefix">
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 
     <!-- link list -->
@@ -59,13 +59,13 @@
     <link name="${prefix}link_4_r">
         <visual>
             <geometry>
-                <mesh filename="package://motoman_gp25_support/meshes/gp25-12/visual/link_4_r.dae"/>
+                <mesh filename="package://motoman_gp25_support/meshes/gp25_12/visual/link_4_r.dae"/>
             </geometry>
             <xacro:material_yaskawa_blue/>
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_gp25_support/meshes/gp25-12/collision/link_4_r.stl"/>
+                <mesh filename="package://motoman_gp25_support/meshes/gp25_12/collision/link_4_r.stl"/>
             </geometry>
         </collision>
     </link>
