@@ -20,8 +20,8 @@
       found in the <em>YASKAWA MOTOMAN-GP165R,GP200R INSTRUCTIONS (HW1484396)</em>
       version <em>186044-1CD, rev 3</em>
     </p>
-    <p>	  
-	  All urdfs are based on the default motion and joint velocity limits, 
+    <p>   
+      All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
     </p>
     <p>
