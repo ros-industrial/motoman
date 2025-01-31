@@ -142,7 +142,7 @@
     </joint>
     <!-- end of joint list -->
 
-	<!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
+    <!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
     <link name="${prefix}flange"/>
     <joint name="${prefix}joint_6_t-flange" type="fixed">
       <origin xyz="0.100 0 0" rpy="0 0 0"/>
@@ -157,7 +157,7 @@
       <parent link="${prefix}flange"/>
       <child link="${prefix}tool0"/>
     </joint>
-	
+
     <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
     <link name="${prefix}base" />
     <joint name="${prefix}base_link-base" type="fixed">
