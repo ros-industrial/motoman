@@ -7,7 +7,7 @@
     <p>ROS-Industrial support for the Motoman GP225.</p>
     <p>
       This package contains configuration data, 3D models and launch files
-      for Motoman GP225 series of manipulators..
+      for Motoman GP225 series of manipulators.
     </p>
     <p>
       <b>Specifications</b>
