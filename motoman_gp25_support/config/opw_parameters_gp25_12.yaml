@@ -1,4 +1,11 @@
 #
+# NOTE: the OPW kinematics parameters provided here have not been verified
+# against a real system. Before using these parameters, be sure to check
+# they are correct for the particular robot model and configuration you intend
+# to use them with.
+#
+
+#
 # Parameters for use with IK solvers which support OPW (Ortho-Parallel Wrist)
 # kinematic configurations, as described in the paper "An Analytical Solution
 # of the Inverse Kinematics Problem of Industrial Serial Manipulators with an
