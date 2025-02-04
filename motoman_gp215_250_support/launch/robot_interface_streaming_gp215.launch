@@ -13,7 +13,7 @@
   <!-- controller: Controller name (yrc1000) -->
   <arg name="controller"/>
 
-  <rosparam command="load" file="$(find motoman_gp215-250_support)/config/joint_names_gp215.yaml" />
+  <rosparam command="load" file="$(find motoman_gp215_250_support)/config/joint_names_gp215.yaml" />
 
   <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
     <arg name="robot_ip" value="$(arg robot_ip)" />
