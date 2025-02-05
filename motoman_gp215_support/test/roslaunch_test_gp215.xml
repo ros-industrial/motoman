@@ -3,16 +3,16 @@
   <arg name="yrc1000" value="yrc1000"/>
   
   <group ns="load_gp215">
-    <include file="$(find motoman_gp215_250_support)/launch/load_gp215.launch"/>
+    <include file="$(find motoman_gp215_support)/launch/load_gp215.launch"/>
   </group>
 
   <group ns="test_gp215">
-    <include file="$(find motoman_gp215_250_support)/launch/test_gp215.launch"/>
+    <include file="$(find motoman_gp215_support)/launch/test_gp215.launch"/>
   </group>
 
   <group ns="robot_interface_streaming_gp215">
     <group ns="yrc1000" >
-      <include file="$(find motoman_gp215_250_support)/launch/robot_interface_streaming_gp215.launch">
+      <include file="$(find motoman_gp215_support)/launch/robot_interface_streaming_gp215.launch">
         <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg yrc1000)"/>
       </include>
@@ -21,7 +21,7 @@
 
   <group ns="robot_state_visualize_gp215">
     <group ns="yrc1000" >
-      <include file="$(find motoman_gp215_250_support)/launch/robot_state_visualize_gp215.launch">
+      <include file="$(find motoman_gp215_support)/launch/robot_state_visualize_gp215.launch">
         <arg name="robot_ip"   value="$(arg req_arg)" />
         <arg name="controller" value="$(arg yrc1000)"/>
       </include>
