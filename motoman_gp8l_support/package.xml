@@ -29,12 +29,6 @@
       in this package, be sure to check they are correct for the particular
       robot model and configuration you intend to use them with.
     </p>
-    <p>
-      NOTE: the OPW kinematics parameters provided by this package have not
-      been verified against a real system. Before using these parameters, be
-      sure to check they are correct for the particular robot model and
-      configuration you intend to use them with.
-    </p>
   </description>
   <author>Eric Marcil</author>
   <maintainer email="eric.marcil@motoman.com">Eric Marcil</maintainer>
