@@ -14,12 +14,12 @@
     </p>
     <ul>
       <li>GP165R - Not-Equipped - Default</li>
-	  <li>GP165R - Equipped</li>
+      <li>GP165R - Equipped</li>
     </ul>
     <p>
-      Joint limits and maximum joint velocities are based on the information 
+      Joint limits and maximum joint velocities are based on the information
       found in the <em>YASKAWA MOTOMAN-GP165R,GP200R INSTRUCTIONS (HW1484396)</em>
-      version <em>186044-1CD, rev 3</em>
+      version <em>186044-1CD, rev 3</em>.
     </p>
     <p>
       This model comes in two versions 'Not-equipped' and 'Equipped'. The
@@ -29,8 +29,8 @@
       allowable moment and inertia for the wrist joints. Please refer to the
       manual for further details.
     </p>
-    <p>   
-      All urdfs are based on the default motion and joint velocity limits, 
+    <p>
+      All urdfs are based on the default motion and joint velocity limits,
       unless noted otherwise.
     </p>
     <p>
