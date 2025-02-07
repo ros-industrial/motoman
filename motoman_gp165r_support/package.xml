@@ -21,16 +21,14 @@
       found in the <em>YASKAWA MOTOMAN-GP165R,GP200R INSTRUCTIONS (HW1484396)</em>
       version <em>186044-1CD, rev 3</em>
     </p>
-	</p>
-	  This model comes in two versions 'Not-equipped' and 'Equipped'. The 
-	  equipped version has reduced motion range to account for restrictions
-	  from extra hardware and cables routed outside of the robot. To use the 
-	  'Equipped' version, edit the ./urdf/gp165r.xacro file and change the 
-	  reference to 'gp165r_macro.xacro' file to 'gp165r_macro_equipped.xacro'
-	  The 'Equipped' version has a reduce payload of 150 kg and lower 
-	  allowable moment and inertia for the wrist joints. Please refer to the 
-	  manual for further details.
-    <p>  
+    <p>
+      This model comes in two versions 'Not-equipped' and 'Equipped'. The
+      equipped version has reduced motion range to account for restrictions
+      from extra hardware and cables routed outside of the robot.
+      The 'Equipped' version has a reduce payload of 150 kg and lower
+      allowable moment and inertia for the wrist joints. Please refer to the
+      manual for further details.
+    </p>
     <p>   
       All urdfs are based on the default motion and joint velocity limits, 
       unless noted otherwise.
