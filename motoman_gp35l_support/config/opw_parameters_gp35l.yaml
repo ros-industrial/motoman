@@ -10,7 +10,7 @@
 #
 opw_kinematics_geometric_parameters:
     a1:  0.145
-    a2:  0.210
+    a2:  -0.210
     b:   0.000
     c1:  0.540
     c2:  1.150
