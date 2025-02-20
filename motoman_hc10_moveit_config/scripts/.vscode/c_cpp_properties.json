@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/ruthrash/motoman_ws/devel/include/**",
+        "/home/ruthrash/motoman_moveit_ws/devel/include/**",
+        "/home/ruthrash/utm/git/frankapy/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/ruthrash/motoman_moveit_ws/src/ros_yaskawa_hc10/motoman_driver/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
