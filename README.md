@@ -1,13 +1,15 @@
 # Motoman
 
 
-This is a forked repository from [motoman](https://github.com/ros-industrial/motoman). This repository contains instructions and example scripts for the HC10DT robot with a smart pendant to perform- 
+This is a forked repository from [motoman](https://github.com/ros-industrial/motoman). This repository contains instructions and example scripts for the HC10DT robot + YRC1000micro + a smart pendant to perform- 
 - joint trajectory streaming 
 - visualizing the HC10DT robot in RViz during motion 
 - MoveIT with the HC10DT robot 
 
-Checkout the [wiki](https://github.com/uoft-cs-robotics/motoman/wiki) for more 
+Checkout the [wiki](https://github.com/uoft-cs-robotics/motoman/wiki) for more information and details
 
+
+---
 [![Build Status: Ubuntu Xenial (Actions)](https://github.com/ros-industrial/motoman/workflows/CI%20-%20Ubuntu%20Xenial/badge.svg?branch=kinetic-devel)](https://github.com/ros-industrial/motoman/actions?query=workflow%3A%22CI+-+Ubuntu+Xenial%22)
 [![Build Status: Ubuntu Bionic (Actions)](https://github.com/ros-industrial/motoman/workflows/CI%20-%20Ubuntu%20Bionic/badge.svg?branch=kinetic-devel)](https://github.com/ros-industrial/motoman/actions?query=workflow%3A%22CI+-+Ubuntu+Bionic%22)
 [![Build Status: Ubuntu Focal (Actions)](https://github.com/ros-industrial/motoman/workflows/CI%20-%20Ubuntu%20Focal/badge.svg?branch=kinetic-devel)](https://github.com/ros-industrial/motoman/actions?query=workflow%3A%22CI+-+Ubuntu+Focal%22)
