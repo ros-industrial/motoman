@@ -31,6 +31,19 @@
             </geometry>
         </collision>
     </link>
+    <link name="${prefix}link_1_s_2">
+        <visual>
+            <geometry>
+                <mesh filename="package://motoman_gp225_support/meshes/gp225/visual/link_1_s_2.dae"/>
+            </geometry>
+            <xacro:material_yaskawa_blue/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://motoman_gp225_support/meshes/gp225/collision/link_1_s_2.stl"/>
+            </geometry>
+        </collision>
+    </link>
     <link name="${prefix}link_2_l">
         <visual>
             <geometry>
@@ -41,6 +54,19 @@
         <collision>
             <geometry>
                 <mesh filename="package://motoman_gp225_support/meshes/gp225/collision/link_2_l.stl"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="${prefix}link_2_l_2">
+        <visual>
+            <geometry>
+                <mesh filename="package://motoman_gp225_support/meshes/gp225/visual/link_2_l_2.dae"/>
+            </geometry>
+            <xacro:material_yaskawa_blue/>
+        </visual>
+        <collision>
+            <geometry>
+                <mesh filename="package://motoman_gp225_support/meshes/gp225/collision/link_2_l_2.stl"/>
             </geometry>
         </collision>
     </link>
@@ -106,12 +132,28 @@
         <axis xyz="0 0 1" />
         <limit lower="${radians(-180)}" upper="${radians(180)}" effort="7845.3" velocity="${radians(120)}"/>
     </joint>
+    <joint name="${prefix}joint_1_s_2" type="revolute">
+        <parent link="${prefix}link_1_s"/>
+        <child link="${prefix}link_1_s_2"/>
+        <origin xyz="0.3989 0 -0.2576" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit lower="${radians(-60)}" upper="${radians(76)}" effort="11522.8" velocity="${radians(97)}"/>
+        <mimic joint="${prefix}joint_2_l" multiplier="0.7634"/> 
+    </joint>
     <joint name="${prefix}joint_2_l" type="revolute">
         <parent link="${prefix}link_1_s"/>
         <child link="${prefix}link_2_l"/>
         <origin xyz="0.325 0 0" rpy="0 0 0" />
         <axis xyz="0 1 0" />
         <limit lower="${radians(-60)}" upper="${radians(76)}" effort="11522.8" velocity="${radians(97)}"/>
+    </joint>
+    <joint name="${prefix}joint_2_l_2" type="revolute">
+        <parent link="${prefix}link_2_l"/>
+        <child link="${prefix}link_2_l_2"/>
+        <origin xyz="0 0 0.720" rpy="0 0 0" />
+        <axis xyz="0 1 0" />
+        <limit lower="${radians(-60)}" upper="${radians(76)}" effort="11522.8" velocity="${radians(97)}"/>
+        <mimic joint="${prefix}joint_2_l" multiplier="-0.2366"/> 
     </joint>
     <joint name="${prefix}joint_3_u" type="revolute">
         <parent link="${prefix}link_2_l"/>
