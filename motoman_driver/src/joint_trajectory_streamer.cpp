@@ -67,8 +67,8 @@ namespace IRC_utils = industrial_robot_client::utils;
 namespace
 {
   const double pos_stale_time_ = 1.0;  // max time since last "current position" update, for validation (sec)
-  const double start_pos_tol_  = 1e-4;  // max difference btwn start & current position, for validation (rad)
-  const double replace_start_pos_tol_  = 0.02;  // default tolerance 1e-4 found to be too strict for some manipulators
+  double start_pos_tol_  = 1e-4;  // max difference btwn start & current position, for validation (rad)
+  double replace_start_pos_tol_  = 0.02;  // default tolerance 1e-4 found to be too strict for some manipulators
 }
 
 #define ROS_ERROR_RETURN(rtn, ...) do {ROS_ERROR(__VA_ARGS__); return(rtn);} while (0)  // NOLINT(whitespace/braces)
@@ -83,6 +83,9 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   this->robot_groups_ = robot_groups;
   rtn &= JointTrajectoryStreamer::init(connection, robot_groups, velocity_limits);
+
+  ros::param::param<double>("~start_pos_tol", start_pos_tol_, start_pos_tol_);
+  ros::param::param<double>("~replace_start_pos_tol", replace_start_pos_tol_, replace_start_pos_tol_);
 
   motion_ctrl_.init(connection, 0);
   for (size_t i = 0; i < robot_groups_.size(); i++)
@@ -117,6 +120,9 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
   ROS_INFO("MotomanJointTrajectoryStreamer: init");
 
   rtn &= JointTrajectoryStreamer::init(connection, joint_names, velocity_limits);
+
+  ros::param::param<double>("~start_pos_tol", start_pos_tol_, start_pos_tol_);
+  ros::param::param<double>("~replace_start_pos_tol", replace_start_pos_tol_, replace_start_pos_tol_);
 
   // try to read robot_id parameter, if none specified
   if ((robot_id_ < 0))
@@ -524,7 +530,13 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 {
   int connectRetryCount = 1;
   int sendRetryCount = 0;
-  const int sendRetryCountLimit = 3;
+
+  // CAREFUL: increasing this can result in continued motion after collisions!
+  //          setting this can be necessary if the robot is still moving slightly after the last move,
+  //          or if a gripper action results in a robot position change in the time between trajectory generation and start
+  int sendRetryCountLimit = 0;
+  ros::param::param<int>("~retry_traj_on_invalid_start_pos", sendRetryCountLimit, sendRetryCountLimit);
+
   bool is_connected = false;
   bool is_msg_sent = false;
 
