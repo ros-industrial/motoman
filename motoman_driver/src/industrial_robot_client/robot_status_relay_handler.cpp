@@ -33,27 +33,32 @@
 #include "industrial_msgs/RobotStatus.h"
 #include "simple_message/log_wrapper.h"
 
-using namespace industrial::shared_types;
-using namespace industrial::smpl_msg_connection;
-using namespace industrial::simple_message;
-using namespace industrial::robot_status;
-using namespace industrial::robot_status_message;
-
 namespace industrial_robot_client
 {
 namespace robot_status_relay_handler
 {
 
+using industrial::simple_message::SimpleMessage;
+using industrial::simple_message::StandardMsgTypes::StandardMsgType;
+using industrial::simple_message::CommTypes::CommType;
+using industrial::simple_message::ReplyTypes::ReplyType;
+using industrial::smpl_msg_connection::SmplMsgConnection;
+using industrial::robot_status::RobotModes::RobotMode;
+using industrial::robot_status::TriStates::TriState;
+using industrial::robot_status::TriStates::toROSMsgEnum;
+using industrial::robot_status_message::RobotStatusMessage;
+
 bool RobotStatusRelayHandler::init(SmplMsgConnection* connection)
 {
   m_auto_enable_robot = true;
-  m_serviceRobotAutoEnable = this->node_.advertiseService("robot_auto_enable", &RobotStatusRelayHandler::robotAutoEnableCB, this);
+  m_serviceRobotAutoEnable = this->node_.advertiseService("robot_auto_enable",
+    &RobotStatusRelayHandler::robotAutoEnableCB, this);
 
   ROS_INFO("[RobotStatusRelayHandler] advertising robot_auto_enable");
 
   this->pub_robot_status_ = this->node_.advertise<industrial_msgs::RobotStatus>("robot_status", 1);
 
-  return init((int)StandardMsgTypes::STATUS, connection);
+  return init(static_cast<int>(StandardMsgType::STATUS), connection);
 }
 
 bool RobotStatusRelayHandler::internalCB(SimpleMessage& in)
@@ -69,7 +74,8 @@ bool RobotStatusRelayHandler::internalCB(SimpleMessage& in)
   return internalCB(status_msg);
 }
 
-bool RobotStatusRelayHandler::robotAutoEnableCB(std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& res) {
+bool RobotStatusRelayHandler::robotAutoEnableCB(std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& res)
+{
   m_auto_enable_robot = req.data;
   res.success = true;
   ROS_INFO("[RobotStatusRelayHandler] auto enable robot: %d", m_auto_enable_robot);
@@ -82,34 +88,36 @@ bool RobotStatusRelayHandler::internalCB(RobotStatusMessage & in)
   bool rtn = true;
 
   status.header.stamp = ros::Time::now();
-  status.drives_powered.val = TriStates::toROSMsgEnum(in.status_.getDrivesPowered());
-  status.e_stopped.val = TriStates::toROSMsgEnum(in.status_.getEStopped());
+  status.drives_powered.val = industrial::robot_status::TriStates::toROSMsgEnum(in.status_.getDrivesPowered());
+  status.e_stopped.val = industrial::robot_status::TriStates::toROSMsgEnum(in.status_.getEStopped());
   status.error_code = in.status_.getErrorCode();
-  status.in_error.val = TriStates::toROSMsgEnum(in.status_.getInError());
-  status.in_motion.val = TriStates::toROSMsgEnum(in.status_.getInMotion());
-  status.mode.val = RobotModes::toROSMsgEnum(in.status_.getMode());
-  if (!m_auto_enable_robot && (status.motion_possible.val == TriStates::TS_FALSE)) {
+  status.in_error.val = industrial::robot_status::TriStates::toROSMsgEnum(in.status_.getInError());
+  status.in_motion.val = industrial::robot_status::TriStates::toROSMsgEnum(in.status_.getInMotion());
+  status.mode.val = industrial::robot_status::RobotModes::toROSMsgEnum(in.status_.getMode());
+  if (!m_auto_enable_robot && (status.motion_possible.val == TriState::TS_FALSE))
+  {
     // override motion_possible value to avoid RobotStatus Error if we wanted to disconnect from the robot
-    status.motion_possible.val = TriStates::TS_UNKNOWN;
-  } else {
-    status.motion_possible.val = TriStates::toROSMsgEnum(in.status_.getMotionPossible());
+    status.motion_possible.val = TriState::TS_UNKNOWN;
+  }
+  else
+  {
+    status.motion_possible.val = industrial::robot_status::TriStates::toROSMsgEnum(in.status_.getMotionPossible());
   }
 
   this->pub_robot_status_.publish(status);
 
   // Reply back to the controller if the sender requested it.
-  if (CommTypes::SERVICE_REQUEST == in.getCommType())
+  if (CommType::SERVICE_REQUEST == in.getCommType())
   {
     SimpleMessage reply;
-    in.toReply(reply, rtn ? ReplyTypes::SUCCESS : ReplyTypes::FAILURE);
+    in.toReply(reply, rtn ? ReplyType::SUCCESS : ReplyType::FAILURE);
     this->getConnection()->sendMsg(reply);
   }
 
-  ros::spinOnce(); // handle service call if requested
+  ros::spinOnce();  // handle service call if requested
 
   return rtn;
 }
 
-}
-}
-
+}  // namespace robot_status_relay_handler
+}  // namespace industrial_robot_client

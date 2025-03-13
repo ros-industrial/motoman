@@ -30,8 +30,8 @@
  */
 
 
-#ifndef ROBOT_STATUS_RELAY_HANDLER_H
-#define ROBOT_STATUS_RELAY_HANDLER_H
+#ifndef MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATUS_RELAY_HANDLER_H
+#define MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATUS_RELAY_HANDLER_H
 
 #include "ros/ros.h"
 #include "simple_message/message_handler.h"
@@ -57,11 +57,10 @@ class RobotStatusRelayHandler : public industrial::message_handler::MessageHandl
   using industrial::message_handler::MessageHandler::init;
 
 public:
-
   /**
    * \brief Constructor
    */
-  RobotStatusRelayHandler(){}
+  RobotStatusRelayHandler() {}
 
   /**
    * \brief Class initializer
@@ -73,7 +72,6 @@ public:
   bool init(industrial::smpl_msg_connection::SmplMsgConnection* connection);
 
 protected:
-
   ros::Publisher pub_robot_status_;
   ros::NodeHandle node_;
 
@@ -98,11 +96,10 @@ private:
   *
   * \return true on success, false otherwise
   */
- bool internalCB(industrial::simple_message::SimpleMessage& in);
+  bool internalCB(industrial::simple_message::SimpleMessage& in);
 };
 
-}
-}
+}  // namespace robot_status_relay_handler
+}  // namespace industrial_robot_client
 
-
-#endif /* ROBOT_STATUS_RELAY_HANDLER_H */
+#endif  // MOTOMAN_DRIVER_INDUSTRIAL_ROBOT_CLIENT_ROBOT_STATUS_RELAY_HANDLER_H

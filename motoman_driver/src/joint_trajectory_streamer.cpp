@@ -205,13 +205,14 @@ bool MotomanJointTrajectoryStreamer::robotCanEnableCB(std_srvs::Trigger::Request
   bool robot_reply_success = status_code == MotionReplyResults::SUCCESS;
 
   bool robot_ready_to_start;
-  switch (status_code) {
+  switch (status_code)
+  {
     case NotReadyCode::ALARM:
     case NotReadyCode::ERROR:
     case NotReadyCode::ESTOP:
     case NotReadyCode::HOLD:
     case NotReadyCode::SKILLSEND:
-    case NotReadyCode::PFL_ACTIVE: // PFL active means motion has been stopped because of detected collision
+    case NotReadyCode::PFL_ACTIVE:  // PFL active means motion has been stopped because of detected collision
       robot_ready_to_start = false;
       res.message = "Motoman robot is not ready to be enabled. Please re-examine and retry.";
       break;
@@ -229,9 +230,12 @@ bool MotomanJointTrajectoryStreamer::robotCanEnableCB(std_srvs::Trigger::Request
 
     default:
       robot_ready_to_start = !robot_reply_success;
-      if (robot_reply_success) {
+      if (robot_reply_success)
+      {
         res.message = "Motoman robot already enabled";
-      } else {
+      }
+      else
+      {
         res.message = "Motoman robot: unexpected readiness status code";
       }
       break;
@@ -240,9 +244,13 @@ bool MotomanJointTrajectoryStreamer::robotCanEnableCB(std_srvs::Trigger::Request
   res.success = robot_ready_to_start;
   if (!res.success)
   {
-    ROS_ERROR_STREAM("MotoROS status check: " << robot_reply_success << ", status code: "  << status_code << ", ready to start: " << robot_ready_to_start << ", msg: " << res.message);    ROS_ERROR_STREAM(res.message);
-  } else {
-    ROS_INFO_STREAM("MotoROS status check: " << robot_reply_success << ", status code: "  << status_code << ", ready to start: " << robot_ready_to_start << ", msg: " << res.message);
+    ROS_ERROR_STREAM("MotoROS status check: " << robot_reply_success << ", status code: "  << status_code
+      << ", ready to start: " << robot_ready_to_start << ", msg: " << res.message);    ROS_ERROR_STREAM(res.message);
+  }
+  else
+  {
+    ROS_INFO_STREAM("MotoROS status check: " << robot_reply_success << ", status code: "  << status_code
+      << ", ready to start: " << robot_ready_to_start << ", msg: " << res.message);
   }
 
   return true;

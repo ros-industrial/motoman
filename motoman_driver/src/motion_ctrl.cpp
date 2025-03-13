@@ -85,9 +85,12 @@ industrial::shared_types::shared_int MotomanMotionCtrl::controllerReadyCode()
     return motoman::simple_message::motion_reply::MotionReplySubcodes::Invalid::UNSPECIFIED;
   }
 
-  if (reply.getResult() == MotionReplyResults::SUCCESS) {
+  if (reply.getResult() == MotionReplyResults::SUCCESS)
+  {
     return MotionReplyResults::SUCCESS;
-  } else {
+  }
+  else
+  {
     return reply.getSubcode();
   }
 }
