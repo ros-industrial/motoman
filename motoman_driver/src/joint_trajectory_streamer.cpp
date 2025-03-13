@@ -533,7 +533,8 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 
   // CAREFUL: increasing this can result in continued motion after collisions!
   //          setting this can be necessary if the robot is still moving slightly after the last move,
-  //          or if a gripper action results in a robot position change in the time between trajectory generation and start
+  //          or if a gripper action results in a robot position change in the time
+  //          between trajectory generation and start
   int sendRetryCountLimit = 0;
   ros::param::param<int>("~retry_traj_on_invalid_start_pos", sendRetryCountLimit, sendRetryCountLimit);
 
@@ -546,7 +547,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     ros::Duration(0.005).sleep();
 
     // automatically re-establish connection, if required
-    if (connectRetryCount-- > 0)  // XXX: will wrap around after 2**31 cycles (@5+ms each), ~2**23s / ~8M seconds, ~100days
+    if (connectRetryCount-- > 0)  // XXX: will wrap around after 2**31 cycles (@5+ms each), ~2**23s or about 100days
     {
       ROS_INFO("Connecting to robot motion server");
       {
@@ -640,25 +641,28 @@ void MotomanJointTrajectoryStreamer::streamingThread()
           ROS_DEBUG("Point[%d of %d] sent to controller",
                     this->current_point_, static_cast<int>(this->current_traj_.size()));
           this->current_point_++;
-          sendRetryCount = 0; // reset
+          sendRetryCount = 0;  // reset
         }
         else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
           break;  // silently retry sending this point
         else if ((reply_status.reply_.getSubcode() == DATA_START_POS) && (sendRetryCount++ < sendRetryCountLimit))
-        { // catch error "Invalid message (3) : Trajectory start position doesn't match current robot position (3011)"
-
-          // MotomanJointTrajectoryStreamer::is_valid() returned true, but the controller returns error 3011"
-          // cause: controller checks later and also does use encoder value thresholds instead of a radian theshold
-          // solution: try to update start position one or more times, replace with same rules as in is_valid()
+        {  // catch error "Invalid message (3) : Trajectory start position doesn't match current robot position (3011)"
+           //
+           // MotomanJointTrajectoryStreamer::is_valid() returned true, but the controller returns error 3011"
+           // cause: controller checks later and also does use encoder value thresholds instead of a radian theshold
+           // solution: try to update start position one or more times, replace with same rules as in is_valid()
 
           ROS_INFO_STREAM("Retrying Trajectory Start (attempt " << sendRetryCount << " of "<< sendRetryCountLimit
                            << "). Received error when sending point"
-                           << " (#" << this->current_point_ << " of " << static_cast<int>(this->current_traj_.size()) << "): "
+                           << " (#" << this->current_point_ << " of " << static_cast<int>(this->current_traj_.size())
+                           << "): "
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
 
-          // attempt to update start position, if deviation is within limit, as in MotomanJointTrajectoryStreamer::is_valid
+          // attempt to update start position, if deviation is within limit,
+          // as in MotomanJointTrajectoryStreamer::is_valid
           if (IRC_utils::isWithinRange(cur_joint_pos_.name, cur_joint_pos_.position,
-                                      this->current_joint_traj_->joint_names, this->current_joint_traj_->points[0].positions,
+                                      this->current_joint_traj_->joint_names,
+                                      this->current_joint_traj_->points[0].positions,
                                       replace_start_pos_tol_))
           {
             ROS_INFO("Retry: Trajectory is close enough, replacing first point.");
@@ -667,8 +671,11 @@ void MotomanJointTrajectoryStreamer::streamingThread()
               if (std::fabs(this->current_joint_traj_->points[0].positions[i] - cur_joint_pos_.position[i]) > 0.000001)
               {
                 ROS_INFO("ros.motoman_driver: Changing first trajectory point from: %f to %f for joint: %s",
-                        this->current_joint_traj_->points[0].positions[i], cur_joint_pos_.position[i], cur_joint_pos_.name[i].c_str());
-              } else {
+                        this->current_joint_traj_->points[0].positions[i], cur_joint_pos_.position[i],
+                        cur_joint_pos_.name[i].c_str());
+              }
+              else
+              {
                 ROS_INFO("ros.motoman_driver: not replacing value for joint %d", i);
               }
               this->current_joint_traj_->points[0].positions[i] = cur_joint_pos_.position[i];
@@ -676,17 +683,22 @@ void MotomanJointTrajectoryStreamer::streamingThread()
 
             // repack for next stream attempt
             std::vector<SimpleMessage> new_traj_msgs;
-            if (!trajectory_to_msgs(this->current_joint_traj_, &new_traj_msgs)) {
+            if (!trajectory_to_msgs(this->current_joint_traj_, &new_traj_msgs))
+            {
               ROS_ERROR("Retry position msgs creation failed");
-            } else {
+            }
+            else
+            {
               ROS_INFO("Retry position msgs created");
               this->current_traj_ = new_traj_msgs;
             }
-          } else {
+          }
+          else
+          {
             ROS_ERROR("Retry position update failed: Trajectory starting point distance to current position too high.");
           }
 
-          break; // retry
+          break;  // retry
         }
         else
         {
@@ -695,7 +707,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                            << "): " << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
 
-          sendRetryCount = 0; // reset
+          sendRetryCount = 0;  // reset
 
           motoman_msgs::MotorosError error;
           error.code = reply_status.reply_.getResult();
@@ -762,7 +774,9 @@ bool MotomanJointTrajectoryStreamer::is_valid(trajectory_msgs::JointTrajectory &
         {
           ROS_INFO("ros.motoman_driver: Changing first trajectory point from: %f to %f for joint: %s",
                    traj.points[0].positions[i], cur_joint_pos_.position[i], cur_joint_pos_.name[i].c_str());
-        } else {
+        }
+        else
+        {
           ROS_INFO("ros.motoman_driver: not replacing value for joint %d", i);
         }
         traj.points[0].positions[i] = cur_joint_pos_.position[i];
