@@ -553,8 +553,8 @@ void MotomanJointTrajectoryStreamer::streamingThread()
         else
         {
           ROS_ERROR_STREAM("Aborting Trajectory.  Failed to send point"
-                           << " (#" << this->current_point_ << " of " << static_cast<int>(this->current_traj_.size()) << "): "
-                           << MotomanMotionCtrl::getErrorString(reply_status.reply_));
+                           << " (#" << this->current_point_ << " of " << static_cast<int>(this->current_traj_.size())
+                           << "): " << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
           break;
         }

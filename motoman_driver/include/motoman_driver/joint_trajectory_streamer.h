@@ -128,9 +128,9 @@ public:
 
   virtual bool create_message_ex(int seq, const motoman_msgs::DynamicJointPoint &point, SimpleMessage* msg);
 
-  virtual bool send_to_robot(const std::vector<SimpleMessage>& messages) override;
+  bool send_to_robot(const std::vector<SimpleMessage>& messages) override;
 
-  virtual void streamingThread() override;
+  void streamingThread() override;
 
   /**
    * \brief Safely disable Yaskawa arm before system shutdown.
