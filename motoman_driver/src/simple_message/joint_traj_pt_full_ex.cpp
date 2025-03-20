@@ -82,7 +82,7 @@ void JointTrajPtFullEx::init(industrial::shared_types::shared_int num_groups,
 {
   this->setNumGroups(num_groups);
   this->setSequence(sequence);
-  this->setMultiJointTrajPtData(joint_trajectory_points_);
+  this->setMultiJointTrajPtData(joint_trajectory_points);
 }
 
 void JointTrajPtFullEx::copyFrom(JointTrajPtFullEx &src)
