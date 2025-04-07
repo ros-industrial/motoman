@@ -1,4 +1,4 @@
-<!-- 
+<!--
   Wrapper launch file for the Fanuc specific motion streaming interface node.
 -->
 <launch>
@@ -11,9 +11,22 @@
   <!-- put them on the parameter server -->
   <param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
 
+  <arg name="start_pos_tol" doc="warn threshold for diff of start/current position (rad)" />
+  <arg name="replace_start_pos_tol" doc="replace threshold for diff of start/current position (rad)" />
+
+  <arg name="retry_traj_on_invalid_start_pos" doc="can lead to continued motion after collisions! setting this can be necessary if the robot is still moving slightly after the last move, or if a gripper action results in a robot position change in the time between trajectory generation and start" />
+
   <!-- load the correct version of the motion streaming node -->
   <node if="$(arg use_bswap)" name="motion_streaming_interface" output="screen"
-        pkg="motoman_driver" type="motion_streaming_interface_bswap" />
+        pkg="motoman_driver" type="motion_streaming_interface_bswap">
+    <param name="start_pos_tol"                   value="$(arg start_pos_tol)" />
+    <param name="replace_start_pos_tol"           value="$(arg replace_start_pos_tol)" />
+    <param name="retry_traj_on_invalid_start_pos" value="$(arg retry_traj_on_invalid_start_pos)" />
+  </node>
   <node unless="$(arg use_bswap)" name="motion_streaming_interface" output="screen"
-        pkg="motoman_driver" type="motion_streaming_interface" />
+        pkg="motoman_driver" type="motion_streaming_interface">
+    <param name="start_pos_tol"                   value="$(arg start_pos_tol)" />
+    <param name="replace_start_pos_tol"           value="$(arg replace_start_pos_tol)" />
+    <param name="retry_traj_on_invalid_start_pos" value="$(arg retry_traj_on_invalid_start_pos)" />
+  </node>
 </launch>

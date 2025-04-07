@@ -81,11 +81,16 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   ROS_INFO("MotomanJointTrajectoryStreamer: init");
 
-  this->robot_groups_ = robot_groups;
-  rtn &= JointTrajectoryStreamer::init(connection, robot_groups, velocity_limits);
-
   ros::param::param<double>("~start_pos_tol", start_pos_tol_, start_pos_tol_);
   ros::param::param<double>("~replace_start_pos_tol", replace_start_pos_tol_, replace_start_pos_tol_);
+  int print_sendRetryCountLimit = -1;  // only for debug output
+  ros::param::param<int>("~retry_traj_on_invalid_start_pos", print_sendRetryCountLimit, print_sendRetryCountLimit);
+  ROS_INFO_STREAM("MotomanJointTrajectoryStreamer: start_pos_tol: " << start_pos_tol_
+    << ", replace_start_pos_tol: " << replace_start_pos_tol_
+    << ", send retry count limit: " << print_sendRetryCountLimit);
+
+  this->robot_groups_ = robot_groups;
+  rtn &= JointTrajectoryStreamer::init(connection, robot_groups, velocity_limits);
 
   motion_ctrl_.init(connection, 0);
   for (size_t i = 0; i < robot_groups_.size(); i++)
@@ -119,10 +124,15 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   ROS_INFO("MotomanJointTrajectoryStreamer: init");
 
-  rtn &= JointTrajectoryStreamer::init(connection, joint_names, velocity_limits);
-
   ros::param::param<double>("~start_pos_tol", start_pos_tol_, start_pos_tol_);
   ros::param::param<double>("~replace_start_pos_tol", replace_start_pos_tol_, replace_start_pos_tol_);
+  int print_sendRetryCountLimit = -1;  // only for debug output
+  ros::param::param<int>("~retry_traj_on_invalid_start_pos", print_sendRetryCountLimit, print_sendRetryCountLimit);
+  ROS_INFO_STREAM("MotomanJointTrajectoryStreamer: start_pos_tol: " << start_pos_tol_
+    << ", replace_start_pos_tol: " << replace_start_pos_tol_
+    << ", send retry count limit: " << print_sendRetryCountLimit);
+
+  rtn &= JointTrajectoryStreamer::init(connection, joint_names, velocity_limits);
 
   // try to read robot_id parameter, if none specified
   if ((robot_id_ < 0))
