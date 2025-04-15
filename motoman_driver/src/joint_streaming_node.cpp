@@ -29,23 +29,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <ros/ros.h>
+#include <signal.h>
+#include <memory>
 #include "motoman_driver/joint_trajectory_streamer.h"
 #include "industrial_utils/param_utils.h"
 
 using motoman::joint_trajectory_streamer::MotomanJointTrajectoryStreamer;
+
+std::unique_ptr<MotomanJointTrajectoryStreamer> motionInterface;
+
+void onShutdown(int signal)
+{
+  motionInterface->shutdown();
+  ros::shutdown();
+}
 
 int main(int argc, char** argv)
 {
   const int FS100_motion_port = 50240;  // FS100 uses a "non-standard" port to comply with MotoPlus guidelines
 
   // initialize node
-  ros::init(argc, argv, "motion_interface");
+  ros::init(argc, argv, "motion_interface", ros::init_options::NoSigintHandler);
+  ros::NodeHandle nh;
+
+  // set up custom shutdown handler
+  signal(SIGINT, onShutdown);
+  signal(SIGTERM, onShutdown);
 
   // launch the FS100 JointTrajectoryStreamer connection/handlers
-  MotomanJointTrajectoryStreamer motionInterface;
-
-  motionInterface.init("", FS100_motion_port, false);
-  motionInterface.run();
+  motionInterface.reset(new MotomanJointTrajectoryStreamer());
+  motionInterface->init("", FS100_motion_port, false);
+  motionInterface->run();
 
   return 0;
 }

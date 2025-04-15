@@ -33,6 +33,7 @@
 #include "motoman_driver/simple_message/messages/motoman_motion_reply_message.h"
 #include "simple_message/messages/joint_traj_pt_full_message.h"
 #include "motoman_driver/simple_message/messages/joint_traj_pt_full_ex_message.h"
+#include "motoman_msgs/MotorosError.h"
 #include "industrial_robot_client/utils.h"
 #include "industrial_utils/param_utils.h"
 #include <map>
@@ -93,6 +94,8 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
 
   srv_select_tool_ = node_.advertiseService("select_tool", &MotomanJointTrajectoryStreamer::selectToolCB, this);
 
+  motoros_error_pub_ = node_.advertise<motoman_msgs::MotorosError>("motoros_error", 10);
+
   return rtn;
 }
 
@@ -117,6 +120,8 @@ bool MotomanJointTrajectoryStreamer::init(SmplMsgConnection* connection, const s
   enabler_ = node_.advertiseService("robot_enable", &MotomanJointTrajectoryStreamer::enableRobotCB, this);
 
   srv_select_tool_ = node_.advertiseService("select_tool", &MotomanJointTrajectoryStreamer::selectToolCB, this);
+
+  motoros_error_pub_ = node_.advertise<motoman_msgs::MotorosError>("motoros_error", 10);
 
   return rtn;
 }
@@ -414,6 +419,13 @@ bool MotomanJointTrajectoryStreamer::VectorToJointData(const std::vector<double>
   return true;
 }
 
+void MotomanJointTrajectoryStreamer::shutdown()
+{
+  std_srvs::Trigger::Request req;
+  std_srvs::Trigger::Response res;
+  disableRobotCB(req, res);
+}
+
 // override send_to_robot to provide controllerReady() and setTrajMode() calls
 bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
@@ -483,7 +495,7 @@ void MotomanJointTrajectoryStreamer::streamingThread()
     switch (this->state_)
     {
     case TransferStates::IDLE:
-      ros::Duration(0.250).sleep();  //  slower loop while waiting for new trajectory
+      ros::Duration(0.010).sleep();  //  slower loop while waiting for new trajectory
       break;
 
     case TransferStates::STREAMING:
@@ -548,6 +560,13 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                            << " (#" << this->current_point_ << "): "
                            << MotomanMotionCtrl::getErrorString(reply_status.reply_));
           this->state_ = TransferStates::IDLE;
+
+          motoman_msgs::MotorosError error;
+          error.code = reply_status.reply_.getResult();
+          error.subcode = reply_status.reply_.getSubcode();
+          error.code_description = reply_status.reply_.getResultString();
+          error.subcode_description = reply_status.reply_.getSubcodeString();
+          motoros_error_pub_.publish(error);
           break;
         }
       }
@@ -640,4 +659,3 @@ bool MotomanJointTrajectoryStreamer::is_valid(const motoman_msgs::DynamicJointTr
 
 }  // namespace joint_trajectory_streamer
 }  // namespace motoman
-
