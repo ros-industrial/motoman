@@ -166,7 +166,7 @@
     <!-- end of link list -->
 
     <!-- joint list -->
-    <xacro:property name="velocities" value="${load_yaml(joint_velocities_file)}" />
+    <xacro:property name="velocities" value="${xacro.load_yaml(joint_velocities_file)}" />
 
     <joint name="${prefix}joint_1_s" type="revolute">
       <origin xyz="0 0 0.450" rpy="0 0 0"/>
