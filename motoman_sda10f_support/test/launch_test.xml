@@ -41,7 +41,7 @@
   
   
   <group ns="urdf_sda10f">
-	  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find motoman_sda10f_support)/test/sda10f_test.xacro'" />
+	  <param name="robot_description" command="$(find xacro)/xacro '$(find motoman_sda10f_support)/test/sda10f_test.xacro'" />
   </group>
 
 

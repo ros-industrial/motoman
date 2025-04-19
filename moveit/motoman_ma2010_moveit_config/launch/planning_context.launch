@@ -6,7 +6,7 @@
   <arg name="robot_description" default="robot_description"/>
 
   <!-- Load universal robot description format (URDF) -->
-  <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro --inorder  '$(find motoman_ma2010_support)/urdf/ma2010.xacro'"/>
+  <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro '$(find motoman_ma2010_support)/urdf/ma2010.xacro'"/>
 
   <!-- The semantic description that corresponds to the URDF -->
   <param name="$(arg robot_description)_semantic" textfile="$(find motoman_ma2010_moveit_config)/config/motoman_ma2010.srdf" />
