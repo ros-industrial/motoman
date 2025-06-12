@@ -1,0 +1,29 @@
+/JOB
+//NAME INIT_ROS
+//POS
+///NPOS 0,0,0,0,0,0
+//INST
+///DATE 2013/03/29 05:32
+///ATTR SC,RW
+///GROUP1 RB1
+NOP
+' this job requires a MotoROS
+' version without mpStartJob
+NOP 
+' assume control, unless:
+IF ( OT#(1569)=ON ) THEN
+ RET
+ ' could also instead CALL a job
+ ' CALL JOB:MAIN
+ENDIF
+DOUT OT#(890) OFF
+DOUT OT#(889) OFF
+TIMER T=0.05
+DOUT OT#(889) ON // ROS_READY 
+WAIT OT#(890)=ON // ROS_DONE
+DOUT OT#(890) OFF
+' Mikado is no longer in control
+NOP
+' return to caller
+RET
+END
