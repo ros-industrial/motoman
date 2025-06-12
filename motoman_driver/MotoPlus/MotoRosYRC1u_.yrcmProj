@@ -19,6 +19,8 @@
     <FileForProject>SimpleMessage.h</FileForProject>
     <FileForProject>StateServer.c</FileForProject>
     <FileForProject>StateServer.h</FileForProject>
+    <FileForProject>debug.h</FileForProject>
+    <FileForProject>debug.c</FileForProject>
   </FilesInProject>
   <LastFileOpened>StateServer.h</LastFileOpened>
   <UsrInit>False</UsrInit>
