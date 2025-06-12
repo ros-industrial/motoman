@@ -1,4 +1,4 @@
-﻿// MotionServer.c
+// MotionServer.c
 //
 /*
 * Software License Agreement (BSD License) 
@@ -894,7 +894,10 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 {
 	int ret;
 	MP_STD_RSP_DATA rData;
+#define NO_MPSTARTJOB
+#ifndef NO_MPSTARTJOB
 	MP_START_JOB_SEND_DATA sStartData;
+#endif
 	int checkCount;
 	int grpNo;
 	STATUS status;
@@ -1026,6 +1029,10 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 		}
 	}
 
+#ifndef NO_MPSTARTJOB
+	// (re-)starting INIT_ROS disabled!
+	// this will require the active Job to set Out#889 (ROS_READY) for Trajectory Mode to work
+	//
 	// Start Job
 	memset(&rData, 0x00, sizeof(rData));
 	memset(&sStartData, 0x00, sizeof(sStartData));
@@ -1035,8 +1042,9 @@ BOOL Ros_MotionServer_StartTrajMode(Controller* controller)
 	if( (ret != 0) || (rData.err_no !=0) )
 	{
 		Ros_MotionServer_PrintError(rData.err_no, "Can't start job because:");
-		goto updateStatus;		
+		goto updateStatus;
 	}
+#endif
 	
 	// wait for the Motion Ready
 	for(checkCount=0; checkCount<MOTION_START_TIMEOUT; checkCount+=MOTION_START_CHECK_PERIOD)
