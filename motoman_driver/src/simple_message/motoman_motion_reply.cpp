@@ -156,7 +156,7 @@ std::string MotionReply::getSubcodeString(shared_int code)
   case MotionReplySubcodes::NotReady::HOLD:
     return "Controller in HOLD state";
   case MotionReplySubcodes::NotReady::NOT_STARTED:
-    return "MotoRos not started";
+    return "MotoROS not started";
   case MotionReplySubcodes::NotReady::WAITING_ROS:
     return "Waiting on ROS";
   case MotionReplySubcodes::NotReady::SKILLSEND:

@@ -529,8 +529,21 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
   }
 
   if (!motion_ctrl_result)
-    ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion, trajectory execution ABORTED. If safe, call the "
-                            "'robot_enable' service to (re-)enable Motoplus motion and retry.");
+  {
+    // retry **once**, after waiting 50ms!
+    ros::Duration(0.050).sleep();
+    {
+      // SmplMsgConnection is not thread safe, so lock first
+      // NOTE: motion_ctrl_ uses the SmplMsgConnection here
+      const std::lock_guard<std::mutex> lock{smpl_msg_conx_mutex_};
+      motion_ctrl_result = motion_ctrl_.controllerReady();
+    }
+    if (!motion_ctrl_result)
+    {
+      ROS_ERROR_RETURN(false, "Failed to initialize MotoROS motion, trajectory execution ABORTED. If safe, call the "
+                              "'robot_enable' service to (re-)enable MotoPlus motion and retry.");
+    }
+  }
 
   ROS_DEBUG("MotomanJointTrajectoryStreamer::send_to_robot() calls JointTrajectoryStreamer::send_to_robot()");
   return JointTrajectoryStreamer::send_to_robot(messages);
