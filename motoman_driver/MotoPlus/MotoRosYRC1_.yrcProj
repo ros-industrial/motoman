@@ -13,7 +13,7 @@
     <FileForProject>MotoROS.h</FileForProject>
     <FileForProject>mpMain.c</FileForProject>
     <FileForProject>ParameterExtraction.h</FileForProject>
-    <FileForProject>ParameterExtraction.yrcmLib</FileForProject>
+    <FileForProject>ParameterExtraction.yrcLib</FileForProject>
     <FileForProject>ParameterTypes.h</FileForProject>
     <FileForProject>SimpleMessage.c</FileForProject>
     <FileForProject>SimpleMessage.h</FileForProject>
