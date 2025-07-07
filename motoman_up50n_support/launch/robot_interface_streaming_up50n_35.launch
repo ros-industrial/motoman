@@ -1,0 +1,21 @@
+<!--
+  Manipulator specific version of 'robot_interface_streaming.launch'.
+
+  Defaults provided for up50n_35:
+   - 6 joints
+
+  Usage:
+    robot_interface_streaming_up50n_35.launch robot_ip:=<value> controller:=<dx100>
+-->
+<launch>
+  <arg name="robot_ip" />
+
+  <!-- controller: Controller name (dx100) -->
+  <arg name="controller"/>
+
+  <rosparam command="load" file="$(find motoman_up50n_support)/config/joint_names_up50n_35.yaml" />
+
+  <include file="$(find motoman_driver)/launch/robot_interface_streaming_$(arg controller).launch">
+    <arg name="robot_ip"   value="$(arg robot_ip)" />
+  </include>
+</launch>
