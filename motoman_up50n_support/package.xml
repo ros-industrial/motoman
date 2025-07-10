@@ -8,6 +8,10 @@
     <p>
       This package contains configuration data, 3D models and launch files
       for Motoman UP50N-35 manipulators.
+    <p>
+      This model is for an NX100 controller which is does not support
+      MotoPlus and cannot be used with the motoman_driver.
+    </p>
     </p>
     <p>
       <b>Specifications</b>
