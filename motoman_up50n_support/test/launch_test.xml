@@ -9,22 +9,4 @@
   <group ns="test_up50n_35">
     <include file="$(find motoman_up50n_support)/launch/test_up50n_35.launch"/>
   </group>
-
-  <group ns="robot_interface_streaming_up50n_35">
-    <group ns="dx100" >
-      <include file="$(find motoman_up50n_support)/launch/robot_interface_streaming_up50n_35.launch">
-        <arg name="robot_ip"   value="$(arg req_arg)" />
-        <arg name="controller" value="$(arg dx100)"/>
-      </include>
-    </group>
-  </group>
-
-  <group ns="robot_state_visualize_up50n_35">
-    <group ns="dx100" >
-      <include file="$(find motoman_up50n_support)/launch/robot_state_visualize_up50n_35.launch">
-        <arg name="robot_ip"   value="$(arg req_arg)" />
-        <arg name="controller" value="$(arg dx100)"/>
-      </include>
-    </group>
-  </group>
 </launch>
