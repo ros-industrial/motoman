@@ -13,7 +13,7 @@
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/visual/base_link.dae"/>
+                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/collision/base_link.stl"/>
             </geometry>
         </collision>
     </link>
@@ -26,7 +26,7 @@
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/visual/link_1_s.dae"/>
+                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/collision/link_1_s.stl"/>
             </geometry>
         </collision>
     </link>
@@ -39,7 +39,7 @@
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/visual/link_2_l.dae"/>
+                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/collision/link_2_l.stl"/>
             </geometry>
         </collision>
     </link>
@@ -52,7 +52,7 @@
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/visual/link_3_u.dae"/>
+                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/collision/link_3_u.stl"/>
             </geometry>
         </collision>
     </link>
@@ -65,7 +65,7 @@
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/visual/link_4_r.dae"/>
+                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/collision/link_4_r.stl"/>
             </geometry>
         </collision>
     </link>
@@ -78,7 +78,7 @@
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/visual/link_5_b.dae"/>
+                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/collision/link_5_b.stl"/>
             </geometry>
         </collision>
     </link>
@@ -91,7 +91,7 @@
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/visual/link_6_t.dae"/>
+                <mesh filename="package://motoman_up50n_support/meshes/up50n_35/collision/link_6_t.stl"/>
             </geometry>
         </collision>
     </link>
