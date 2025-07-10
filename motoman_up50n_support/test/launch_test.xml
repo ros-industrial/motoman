@@ -1,7 +1,4 @@
 <launch>
-  <arg name="req_arg" value="default"/>
-  <arg name="dx100" value="dx100"/>
-
   <group ns="load_up50n_35">
     <include file="$(find motoman_up50n_support)/launch/load_up50n_35.launch"/>
   </group>
