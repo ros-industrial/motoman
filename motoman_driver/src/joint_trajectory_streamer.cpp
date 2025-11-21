@@ -532,6 +532,7 @@ bool MotomanJointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessa
     ROS_ERROR_RETURN(false, "Failed to initialize MotoRos motion, trajectory execution ABORTED. If safe, call the "
                             "'robot_enable' service to (re-)enable Motoplus motion and retry.");
 
+  ROS_DEBUG("MotomanJointTrajectoryStreamer::send_to_robot() calls JointTrajectoryStreamer::send_to_robot()");
   return JointTrajectoryStreamer::send_to_robot(messages);
 }
 
@@ -652,6 +653,14 @@ void MotomanJointTrajectoryStreamer::streamingThread()
                     this->current_point_, static_cast<int>(this->current_traj_.size()));
           this->current_point_++;
           sendRetryCount = 0;  // reset
+
+          if (this->current_point_ >= static_cast<int>(this->current_traj_.size()))
+          {
+            // early return to idle, without the sleep at the start of the next loop iteration
+            ROS_INFO("Trajectory streaming complete, setting state to IDLE");
+            this->state_ = TransferStates::IDLE;
+            break;
+          }
         }
         else if (reply_status.reply_.getResult() == MotionReplyResults::BUSY)
           break;  // silently retry sending this point
