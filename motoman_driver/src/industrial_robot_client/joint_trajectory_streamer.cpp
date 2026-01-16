@@ -91,21 +91,59 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJoint
 {
   ROS_INFO("Receiving joint trajectory message");
 
+  motoman_msgs::DynamicJointTrajectoryPtr trajs = boost::make_shared<motoman_msgs::DynamicJointTrajectory>(*msg);
+
   // read current state value (should be atomic)
   int state = this->state_;
 
   ROS_DEBUG("Current state is: %d", state);
   if (TransferStates::IDLE != state)
   {
-    if (msg->points.empty())
-      ROS_INFO("Empty trajectory received, canceling current trajectory");
-    else
-      ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+    bool stop = false;
 
-    this->mutex_.lock();
-    trajectoryStop();
-    this->mutex_.unlock();
-    return;
+    if (msg->points.empty())
+    {
+      ROS_INFO("Empty trajectory received, cancelling current trajectory");
+      stop = true;
+    }
+    else
+    {
+      //  wait for up to 500ms or until the previous motion is sent and the streamer turns idle
+      int wait_count = 0;
+      float timeout_wait_for_idle = 0.020;
+      float max_timeout_wait_for_idle = 0.300;
+      do
+      {
+        ros::Duration(timeout_wait_for_idle).sleep();
+        state = this->state_;
+      }
+      while (TransferStates::IDLE != state && (++wait_count * timeout_wait_for_idle < max_timeout_wait_for_idle));
+
+      if (TransferStates::IDLE != state)
+      {
+        ROS_ERROR("Previous motion still not fully streamed. "
+                  "Trajectory splicing not yet implemented, stopping current motion.");
+        stop = true;
+      }
+      else if (!is_valid(*trajs))
+      {
+        // there is also a check in streamingThread(), but here we can immediately stop the robot
+        ROS_ERROR("New motion start differs too much from current position, cancelling current trajectory");
+        stop = true;
+      }
+      else
+      {
+        ROS_INFO("Previous motion now fully streamed, sending motion (after %d wait cycles)", wait_count);
+      }
+    }
+
+    if (stop)
+    {
+      this->mutex_.lock();
+      trajectoryStop();
+      this->mutex_.unlock();
+      return;
+    }
   }
 
   if (msg->points.empty())
@@ -116,8 +154,6 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJoint
 
   // calc new trajectory
   std::vector<SimpleMessage> new_traj_msgs;
-  motoman_msgs::DynamicJointTrajectoryPtr trajs = boost::make_shared<motoman_msgs::DynamicJointTrajectory>(
-    *boost::const_pointer_cast<motoman_msgs::DynamicJointTrajectory>(msg));
   if (!trajectory_to_msgs(trajs, &new_traj_msgs))
     return;
 
@@ -129,21 +165,59 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
 {
   ROS_INFO("Receiving joint trajectory message");
 
+  trajectory_msgs::JointTrajectoryPtr traj = boost::make_shared<trajectory_msgs::JointTrajectory>(*msg);
+
   // read current state value (should be atomic)
   int state = this->state_;
 
   ROS_DEBUG("Current state is: %d", state);
   if (TransferStates::IDLE != state)
   {
-    if (msg->points.empty())
-      ROS_INFO("Empty trajectory received, canceling current trajectory");
-    else
-      ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
+    bool stop = false;
 
-    this->mutex_.lock();
-    trajectoryStop();
-    this->mutex_.unlock();
-    return;
+    if (msg->points.empty())
+    {
+      ROS_INFO("Empty trajectory received, cancelling current trajectory");
+      stop = true;
+    }
+    else
+    {
+      //  wait for up to 500ms or until the previous motion is sent and the streamer turns idle
+      int wait_count = 0;
+      float timeout_wait_for_idle = 0.020;
+      float max_timeout_wait_for_idle = 0.300;
+      do
+      {
+        ros::Duration(timeout_wait_for_idle).sleep();
+        state = this->state_;
+      }
+      while (TransferStates::IDLE != state && (++wait_count * timeout_wait_for_idle < max_timeout_wait_for_idle));
+
+      if (TransferStates::IDLE != state)
+      {
+        ROS_ERROR("Previous motion still not fully streamed. "
+                  "Trajectory splicing not yet implemented, stopping current motion.");
+        stop = true;
+      }
+      else if (!is_valid(*traj))
+      {
+        // there is also a check in streamingThread(), but here we can immediately stop the robot
+        ROS_ERROR("New motion start differs too much from current position, cancelling current trajectory");
+        stop = true;
+      }
+      else
+      {
+        ROS_INFO("Previous motion now fully streamed, sending motion (after %d wait cycles)", wait_count);
+      }
+    }
+
+    if (stop)
+    {
+      this->mutex_.lock();
+      trajectoryStop();
+      this->mutex_.unlock();
+      return;
+    }
   }
 
   if (msg->points.empty())
@@ -154,8 +228,6 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
 
   // calc new trajectory
   std::vector<SimpleMessage> new_traj_msgs;
-  trajectory_msgs::JointTrajectoryPtr traj = boost::make_shared<trajectory_msgs::JointTrajectory>(
-    *boost::const_pointer_cast<trajectory_msgs::JointTrajectory>(msg));
   if (!trajectory_to_msgs(traj, &new_traj_msgs))
     return;
 
@@ -182,7 +254,7 @@ bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& me
   return true;
 }
 
-bool JointTrajectoryStreamer::trajectory_to_msgs(trajectory_msgs::JointTrajectoryPtr& traj,
+bool JointTrajectoryStreamer::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryPtr& traj,
                                                  std::vector<SimpleMessage>* msgs)
 {
   // use base function to transform points
@@ -200,7 +272,7 @@ bool JointTrajectoryStreamer::trajectory_to_msgs(trajectory_msgs::JointTrajector
   return true;
 }
 
-bool JointTrajectoryStreamer::trajectory_to_msgs(motoman_msgs::DynamicJointTrajectoryPtr& traj,
+bool JointTrajectoryStreamer::trajectory_to_msgs(const motoman_msgs::DynamicJointTrajectoryPtr& traj,
                                                  std::vector<SimpleMessage>* msgs)
 {
   // use base function to transform points

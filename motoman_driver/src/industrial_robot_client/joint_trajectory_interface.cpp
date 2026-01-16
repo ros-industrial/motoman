@@ -274,7 +274,7 @@ void JointTrajectoryInterface::jointTrajectoryCB(
 }
 
 bool JointTrajectoryInterface::trajectory_to_msgs(
-  motoman_msgs::DynamicJointTrajectoryPtr& traj,
+  const motoman_msgs::DynamicJointTrajectoryPtr& traj,
   std::vector<SimpleMessage>* msgs)
 {
   msgs->clear();
@@ -325,7 +325,7 @@ bool JointTrajectoryInterface::trajectory_to_msgs(
 }
 
 bool JointTrajectoryInterface::trajectory_to_msgs(
-  trajectory_msgs::JointTrajectoryPtr& traj,
+  const trajectory_msgs::JointTrajectoryPtr& traj,
   std::vector<SimpleMessage>* msgs)
 {
   msgs->clear();
@@ -666,7 +666,7 @@ bool JointTrajectoryInterface::stopMotionCB(
   return true;  // always return true.  To distinguish between call-failed and service-unavailable.
 }
 
-bool JointTrajectoryInterface::is_valid(trajectory_msgs::JointTrajectory &traj)
+bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &traj)
 {
   for (size_t i = 0; i < traj.points.size(); ++i)
   {
@@ -695,7 +695,7 @@ bool JointTrajectoryInterface::is_valid(trajectory_msgs::JointTrajectory &traj)
   return true;
 }
 
-bool JointTrajectoryInterface::is_valid(motoman_msgs::DynamicJointTrajectory &traj)
+bool JointTrajectoryInterface::is_valid(const motoman_msgs::DynamicJointTrajectory &traj)
 {
   for (size_t i = 0; i < traj.points.size(); ++i)
   {
